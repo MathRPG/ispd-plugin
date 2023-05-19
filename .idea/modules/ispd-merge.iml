@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$/../.." dumb="true">
+      <excludeFolder url="file://$MODULE_DIR$/../../Erros" />
+      <excludeFolder url="file://$MODULE_DIR$/../../policies" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/0" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/1" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/2" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/3" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/4" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/5" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/7" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/8" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/9" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/a" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/b" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/c" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/d" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/issuestore/f" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/0" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/1" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/2" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/3" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/4" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/5" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/7" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/8" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/9" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/a" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/b" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/c" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/d" />
+      <excludeFolder url="file://$MODULE_DIR$/../sonarlint/securityhotspotstore/f" />
+    </content>
+  </component>
+</module>

@@ -1,38 +1,24 @@
-# Netbeans
-/nbproject/private/
-/build/
-/dist/
+## Build
 
-# iSPD
+/build/
+/.gradle/
+
+## iSPD
+
+# Directory for automatically generated error logs
 /Erros/
-/policies
+
+# Directory for user-generated scheduling and allocation policies
+/policies/
+
+# Files generated during iconic to simulable model conversion
 /modeloiconico
 /modelosimulavel
+
+# User preferences file
 /configuration.xml
 
-# Backup files
-*.bak
+## IDE
 
-# Vim
-.vim/
-.*.swp
-*~
-
-# VS Code
-.vscode/
-
-# Idea
-.idea/
-
-# Hidden files
-.*
-
-# Log files
-*.log
-
-# Github
-!.github/
-
-# Git
-!.gitignore
-!.gitmodules
+# IntelliJ Plugin
+/.idea/sonarlint/
