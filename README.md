@@ -115,7 +115,8 @@ With the state of the project, the addition of any moderately complex feature wi
 
 If you'd like to contribute to the project, simply open a Pull Request. It will be reviewed and merged if deemed constructive, with immense gratitude.
 
-Read the coding standards documentation available. If you'd like to contribute to these, have at it!
+Use the code style configurations available in `docs/codeStyle`.
+- If you'd like to suggest changes to the project code style, simply open a new _issue_ with your suggestion and reasoning!
 
 Make sure to read the **Project Status** section above to know what the project's priorities are right now, and focus on changes aimed at these goals.
 - For instance, a PR adding a new user-oriented feature may be refused/ignored, if it relies too much on code which will most likely be changed. On the other hand, PRs that standardize, document and/or refactor code to bring it more in line with the project's vision will have a high probability of being accepted.
