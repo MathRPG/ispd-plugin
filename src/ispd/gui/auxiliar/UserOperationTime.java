@@ -5,29 +5,31 @@ package ispd.gui.auxiliar;
  */
 public class UserOperationTime implements Comparable<UserOperationTime> {
 
-    private final double time;
+    private final double  time;
     private final boolean startTime;
-    private final double nodeUse;
-    private final int userId;
+    private final double  nodeUse;
+    private final int     userId;
 
     /**
      * Constructor which specifies the time, start time
      * node use and the user id.
      *
-     * @param time the time
-     * @param startTime the start time
-     * @param nodeUse the node use
-     * @param userId the user id
+     * @param time
+     *         the time
+     * @param startTime
+     *         the start time
+     * @param nodeUse
+     *         the node use
+     * @param userId
+     *         the user id
      */
-    public UserOperationTime(
-            final double time,
-            final boolean startTime,
-            final double nodeUse,
-            final int userId) {
-        this.time = time;
+    public UserOperationTime (
+            final double time, final boolean startTime, final double nodeUse, final int userId
+    ) {
+        this.time      = time;
         this.startTime = startTime;
-        this.nodeUse = nodeUse;
-        this.userId = userId;
+        this.nodeUse   = nodeUse;
+        this.userId    = userId;
     }
 
     /**
@@ -35,7 +37,7 @@ public class UserOperationTime implements Comparable<UserOperationTime> {
      *
      * @return the time.
      */
-    public double getTime() {
+    public double getTime () {
         return this.time;
     }
 
@@ -44,7 +46,7 @@ public class UserOperationTime implements Comparable<UserOperationTime> {
      *
      * @return the start time.
      */
-    public boolean isStartTime() {
+    public boolean isStartTime () {
         return this.startTime;
     }
 
@@ -53,7 +55,7 @@ public class UserOperationTime implements Comparable<UserOperationTime> {
      *
      * @return the node use.
      */
-    public double getNodeUse() {
+    public double getNodeUse () {
         return this.nodeUse;
     }
 
@@ -62,7 +64,7 @@ public class UserOperationTime implements Comparable<UserOperationTime> {
      *
      * @return the user id
      */
-    public int getUserId() {
+    public int getUserId () {
         return this.userId;
     }
 
@@ -74,7 +76,8 @@ public class UserOperationTime implements Comparable<UserOperationTime> {
      * the second one and a value greater than 0 if {@code this}'s time is
      * numerically greater than the second one.
      *
-     * @param o the another {@link UserOperationTime} to be compared.
+     * @param o
+     *         the another {@link UserOperationTime} to be compared.
      *
      * @return 0 if {@code this}'s time is numerically equal than the second one;
      *         a value less than 0 if {@code this}'s time is numerically less than
@@ -84,7 +87,7 @@ public class UserOperationTime implements Comparable<UserOperationTime> {
      * @see Double#compare(double, double)
      */
     @Override
-    public int compareTo(final UserOperationTime o) {
+    public int compareTo (final UserOperationTime o) {
         return Double.compare(this.time, o.time);
     }
 }
