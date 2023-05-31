@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MedidasServidor {
+
     private Double tempoTotalServOcupadoProc;
     private Double tempoTotalServOcupadoCom;
     private int ID;
@@ -11,38 +12,36 @@ public class MedidasServidor {
     private List<NoMedidasServidor> servidor;
 
 
-    public MedidasServidor(int ID, int tipoServ) {
+    public MedidasServidor (int ID, int tipoServ) {
         servidor = new ArrayList<NoMedidasServidor>();
-        this.ID = ID;
-        tipo = tipoServ;
+        this.ID  = ID;
+        tipo     = tipoServ;
     }
 
-    public void addNoMedidasServidor(int estado, Double tempo) {
+    public void addNoMedidasServidor (int estado, Double tempo) {
         NoMedidasServidor no = new NoMedidasServidor(estado, tempo);
         servidor.add(no);
     }
 
-    public void imprimeValores() {
+    public void imprimeValores () {
         System.out.printf("\nSERVIDOR ID %d DO TIPO", getID());
-        if (getTipo() == 0)
-            System.out.printf(" PROCESSAMENTO", getID());
-        else
+        if (getTipo() == 0) {System.out.printf(" PROCESSAMENTO", getID());} else {
             System.out.printf(" COMUNICACAO", getID());
+        }
         for (NoMedidasServidor temp : servidor) {
-            System.out.printf("\nServidor Estado: %d -> Tempo: %g\n",
-					temp.getEstado(), temp.getTempoServidor());
+            System.out.printf("\nServidor Estado: %d -> Tempo: %g\n", temp.getEstado(), temp.getTempoServidor());
         }
     }
 
-    public int getID() {
+    public int getID () {
         return ID;
     }
 
-    public int getTipo() {
+    public int getTipo () {
         return tipo;
     }
 
-    public void setTTSOcupadoProc() {
+    public void setTTSOcupadoProc () {
         Double aux = 0.0;
         for (NoMedidasServidor no : servidor) {
             aux += no.getTempoServidor();
@@ -50,11 +49,11 @@ public class MedidasServidor {
         tempoTotalServOcupadoProc = aux;
     }
 
-    public Double getTTSOcupadoProc() {
+    public Double getTTSOcupadoProc () {
         return tempoTotalServOcupadoProc;
     }
 
-    public void setTTSOcupadoCom() {
+    public void setTTSOcupadoCom () {
         Double aux = 0.0;
         for (NoMedidasServidor no : servidor) {
             aux += no.getTempoServidor();
@@ -62,7 +61,7 @@ public class MedidasServidor {
         tempoTotalServOcupadoCom = aux;
     }
 
-    public Double getTTSOcupadoCom() {
+    public Double getTTSOcupadoCom () {
         return tempoTotalServOcupadoCom;
     }
 
