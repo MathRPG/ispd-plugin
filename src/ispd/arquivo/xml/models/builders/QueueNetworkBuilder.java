@@ -1,5 +1,10 @@
 package ispd.arquivo.xml.models.builders;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import ispd.arquivo.xml.utils.SwitchConnection;
 import ispd.arquivo.xml.utils.UserPowerLimit;
 import ispd.arquivo.xml.utils.WrappedDocument;
@@ -16,11 +21,6 @@ import ispd.motor.filas.servidores.implementacao.CS_Switch;
 import ispd.motor.filas.servidores.implementacao.Vertice;
 import ispd.policy.scheduling.grid.GridSchedulingPolicy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * Class to build a queue network from a model in a {@link WrappedDocument}.
  * Usage should be as follows: <pre>{@code
@@ -34,46 +34,48 @@ import java.util.Map;
  * @see ispd.arquivo.xml.IconicoXML
  */
 public class QueueNetworkBuilder {
+
     /**
      * Map or {@link CentroServico}s parsed from the document, indexed by id.
      */
-    protected final Map<Integer, CentroServico> serviceCenters =
-            new HashMap<>();
+    protected final Map<Integer, CentroServico>          serviceCenters     = new HashMap<>();
     /**
      * Map of {@link CS_Internet}s parsed from the document.
      */
-    protected final List<CS_Internet> internets = new ArrayList<>();
+    protected final List<CS_Internet>                    internets          = new ArrayList<>();
     /**
      * Map of {@link CS_Link}s parsed from the document.
      */
-    protected final List<CS_Comunicacao> links = new ArrayList<>();
-    private final Map<String, Double> powerLimits = new HashMap<>();
-    private final List<CS_Maquina> machines = new ArrayList<>();
-    private final List<CS_Processamento> masters = new ArrayList<>();
-    private final Map<CentroServico, List<CS_Maquina>> clusterSlaves =
-            new HashMap<>(0);
+    protected final List<CS_Comunicacao>                 links              = new ArrayList<>();
+    private final   Map<String, Double>                  powerLimits        = new HashMap<>();
+    private final   List<CS_Maquina>                     machines           = new ArrayList<>();
+    private final   List<CS_Processamento>               masters            = new ArrayList<>();
+    private final   Map<CentroServico, List<CS_Maquina>> clusterSlaves      = new HashMap<>();
     /**
      * Whether this instance has already parsed a document successfully.
      * Each instance should be responsible for parsing <b>only one</b>
      * document.
      */
-    private boolean hasParsedADocument = false;
+    private         boolean                              hasParsedADocument = false;
 
     /**
      * Parse the required {@link CentroServico}s and user power limits from
      * the given {@link WrappedDocument}.
      *
-     * @param doc the {@link WrappedDocument} to be processed. Must contain a
-     *            valid model.
+     * @param doc
+     *         the {@link WrappedDocument} to be processed. Must contain a
+     *         valid model.
+     *
      * @return the called instance itself, so the call can be chained into a
-     * {@link #build()} if so desired.
-     * @throws IllegalStateException if this instance was already used to
-     *                               parse a {@link WrappedDocument}.
+     *         {@link #build()} if so desired.
+     *
+     * @throws IllegalStateException
+     *         if this instance was already used to
+     *         parse a {@link WrappedDocument}.
      */
-    public QueueNetworkBuilder parseDocument(final WrappedDocument doc) {
+    public QueueNetworkBuilder parseDocument (final WrappedDocument doc) {
         if (this.hasParsedADocument) {
-            throw new IllegalStateException(
-                    ".parseDocument(doc) method called twice.");
+            throw new IllegalStateException(".parseDocument(doc) method called twice.");
         }
 
         doc.owners().forEach(o -> this.powerLimits.put(o.id(), 0.0));
@@ -88,7 +90,7 @@ public class QueueNetworkBuilder {
         return this;
     }
 
-    private void processMachineElement(final WrappedElement e) {
+    private void processMachineElement (final WrappedElement e) {
         final var machine = this.makeAndAddMachine(e);
 
         this.serviceCenters.put(e.globalIconId(), machine);
@@ -100,52 +102,15 @@ public class QueueNetworkBuilder {
     }
 
     /**
-     * Build and process the machine (more specifically, the
-     * {@link CS_Processamento} represented by the {@link WrappedElement}
-     * {@code e}. Since the machine may or may not be a master, it can be
-     * added to either the collection of {@link #masters} or {@link #machines}.
-     *
-     * @param e {@link WrappedElement} representing a {@link CS_Processamento}.
-     * @return the interpreted {@link CS_Processamento} from the given
-     * {@link WrappedElement}. May either be a {@link CS_Mestre} or a
-     * {@link CS_Maquina}.
-     */
-    protected CS_Processamento makeAndAddMachine(final WrappedElement e) {
-        final CS_Processamento machine;
-
-        if (e.hasMasterAttribute()) {
-            machine = ServiceCenterBuilder.aMaster(e);
-            this.masters.add(machine);
-        } else {
-            machine = ServiceCenterBuilder.aMachine(e);
-            this.machines.add((CS_Maquina) machine);
-        }
-
-        return machine;
-    }
-
-    /**
-     * Increase the power limit of the user with given id by the given amount.
-     *
-     * @param userId    id of the user whose power limit will be increased.
-     * @param increment amount to increment the power limit by. Should be
-     *                  <b>positive</b>.
-     */
-    protected void increaseUserPower(
-            final String userId, final double increment) {
-        final var oldValue = this.powerLimits.get(userId);
-        this.powerLimits.put(userId, oldValue + increment);
-    }
-
-    /**
      * Process a {@link WrappedElement} that is representing a cluster of
      * {@link CentroServico}s. The {@link CS_Mestre}, {@link CS_Maquina}s and
      * {@link CS_Link}s in the cluster are differentiated and all processed
      * individually.
      *
-     * @param e {@link WrappedElement} representing a cluster.
+     * @param e
+     *         {@link WrappedElement} representing a cluster.
      */
-    protected void processClusterElement(final WrappedElement e) {
+    protected void processClusterElement (final WrappedElement e) {
         if (e.isMaster()) {
             final var cluster = ServiceCenterBuilder.aMasterWithNoLoad(e);
 
@@ -199,46 +164,87 @@ public class QueueNetworkBuilder {
         }
     }
 
-    private void processInternetElement(final WrappedElement e) {
+    private void processInternetElement (final WrappedElement e) {
         final var net = ServiceCenterBuilder.anInternet(e);
 
         this.internets.add(net);
         this.serviceCenters.put(e.globalIconId(), net);
     }
 
-    private void processLinkElement(final WrappedElement e) {
+    private void processLinkElement (final WrappedElement e) {
         final var link = ServiceCenterBuilder.aLink(e);
 
-        QueueNetworkBuilder.connectLinkAndVertices(link,
-                this.getVertex(e.origination()),
-                this.getVertex(e.destination())
+        QueueNetworkBuilder.connectLinkAndVertices(
+                link, this.getVertex(e.origination()), this.getVertex(e.destination())
         );
 
         this.links.add(link);
     }
 
-    private static void connectLinkAndVertices(
-            final CS_Link link,
-            final Vertice origination, final Vertice destination) {
+    private void addSlavesToMachine (final WrappedElement e) {
+        final var master = (CS_Processamento) this.serviceCenters.get(e.globalIconId());
+
+        e.master().slaves()
+         .map(WrappedElement::id)
+         .map(Integer::parseInt)
+         .map(this.serviceCenters::get)
+         .forEach(sc -> this.addSlavesToProcessingCenter(master, sc));
+    }
+
+    /**
+     * Build and process the machine (more specifically, the
+     * {@link CS_Processamento} represented by the {@link WrappedElement}
+     * {@code e}. Since the machine may or may not be a master, it can be
+     * added to either the collection of {@link #masters} or {@link #machines}.
+     *
+     * @param e
+     *         {@link WrappedElement} representing a {@link CS_Processamento}.
+     *
+     * @return the interpreted {@link CS_Processamento} from the given
+     *         {@link WrappedElement}. May either be a {@link CS_Mestre} or a
+     *         {@link CS_Maquina}.
+     */
+    protected CS_Processamento makeAndAddMachine (final WrappedElement e) {
+        final CS_Processamento machine;
+
+        if (e.hasMasterAttribute()) {
+            machine = ServiceCenterBuilder.aMaster(e);
+            this.masters.add(machine);
+        } else {
+            machine = ServiceCenterBuilder.aMachine(e);
+            this.machines.add((CS_Maquina) machine);
+        }
+
+        return machine;
+    }
+
+    /**
+     * Increase the power limit of the user with given id by the given amount.
+     *
+     * @param userId
+     *         id of the user whose power limit will be increased.
+     * @param increment
+     *         amount to increment the power limit by. Should be
+     *         <b>positive</b>.
+     */
+    protected void increaseUserPower (
+            final String userId, final double increment
+    ) {
+        final var oldValue = this.powerLimits.get(userId);
+        this.powerLimits.put(userId, oldValue + increment);
+    }
+
+    private static void connectLinkAndVertices (
+            final CS_Link link, final Vertice origination, final Vertice destination
+    ) {
         link.setConexoesEntrada((CentroServico) origination);
         link.setConexoesSaida((CentroServico) destination);
         origination.addConexoesSaida(link);
         destination.addConexoesEntrada(link);
     }
 
-    private Vertice getVertex(final int e) {
+    private Vertice getVertex (final int e) {
         return (Vertice) this.serviceCenters.get(e);
-    }
-
-    private void addSlavesToMachine(final WrappedElement e) {
-        final var master =
-                (CS_Processamento) this.serviceCenters.get(e.globalIconId());
-
-        e.master().slaves()
-                .map(WrappedElement::id)
-                .map(Integer::parseInt)
-                .map(this.serviceCenters::get)
-                .forEach(sc -> this.addSlavesToProcessingCenter(master, sc));
     }
 
     /**
@@ -254,19 +260,22 @@ public class QueueNetworkBuilder {
      * In any case, the method process the element appropriately and updates
      * the necessary master-slave relations.
      *
-     * @param master an instance of {@link CS_Mestre}.
-     * @param slave  <b>slave</b> {@link CentroServico}.
-     * @throws ClassCastException if the given {@link CS_Processamento}
-     *                            {@code master} is not an instance of
-     *                            {@link CS_Mestre}.
+     * @param master
+     *         an instance of {@link CS_Mestre}.
+     * @param slave
+     *         <b>slave</b> {@link CentroServico}.
+     *
+     * @throws ClassCastException
+     *         if the given {@link CS_Processamento}
+     *         {@code master} is not an instance of
+     *         {@link CS_Mestre}.
      * @apiNote the parameter {@code master} is typed as a
-     * {@link CS_Processamento} to support overrides that deal with other
-     * types of masters. See
-     * {@link CloudQueueNetworkBuilder#addSlavesToProcessingCenter} for an
-     * example.
+     *         {@link CS_Processamento} to support overrides that deal with other
+     *         types of masters. See
+     *         {@link CloudQueueNetworkBuilder#addSlavesToProcessingCenter} for an
+     *         example.
      */
-    protected void addSlavesToProcessingCenter(
-            final CS_Processamento master, final CentroServico slave) {
+    protected void addSlavesToProcessingCenter (final CS_Processamento master, final CentroServico slave) {
         final var theMaster = (CS_Mestre) master;
         if (slave instanceof CS_Processamento proc) {
             theMaster.addEscravo(proc);
@@ -287,9 +296,9 @@ public class QueueNetworkBuilder {
      * already have been called on the instance.
      *
      * @return {@link RedeDeFilas} with the appropriate service centers,
-     * links, and user configurations found in the document.
+     *         links, and user configurations found in the document.
      */
-    public RedeDeFilas build() {
+    public RedeDeFilas build () {
         this.throwIfNoDocumentWasParsed();
 
         final var helper = new UserPowerLimit(this.powerLimits);
@@ -300,7 +309,7 @@ public class QueueNetworkBuilder {
         return queueNetwork;
     }
 
-    private void throwIfNoDocumentWasParsed() {
+    private void throwIfNoDocumentWasParsed () {
         if (!this.hasParsedADocument) {
             throw new IllegalStateException(
                     ".build() method called without a document parsed.");
@@ -312,13 +321,14 @@ public class QueueNetworkBuilder {
      * {@link GridSchedulingPolicy}'s user metrics with the obtained user
      * power limit information.
      *
-     * @param helper {@link UserPowerLimit} with the power limit information.
+     * @param helper
+     *         {@link UserPowerLimit} with the power limit information.
      */
-    protected void setSchedulersUserMetrics(final UserPowerLimit helper) {
+    protected void setSchedulersUserMetrics (final UserPowerLimit helper) {
         this.masters.stream()
-                .map(CS_Mestre.class::cast)
-                .map(CS_Mestre::getEscalonador)
-                .forEach(helper::setSchedulerUserMetrics);
+                    .map(CS_Mestre.class::cast)
+                    .map(CS_Mestre::getEscalonador)
+                    .forEach(helper::setSchedulerUserMetrics);
     }
 
     /**
@@ -327,7 +337,7 @@ public class QueueNetworkBuilder {
      *
      * @return initialized {@link RedeDeFilas}.
      */
-    protected RedeDeFilas initQueueNetwork() {
+    protected RedeDeFilas initQueueNetwork () {
         return new RedeDeFilas(
                 this.masters, this.machines,
                 this.links, this.internets,
