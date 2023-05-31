@@ -1,21 +1,22 @@
 package ispd.arquivo.xml.utils;
 
-import ispd.motor.metricas.MetricasUsuarios;
-import ispd.policy.scheduling.SchedulingPolicy;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import ispd.motor.metricas.MetricasUsuarios;
+import ispd.policy.scheduling.SchedulingPolicy;
 
 /**
  * Utility class to process users' power limits, creating user metrics based
  * on these values and giving such information to schedulers.
  */
 public class UserPowerLimit {
+
     private final List<String> owners;
     private final List<Double> limits;
 
-    public UserPowerLimit(final Map<String, Double> powerLimits) {
+    public UserPowerLimit (final Map<String, Double> powerLimits) {
         // Note: Constructing from powerLimits.keySet() and .values() is
         // tempting, however those methods do NOT guarantee the same relative
         // order in the returned elements
@@ -33,16 +34,17 @@ public class UserPowerLimit {
      * Sets the scheduler's {@link MetricasUsuarios} with an instance created
      * internally, based on the user power limits stored internally.
      *
-     * @param scheduler scheduler to be set with new user metrics.
+     * @param scheduler
+     *         scheduler to be set with new user metrics.
      */
-    public void setSchedulerUserMetrics(final SchedulingPolicy<?> scheduler) {
+    public void setSchedulerUserMetrics (final SchedulingPolicy<?> scheduler) {
         scheduler.setMetricaUsuarios(this.makeUserMetrics());
     }
 
     /**
      * @return {@link MetricasUsuarios} based on the values acquired.
      */
-    private MetricasUsuarios makeUserMetrics() {
+    private MetricasUsuarios makeUserMetrics () {
         final var metrics = new MetricasUsuarios();
         metrics.addAllUsuarios(this.owners, this.limits);
         return metrics;
@@ -51,7 +53,7 @@ public class UserPowerLimit {
     /**
      * @return a reference to the list of owners (users).
      */
-    public List<String> getOwners() {
+    public List<String> getOwners () {
         return this.owners;
     }
 }

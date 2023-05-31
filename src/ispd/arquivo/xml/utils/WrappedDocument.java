@@ -12,15 +12,19 @@ import java.util.stream.Stream;
  * It functions as a wrapper, outsourcing method calls to the inner object.
  */
 public class WrappedDocument {
+
     public final Document document;
 
     /**
      * Construct a wrapper to abstract calls to the {@link Document} passed in.
      *
-     * @param doc {@link Document} to be wrapped
-     * @throws NullPointerException if the parameter {@code doc} is {@code null}
+     * @param doc
+     *         {@link Document} to be wrapped
+     *
+     * @throws NullPointerException
+     *         if the parameter {@code doc} is {@code null}
      */
-    public WrappedDocument(final Document doc) {
+    public WrappedDocument (final Document doc) {
         Objects.requireNonNull(doc);
         this.document = doc;
     }
@@ -28,139 +32,136 @@ public class WrappedDocument {
     /**
      * Creates an element with the specified tag in the inner {@link Document}.
      *
-     * @param s Tag name of the element to be created
+     * @param s
+     *         Tag name of the element to be created
+     *
      * @return {@link Element} hosted within the inner {@link Document}
      */
-    public Element createElement(final String s) {
+    public Element createElement (final String s) {
         return this.document.createElement(s);
     }
 
     /**
      * Append a child {@link Node} to the inner {@link Document}.
      *
-     * @param node child to be appended
+     * @param node
+     *         child to be appended
      */
-    public void appendChild(final Node node) {
+    public void appendChild (final Node node) {
         this.document.appendChild(node);
     }
 
     /**
      * @return {@code true} if the model in the inner document has no
-     * elements with the tag "owner"
+     *         elements with the tag "owner"
      */
-    public boolean hasNoOwners() {
+    public boolean hasNoOwners () {
         return this.hasEmptyTag("owner");
     }
 
-    private boolean hasEmptyTag(final String tag) {
+    private boolean hasEmptyTag (final String tag) {
         return this.document.getElementsByTagName(tag).getLength() == 0;
     }
 
     /**
      * @return {@code true} if the model in the inner document has no
-     * elements with the tag "machine"
+     *         elements with the tag "machine"
      */
-    public boolean hasNoMachines() {
+    public boolean hasNoMachines () {
         return this.hasEmptyTag("machine");
     }
 
     /**
      * @return {@code true} if the model in the inner document has no
-     * elements with the tag "machine", or no elements with such tag have an
-     * inner tag with the attribute "master"
+     *         elements with the tag "machine", or no elements with such tag have an
+     *         inner tag with the attribute "master"
      */
-    public boolean hasNoMasters() {
-        return this.machines()
-                .noneMatch(WrappedElement::hasMasterAttribute);
+    public boolean hasNoMasters () {
+        return this.machines().noneMatch(WrappedElement::hasMasterAttribute);
     }
 
     /**
      * @return elements in the model with the tag "machine"
      */
-    public Stream<WrappedElement> machines() {
+    public Stream<WrappedElement> machines () {
         return this.elementsWithTag("machine");
     }
 
-    private Stream<WrappedElement> elementsWithTag(final String tag) {
-        return WrappedElement.nodeListToWrappedElementStream(
-                this.document.getElementsByTagName(tag)
-        );
+    private Stream<WrappedElement> elementsWithTag (final String tag) {
+        return WrappedElement.nodeListToWrappedElementStream(this.document.getElementsByTagName(tag));
     }
 
     /**
      * @return {@code true} if the model in the inner document has no
-     * elements with the tag "cluster"
+     *         elements with the tag "cluster"
      */
-    public boolean hasNoClusters() {
+    public boolean hasNoClusters () {
         return this.hasEmptyTag("cluster");
     }
 
     /**
      * @return {@code true} if the model in the inner document has no
-     * elements with the tag "load"
+     *         elements with the tag "load"
      */
-    public boolean hasNoLoads() {
+    public boolean hasNoLoads () {
         return this.hasEmptyTag("load");
     }
 
     /**
      * @return elements in the model with the tag "owner"
      */
-    public Stream<WrappedElement> owners() {
+    public Stream<WrappedElement> owners () {
         return this.elementsWithTag("owner");
     }
 
     /**
      * @return elements in the model with the tag "machine" <b>and</b> with
-     * an inner tag with the attribute "master"
+     *         an inner tag with the attribute "master"
      */
-    public Stream<WrappedElement> masters() {
-        return this.machines()
-                .filter(WrappedElement::hasMasterAttribute);
+    public Stream<WrappedElement> masters () {
+        return this.machines().filter(WrappedElement::hasMasterAttribute);
     }
 
     /**
      * @return elements in the model with the tag "cluster"
      */
-    public Stream<WrappedElement> clusters() {
+    public Stream<WrappedElement> clusters () {
         return this.elementsWithTag("cluster");
     }
 
     /**
      * @return elements in the model with the tag "internet"
      */
-    public Stream<WrappedElement> internets() {
+    public Stream<WrappedElement> internets () {
         return this.elementsWithTag("internet");
     }
 
     /**
      * @return elements in the model with the tag "link"
      */
-    public Stream<WrappedElement> links() {
+    public Stream<WrappedElement> links () {
         return this.elementsWithTag("link");
     }
 
     /**
      * @return elements in the model with the tag "virtualMac"
      */
-    public Stream<WrappedElement> virtualMachines() {
+    public Stream<WrappedElement> virtualMachines () {
         return this.elementsWithTag("virtualMac");
     }
 
     /**
      * @return elements in the model with the tag "load"
      */
-    public Stream<WrappedElement> loads() {
+    public Stream<WrappedElement> loads () {
         return this.elementsWithTag("load");
     }
 
     /**
      * @return the first element in the model with the tag "ispd", or {@code
-     * null} if none are present
+     *         null} if none are present
      */
-    public WrappedElement ispd() {
-        return this.elementsWithTag("ispd")
-                .findFirst()
-                .orElse(null);
+    public WrappedElement ispd () {
+        return this.elementsWithTag("ispd").findFirst().orElse(null);
     }
 }
