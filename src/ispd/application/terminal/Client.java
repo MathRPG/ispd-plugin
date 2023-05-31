@@ -1,6 +1,7 @@
 package ispd.application.terminal;
 
 import ispd.motor.metricas.Metricas;
+
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -14,22 +15,24 @@ import java.net.Socket;
  * A helper class for the client part of the terminal application simulation.
  */
 public class Client {
-    private final InetAddress serverAddress;
-    private int clientPort;
-    private final int serverPort;
 
-    public Client(final InetAddress serverAddress, final int serverPort) {
+    private final InetAddress serverAddress;
+    private final int         serverPort;
+    private       int         clientPort;
+
+    public Client (final InetAddress serverAddress, final int serverPort) {
         this.serverAddress = serverAddress;
-        this.serverPort = serverPort;
-        this.clientPort = 0;
+        this.serverPort    = serverPort;
+        this.clientPort    = 0;
     }
 
     /**
      * Sends a model to a server for simulation.
      *
-     * @param model A configuration file for setting up a simulation.
+     * @param model
+     *         A configuration file for setting up a simulation.
      */
-    public void sendModelToServer(Document model) {
+    public void sendModelToServer (Document model) {
         try (
                 final var socket = new Socket(this.serverAddress.getHostName(), this.serverPort);
                 final var outputStream = new ObjectOutputStream(socket.getOutputStream())
@@ -37,8 +40,6 @@ public class Client {
             socket.setReuseAddress(true);
             outputStream.writeObject(model);
             this.clientPort = socket.getLocalPort();
-
-
         } catch (IOException e) {
             System.out.println("Couldn't create the client socket.");
         }
@@ -49,12 +50,11 @@ public class Client {
      *
      * @return The metrics from a simulation
      */
-    public Metricas receiveMetricsFromServer() {
+    public Metricas receiveMetricsFromServer () {
         try (
                 final var serverSocket = new ServerSocket(this.clientPort);
                 final var inputStream = new ObjectInputStream(serverSocket.accept().getInputStream())
         ) {
-
             return (Metricas) inputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new AssertionError(e);

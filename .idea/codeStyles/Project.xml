@@ -2,7 +2,6 @@
   <code_scheme name="Project" version="173">
     <option name="ENABLE_SECOND_REFORMAT" value="true" />
     <JavaCodeStyleSettings>
-      <option name="SPACES_WITHIN_ANGLE_BRACKETS" value="true" />
       <option name="SPACE_BEFORE_OPENING_ANGLE_BRACKET_IN_TYPE_PARAMETER" value="true" />
       <option name="ANNOTATION_PARAMETER_WRAP" value="1" />
       <option name="ALIGN_MULTILINE_ANNOTATION_PARAMETERS" value="true" />
@@ -49,6 +48,7 @@
       </option>
       <option name="NEW_LINE_AFTER_LPAREN_IN_RECORD_HEADER" value="true" />
       <option name="RPAREN_ON_NEW_LINE_IN_RECORD_HEADER" value="true" />
+      <option name="SPACE_WITHIN_RECORD_HEADER" value="true" />
       <option name="SPACE_BEFORE_DECONSTRUCTION_LIST" value="true" />
       <option name="JD_ADD_BLANK_AFTER_PARM_COMMENTS" value="true" />
       <option name="JD_ADD_BLANK_AFTER_RETURN" value="true" />
