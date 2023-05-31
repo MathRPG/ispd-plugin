@@ -1,16 +1,16 @@
 package ispd.gui.utils;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 public class Multipane extends JScrollPane {
 
@@ -28,13 +28,16 @@ public class Multipane extends JScrollPane {
     /**
      * Constructor which specifies the buttons in this multipane.
      *
-     * @param buttons the multipane buttons
+     * @param buttons
+     *         the multipane buttons
      *
-     * @throws NullPointerException if buttons is {@code null}
+     * @throws NullPointerException
+     *         if buttons is {@code null}
      */
-    public Multipane(final List<MultipaneButton> buttons) {
-        if (buttons == null)
+    public Multipane (final List<MultipaneButton> buttons) {
+        if (buttons == null) {
             throw new NullPointerException("buttons is null. It was not possible created the multipane.");
+        }
 
         /* Filter those buttons which has a component */
         this.buttons = buttons
@@ -49,7 +52,7 @@ public class Multipane extends JScrollPane {
     /**
      * It initializes the multipane.
      */
-    public void initializeMultipane() {
+    public void initializeMultipane () {
         final var prePane = new JPanel();
         final var toolbar = new JToolBar();
 
@@ -59,8 +62,7 @@ public class Multipane extends JScrollPane {
         prePane.add(toolbar);
 
         /* Add the first button's component as the default one */
-        if (!this.buttons.isEmpty())
-            prePane.add(this.buttons.get(0).getComponent());
+        if (!this.buttons.isEmpty()) {prePane.add(this.buttons.get(0).getComponent());}
 
         toolbar.setRollover(true);
         toolbar.setFloatable(false);
@@ -84,7 +86,7 @@ public class Multipane extends JScrollPane {
             multipaneButton.setHorizontalTextPosition(SwingConstants.LEFT);
             multipaneButton.setVerticalTextPosition(SwingConstants.CENTER);
             multipaneButton.addActionListener((event) ->
-                    switchComponent.accept(multipaneButton.getComponent()));
+                                                      switchComponent.accept(multipaneButton.getComponent()));
 
             toolbar.add(multipaneButton);
         }
