@@ -1,5 +1,12 @@
 package ispd.motor;
 
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.PriorityQueue;
+import java.util.stream.Collectors;
+
 import ispd.gui.PickSimulationFaultsDialog;
 import ispd.motor.falhas.FIBadDesign;
 import ispd.motor.falhas.FIDenialService;
@@ -27,27 +34,23 @@ import ispd.motor.filas.servidores.implementacao.CS_VMM;
 import ispd.motor.metricas.MetricasGlobais;
 import ispd.policy.PolicyMaster;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
-
 public class SimulacaoSequencialCloud extends Simulation {
+
     private final PriorityQueue<FutureEvent> eventos = new PriorityQueue<>();
-    private double time = 0;
+    private       double                     time    = 0;
 
     /**
      * @param window
      * @param cloudQueueNetwork
      * @param jobs
+     *
      * @throws IllegalArgumentException
      */
-    public SimulacaoSequencialCloud(
+    public SimulacaoSequencialCloud (
             final ProgressoSimulacao window,
             final RedeDeFilasCloud cloudQueueNetwork,
-            final List<Tarefa> jobs) {
+            final List<Tarefa> jobs
+    ) {
         super(window, cloudQueueNetwork, jobs);
 
         if (cloudQueueNetwork == null) {
@@ -56,11 +59,12 @@ public class SimulacaoSequencialCloud extends Simulation {
             throw new IllegalArgumentException("The model has no Masters.");
         } else if (cloudQueueNetwork.getLinks() == null || cloudQueueNetwork.getLinks().isEmpty()) {
             window.println("The model has no Networks.", Color.orange);
-        } else if (cloudQueueNetwork.getVMs() == null || cloudQueueNetwork.getVMs().isEmpty())
+        } else if (cloudQueueNetwork.getVMs() == null || cloudQueueNetwork.getVMs().isEmpty()) {
             window.println(
                     "The model has no virtual machines configured.",
                     Color.orange
             );
+        }
         if (jobs == null || jobs.isEmpty()) {
             throw new IllegalArgumentException(
                     "One or more  workloads have not been configured.");
@@ -73,13 +77,15 @@ public class SimulacaoSequencialCloud extends Simulation {
         for (final CS_Processamento mst : cloudQueueNetwork.getMestres()) {
             // TODO: WTF?
             final PolicyMaster temp = (PolicyMaster) mst;
-            final PolicyMaster aux = (PolicyMaster) mst;
+            final PolicyMaster aux  = (PolicyMaster) mst;
             //Cede acesso ao mestre a fila de eventos futuros
             aux.setSimulation(this);
             temp.setSimulation(this);
             //Encontra menor caminho entre o mestre e seus escravos
-            System.out.printf("Mestre %s encontrando seus escravos\n",
-                    mst.getId());
+            System.out.printf(
+                    "Mestre %s encontrando seus escravos\n",
+                    mst.getId()
+            );
             mst.determinarCaminhos(); //mestre encontra caminho para seus
             // escravos
         }
@@ -155,7 +161,7 @@ public class SimulacaoSequencialCloud extends Simulation {
                 window.println("Creating value fault.");
                 //ir para ispd.motor.falhas.FValue.java
                 final MetricasGlobais global = new MetricasGlobais();
-                final FIValue value = new FIValue();
+                final FIValue         value  = new FIValue();
                 value.FIValue1(window, cloudQueueNetwork, global);
             }//if (selecionarFalhas.cbx.isSelected()){
             else {
@@ -276,8 +282,7 @@ public class SimulacaoSequencialCloud extends Simulation {
                 window.println("There aren't injected transient failures.");
             }
         }//if (selecionarFalhas!=null)
-        else
-            window.println("There aren't selected faults.");
+        else {window.println("There aren't selected faults.");}
         if (cloudQueueNetwork.getMaquinasCloud() == null || cloudQueueNetwork.getMaquinasCloud().isEmpty()) {
             window.println("The model has no phisical machines.", Color.orange);
         } else {
@@ -297,7 +302,7 @@ public class SimulacaoSequencialCloud extends Simulation {
     }
 
     @Override
-    public void simulate() {
+    public void simulate () {
         //inicia os escalonadores
         System.out.println("---------------------------------------");
         this.initCloudSchedulers();
@@ -320,46 +325,18 @@ public class SimulacaoSequencialCloud extends Simulation {
         this.getWindow().println("Simulation completed.", Color.green);
     }
 
-    public void addEventos(final List<Tarefa> tarefas) {
+    public void addEventos (final List<Tarefa> tarefas) {
         System.out.println("Tarefas sendo adicionadas na lista de eventos " +
                            "futuros");
         for (final Tarefa tarefa : tarefas) {
             final FutureEvent evt = new FutureEvent(tarefa.getTimeCriacao(),
-                    FutureEvent.CHEGADA, tarefa.getOrigem(), tarefa);
+                                                    FutureEvent.CHEGADA, tarefa.getOrigem(), tarefa
+            );
             this.eventos.add(evt);
         }
     }
 
-    @Override
-    public void addFutureEvent(final FutureEvent ev) {
-        this.eventos.offer(ev);
-    }
-
-    @Override
-    public boolean removeFutureEvent(
-            final int eventType,
-            final CentroServico eventServer,
-            final Client eventClient) {
-        //remover evento de saida do cliente do servidor
-        final var interator = this.eventos.iterator();
-        while (interator.hasNext()) {
-            final FutureEvent ev = interator.next();
-            if (ev.getType() == eventType
-                && ev.getServidor().equals(eventServer)
-                && ev.getClient().equals(eventClient)) {
-                this.eventos.remove(ev);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public double getTime(final Object origin) {
-        return this.time;
-    }
-
-    private boolean atualizarEscalonadores() {
+    private boolean atualizarEscalonadores () {
         for (final CS_Processamento mst :
                 this.getCloudQueueNetwork().getMestres()) {
             final CS_VMM mestre = (CS_VMM) mst;
@@ -370,22 +347,11 @@ public class SimulacaoSequencialCloud extends Simulation {
         return false;
     }
 
-
-    private void realizarSimulacao() {
-        while (!this.eventos.isEmpty()) {
-            //recupera o próximo evento e o executa.
-            //executa estes eventos de acordo com sua ordem de chegada
-            //de forma a evitar a execução de um evento antes de outro
-            //que seria criado anteriormente
-            this.processTopEvent();
-        }
-    }
-
     /**
      * Executa o laço de repetição responsavel por atender todos eventos da
      * simulação, e adiciona o evento para atualizar os escalonadores.
      */
-    private void realizarSimulacaoAtualizaTime() {
+    private void realizarSimulacaoAtualizaTime () {
         final var updateArray = this.makeUpdateArray();
 
         while (!this.eventos.isEmpty()) {
@@ -409,48 +375,94 @@ public class SimulacaoSequencialCloud extends Simulation {
         }
     }
 
-    private void processTopEvent() {
+    private void realizarSimulacao () {
+        while (!this.eventos.isEmpty()) {
+            //recupera o próximo evento e o executa.
+            //executa estes eventos de acordo com sua ordem de chegada
+            //de forma a evitar a execução de um evento antes de outro
+            //que seria criado anteriormente
+            this.processTopEvent();
+        }
+    }
+
+    private void desligarMaquinas (
+            final Simulation simulation, final RedeDeFilasCloud qn
+    ) {
+        for (final CS_MaquinaCloud aux : qn.getMaquinasCloud()) {
+            aux.desligar(simulation);
+        }
+    }
+
+    private List<Object[]> makeUpdateArray () {
+        return this.getQueueNetwork().getMestres().stream()
+                   .map(CS_Mestre.class::cast)
+                   .filter(m -> m.getEscalonador().getTempoAtualizar() != null)
+                   .map(m -> new Object[] {
+                           m,
+                           m.getEscalonador().getTempoAtualizar(),
+                           m.getEscalonador().getTempoAtualizar()
+                   })
+                   .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private void processTopEvent () {
         final FutureEvent eventoAtual = this.eventos.poll();
         Objects.requireNonNull(eventoAtual);
         this.time = eventoAtual.getCreationTime();
         switch (eventoAtual.getType()) {
-            case FutureEvent.CHEGADA ->
-                    eventoAtual.getServidor().chegadaDeCliente(this,
-                            (Tarefa) eventoAtual.getClient());
-            case FutureEvent.ATENDIMENTO ->
-                    eventoAtual.getServidor().atendimento(this,
-                            (Tarefa) eventoAtual.getClient());
-            case FutureEvent.SAIDA ->
-                    eventoAtual.getServidor().saidaDeCliente(this,
-                            (Tarefa) eventoAtual.getClient());
-            case FutureEvent.ESCALONAR ->
-                    eventoAtual.getServidor().requisicao(this, null,
-                            FutureEvent.ESCALONAR);
-            case FutureEvent.ALOCAR_VMS ->
-                    eventoAtual.getServidor().requisicao(this, null,
-                            FutureEvent.ALOCAR_VMS);
-            default -> eventoAtual.getServidor().requisicao(this,
+            case FutureEvent.CHEGADA -> eventoAtual.getServidor().chegadaDeCliente(
+                    this,
+                    (Tarefa) eventoAtual.getClient()
+            );
+            case FutureEvent.ATENDIMENTO -> eventoAtual.getServidor().atendimento(
+                    this,
+                    (Tarefa) eventoAtual.getClient()
+            );
+            case FutureEvent.SAIDA -> eventoAtual.getServidor().saidaDeCliente(
+                    this,
+                    (Tarefa) eventoAtual.getClient()
+            );
+            case FutureEvent.ESCALONAR -> eventoAtual.getServidor().requisicao(this, null,
+                                                                               FutureEvent.ESCALONAR
+            );
+            case FutureEvent.ALOCAR_VMS -> eventoAtual.getServidor().requisicao(this, null,
+                                                                                FutureEvent.ALOCAR_VMS
+            );
+            default -> eventoAtual.getServidor().requisicao(
+                    this,
                     (Mensagem) eventoAtual.getClient(),
-                    eventoAtual.getType());
+                    eventoAtual.getType()
+            );
         }
     }
 
-    private List<Object[]> makeUpdateArray() {
-        return this.getQueueNetwork().getMestres().stream()
-                .map(CS_Mestre.class::cast)
-                .filter(m -> m.getEscalonador().getTempoAtualizar() != null)
-                .map(m -> new Object[] {
-                        m,
-                        m.getEscalonador().getTempoAtualizar(),
-                        m.getEscalonador().getTempoAtualizar()
-                })
-                .collect(Collectors.toCollection(ArrayList::new));
+    @Override
+    public void addFutureEvent (final FutureEvent ev) {
+        this.eventos.offer(ev);
     }
 
-    private void desligarMaquinas(
-            final Simulation simulation, final RedeDeFilasCloud qn) {
-        for (final CS_MaquinaCloud aux : qn.getMaquinasCloud()) {
-            aux.desligar(simulation);
+    @Override
+    public boolean removeFutureEvent (
+            final int eventType,
+            final CentroServico eventServer,
+            final Client eventClient
+    ) {
+        //remover evento de saida do cliente do servidor
+        final var interator = this.eventos.iterator();
+        while (interator.hasNext()) {
+            final FutureEvent ev = interator.next();
+            if (ev.getType() == eventType
+                && ev.getServidor().equals(eventServer)
+                && ev.getClient().equals(eventClient)) {
+                this.eventos.remove(ev);
+                return true;
+            }
         }
+        return false;
+    }
+
+    @Override
+    public double getTime (final Object origin) {
+        return this.time;
     }
 }
