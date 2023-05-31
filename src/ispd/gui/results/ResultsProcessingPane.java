@@ -1,10 +1,10 @@
 package ispd.gui.results;
 
+import java.util.List;
+
 import ispd.gui.auxiliar.SimulationResultChartMaker;
 import ispd.gui.utils.Multipane;
 import ispd.gui.utils.MultipaneButton;
-
-import java.util.List;
 
 /**
  * A {@link ResultsProcessingPane} is a class that represents a multipane
@@ -17,9 +17,10 @@ import java.util.List;
      * Constructor which creates a pane that contains results of processing
      * performed for each machine being shown in a bar and a pie chart.
      *
-     * @param charts the simulation chart maker
+     * @param charts
+     *         the simulation chart maker
      */
-    public ResultsProcessingPane(final SimulationResultChartMaker charts) {
+    public ResultsProcessingPane (final SimulationResultChartMaker charts) {
         super(List.of(
                 new MultipaneButton("Bar Chart", charts.getProcessingBarChart()),
                 new MultipaneButton("Pie Chart", charts.getProcessingPieChart())

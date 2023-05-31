@@ -1,9 +1,9 @@
 package ispd.gui.results;
 
-import ispd.motor.metricas.Metricas;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import ispd.motor.metricas.Metricas;
 
 /**
  * A {@link ResultsTasksPane} is a class that represents a pane containing the
@@ -11,7 +11,7 @@ import javax.swing.JTextArea;
  * tasks.
  *
  * @see ResultsUsersPane for see the information about processing and communication
- *                       performed for resolve the tasks for each user
+ *         performed for resolve the tasks for each user
  */
 /* package-private */ class ResultsTasksPane extends JScrollPane {
 
@@ -19,9 +19,10 @@ import javax.swing.JTextArea;
      * Constructor which creates a pane that contains information about the
      * processing and communication performed for the task completion.
      *
-     * @param metrics the simulation metrics
+     * @param metrics
+     *         the simulation metrics
      */
-    public ResultsTasksPane(final Metricas metrics) {
+    public ResultsTasksPane (final Metricas metrics) {
         final var textArea = new JTextArea();
 
         this.setPreferredSize(ResultsDialog.CHART_PREFERRED_SIZE);
@@ -43,7 +44,7 @@ import javax.swing.JTextArea;
      *
      * @return the task results text
      */
-    private String makeTasksResultsText(final Metricas metrics) {
+    private String makeTasksResultsText (final Metricas metrics) {
         final var sb = new StringBuilder();
         final var avgSystemCommunicationTime =
                 metrics.getTempoMedioFilaComunicacao() + metrics.getTempoMedioComunicacao();

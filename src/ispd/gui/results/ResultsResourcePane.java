@@ -1,10 +1,10 @@
 package ispd.gui.results;
 
-import ispd.motor.metricas.Metricas;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
+import ispd.motor.metricas.Metricas;
 
 /**
  * A {@link ResultsResourcePane} is a class that represents a pane containing
@@ -17,9 +17,10 @@ import javax.swing.table.DefaultTableModel;
      * Constructor which creates a pane in which the performed results in total
      * for each machine and each network link are shown in a tabular view.
      *
-     * @param metrics the simulation metrics
+     * @param metrics
+     *         the simulation metrics
      */
-    public ResultsResourcePane(final Metricas metrics) {
+    public ResultsResourcePane (final Metricas metrics) {
         final var table = new JTable();
         final var columns = new Object[] {
                 "Label", "Owner", "Processing performed", "Communication performed"
