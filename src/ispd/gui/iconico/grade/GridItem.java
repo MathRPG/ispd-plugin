@@ -10,7 +10,7 @@ public interface GridItem {
      *
      * @return its identifier
      */
-    GridItemIdentifier getId();
+    GridItemIdentifier getId ();
 
     /**
      * Returns the inbound connections.
@@ -20,7 +20,7 @@ public interface GridItem {
      *
      * @return the inbound connections
      */
-    Set<GridItem> getInboundConnections();
+    Set<GridItem> getInboundConnections ();
 
     /**
      * Returns the outbound connections.
@@ -30,34 +30,40 @@ public interface GridItem {
      *
      * @return the outbound connections
      */
-    Set<GridItem> getOutboundConnections();
+    Set<GridItem> getOutboundConnections ();
 
     /**
      * It makes the grid item description relative to the
      * specified translator.
      *
-     * @param translator the translator containing the
-     *                   translated messages
+     * @param translator
+     *         the translator containing the
+     *         translated messages
+     *
      * @return the grid item description
      */
-    String makeDescription(ResourceBundle translator);
+    String makeDescription (ResourceBundle translator);
 
     /**
      * It returns a copy of this grid item relative to the
      * specified parameters.
      *
-     * @param mousePosX the mouse x-coordinate in
-     *                  cartesian coordinates
-     * @param mousePosY the mouse y-coordinate in
-     *                  cartesian coordinates
-     * @param globalId  the global identifier
-     * @param localId   the local identifier
+     * @param mousePosX
+     *         the mouse x-coordinate in
+     *         cartesian coordinates
+     * @param mousePosY
+     *         the mouse y-coordinate in
+     *         cartesian coordinates
+     * @param globalId
+     *         the global identifier
+     * @param localId
+     *         the local identifier
+     *
      * @return a copy of this {@link GridItem}
      */
-    GridItem makeCopy(int mousePosX,
-                      int mousePosY,
-                      int globalId,
-                      int localId);
+    GridItem makeCopy (
+            int mousePosX, int mousePosY, int globalId, int localId
+    );
 
     /**
      * Returns {@code true} since this {@link GridItem} is
@@ -66,5 +72,5 @@ public interface GridItem {
      * @return {@code true} since this {@link GridItem} is
      *         configured; otherwise, {@code false}.
      */
-    boolean isConfigured();
+    boolean isConfigured ();
 }
