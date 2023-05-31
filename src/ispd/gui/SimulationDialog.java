@@ -1,29 +1,7 @@
 package ispd.gui;
 
-import ispd.arquivo.xml.IconicoXML;
-import ispd.gui.results.ResultsDialog;
-import ispd.gui.utils.ButtonBuilder;
-import ispd.motor.ProgressoSimulacao;
-import ispd.motor.SimulacaoSequencial;
-import ispd.motor.SimulacaoSequencialCloud;
-import ispd.motor.Simulation;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.metricas.Metricas;
 import org.w3c.dom.Document;
 
-import javax.swing.DebugGraphics;
-import javax.swing.GroupLayout;
-import javax.swing.JDialog;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.WindowConstants;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Frame;
@@ -37,38 +15,65 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.DebugGraphics;
+import javax.swing.GroupLayout;
+import javax.swing.JDialog;
+import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
+import javax.swing.WindowConstants;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+
+import ispd.arquivo.xml.IconicoXML;
+import ispd.gui.results.ResultsDialog;
+import ispd.gui.utils.ButtonBuilder;
+import ispd.motor.ProgressoSimulacao;
+import ispd.motor.SimulacaoSequencial;
+import ispd.motor.SimulacaoSequencialCloud;
+import ispd.motor.Simulation;
+import ispd.motor.filas.RedeDeFilas;
+import ispd.motor.filas.RedeDeFilasCloud;
+import ispd.motor.filas.Tarefa;
+import ispd.motor.metricas.Metricas;
+
 /**
  * Makes calls to simulation engine.
  * Presents the steps taken so far and simulation progress (%).
  */
 public class SimulationDialog extends JDialog implements Runnable {
-    private static final Font ARIAL_FONT_BOLD =
-            new Font("Arial", Font.BOLD, 12);
-    private final MutableAttributeSet colorConfig = new SimpleAttributeSet();
-    private final String modelAsText;
-    private final Document model;
-    private final ResourceBundle translator;
-    private final ProgressoSimulacao progressTracker =
-            new BasicProgressTracker();
-    private final int gridOrCloud;
-    private JProgressBar progressBar;
-    private JTextPane notificationArea;
-    private Thread simThread = null;
-    private int progressPercent = 0;
 
-    SimulationDialog(final Frame parent, final boolean modal, final Document model,
-                     final String modelAsText, final ResourceBundle translator,
-                     final int gridOrCloud) {
+    private static final Font                ARIAL_FONT_BOLD =
+            new Font("Arial", Font.BOLD, 12);
+    private final        MutableAttributeSet colorConfig     = new SimpleAttributeSet();
+    private final        String              modelAsText;
+    private final        Document            model;
+    private final        ResourceBundle      translator;
+    private final        ProgressoSimulacao  progressTracker =
+            new BasicProgressTracker();
+    private final        int                 gridOrCloud;
+    private              JProgressBar        progressBar;
+    private              JTextPane           notificationArea;
+    private              Thread              simThread       = null;
+    private              int                 progressPercent = 0;
+
+    SimulationDialog (
+            final Frame parent, final boolean modal, final Document model,
+            final String modelAsText, final ResourceBundle translator,
+            final int gridOrCloud
+    ) {
         super(parent, modal);
-        this.translator = translator;
+        this.translator  = translator;
         this.gridOrCloud = gridOrCloud;
-        this.model = model;
+        this.model       = model;
         this.modelAsText = modelAsText;
         this.initComponents();
         this.addWindowListener(new SomeWindowAdapter());
     }
 
-    private void initComponents() {
+    private void initComponents () {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setTitle(this.translate("Running Simulation"));
 
@@ -82,18 +87,11 @@ public class SimulationDialog extends JDialog implements Runnable {
         this.makeLayoutAndPack();
     }
 
-    private String translate(final String word) {
+    private String translate (final String word) {
         return this.translator.getString(word);
     }
 
-    private void onCancel(final ActionEvent evt) {
-        if (this.simThread != null) {
-            this.simThread = null;
-        }
-        this.dispose();
-    }
-
-    private void makeLayoutAndPack() {
+    private void makeLayoutAndPack () {
         final var scrollPane = new JScrollPane(this.notificationArea);
         final var cancelButton = ButtonBuilder.basicButton(
                 this.translate("Cancel"), this::onCancel);
@@ -103,48 +101,68 @@ public class SimulationDialog extends JDialog implements Runnable {
 
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(GroupLayout.Alignment.TRAILING,
-                                layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
-                                                .addComponent(cancelButton,
-                                                        GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
-                                                .addComponent(scrollPane,
-                                                        GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
-                                                .addComponent(this.progressBar,
-                                                        GroupLayout.Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE))
-                                        .addContainerGap())
+                      .addGroup(
+                              GroupLayout.Alignment.TRAILING,
+                              layout.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addGroup(layout.createParallelGroup(GroupLayout.Alignment.TRAILING)
+                                                    .addComponent(cancelButton,
+                                                                  GroupLayout.Alignment.LEADING,
+                                                                  GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE
+                                                    )
+                                                    .addComponent(scrollPane,
+                                                                  GroupLayout.Alignment.LEADING,
+                                                                  GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE
+                                                    )
+                                                    .addComponent(this.progressBar,
+                                                                  GroupLayout.Alignment.LEADING,
+                                                                  GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE
+                                                    ))
+                                    .addContainerGap()
+                      )
         );
 
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(GroupLayout.Alignment.TRAILING,
-                                layout.createSequentialGroup()
-                                        .addContainerGap()
-                                        .addComponent(scrollPane,
-                                                GroupLayout.DEFAULT_SIZE,
-                                                227, Short.MAX_VALUE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(this.progressBar,
-                                                GroupLayout.PREFERRED_SIZE,
-                                                42, GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(cancelButton,
-                                                GroupLayout.PREFERRED_SIZE,
-                                                41, GroupLayout.PREFERRED_SIZE)
-                                        .addContainerGap())
+                      .addGroup(
+                              GroupLayout.Alignment.TRAILING,
+                              layout.createSequentialGroup()
+                                    .addContainerGap()
+                                    .addComponent(scrollPane,
+                                                  GroupLayout.DEFAULT_SIZE,
+                                                  227, Short.MAX_VALUE
+                                    )
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(this.progressBar,
+                                                  GroupLayout.PREFERRED_SIZE,
+                                                  42, GroupLayout.PREFERRED_SIZE
+                                    )
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(cancelButton,
+                                                  GroupLayout.PREFERRED_SIZE,
+                                                  41, GroupLayout.PREFERRED_SIZE
+                                    )
+                                    .addContainerGap()
+                      )
         );
 
         this.pack();
     }
 
-    void iniciarSimulacao() {
+    private void onCancel (final ActionEvent evt) {
+        if (this.simThread != null) {
+            this.simThread = null;
+        }
+        this.dispose();
+    }
+
+    void iniciarSimulacao () {
         this.simThread = new Thread(this);
         this.simThread.start();
     }
 
     @Override
-    public void run() {
+    public void run () {
         this.progressTracker.println("Simulation Initiated.");
         try {
             //0%
@@ -170,7 +188,8 @@ public class SimulationDialog extends JDialog implements Runnable {
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
                 final Simulation sim = new SimulacaoSequencial(this.progressTracker,
-                        queueNetwork, tasks);//[10%] --> 55 %
+                                                               queueNetwork, tasks
+                );//[10%] --> 55 %
                 //Realiza asimulação
                 this.progressTracker.println("Simulating.");
                 //recebe instante de tempo em milissegundos ao iniciar a
@@ -212,7 +231,8 @@ public class SimulationDialog extends JDialog implements Runnable {
                 //Verifica recursos do modelo e define roteamento
                 final Simulation sim =
                         new SimulacaoSequencialCloud(this.progressTracker,
-                                cloudQueueNetwork, tasks);//[10%]
+                                                     cloudQueueNetwork, tasks
+                        );//[10%]
                 // --> 55 %
                 //Realiza asimulação
                 this.progressTracker.println("Simulating.");
@@ -244,37 +264,40 @@ public class SimulationDialog extends JDialog implements Runnable {
         } catch (final IllegalArgumentException erro) {
 
             Logger.getLogger(SimulationDialog.class.getName()).log(Level.SEVERE,
-                    null, erro);
+                                                                   null, erro
+            );
             this.progressTracker.println(erro.getMessage(), Color.red);
             this.progressTracker.print("Simulation Aborted", Color.red);
             this.progressTracker.println("!", Color.red);
         }
     }
 
-    private void incrementProgress(final int add) {
+    private void incrementProgress (final int add) {
         this.progressPercent += add;
         this.progressBar.setValue(this.progressPercent);
     }
 
     private class SomeWindowAdapter extends WindowAdapter {
+
         @Override
-        public void windowClosing(final WindowEvent e) {
-            
+        public void windowClosing (final WindowEvent e) {
+
             SimulationDialog.this.simThread = null;
             SimulationDialog.this.dispose();
         }
     }
 
     private class BasicProgressTracker extends ProgressoSimulacao {
+
         @Override
-        public void incProgresso(final int n) {
+        public void incProgresso (final int n) {
             SimulationDialog.this.incrementProgress(n);
         }
 
         @Override
-        public void print(final String text, final Color cor) {
+        public void print (final String text, final Color cor) {
             try {
-                final var doc = SimulationDialog.this.notificationArea.getDocument();
+                final var doc    = SimulationDialog.this.notificationArea.getDocument();
                 final var config = SimulationDialog.this.colorConfig;
 
                 StyleConstants.setForeground(
@@ -290,13 +313,12 @@ public class SimulationDialog extends JDialog implements Runnable {
 
             } catch (final BadLocationException ex) {
                 Logger.getLogger(SimulationDialog.class.getName())
-                        .log(Level.SEVERE, null, ex);
+                      .log(Level.SEVERE, null, ex);
             }
         }
 
-        private String tryTranslate(final String text) {
-            if (!SimulationDialog.this.translator.containsKey(text))
-                return text;
+        private String tryTranslate (final String text) {
+            if (!SimulationDialog.this.translator.containsKey(text)) {return text;}
             return SimulationDialog.this.translate(text);
         }
     }
