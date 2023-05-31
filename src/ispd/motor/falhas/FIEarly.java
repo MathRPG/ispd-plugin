@@ -1,4 +1,3 @@
 package ispd.motor.falhas;
 
-public class FIEarly {
-}
+public class FIEarly {}
