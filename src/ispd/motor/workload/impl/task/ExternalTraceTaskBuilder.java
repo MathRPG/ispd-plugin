@@ -1,13 +1,13 @@
 package ispd.motor.workload.impl.task;
 
+import java.util.List;
+
 import ispd.motor.filas.RedeDeFilas;
 import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.motor.random.Distribution;
 import ispd.motor.random.TwoStageUniform;
-
-import java.util.List;
 
 /**
  * Specialization of task building from traces for external models. Its
@@ -26,10 +26,11 @@ import java.util.List;
  * @see #makeTaskCommunicationSize()
  */
 public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
+
     private static final TwoStageUniform TASK_COMM_SIZE =
             new TwoStageUniform(200, 5000, 25000);
-    private final Distribution random;
-    private final double averageComputationPower;
+    private final        Distribution    random;
+    private final        double          averageComputationPower;
 
     /**
      * Initialize an instance with the given {@link List} of
@@ -37,19 +38,23 @@ public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
      * {@link Distribution} to generate the task communication size, and
      * average computation power to normalize the task computation size.
      *
-     * @param traceTaskInfos   list of task information to be converted into
-     *                         tasks.
-     * @param random           random double generator to produce
-     *                         communication sizes.
-     * @param averageCompPower average computational power of the
-     *                         {@link RedeDeFilas} containing the masters
-     *                         which tasks will be generated for.
+     * @param traceTaskInfos
+     *         list of task information to be converted into
+     *         tasks.
+     * @param random
+     *         random double generator to produce
+     *         communication sizes.
+     * @param averageCompPower
+     *         average computational power of the
+     *         {@link RedeDeFilas} containing the masters
+     *         which tasks will be generated for.
      */
-    public ExternalTraceTaskBuilder(
+    public ExternalTraceTaskBuilder (
             final List<TraceTaskInfo> traceTaskInfos,
-            final Distribution random, final double averageCompPower) {
+            final Distribution random, final double averageCompPower
+    ) {
         super(traceTaskInfos);
-        this.random = random;
+        this.random                  = random;
         this.averageComputationPower = averageCompPower;
     }
 
@@ -59,14 +64,17 @@ public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
      * set to the given {@link CS_Processamento} and it is set to be
      * cancelled instantly (on instant {@literal 0.0}).
      *
-     * @param master {@link CS_Processamento} that will host the task.
+     * @param master
+     *         {@link CS_Processamento} that will host the task.
+     *
      * @return created (and possibly cancelled) {@link Tarefa}.
+     *
      * @see TraceTaskInfo#shouldBeCanceled()
      * @see Tarefa#setLocalProcessamento(CentroServico)
      * @see Tarefa#cancelar(double)
      */
     @Override
-    public Tarefa makeTaskFor(final CS_Processamento master) {
+    public Tarefa makeTaskFor (final CS_Processamento master) {
         final var task = super.makeTaskFor(master);
 
         if (this.currTaskInfo.shouldBeCanceled()) {
@@ -84,7 +92,7 @@ public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
      * @return the randomly generated task communication size (in MBits).
      */
     @Override
-    protected double makeTaskCommunicationSize() {
+    protected double makeTaskCommunicationSize () {
         return ExternalTraceTaskBuilder.TASK_COMM_SIZE.generateValue(this.random);
     }
 
@@ -96,7 +104,7 @@ public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
      * @return the calculated task computation size (in MFlops).
      */
     @Override
-    protected double makeTaskComputationSize() {
+    protected double makeTaskComputationSize () {
         return super.makeTaskComputationSize() * this.averageComputationPower;
     }
 }
