@@ -36,11 +36,14 @@ public abstract class Vertex implements Icon {
      * x-coordinate and y-coordinate in the cartesian coordinates.
      * Further, the icon is set as non-selected by default.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
+     * @param x
+     *         the x-coordinate
+     * @param y
+     *         the y-coordinate
+     *
      * @see #Vertex(Integer, Integer, boolean)
      */
-    protected Vertex(final Integer x, final Integer y) {
+    protected Vertex (final Integer x, final Integer y) {
         this(x, y, false);
     }
 
@@ -49,15 +52,18 @@ public abstract class Vertex implements Icon {
      * x-coordinate, y-coordinate and whether the icon
      * is selected.
      *
-     * @param x        the x-coordinate
-     * @param y        the y-coordinate
-     * @param selected whether the icon is selected
+     * @param x
+     *         the x-coordinate
+     * @param y
+     *         the y-coordinate
+     * @param selected
+     *         whether the icon is selected
      */
-    protected Vertex(final Integer x,
-                     final Integer y,
-                     final boolean selected) {
-        this.x = x;
-        this.y = y;
+    protected Vertex (
+            final Integer x, final Integer y, final boolean selected
+    ) {
+        this.x        = x;
+        this.y        = y;
         this.selected = selected;
     }
 
@@ -66,7 +72,7 @@ public abstract class Vertex implements Icon {
      *
      * @return the base x-coordinate
      */
-    /* package-private */ int getBaseX() {
+    /* package-private */ int getBaseX () {
         return this.baseX;
     }
 
@@ -75,7 +81,7 @@ public abstract class Vertex implements Icon {
      *
      * @return the base y-coordinate
      */
-    /* package-private */ int getBaseY() {
+    /* package-private */ int getBaseY () {
         return this.baseY;
     }
 
@@ -83,11 +89,14 @@ public abstract class Vertex implements Icon {
      * It sets the vertex's <em>base</em> X and Y coordinates to the
      * specified coordinates.
      *
-     * @param x the base x-coordinate
-     * @param y the base y-coordinate
+     * @param x
+     *         the base x-coordinate
+     * @param y
+     *         the base y-coordinate
      */
-    /* package-private */ void setBase(final Integer x,
-                                       final Integer y) {
+    /* package-private */ void setBase (
+            final Integer x, final Integer y
+    ) {
         this.baseX = x;
         this.baseY = y;
     }
@@ -95,11 +104,14 @@ public abstract class Vertex implements Icon {
     /**
      * It sets the vertex's X and Y coordinates.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
+     * @param x
+     *         the x-coordinate
+     * @param y
+     *         the y-coordinate
      */
-    public void setPosition(final Integer x,
-                            final Integer y) {
+    public void setPosition (
+            final Integer x, final Integer y
+    ) {
         this.x = x;
         this.y = y;
     }
@@ -112,18 +124,19 @@ public abstract class Vertex implements Icon {
      *         otherwise, returns {@code false}.
      */
     @Override
-    public boolean isSelected() {
+    public boolean isSelected () {
         return this.selected;
     }
 
     /**
      * It sets the vertex as selected or not.
      *
-     * @param selected if {@code true}, set this icon as selected;
-     *                 otherwise, set this icon as not selected.
+     * @param selected
+     *         if {@code true}, set this icon as selected;
+     *         otherwise, set this icon as not selected.
      */
     @Override
-    public void setSelected(final boolean selected) {
+    public void setSelected (final boolean selected) {
         this.selected = selected;
     }
 
@@ -133,7 +146,7 @@ public abstract class Vertex implements Icon {
      * @return the x-coordinate
      */
     @Override
-    public Integer getX() {
+    public Integer getX () {
         return this.x;
     }
 
@@ -143,7 +156,7 @@ public abstract class Vertex implements Icon {
      * @return the y-coordinate
      */
     @Override
-    public Integer getY() {
+    public Integer getY () {
         return this.y;
     }
 }

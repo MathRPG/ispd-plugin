@@ -31,12 +31,13 @@
 
 package ispd.gui.iconico;
 
-import javax.swing.JComponent;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+
+import javax.swing.JComponent;
 
 public class Ruler extends JComponent {
 
@@ -86,17 +87,21 @@ public class Ruler extends JComponent {
     /**
      * Constructor which specifies the ruler orientation and the ruler unit.
      *
-     * @param orientation the orientation
-     * @param unit        the unit
+     * @param orientation
+     *         the orientation
+     * @param unit
+     *         the unit
      */
-    /* package-private */ Ruler(final RulerOrientation orientation,
-                                final RulerUnit unit) {
+    /* package-private */ Ruler (
+            final RulerOrientation orientation,
+            final RulerUnit unit
+    ) {
         this.orientation = orientation;
-        this.unit = unit;
+        this.unit        = unit;
     }
 
-    protected void paintComponent(final Graphics g) {
-        final var units = this.unit.getUnit();
+    protected void paintComponent (final Graphics g) {
+        final var units     = this.unit.getUnit();
         final var increment = this.unit.getIncrement();
 
         final Rectangle drawHere = g.getClipBounds();
@@ -113,16 +118,16 @@ public class Ruler extends JComponent {
                 this.orientation == RulerOrientation.HORIZONTAL;
 
         // Use clipping bounds to calculate first and last tick locations.
-        int start;
+        int       start;
         final int end;
         if (isHorizontal) {
             start = (drawHere.x / increment) * increment;
-            end = (((drawHere.x + drawHere.width) / increment) + 1)
-                  * increment;
+            end   = (((drawHere.x + drawHere.width) / increment) + 1)
+                    * increment;
         } else {
             start = (drawHere.y / increment) * increment;
-            end = (((drawHere.y + drawHere.height) / increment) + 1)
-                  * increment;
+            end   = (((drawHere.y + drawHere.height) / increment) + 1)
+                    * increment;
         }
 
         // Make a special case of 0 to display the number
@@ -132,11 +137,13 @@ public class Ruler extends JComponent {
 
             if (isHorizontal) {
                 g.drawLine(0, Ruler.SIZE - 1,
-                        0, Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1);
+                           0, Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1
+                );
                 g.drawString(text, 2, 21);
             } else {
                 g.drawLine(Ruler.SIZE - 1, 0,
-                        Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1, 0);
+                           Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1, 0
+                );
                 g.drawString(text, 9, 10);
             }
             start = increment;
@@ -145,24 +152,22 @@ public class Ruler extends JComponent {
         // ticks and labels
         for (int i = start; i < end; i += increment) {
             final String text;
-            final int tickLength;
+            final int    tickLength;
 
             if (i % units == 0) {
                 tickLength = Ruler.RULER_TICK_LENGTH;
-                text = Integer.toString(i / units);
+                text       = Integer.toString(i / units);
             } else {
                 tickLength = Ruler.RULER_PRE_TICK_LENGTH;
-                text = null;
+                text       = null;
             }
 
             if (isHorizontal) {
                 g.drawLine(i, Ruler.SIZE - 1, i, Ruler.SIZE - tickLength - 1);
-                if (text != null)
-                    g.drawString(text, i - 3, 21);
+                if (text != null) {g.drawString(text, i - 3, 21);}
             } else {
                 g.drawLine(Ruler.SIZE - 1, i, Ruler.SIZE - tickLength - 1, i);
-                if (text != null)
-                    g.drawString(text, 9, i + 3);
+                if (text != null) {g.drawString(text, 9, i + 3);}
             }
         }
     }
@@ -174,9 +179,10 @@ public class Ruler extends JComponent {
      * Therefore, unexpected behavior may arise if this precondition
      * is not followed.
      *
-     * @param newUnit the unit to be updated to
+     * @param newUnit
+     *         the unit to be updated to
      */
-    /* package-private */ void updateUnitTo(final RulerUnit newUnit) {
+    /* package-private */ void updateUnitTo (final RulerUnit newUnit) {
         this.unit = newUnit;
         this.repaint();
     }
@@ -184,18 +190,20 @@ public class Ruler extends JComponent {
     /**
      * It sets the ruler's preferred height.
      *
-     * @param preferredHeight the preferred height
+     * @param preferredHeight
+     *         the preferred height
      */
-    /* package-private */ void setPreferredHeight(final int preferredHeight) {
+    /* package-private */ void setPreferredHeight (final int preferredHeight) {
         this.setPreferredSize(new Dimension(Ruler.SIZE, preferredHeight));
     }
 
     /**
      * It sets the ruler's preferred width.
      *
-     * @param preferredWidth the preferred width
+     * @param preferredWidth
+     *         the preferred width
      */
-    /* package-private */ void setPreferredWidth(final int preferredWidth) {
+    /* package-private */ void setPreferredWidth (final int preferredWidth) {
         this.setPreferredSize(new Dimension(preferredWidth, Ruler.SIZE));
     }
 }
