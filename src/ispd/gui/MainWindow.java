@@ -16,10 +16,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.HashSet;
@@ -61,7 +59,6 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileView;
 import javax.xml.parsers.ParserConfigurationException;
 
-import ispd.arquivo.description.DescreveSistema;
 import ispd.arquivo.exportador.Exportador;
 import ispd.arquivo.interpretador.gridsim.InterpretadorGridSim;
 import ispd.arquivo.interpretador.simgrid.InterpretadorSimGrid;
@@ -70,7 +67,6 @@ import ispd.arquivo.xml.IconicoXML;
 import ispd.gui.auxiliar.Corner;
 import ispd.gui.auxiliar.HtmlPane;
 import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.gui.auxiliar.Stalemate;
 import ispd.gui.configuracao.JPanelConfigIcon;
 import ispd.gui.configuracao.SimplePanel;
 import ispd.gui.iconico.grade.Cluster;
@@ -91,8 +87,8 @@ public class MainWindow extends JFrame implements KeyListener {
     private static final char                          FILE_EXTENSION_SEPARATOR     = '.';
     private static final int                           LOADING_SCREEN_WIDTH         = 200;
     private static final int                           LOADING_SCREEN_HEIGHT        = 100;
-    private static final String[]                      ISPD_FILE_EXTENSIONS         = { ".ims", ".imsx" };
-    private static final String[]                      ALL_FILE_EXTENSIONS          = { ".ims", ".imsx", ".wmsx" };
+    private static final String[]                      ISPD_FILE_EXTENSIONS         = { ".imsx" };
+    private static final String[]                      ALL_FILE_EXTENSIONS          = { ".imsx", ".wmsx" };
     private static final Locale                        LOCALE_EN_US                 = new Locale("en", "US");
     private static final Locale                        LOCALE_PT_BR                 = new Locale("pt", "BR");
     private static final String                        ISPD_LOGO_FILE_PATH          = "imagens/Logo_iSPD_25.png";
@@ -175,25 +171,26 @@ public class MainWindow extends JFrame implements KeyListener {
     private              JPanelConfigIcon              jPanelSettings;
     private              int                           modelType                    = 0;
     // define se o modelo é GRID, IAAS ou PAAS;
-    private              ResourceBundle                words                        = ResourceBundle.getBundle(
+
+    private       ResourceBundle              words                        = ResourceBundle.getBundle(
             "ispd.idioma.Idioma", Locale.getDefault());
-    private final        MultipleExtensionFileFilter   fileFilter                   =
+    private final MultipleExtensionFileFilter fileFilter                   =
             new MultipleExtensionFileFilter(
                     this.translate("Iconic Model of Simulation"),
                     MainWindow.ALL_FILE_EXTENSIONS,
                     true
             );
-    private              boolean                       currentFileHasUnsavedChanges = false;
-    private              File                          openFile                     = null;
-    private              DesenhoGrade                  drawingArea                  = null;
-    private final        AbstractButton                jButtonTasks                 = ButtonBuilder
+    private       boolean                     currentFileHasUnsavedChanges = false;
+    private       File                        openFile                     = null;
+    private       DesenhoGrade                drawingArea                  = null;
+    private final AbstractButton              jButtonTasks                 = ButtonBuilder
             .aButton(getImage("/ispd/gui/imagens/botao_tarefas.gif"), this::jButtonTaskActionPerformed)
             .withToolTip(this.translate("Selects insertion model of tasks"))
             .withCenterBottomTextPosition()
             .disabled()
             .nonFocusable()
             .build();
-    private final        AbstractButton                jButtonSimulate              = ButtonBuilder
+    private final AbstractButton              jButtonSimulate              = ButtonBuilder
             .aButton(this.translate("Simulate"), this::jButtonSimulateActionPerformed)
             .withIcon(getImage("/ispd/gui/imagens" + "/system-run.png"))
             .withToolTip(this.translate("Starts the " + "simulation"))
@@ -201,22 +198,22 @@ public class MainWindow extends JFrame implements KeyListener {
             .disabled()
             .nonFocusable()
             .build();
-    private final        AbstractButton                jButtonUsers                 = ButtonBuilder
+    private final AbstractButton              jButtonUsers                 = ButtonBuilder
             .aButton(getImage("/ispd/gui/imagens/system-users.png"), this::jButtonUsersActionPerformed)
             .withToolTip(this.translate("Add and remove users to the model"))
             .withCenterBottomTextPosition()
             .disabled()
             .nonFocusable()
             .build();
-    private              HashSet<VirtualMachine>       virtualMachines              = null;
-    private final        AbstractButton                jButtonConfigVM              = ButtonBuilder
+    private       HashSet<VirtualMachine>     virtualMachines              = null;
+    private final AbstractButton              jButtonConfigVM              = ButtonBuilder
             .aButton(getImage("/ispd/gui/imagens/vm_icon.png"), this::jButtonConfigVMActionPerformed)
             .withToolTip("Add and remove the virtual machines")
             .withCenterBottomTextPosition()
             .disabled()
             .nonFocusable()
             .build();
-    private final        JComponent[]                  interactables                = {
+    private final JComponent[]                interactables                = {
             this.jToggleButtonCluster,
             this.jToggleButtonInternet,
             this.jToggleButtonMachine,
@@ -269,15 +266,7 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private static boolean hasValidIspdFileExtension (final File file) {
-        return file.getName().endsWith(".ims") || file.getName().endsWith(".imsx");
-    }
-
-    private static DescreveSistema getSystemDescription (final File file) throws ClassNotFoundException, IOException {
-        try (
-                final var input = new ObjectInputStream(new FileInputStream(file))
-        ) {
-            return (DescreveSistema) input.readObject();
-        }
+        return file.getName().endsWith(".imsx");
     }
 
     private static void jButtonInjectFaultsActionPerformed (final ActionEvent evt) {
@@ -860,7 +849,9 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void jMenuItemOpenActionPerformed (final ActionEvent evt) {
-        if (this.shouldContinueEditingCurrentlyOpenedFile()) {return;}
+        if (this.shouldContinueEditingCurrentlyOpenedFile()) {
+            return;
+        }
 
         this.configureFileFilterAndChooser(
                 "Iconic Model of Simulation",
@@ -870,32 +861,20 @@ public class MainWindow extends JFrame implements KeyListener {
 
         if (this.jFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {return;}
 
-        var file = this.jFileChooser.getSelectedFile();
+        final var file = this.jFileChooser.getSelectedFile();
 
         if (!hasValidIspdFileExtension(file)) {
-            this.invalidFileSelected(file);
+            JOptionPane.showMessageDialog(
+                    null, this.translate("Invalid file"), this.translate("WARNING"), JOptionPane.PLAIN_MESSAGE
+            );
             return;
         }
 
         try {
-            file = this.readFileContents(file);
+            this.readFileContents(file);
             this.updateGuiWithOpenFile("model opened", file);
-        } catch (final ClassNotFoundException | ParserConfigurationException |
-                       IOException | SAXException ex) {
+        } catch (final ParserConfigurationException | IOException | SAXException ex) {
             this.processFileOpeningException(ex);
-        }
-    }
-
-    private void invalidFileSelected (final File file) {
-        if ("Torre".equals(file.getName())) {
-            this.jScrollPaneDrawingArea.setViewportView(new Stalemate());
-        } else {
-            JOptionPane.showMessageDialog(
-                    null,
-                    this.translate("Invalid file"),
-                    this.translate("WARNING"),
-                    JOptionPane.PLAIN_MESSAGE
-            );
         }
     }
 
@@ -905,14 +884,13 @@ public class MainWindow extends JFrame implements KeyListener {
         JOptionPane.showMessageDialog(null, message, this.translate("WARNING"), JOptionPane.PLAIN_MESSAGE);
     }
 
-    private File readFileContents (final File file)
-            throws ParserConfigurationException, IOException, SAXException, ClassNotFoundException {
-        if (file.getName().endsWith(".imsx")) {
-            this.readFileNewExtension(file);
-            return file;
-        }
-
-        return this.readFileOldExtension(file);
+    private void readFileContents (final File file)
+            throws ParserConfigurationException, IOException, SAXException {
+        final var doc = IconicoXML.ler(file);
+        this.startNewDrawing(doc);
+        this.modelType       = this.drawingArea.getModelType();
+        this.virtualMachines = this.drawingArea.getVirtualMachines();
+        this.updateVmConfigButtonVisibility();
     }
 
     private void updateGuiWithOpenFile (final String message, final File file) {
@@ -923,25 +901,6 @@ public class MainWindow extends JFrame implements KeyListener {
         this.jScrollPaneDrawingArea.setViewportView(this.drawingArea);
         this.appendNotificacao(this.translate(message));
         this.openEditing(file);
-    }
-
-    private void readFileNewExtension (final File file) throws ParserConfigurationException, IOException, SAXException {
-        final var doc = IconicoXML.ler(file);
-        this.startNewDrawing(doc);
-        this.modelType       = this.drawingArea.getModelType();
-        this.virtualMachines = this.drawingArea.getVirtualMachines();
-        this.updateVmConfigButtonVisibility();
-    }
-
-    private File readFileOldExtension (final File file) throws IOException, ClassNotFoundException {
-        final var description = getSystemDescription(file);
-
-        this.startNewDrawingOld(description);
-        return null;
-    }
-
-    private void startNewDrawingOld (final DescreveSistema description) {
-        this.drawingArea = emptyDrawingArea();
     }
 
     private void startNewDrawing (final Document doc) {
