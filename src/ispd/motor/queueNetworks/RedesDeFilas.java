@@ -4,18 +4,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-import ispd.motor.statistics.Estatistica;
-import ispd.motor.statistics.MetricaCS;
-
 public class RedesDeFilas {
 
     private final List<Integer>             escalonadores;
     private final HashSet<CentrosDeServico> centroDeServicos;
-    private final Estatistica               estatRedeDeFilas;
     private       int                       numCS;
     private       int[][]                   matrizRF;
     private       int                       tam_mat;
-    private       MetricaCS                 atualCS;
 
     //+------------------------------------------Inicio dos metodos da
     // classe------------------------------------------+
@@ -39,7 +34,6 @@ si, ajudar no entendimento do codigos daqui.
         this.numCS            = 0;
         this.escalonadores    = new ArrayList<>();
         this.centroDeServicos = new HashSet<>();
-        this.estatRedeDeFilas = new Estatistica(0.0);
     }
 //+----------------------------Metodos que adicionam um centro de servico a
 // rede de filas----------------------------+
@@ -68,14 +62,12 @@ si, ajudar no entendimento do codigos daqui.
                 // Se for maquina
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ, vetEscravos);
                 this.centroDeServicos.add(CS);
-                this.estatRedeDeFilas.addMetricaCS(this.numCS);
                 System.out.printf("|\tCS (tipo0) ID: %2d adicionado                    |\n", this.numCS);
             }
             case 1 -> {
                 System.out.printf("\n nMaxServ = %d\n", nMaxServ);
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ, vetEscravos);
                 this.centroDeServicos.add(CS);
-                this.estatRedeDeFilas.addMetricaCS(this.numCS);
                 System.out.printf("|\tCS ID (tip 1): %2d adicionado                    |\n", this.numCS);
             }
         }
@@ -91,18 +83,15 @@ si, ajudar no entendimento do codigos daqui.
             case 1 -> {
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ);
                 this.centroDeServicos.add(CS);
-                this.estatRedeDeFilas.addMetricaCS(this.numCS);
                 System.out.printf("|\tCS ID (tp 1): %2d adicionado                    |\n", this.numCS);
             }
             case 2 -> {
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ);
                 this.centroDeServicos.add(CS);
-                this.estatRedeDeFilas.addMetricaCS(this.numCS);
             }
             case 3 -> {
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ);
                 this.centroDeServicos.add(CS);
-                this.estatRedeDeFilas.addMetricaCS(this.numCS);
             }
         }
         System.out.printf("|\tCS ID: %2d adicionado                    |\n", this.numCS);
@@ -118,8 +107,7 @@ si, ajudar no entendimento do codigos daqui.
         }
         for (final CentrosDeServico csTemp : this.centroDeServicos) {
             if (csTemp.getIdCS() == idCS) {
-                this.atualCS = this.estatRedeDeFilas.descobreServidorCS(idCS);
-                csTemp.adicionaServidorProcto(msOuEsc, this.atualCS);
+                csTemp.adicionaServidorProcto(msOuEsc);
             }
         }
     }
@@ -127,8 +115,7 @@ si, ajudar no entendimento do codigos daqui.
     public void adicionaServidorCom (final int idCS) {
         for (final CentrosDeServico csTemp : this.centroDeServicos) {
             if (csTemp.getIdCS() == idCS) {
-                this.atualCS = this.estatRedeDeFilas.descobreServidorCS(idCS);
-                csTemp.adicionaServidorCom(this.atualCS);
+                csTemp.adicionaServidorCom();
             }
         }
     }
@@ -136,12 +123,9 @@ si, ajudar no entendimento do codigos daqui.
     public void adicionaServidoresClr (final int idCS) {
         for (final CentrosDeServico csTemp : this.centroDeServicos) {
             if (csTemp.getIdCS() == idCS) {
-                this.atualCS = this.estatRedeDeFilas.descobreServidorCS(idCS);
                 System.out.printf("CS PASSADO %d", idCS);
 
-                csTemp.adicionaServidoresClr(
-                        this.atualCS
-                );
+                csTemp.adicionaServidoresClr();
             }
         }
     }

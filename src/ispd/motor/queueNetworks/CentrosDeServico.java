@@ -2,14 +2,12 @@ package ispd.motor.queueNetworks;
 
 import java.util.HashSet;
 
-import ispd.motor.statistics.MetricaCS;
-
 public class CentrosDeServico {
 
     private final HashSet<Object> servidores;
     private final HashSet<Object> filas;
     private final int             numMaxServidores;  //Capacidade maxima de servidores que
-    private       int             idCS;
+    private final int             idCS;
     // podem ser adicionados ao CS.
     //Esse numero considera apenas servidores de processamento (mestre e
     // escravos)
@@ -21,7 +19,6 @@ public class CentrosDeServico {
     // maximo igual a numMaxServidores
     private       int             numAtualFilas;
     private       boolean         ehEscalonador;
-    private       int[]           vetorEscravos;
 
     //Adiciona CSs Homogeneos ( maquinas (servidores de processamento),
     // conexao de rede simples ou
@@ -43,10 +40,11 @@ public class CentrosDeServico {
     }
 
     public void setVetorEscravos (final int[] vetEscravos) {
-        this.vetorEscravos = vetEscravos;
-        System.out.printf("\nthis.vetorEscravos.length - " + this.vetorEscravos.length);
-        for (int i = 0; i < this.vetorEscravos.length; i++) {
-            System.out.printf("\nthis.vetorEscravos[" + i + "] - " + this.vetorEscravos[i]);
+        int[] vetorEscravos;
+        vetorEscravos = vetEscravos;
+        System.out.printf("\nthis.vetorEscravos.length - " + vetorEscravos.length);
+        for (int i = 0; i < vetorEscravos.length; i++) {
+            System.out.printf("\nthis.vetorEscravos[" + i + "] - " + vetorEscravos[i]);
         }
     }
 
@@ -54,7 +52,7 @@ public class CentrosDeServico {
         this.numAtualServidores = (nAtualServ >= 0) ? nAtualServ : 0;
     }
 
-    public void adicionaServidorProcto (final boolean msOuEsc, final MetricaCS atualCS) {
+    public void adicionaServidorProcto (final boolean msOuEsc) {
 
         this.ehEscalonador = msOuEsc;
 
@@ -64,8 +62,6 @@ public class CentrosDeServico {
             System.out.printf("o CS %d eh escalonador\n", this.idCS);
         }
         this.servidores.add(new Object());
-
-        atualCS.addMedidasServidor(this.numAtualServidores, 0);
 
         System.out.printf(
                 "|\tServidor ID: %2d adicionado ao Centro de Servico ID: %2d |\n",
@@ -82,7 +78,7 @@ public class CentrosDeServico {
         return this.idCS;
     }
 
-    public void adicionaServidorCom (final MetricaCS atualCS) {
+    public void adicionaServidorCom () {
 
         this.ehEscalonador = false;
         if (!this.ehEscalonador) {
@@ -92,8 +88,6 @@ public class CentrosDeServico {
         }
         this.servidores.add(new Object());
 
-        atualCS.addMedidasServidor(this.numAtualServidores, 1);
-
         System.out.printf(
                 "|\tServidor ID: %2d adicionado ao Centro de Servico ID: %2d |\n",
                 this.numAtualServidores, this.idCS
@@ -102,15 +96,13 @@ public class CentrosDeServico {
     }
 
     //+--------------------------------+
-    public void adicionaServidoresClr (final MetricaCS atualCS) {
+    public void adicionaServidoresClr () {
         this.ehEscalonador = true;
         if (!this.ehEscalonador) {System.out.printf("o CS %d NAO eh escalonador\n", this.idCS);} else {
             System.out.printf("o CS %d eh escalonador\n", this.idCS);
         }
 
         this.servidores.add(new Object());
-
-        atualCS.addMedidasServidor(this.numAtualServidores, 0);
 
         System.out.printf(
                 "|\tServidor ID: %2d adicionado ao Centro de Servico ID: %2d |\n",
@@ -121,8 +113,6 @@ public class CentrosDeServico {
         //Adiciona os escravos
         while (this.numAtualServidores < this.numMaxServidores) {
             this.servidores.add(new Object());
-
-            atualCS.addMedidasServidor(this.numAtualServidores, 0);
 
             System.out.printf(
                     "|\tServidor ID: %2d adicionado ao Centro de Servico ID: %2d |\n",
@@ -144,8 +134,6 @@ public class CentrosDeServico {
         );
         final Object serv = new Object();
         this.servidores.add(serv);
-
-        atualCS.addMedidasServidor(this.numAtualServidores, 1);
 
         //Nao precisa adicionar valor a  numAtualServidores, pois o servidor
         // e de comunicacao e essa
