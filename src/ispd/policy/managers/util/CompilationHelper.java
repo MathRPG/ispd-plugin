@@ -1,9 +1,5 @@
 package ispd.policy.managers.util;
 
-import ispd.policy.managers.FilePolicyManager;
-
-import javax.tools.Tool;
-import javax.tools.ToolProvider;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -13,31 +9,37 @@ import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.tools.Tool;
+import javax.tools.ToolProvider;
+
+import ispd.policy.managers.FilePolicyManager;
+
 public class CompilationHelper {
+
     private final Optional<Tool> compiler = Optional.ofNullable(
             ToolProvider.getSystemJavaCompiler());
-    private final File target;
+    private final File           target;
 
     /* package-private */
-    public CompilationHelper(final File target) {
+    public CompilationHelper (final File target) {
         this.target = target;
     }
 
     /* package-private */
-    public String compile() {
+    public String compile () {
         return this.compiler
                 .map(this::compileWithSystemTool)
                 .orElseGet(this::tryCompileWithJavac);
     }
 
-    private String compileWithSystemTool(final Tool tool) {
+    private String compileWithSystemTool (final Tool tool) {
         final var err = new ByteArrayOutputStream();
         final var arg = this.target.getPath();
         tool.run(null, null, err, arg);
         return err.toString();
     }
 
-    private String tryCompileWithJavac() {
+    private String tryCompileWithJavac () {
         try {
             return this.compileWithJavac();
         } catch (final IOException ex) {
@@ -46,13 +48,15 @@ public class CompilationHelper {
         }
     }
 
-    private String compileWithJavac() throws IOException {
+    private String compileWithJavac () throws IOException {
         final var command = "javac %s".formatted(this.target.getPath());
         final var process = Runtime.getRuntime().exec(command);
 
-        try (final var err = new BufferedReader(new InputStreamReader(
-                process.getErrorStream(), StandardCharsets.UTF_8
-        ))) {
+        try (
+                final var err = new BufferedReader(new InputStreamReader(
+                        process.getErrorStream(), StandardCharsets.UTF_8
+                ))
+        ) {
             return err.lines().collect(Collectors.joining("\n"));
         }
     }
