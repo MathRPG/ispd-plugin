@@ -14,13 +14,11 @@ public class Distribution extends Random {
     }
 
     public double nextExponential (final double beta) {
-        return -1 * beta * Math.log(this.nextDouble());
+        return -1.0 * beta * StrictMath.log(this.nextDouble());
     }
 
     // http://www.cs.huji.ac.il/labs/parallel/workload/m_lublin99/m_lublin99.c
-    public double twoStageUniform (
-            final double low, final double med, final double hi, final double prob
-    ) {
+    public double twoStageUniform (final double low, final double med, final double hi, final double prob) {
         if (this.nextDouble() <= prob) {
             return this.getUniform(low, med);
         } else {
