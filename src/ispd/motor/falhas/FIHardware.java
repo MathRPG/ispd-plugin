@@ -8,21 +8,13 @@ import javax.swing.JOptionPane;
 import ispd.gui.PickSimulationFaultsDialog;
 import ispd.motor.ProgressoSimulacao;
 import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
 import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
 
 public class FIHardware {
 
-    /**
-     * @param janela
-     * @param redeDeFilas
-     * @param tarefas
-     */
-    public void FIHardware1 (
-            final ProgressoSimulacao janela, final RedeDeFilasCloud redeDeFilas, final List<Tarefa> tarefas
-    ) {
-        FIHardware.selectFaults(janela);
+    public void FIHardware1 (final ProgressoSimulacao janela, final RedeDeFilasCloud redeDeFilas) {
+        selectFaults(janela);
 
         final var vms = redeDeFilas.getVMs();
 
@@ -50,7 +42,7 @@ public class FIHardware {
                           Máquina que o status é igual a 2: %d
                           """, redeDeFilas, vms, vms, machines, machines.size(), id, id, CS_MaquinaCloud.DESLIGADO);
 
-        FIHardware.printNewQueueNetwork(vms, machines);
+        printNewQueueNetwork(vms, machines);
     }
 
     private static void selectFaults (final ProgressoSimulacao janela) {
@@ -60,9 +52,7 @@ public class FIHardware {
         janela.print(" -> ");
     }
 
-    private static void printNewQueueNetwork (
-            final List<CS_VirtualMac> vms, final List<CS_MaquinaCloud> machines
-    ) {
+    private static void printNewQueueNetwork (final List<CS_VirtualMac> vms, final List<CS_MaquinaCloud> machines) {
         final int qn = machines.size() - 1;
         System.out.printf("Novo redeDeFilas: %d\n", qn);
         for (int i = 0; i <= qn; i++) {

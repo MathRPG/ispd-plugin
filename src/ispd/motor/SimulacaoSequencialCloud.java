@@ -84,7 +84,7 @@ public class SimulacaoSequencialCloud extends Simulation {
                 window.println("There are injected hardware omission failures.");
                 window.println("Creating Hardware fault.");
                 final FIHardware fihardware = new FIHardware();
-                fihardware.FIHardware1(window, cloudQueueNetwork, jobs);
+                fihardware.FIHardware1(window, cloudQueueNetwork);
             } else {
                 window.println("There aren't injected hardware omission failures.");
             }
@@ -94,7 +94,7 @@ public class SimulacaoSequencialCloud extends Simulation {
                 window.println("Creating software fault.");
                 window.println("Software failure created.");
                 final FISoftware fisoftdware = new FISoftware();
-                fisoftdware.FISfotware1(window, cloudQueueNetwork, jobs);
+                fisoftdware.FISfotware1(window, cloudQueueNetwork);
             } else {
                 window.println("There aren't injected software omission failures.");
             }
