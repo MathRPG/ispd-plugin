@@ -1,11 +1,8 @@
 package ispd.motor.filas;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import ispd.motor.filas.servidores.CS_Comunicacao;
 import ispd.motor.filas.servidores.CS_Processamento;
@@ -19,30 +16,30 @@ import ispd.motor.filas.servidores.implementacao.CS_Maquina;
 public class RedeDeFilas {
 
     /**
+     * Lista dos limites de consumo, em porcentagem, de cada usuário
+     */
+    private final Map<String, Double>    limiteConsumo;
+    /**
      * Todos os mestres existentes no sistema incluindo o front-node dos
      * clusters
      */
-    private List<CS_Processamento> mestres;
+    private final List<CS_Processamento> mestres;
     /**
      * Todas as máquinas que não são mestres
      */
-    private List<CS_Maquina>       maquinas;
+    private final List<CS_Maquina>       maquinas;
     /**
      * Todas as conexões
      */
-    private List<CS_Comunicacao>   links;
+    private final List<CS_Comunicacao>   links;
     /**
      * Todos icones de internet do modelo
      */
-    private List<CS_Internet>      internets;
+    private final List<CS_Internet>      internets;
     /**
      * Mantem lista dos usuarios da rede de filas
      */
-    private List<String>           usuarios;
-    /**
-     * Lista dos limites de consumo, em porcentagem, de cada usuário
-     */
-    private Map<String, Double>    limiteConsumo;
+    private       List<String>           usuarios;
 
     /**
      * Constructor which specifies the model of architecture's network of queue
@@ -67,10 +64,8 @@ public class RedeDeFilas {
      *         for specify the power limit for each user
      */
     public RedeDeFilas (
-            final List<CS_Processamento> masterList,
-            final List<CS_Maquina> machineList,
-            final List<CS_Comunicacao> linkList,
-            final List<CS_Internet> internetList
+            final List<CS_Processamento> masterList, final List<CS_Maquina> machineList,
+            final List<CS_Comunicacao> linkList, final List<CS_Internet> internetList
     ) {
         this(masterList, machineList, linkList, internetList, new HashMap<>());
     }
@@ -94,10 +89,8 @@ public class RedeDeFilas {
      *         for each user in the simulation.
      */
     public RedeDeFilas (
-            final List<CS_Processamento> masterList,
-            final List<CS_Maquina> machineList,
-            final List<CS_Comunicacao> linkList,
-            final List<CS_Internet> internetList,
+            final List<CS_Processamento> masterList, final List<CS_Maquina> machineList,
+            final List<CS_Comunicacao> linkList, final List<CS_Internet> internetList,
             final Map<String, Double> powerLimitMap
     ) {
         this.mestres       = masterList;
@@ -115,83 +108,30 @@ public class RedeDeFilas {
     }
 
     public List<CS_Internet> getInternets () {
-        return internets;
-    }
-
-    public void setInternets (List<CS_Internet> internets) {
-        this.internets = internets;
+        return this.internets;
     }
 
     public List<CS_Comunicacao> getLinks () {
-        return links;
-    }
-
-    public void setLinks (List<CS_Comunicacao> links) {
-        this.links = links;
+        return this.links;
     }
 
     public List<CS_Maquina> getMaquinas () {
-        return maquinas;
-    }
-
-    public void setMaquinas (List<CS_Maquina> maquinas) {
-        this.maquinas = maquinas;
+        return this.maquinas;
     }
 
     public List<CS_Processamento> getMestres () {
-        return mestres;
-    }
-
-    public void setMestres (List<CS_Processamento> mestres) {
-        this.mestres = mestres;
+        return this.mestres;
     }
 
     public List<String> getUsuarios () {
         return this.usuarios;
     }
 
-    public void setUsuarios (List<String> usuarios) {
+    public void setUsuarios (final List<String> usuarios) {
         this.usuarios = usuarios;
     }
 
     public Map<String, Double> getLimites () {
         return this.limiteConsumo;
-    }
-
-    /**
-     * Cria falhas para ocorrer durante a simulação usando a distribuição de Weibull.
-     * A distribuição de Weibull indica o momento que ocorre a falha,
-     * enquanto a uniforme indica o tempo de recuperação do recurso
-     *
-     * @param min
-     *         número mínimo de falhas que ocorrerão
-     * @param max
-     *         número máximo do falahas que ocorrerão
-     * @param scale
-     *         parâmetro de escala da distribuição de Weibull
-     * @param shape
-     *         parâmetro de forma da distribuição de Weibull
-     * @param recMin
-     *         tempo mínimo para recuperação do recurso que falhou
-     * @param recMax
-     *         tempo máximo para recuperação do recurso que falhou
-     * @param recuperavel
-     *         indica se a falha tem recuperação automática
-     */
-    public void setFalhas (
-            int min, int max, double scale, double shape, double recMin, double recMax, boolean recuperavel
-    ) {
-        Random       rd        = new Random();
-        int          numFalhas = min + rd.nextInt(max - min);
-        List<Double> falhas    = new ArrayList<Double>();
-        for (int i = 0; i < numFalhas; i++) {
-            falhas.add(scale * Math.pow(-Math.log(1 - rd.nextDouble()), 1 / shape));
-        }
-        Collections.sort(falhas);
-        while (!falhas.isEmpty()) {
-            int next = rd.nextInt(maquinas.size());
-            System.out.println("Falha " + falhas.get(0) + " no " + maquinas.get(next).getId());
-            maquinas.get(next).addFalha(falhas.remove(0), recMin, recuperavel);
-        }
     }
 }

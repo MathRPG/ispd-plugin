@@ -12,66 +12,62 @@ import ispd.motor.metricas.MetricasTarefa;
  * centros de serviços Os clientes podem ser: Tarefas
  */
 public class Tarefa implements Client {
+
     //Estados que a tarefa pode estar
-
-    public static final int PARADO      = 1;
-    public static final int PROCESSANDO = 2;
-    public static final int CANCELADO   = 3;
-    public static final int CONCLUIDO   = 4;
-    public static final int FALHA       = 5;
-
-    private String                 proprietario;
-    private String                 aplicacao;
-    private int                    identificador;
-    private boolean                copia;
-    private List<CS_Processamento> historicoProcessamento = new ArrayList<CS_Processamento>();
-
+    public static final int                    PARADO                 = 1;
+    public static final int                    PROCESSANDO            = 2;
+    public static final int                    CANCELADO              = 3;
+    public static final int                    CONCLUIDO              = 4;
+    public static final int                    FALHA                  = 5;
+    private final       String                 proprietario;
+    private final       String                 aplicacao;
+    private final       int                    identificador;
+    private final       boolean                copia;
+    private final       List<CS_Processamento> historicoProcessamento = new ArrayList<>();
+    /**
+     * Tamanho do arquivo em Mbits que será enviado para o escravo.
+     */
+    private final       double                 arquivoEnvio;
+    /**
+     * Tamanho do arquivo em Mbits que será devolvido para o mestre.
+     */
+    private final       double                 arquivoRecebimento;
+    /**
+     * Tamanho em Mflops para processar.
+     */
+    private final       double                 tamProcessamento;
+    /**
+     * Local de origem da mensagem/tarefa.
+     */
+    private final       CentroServico          origem;
+    private final       MetricasTarefa         metricas;
+    private final       double                 tempoCriacao;
+    private final       List<Double>           tempoFinal; //Criando o tempo em que a tarefa acabou.
+    private final       List<Double>           tempoInicial; //Criando o tempo em que a tarefa começou a ser executada.
     /**
      * Indica a quantidade de mflops já processados no momento de um bloqueio
      */
-    private double              mflopsProcessado;
+    private             double                 mflopsProcessado;
     /**
      * Indica a quantidade de mflops desperdiçados por uma preempção ou cancelamento
      */
-    private double              mflopsDesperdicados = 0;
-    /**
-     * Tamanho do arquivo em Mbits que será enviado para o escravo
-     */
-    private double              arquivoEnvio;
-    /**
-     * Tamanho do arquivo em Mbits que será devolvido para o mestre
-     */
-    private double              arquivoRecebimento;
-    /**
-     * Tamanho em Mflops para processar
-     */
-    private double              tamProcessamento;
-    /**
-     * Local de origem da mensagem/tarefa
-     */
-    private CentroServico       origem;
+    private             double                 mflopsDesperdicados    = 0;
     /**
      * Local de destino da mensagem/tarefa
      */
-    private CentroServico       localProcessamento;
+    private             CentroServico          localProcessamento;
     /**
      * Caminho que o pacote deve percorrer até o destino O destino é o ultimo
      * item desta lista
      */
-    private List<CentroServico> caminho;
-    private double              inicioEspera;
-    private MetricasTarefa      metricas;
-    private double              tempoCriacao;
-    //Criando o tempo em que a tarefa acabou.
-    private List<Double>        tempoFinal;
-    //Criando o tempo em que a tarefa começou a ser executada.
-    private List<Double>        tempoInicial;
-    private int                 estado;
-    private double              tamComunicacao;
+    private             List<CentroServico>    caminho;
+    private             double                 inicioEspera;
+    private             int                    estado;
+    private             double                 tamComunicacao;
 
     public Tarefa (
-            int id, String proprietario, String aplicacao, CentroServico origem, double arquivoEnvio,
-            double tamProcessamento, double tempoCriacao
+            final int id, final String proprietario, final String aplicacao, final CentroServico origem,
+            final double arquivoEnvio, final double tamProcessamento, final double tempoCriacao
     ) {
         this.proprietario       = proprietario;
         this.aplicacao          = aplicacao;
@@ -84,15 +80,16 @@ public class Tarefa implements Client {
         this.tamProcessamento   = tamProcessamento;
         this.metricas           = new MetricasTarefa();
         this.tempoCriacao       = tempoCriacao;
-        this.estado             = PARADO;
+        this.estado             = ispd.motor.filas.Tarefa.PARADO;
         this.mflopsProcessado   = 0;
-        this.tempoInicial       = new ArrayList<Double>();
-        this.tempoFinal         = new ArrayList<Double>();
+        this.tempoInicial       = new ArrayList<>();
+        this.tempoFinal         = new ArrayList<>();
     }
 
     public Tarefa (
-            int id, String proprietario, String aplicacao, CentroServico origem, double arquivoEnvio,
-            double arquivoRecebimento, double tamProcessamento, double tempoCriacao
+            final int id, final String proprietario, final String aplicacao, final CentroServico origem,
+            final double arquivoEnvio, final double arquivoRecebimento, final double tamProcessamento,
+            final double tempoCriacao
     ) {
         this.identificador      = id;
         this.proprietario       = proprietario;
@@ -105,166 +102,166 @@ public class Tarefa implements Client {
         this.tamProcessamento   = tamProcessamento;
         this.metricas           = new MetricasTarefa();
         this.tempoCriacao       = tempoCriacao;
-        this.estado             = PARADO;
+        this.estado             = ispd.motor.filas.Tarefa.PARADO;
         this.mflopsProcessado   = 0;
-        this.tempoInicial       = new ArrayList<Double>();
-        this.tempoFinal         = new ArrayList<Double>();
+        this.tempoInicial       = new ArrayList<>();
+        this.tempoFinal         = new ArrayList<>();
     }
 
-    public Tarefa (Tarefa tarefa) {
+    public Tarefa (final Tarefa tarefa) {
         this.proprietario       = tarefa.proprietario;
-        this.aplicacao          = tarefa.getAplicacao();
+        this.aplicacao          = tarefa.aplicacao;
         this.identificador      = tarefa.identificador;
         this.copia              = true;
-        this.origem             = tarefa.getOrigem();
+        this.origem             = tarefa.origem;
         this.tamComunicacao     = tarefa.arquivoEnvio;
         this.arquivoEnvio       = tarefa.arquivoEnvio;
         this.arquivoRecebimento = tarefa.arquivoRecebimento;
-        this.tamProcessamento   = tarefa.getTamProcessamento();
+        this.tamProcessamento   = tarefa.tamProcessamento;
         this.metricas           = new MetricasTarefa();
-        this.tempoCriacao       = tarefa.getTimeCriacao();
-        this.estado             = PARADO;
+        this.tempoCriacao       = tarefa.tempoCriacao;
+        this.estado             = ispd.motor.filas.Tarefa.PARADO;
         this.mflopsProcessado   = 0;
-        this.tempoInicial       = new ArrayList<Double>();
-        this.tempoFinal         = new ArrayList<Double>();
+        this.tempoInicial       = new ArrayList<>();
+        this.tempoFinal         = new ArrayList<>();
     }
 
     public String getAplicacao () {
-        return aplicacao;
+        return this.aplicacao;
     }
 
     public double getTamComunicacao () {
-        return tamComunicacao;
+        return this.tamComunicacao;
     }
 
     public double getTamProcessamento () {
-        return tamProcessamento;
+        return this.tamProcessamento;
     }
 
     public double getTimeCriacao () {
-        return tempoCriacao;
+        return this.tempoCriacao;
     }
 
     public CentroServico getOrigem () {
-        return origem;
+        return this.origem;
     }
 
     public List<CentroServico> getCaminho () {
-        return caminho;
+        return this.caminho;
     }
 
-    public void setCaminho (List<CentroServico> caminho) {
+    public void setCaminho (final List<CentroServico> caminho) {
         this.caminho = caminho;
     }
 
     public String getProprietario () {
-        return proprietario;
+        return this.proprietario;
     }
 
     public CentroServico getLocalProcessamento () {
-        return localProcessamento;
+        return this.localProcessamento;
     }
 
-    public void setLocalProcessamento (CentroServico localProcessamento) {
+    public void setLocalProcessamento (final CentroServico localProcessamento) {
         this.localProcessamento = localProcessamento;
     }
 
     public CS_Processamento getCSLProcessamento () {
-        return (CS_Processamento) localProcessamento;
+        return (CS_Processamento) this.localProcessamento;
     }
 
-    public void iniciarEsperaComunicacao (double tempo) {
+    public void iniciarEsperaComunicacao (final double tempo) {
         this.inicioEspera = tempo;
     }
 
-    public void finalizarEsperaComunicacao (double tempo) {
-        this.metricas.incTempoEsperaComu(tempo - inicioEspera);
+    public void finalizarEsperaComunicacao (final double tempo) {
+        this.metricas.incTempoEsperaComu(tempo - this.inicioEspera);
     }
 
-    public void iniciarAtendimentoComunicacao (double tempo) {
+    public void iniciarAtendimentoComunicacao (final double tempo) {
         this.inicioEspera = tempo;
     }
 
-    public void finalizarAtendimentoComunicacao (double tempo) {
-        this.metricas.incTempoComunicacao(tempo - inicioEspera);
+    public void finalizarAtendimentoComunicacao (final double tempo) {
+        this.metricas.incTempoComunicacao(tempo - this.inicioEspera);
     }
 
-    public void iniciarEsperaProcessamento (double tempo) {
+    public void iniciarEsperaProcessamento (final double tempo) {
         this.inicioEspera = tempo;
     }
 
-    public void finalizarEsperaProcessamento (double tempo) {
-        this.metricas.incTempoEsperaProc(tempo - inicioEspera);
+    public void finalizarEsperaProcessamento (final double tempo) {
+        this.metricas.incTempoEsperaProc(tempo - this.inicioEspera);
     }
 
-    public void iniciarAtendimentoProcessamento (double tempo) {
-        this.estado       = PROCESSANDO;
+    public void iniciarAtendimentoProcessamento (final double tempo) {
+        this.estado       = ispd.motor.filas.Tarefa.PROCESSANDO;
         this.inicioEspera = tempo;
         this.tempoInicial.add(tempo);
-        this.historicoProcessamento.add((CS_Processamento) localProcessamento);
+        this.historicoProcessamento.add((CS_Processamento) this.localProcessamento);
     }
 
     public List<CS_Processamento> getHistoricoProcessamento () {
         return this.historicoProcessamento;
     }
 
-    public void finalizarAtendimentoProcessamento (double tempo) {
-        this.estado = CONCLUIDO;
-        this.metricas.incTempoProcessamento(tempo - inicioEspera);
+    public void finalizarAtendimentoProcessamento (final double tempo) {
+        this.estado = ispd.motor.filas.Tarefa.CONCLUIDO;
+        this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
         if (this.tempoFinal.size() < this.tempoInicial.size()) {
             this.tempoFinal.add(tempo);
         }
-        this.tamComunicacao = arquivoRecebimento;
+        this.tamComunicacao = this.arquivoRecebimento;
     }
 
-    public double cancelar (double tempo) {
-        if (estado == PARADO || estado == PROCESSANDO) {
-            this.estado = CANCELADO;
-            this.metricas.incTempoProcessamento(tempo - inicioEspera);
+    public double cancelar (final double tempo) {
+        if (this.estado == ispd.motor.filas.Tarefa.PARADO || this.estado == ispd.motor.filas.Tarefa.PROCESSANDO) {
+            this.estado = ispd.motor.filas.Tarefa.CANCELADO;
+            this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
             if (this.tempoFinal.size() < this.tempoInicial.size()) {
                 this.tempoFinal.add(tempo);
             }
-            return inicioEspera;
+            return this.inicioEspera;
         } else {
-            this.estado = CANCELADO;
+            this.estado = ispd.motor.filas.Tarefa.CANCELADO;
             return tempo;
         }
     }
 
-    public double parar (double tempo) {
-        if (estado == PROCESSANDO) {
-            this.estado = PARADO;
-            this.metricas.incTempoProcessamento(tempo - inicioEspera);
+    public double parar (final double tempo) {
+        if (this.estado == ispd.motor.filas.Tarefa.PROCESSANDO) {
+            this.estado = ispd.motor.filas.Tarefa.PARADO;
+            this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
             if (this.tempoFinal.size() < this.tempoInicial.size()) {
                 this.tempoFinal.add(tempo);
             }
-            return inicioEspera;
+            return this.inicioEspera;
         } else {
             return tempo;
         }
     }
 
-    public void calcEficiencia (double capacidadeRecebida) {
-        this.metricas.calcEficiencia(capacidadeRecebida, tamProcessamento);
+    public void calcEficiencia (final double capacidadeRecebida) {
+        this.metricas.calcEficiencia(capacidadeRecebida, this.tamProcessamento);
     }
 
     public List<Double> getTempoInicial () {
-        return tempoInicial;
+        return this.tempoInicial;
     }
 
     public List<Double> getTempoFinal () {
-        return tempoFinal;
+        return this.tempoFinal;
     }
 
     public MetricasTarefa getMetricas () {
-        return metricas;
+        return this.metricas;
     }
 
     public int getEstado () {
         return this.estado;
     }
 
-    public void setEstado (int estado) {
+    public void setEstado (final int estado) {
         this.estado = estado;
     }
 
@@ -273,44 +270,36 @@ public class Tarefa implements Client {
     }
 
     public boolean isCopy () {
-        return copia;
+        return this.copia;
     }
 
-    public boolean isCopyOf (Tarefa tarefa) {
-        if (this.identificador == tarefa.identificador && !this.equals(tarefa)) {
-            return true;
-        } else {
-            return false;
-        }
+    public boolean isCopyOf (final Tarefa tarefa) {
+        return this.identificador == tarefa.identificador && !this.equals(tarefa);
     }
 
     public double getMflopsProcessado () {
-        return mflopsProcessado;
+        return this.mflopsProcessado;
     }
 
-    public void setMflopsProcessado (double mflopsProcessado) {
+    public void setMflopsProcessado (final double mflopsProcessado) {
         this.mflopsProcessado = mflopsProcessado;
     }
 
     public double getMflopsDesperdicados () {
-        return mflopsDesperdicados;
+        return this.mflopsDesperdicados;
     }
 
-    public void incMflopsDesperdicados (double mflopsDesperdicados) {
+    public void incMflopsDesperdicados (final double mflopsDesperdicados) {
         this.mflopsDesperdicados += mflopsDesperdicados;
     }
 
-    public double getCheckPoint () {//Se for alterado o tempo de checkpoint, alterar também no métricas
-        //return 1.0;//Fazer Chekcpoint a cada 1 megaflop
+    public double getCheckPoint () {
+        //Se for alterado o tempo de checkpoint, alterar também no métricas
         //Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
         return 0.0;
-        //double tempo = mflopsProcessado/((CS_Processamento) localProcessamento).getPoderComputacional();
-        //double resto = tempo%300;
-        //return mflopsProcessado - ((CS_Processamento) localProcessamento).getPoderComputacional()*resto;
-        //throw new UnsupportedOperationException("Not yet implemented");
     }
 
     public double getArquivoEnvio () {
-        return arquivoEnvio;
+        return this.arquivoEnvio;
     }
 }
