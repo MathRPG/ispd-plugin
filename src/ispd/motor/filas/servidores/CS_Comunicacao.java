@@ -12,13 +12,15 @@ public abstract class CS_Comunicacao extends CentroServico {
     /**
      * Identificador do centro de serviço, deve ser o mesmo do modelo icônico
      */
-    private double              larguraBanda;
-    private double              ocupacao;
-    private double              latencia;
-    private MetricasComunicacao metrica;
-    private double              larguraBandaDisponivel;
+    private final double              larguraBanda;
+    private final double              ocupacao;
+    private final double              latencia;
+    private final MetricasComunicacao metrica;
+    private final double              larguraBandaDisponivel;
 
-    public CS_Comunicacao (String id, double LarguraBanda, double Ocupacao, double Latencia) {
+    protected CS_Comunicacao (
+            final String id, final double LarguraBanda, final double Ocupacao, final double Latencia
+    ) {
         this.larguraBanda           = LarguraBanda;
         this.ocupacao               = Ocupacao;
         this.latencia               = Latencia;
@@ -27,24 +29,24 @@ public abstract class CS_Comunicacao extends CentroServico {
     }
 
     public MetricasComunicacao getMetrica () {
-        return metrica;
+        return this.metrica;
     }
 
     @Override
     public String getId () {
-        return metrica.getId();
+        return this.metrica.getId();
     }
 
     public double getLarguraBanda () {
-        return larguraBanda;
+        return this.larguraBanda;
     }
 
     public double getLatencia () {
-        return latencia;
+        return this.latencia;
     }
 
     public double getOcupacao () {
-        return ocupacao;
+        return this.ocupacao;
     }
 
     /**
@@ -52,8 +54,7 @@ public abstract class CS_Comunicacao extends CentroServico {
      *
      * @param Mbits
      */
-    public double tempoTransmitir (double Mbits) {
-        return (Mbits / larguraBandaDisponivel) + latencia;
+    public double tempoTransmitir (final double Mbits) {
+        return (Mbits / this.larguraBandaDisponivel) + this.latencia;
     }
-
 }
