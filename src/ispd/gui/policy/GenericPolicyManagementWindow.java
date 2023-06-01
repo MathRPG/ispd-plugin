@@ -59,15 +59,13 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     private static final String                 ICON_IMAGE_PATH       = String.join(
             File.separator, "..", "imagens", "Logo_iSPD_25.png"
     );
-    private final        NonThrowingUndoManager undoManager           =
-            new NonThrowingUndoManager();
+    private final        NonThrowingUndoManager undoManager           = new NonThrowingUndoManager();
     private final        PolicyManager          manager;
     private final        ResourceBundle         words                 =
             ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
     private final        JFileChooser           fileChooser           = this.configuredFileChooser();
     private final        JList<String>          policyList            = this.makePolicyList();
-    private final        JTextPane              textPane              =
-            GenericPolicyManagementWindow.disabledTextPane();
+    private final        JTextPane              textPane              = disabledTextPane();
     private final        TextEditorStyle        textEditor            = new TextEditorStyle();
     private              Optional<String>       currentlyOpenFileName = Optional.empty();
     private              boolean                hasPendingChanges     = false;
@@ -134,7 +132,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private void configureMenuBar () {
-        this.setJMenuBar(GenericPolicyManagementWindow.makeMenuBarWith(
+        this.setJMenuBar(makeMenuBarWith(
                 this.makeMenu(
                         "File",
                         this.makeMenuItem("New",
@@ -311,23 +309,21 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var editorPanel = new JPanel();
         final var layout      = new GroupLayout(editorPanel);
 
-        layout.setHorizontalGroup(layout
-                                          .createParallelGroup(GroupLayout.Alignment.LEADING)
-                                          .addGroup(layout
-                                                            .createSequentialGroup()
-                                                            .addContainerGap()
-                                                            .addComponent(editorPane,
-                                                                          GroupLayout.DEFAULT_SIZE, 734, Short.MAX_VALUE
-                                                            )
-                                                            .addContainerGap()));
-
-        layout.setVerticalGroup(layout
-                                        .createParallelGroup(GroupLayout.Alignment.LEADING)
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                         .addGroup(layout
                                                           .createSequentialGroup()
                                                           .addContainerGap()
-                                                          .addComponent(editorPane)
-                                                          .addContainerGap())
+                                                          .addComponent(editorPane,
+                                                                        GroupLayout.DEFAULT_SIZE, 734, Short.MAX_VALUE
+                                                          )
+                                                          .addContainerGap()));
+
+        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                      .addGroup(layout
+                                                        .createSequentialGroup()
+                                                        .addContainerGap()
+                                                        .addComponent(editorPane)
+                                                        .addContainerGap())
         );
 
         editorPanel.setLayout(layout);
@@ -340,25 +336,23 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var policyListPanel = new JPanel();
         final var layout          = new GroupLayout(policyListPanel);
 
-        layout.setHorizontalGroup(layout
-                                          .createParallelGroup(GroupLayout.Alignment.LEADING)
-                                          .addGroup(layout
-                                                            .createSequentialGroup()
-                                                            .addContainerGap()
-                                                            .addComponent(policyListScrollPane,
-                                                                          GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE
-                                                            )
-                                                            .addContainerGap()));
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout
+                                                          .createSequentialGroup()
+                                                          .addContainerGap()
+                                                          .addComponent(policyListScrollPane,
+                                                                        GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE
+                                                          )
+                                                          .addContainerGap()));
 
-        layout.setVerticalGroup(layout
-                                        .createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addGroup(GroupLayout.Alignment.TRAILING, layout
-                                                .createSequentialGroup()
-                                                .addContainerGap()
-                                                .addComponent(policyListScrollPane,
-                                                              GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE
-                                                )
-                                                .addContainerGap())
+        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                      .addGroup(GroupLayout.Alignment.TRAILING, layout
+                                              .createSequentialGroup()
+                                              .addContainerGap()
+                                              .addComponent(policyListScrollPane,
+                                                            GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE
+                                              )
+                                              .addContainerGap())
         );
 
         policyListPanel.setLayout(layout);
@@ -377,8 +371,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private JMenuItem makeMenuItem (
-            final String itemName, final String imagePath,
-            final ActionListener action, final int acceleratorKey,
+            final String itemName, final String imagePath, final ActionListener action, final int acceleratorKey,
             final String toolTip
     ) {
         final var item = this.makeMenuItem(
@@ -390,8 +383,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private JMenuItem makeMenuItem (
-            final String itemName, final String imagePath,
-            final ActionListener action, final int acceleratorKey
+            final String itemName, final String imagePath, final ActionListener action, final int acceleratorKey
     ) {
         final var item = this.makeMenuItem(itemName, imagePath, action);
         item.setAccelerator(KeyStroke.getKeyStroke(
@@ -401,10 +393,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         return item;
     }
 
-    private JMenuItem makeMenuItem (
-            final String itemName, final String imagePath,
-            final ActionListener action
-    ) {
+    private JMenuItem makeMenuItem (final String itemName, final String imagePath, final ActionListener action) {
         final var item = new JMenuItem();
         item.setIcon(new ImageIcon(this.getResource(imagePath)));
         item.setText(this.translate(itemName));
@@ -434,14 +423,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         return tb;
     }
 
-    private JButton makeButton (
-            final String iconPath, final String helpText,
-            final ActionListener action
-    ) {
-        return ButtonBuilder.aButton(
-                                    new ImageIcon(this.getResource(iconPath)),
-                                    action
-                            )
+    private JButton makeButton (final String iconPath, final String helpText, final ActionListener action) {
+        return ButtonBuilder.aButton(new ImageIcon(this.getResource(iconPath)), action)
                             .withToolTip(this.translate(helpText))
                             .withCenterBottomTextPosition()
                             .nonFocusable()
@@ -488,10 +471,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private void openNewPolicyInEditor (final String name) {
-        this.fillEditorWithCode(
-                name,
-                this.manager.getPolicyTemplate(name)
-        );
+        this.fillEditorWithCode(name, this.manager.getPolicyTemplate(name));
         this.setAsPendingChanges();
     }
 
@@ -525,12 +505,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var errors = this.manager.compilar(fileName);
 
         if (errors != null) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    errors,
-                    "Errors during compilation",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this, errors, "Errors during compilation", JOptionPane.ERROR_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(
                     this,
@@ -635,10 +610,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         }
 
         if (!this.manager.remover(selected)) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Failed to remove policy %s".formatted(selected)
-            );
+            JOptionPane.showMessageDialog(this, "Failed to remove policy %s".formatted(selected));
             return;
         }
 
@@ -662,13 +634,9 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private void runCancelableAction (final Runnable action) {
-        final var choice = this.hasPendingChanges
-                           ? this.askAboutPendingChanges()
-                           : JOptionPane.YES_OPTION;
-
+        final var choice = this.hasPendingChanges ? this.askAboutPendingChanges() : JOptionPane.YES_OPTION;
         switch (choice) {
-            case JOptionPane.CANCEL_OPTION,
-                    JOptionPane.CLOSED_OPTION:
+            case JOptionPane.CANCEL_OPTION, JOptionPane.CLOSED_OPTION:
                 return;
             default:
                 action.run();
@@ -677,31 +645,23 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private void openFile () {
         this.configureFileChooser(false, this.manager.directory());
-        this.getFileChoice()
-            .ifPresent(this::openChosenFile);
+        this.getFileChoice().ifPresent(this::openChosenFile);
     }
 
     private void openChosenFile (final File file) {
-        final var name =
-                GenericPolicyManagementWindow.policyNameFromFile(file);
+        final var name = policyNameFromFile(file);
         final var code = this.manager.ler(name);
         this.fillEditorWithCode(name, code);
     }
 
     private void importFile () {
         this.configureFileChooser(true, null);
-        this.getFileChoice()
-            .ifPresent(this::importFile);
+        this.getFileChoice().ifPresent(this::importFile);
     }
 
     private void importFile (final File f) {
         if (!this.manager.importJavaPolicy(f)) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Could not import policy",
-                    "Error!",
-                    JOptionPane.ERROR_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this, "Could not import policy", "Error!", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -837,8 +797,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     private class PolicyListMouseAdapter extends MouseAdapter {
 
         @Override
-        public void mouseClicked (final MouseEvent evt) {
-            if (!GenericPolicyManagementWindow.PolicyListMouseAdapter.isDoubleClick(evt)) {
+        public void mouseClicked (final MouseEvent e) {
+            if (!isDoubleClick(e)) {
                 return;
             }
 
