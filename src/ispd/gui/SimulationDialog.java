@@ -1,5 +1,7 @@
 package ispd.gui;
 
+import static ispd.gui.utils.ButtonBuilder.basicButton;
+
 import org.w3c.dom.Document;
 
 import java.awt.Color;
@@ -29,7 +31,6 @@ import javax.swing.text.StyleConstants;
 
 import ispd.arquivo.xml.IconicoXML;
 import ispd.gui.results.ResultsDialog;
-import ispd.gui.utils.ButtonBuilder;
 import ispd.motor.ProgressoSimulacao;
 import ispd.motor.SimulacaoSequencial;
 import ispd.motor.SimulacaoSequencialCloud;
@@ -45,24 +46,21 @@ import ispd.motor.metricas.Metricas;
  */
 public class SimulationDialog extends JDialog implements Runnable {
 
-    private static final Font                ARIAL_FONT_BOLD =
-            new Font("Arial", Font.BOLD, 12);
+    private static final Font                ARIAL_FONT_BOLD = new Font("Arial", Font.BOLD, 12);
     private final        MutableAttributeSet colorConfig     = new SimpleAttributeSet();
     private final        String              modelAsText;
     private final        Document            model;
     private final        ResourceBundle      translator;
-    private final        ProgressoSimulacao  progressTracker =
-            new BasicProgressTracker();
+    private final        ProgressoSimulacao  progressTracker = new BasicProgressTracker();
     private final        int                 gridOrCloud;
     private              JProgressBar        progressBar;
     private              JTextPane           notificationArea;
     private              Thread              simThread       = null;
     private              int                 progressPercent = 0;
 
-    SimulationDialog (
-            final Frame parent, final boolean modal, final Document model,
-            final String modelAsText, final ResourceBundle translator,
-            final int gridOrCloud
+    public SimulationDialog (
+            final Frame parent, final boolean modal, final Document model, final String modelAsText,
+            final ResourceBundle translator, final int gridOrCloud
     ) {
         super(parent, modal);
         this.translator  = translator;
@@ -92,9 +90,8 @@ public class SimulationDialog extends JDialog implements Runnable {
     }
 
     private void makeLayoutAndPack () {
-        final var scrollPane = new JScrollPane(this.notificationArea);
-        final var cancelButton = ButtonBuilder.basicButton(
-                this.translate("Cancel"), this::onCancel);
+        final var scrollPane   = new JScrollPane(this.notificationArea);
+        final var cancelButton = basicButton(this.translate("Cancel"), this::onCancel);
 
         final var layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
@@ -182,14 +179,12 @@ public class SimulationDialog extends JDialog implements Runnable {
                 //criar tarefas
                 this.progressTracker.print("Creating tasks.");
                 this.progressTracker.print(" -> ");
-                tasks =
-                        IconicoXML.newGerarCarga(this.model).makeTaskList(queueNetwork);
+                tasks = IconicoXML.newGerarCarga(this.model).makeTaskList(queueNetwork);
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
-                final Simulation sim = new SimulacaoSequencial(this.progressTracker,
-                                                               queueNetwork, tasks
-                );//[10%] --> 55 %
+                final Simulation sim =
+                        new SimulacaoSequencial(this.progressTracker, queueNetwork, tasks);//[10%] --> 55 %
                 //Realiza asimulação
                 this.progressTracker.println("Simulating.");
                 //recebe instante de tempo em milissegundos ao iniciar a
@@ -217,23 +212,18 @@ public class SimulationDialog extends JDialog implements Runnable {
                 janelaResultados.setVisible(true);
 
             } else if (this.gridOrCloud == PickModelTypeDialog.IAAS) {
-                final RedeDeFilasCloud cloudQueueNetwork =
-                        IconicoXML.newRedeDeFilasCloud(this.model);
+                final RedeDeFilasCloud cloudQueueNetwork = IconicoXML.newRedeDeFilasCloud(this.model);
                 this.incrementProgress(10);//[10%] --> 35%
                 this.progressTracker.println("OK", Color.green);
                 //criar tarefas
                 this.progressTracker.print("Creating tasks.");
                 this.progressTracker.print(" -> ");
-                tasks =
-                        IconicoXML.newGerarCarga(this.model).makeTaskList(cloudQueueNetwork);
+                tasks = IconicoXML.newGerarCarga(this.model).makeTaskList(cloudQueueNetwork);
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
                 final Simulation sim =
-                        new SimulacaoSequencialCloud(this.progressTracker,
-                                                     cloudQueueNetwork, tasks
-                        );//[10%]
-                // --> 55 %
+                        new SimulacaoSequencialCloud(this.progressTracker, cloudQueueNetwork, tasks);//[10%] --> 55 %
                 //Realiza asimulação
                 this.progressTracker.println("Simulating.");
                 //recebe instante de tempo em milissegundos ao iniciar a
@@ -262,10 +252,8 @@ public class SimulationDialog extends JDialog implements Runnable {
                 janelaResultados.setVisible(true);
             }
         } catch (final IllegalArgumentException erro) {
-
-            Logger.getLogger(SimulationDialog.class.getName()).log(Level.SEVERE,
-                                                                   null, erro
-            );
+            Logger.getLogger(SimulationDialog.class.getName())
+                  .log(Level.SEVERE, null, erro);
             this.progressTracker.println(erro.getMessage(), Color.red);
             this.progressTracker.print("Simulation Aborted", Color.red);
             this.progressTracker.println("!", Color.red);
@@ -300,16 +288,8 @@ public class SimulationDialog extends JDialog implements Runnable {
                 final var doc    = SimulationDialog.this.notificationArea.getDocument();
                 final var config = SimulationDialog.this.colorConfig;
 
-                StyleConstants.setForeground(
-                        config,
-                        Optional.ofNullable(cor).orElse(Color.black)
-                );
-
-                doc.insertString(
-                        doc.getLength(),
-                        this.tryTranslate(text),
-                        config
-                );
+                StyleConstants.setForeground(config, Optional.ofNullable(cor).orElse(Color.black));
+                doc.insertString(doc.getLength(), this.tryTranslate(text), config);
 
             } catch (final BadLocationException ex) {
                 Logger.getLogger(SimulationDialog.class.getName())
@@ -318,7 +298,10 @@ public class SimulationDialog extends JDialog implements Runnable {
         }
 
         private String tryTranslate (final String text) {
-            if (!SimulationDialog.this.translator.containsKey(text)) {return text;}
+            if (!SimulationDialog.this.translator.containsKey(text)) {
+                return text;
+            }
+
             return SimulationDialog.this.translate(text);
         }
     }

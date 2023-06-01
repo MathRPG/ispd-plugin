@@ -34,27 +34,23 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
                                                                   """;
     private static final int       SCROLL_PANE_PREFERRED_WIDTH  = 500;
     private static final int       SCROLL_PANE_PREFERRED_HEIGHT = 300;
-    private final        JTextArea textArea                     = LogExceptions.readonlyTextArea();
+    private final        JTextArea textArea                     = readonlyTextArea();
 
 
-    private final JScrollPane scrollPane =
-            LogExceptions.resizedScrollPaneFrom(this.textArea);
+    private final JScrollPane scrollPane = resizedScrollPaneFrom(this.textArea);
     private       Component   parentComponent;
 
     public LogExceptions (final Component gui) {
         this.parentComponent = gui;
-
-        LogExceptions.createErrorFolderIfNonExistent();
-
+        createErrorFolderIfNonExistent();
     }
 
     private static void createErrorFolderIfNonExistent () {
         final var aux = new File(LogExceptions.ERROR_FOLDER_PATH);
 
-
         if (aux.exists()) {return;}
 
-        final var ignored = aux.mkdir();
+        aux.mkdir();
     }
 
     private static JTextArea readonlyTextArea () {
@@ -78,7 +74,6 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException (final Thread t, final Throwable e) {
-
         final var errStream = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(errStream));
         this.processError(errStream);
@@ -88,35 +83,27 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
         if (errorStream.size() == 0) {return;}
 
         try {
-            final var errorMessage =
-                    String.format(
-                            LogExceptions.ERROR_FILE_MESSAGE_FORMAT,
-                            errorStream
-                    );
+            final var errorMessage = String.format(LogExceptions.ERROR_FILE_MESSAGE_FORMAT, errorStream);
             this.displayError(errorMessage);
 
             errorStream.reset();
 
         } catch (final IOException e) {
-            JOptionPane.showMessageDialog(this.parentComponent,
-                                          e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this.parentComponent, e.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 
     private void displayError (final String errorMessage) throws IOException {
-        final var errorFile = new File(
-                LogExceptions.buildErrorFilePath(new Date()));
+        final var errorFile = new File(buildErrorFilePath(new Date()));
 
-        LogExceptions.printErrorToFile(errorMessage, errorFile);
+        printErrorToFile(errorMessage, errorFile);
         this.displayErrorInGui(errorMessage, errorFile);
     }
 
     private static String buildErrorFilePath (final Date date) {
-        final var errorCode = LogExceptions.buildErrorFileTimestamp(date);
-        return String.format("%s%s%s_%s",
-                             LogExceptions.ERROR_FOLDER_PATH, File.separator,
-                             LogExceptions.ERROR_FILE_PREFIX, errorCode
+        final var errorCode = buildErrorFileTimestamp(date);
+        return String.format(
+                "%s%s%s_%s", LogExceptions.ERROR_FOLDER_PATH, File.separator, LogExceptions.ERROR_FILE_PREFIX, errorCode
         );
     }
 
@@ -124,7 +111,7 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
             final String errorMessage, final File file
     ) throws IOException {
         try (
-                final var fw = new FileWriter(file);
+                final var fw = new FileWriter(file, java.nio.charset.StandardCharsets.UTF_8);
                 final var pw = new PrintWriter(fw, true)
         ) {
             pw.print(errorMessage);
@@ -132,21 +119,16 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
     }
 
     private void displayErrorInGui (final String errorMessage, final File file) {
-        final var path = file.getAbsolutePath();
-        final var formattedMessage = String.format(
-                LogExceptions.ERROR_GUI_MESSAGE_FORMAT, path, errorMessage);
+        final var path             = file.getAbsolutePath();
+        final var formattedMessage = String.format(LogExceptions.ERROR_GUI_MESSAGE_FORMAT, path, errorMessage);
 
         this.textArea.setText(formattedMessage);
 
-
-        JOptionPane.showMessageDialog(this.parentComponent, this.scrollPane,
-                                      "System Error", JOptionPane.ERROR_MESSAGE
-        );
+        JOptionPane.showMessageDialog(this.parentComponent, this.scrollPane, "System Error", JOptionPane.ERROR_MESSAGE);
     }
 
     private static String buildErrorFileTimestamp (final Date date) {
-        final var dateFormat =
-                new SimpleDateFormat(LogExceptions.ERROR_CODE_DATE_FORMAT);
+        final var dateFormat = new SimpleDateFormat(LogExceptions.ERROR_CODE_DATE_FORMAT);
         return dateFormat.format(date);
     }
 }

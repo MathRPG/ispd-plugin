@@ -1,5 +1,8 @@
 package ispd.gui;
 
+import static ispd.gui.utils.ButtonBuilder.aButton;
+import static ispd.gui.utils.ButtonBuilder.basicButton;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -37,6 +40,7 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileView;
 import javax.swing.table.DefaultTableModel;
 
@@ -251,23 +255,27 @@ public class LoadConfigurationDialog extends JDialog {
                                                                                 jPanelRandomLayout.createParallelGroup(
                                                                                         GroupLayout.Alignment.LEADING,
                                                                                         false
-                                                                                ).addComponent(taskCount,
-                                                                                               GroupLayout.Alignment.TRAILING,
-                                                                                               GroupLayout.DEFAULT_SIZE,
-                                                                                               GroupLayout.DEFAULT_SIZE,
-                                                                                               Short.MAX_VALUE
-                                                                                ).addComponent(computationalSize,
-                                                                                               GroupLayout.DEFAULT_SIZE,
-                                                                                               GroupLayout.DEFAULT_SIZE,
-                                                                                               Short.MAX_VALUE
-                                                                                ).addComponent(communicationSize,
-                                                                                               GroupLayout.DEFAULT_SIZE,
-                                                                                               GroupLayout.DEFAULT_SIZE,
-                                                                                               Short.MAX_VALUE
-                                                                                ).addComponent(arrivalTime,
-                                                                                               GroupLayout.DEFAULT_SIZE,
-                                                                                               GroupLayout.DEFAULT_SIZE,
-                                                                                               Short.MAX_VALUE
+                                                                                ).addComponent(
+                                                                                        taskCount,
+                                                                                        GroupLayout.Alignment.TRAILING,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        Short.MAX_VALUE
+                                                                                ).addComponent(
+                                                                                        computationalSize,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        Short.MAX_VALUE
+                                                                                ).addComponent(
+                                                                                        communicationSize,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        Short.MAX_VALUE
+                                                                                ).addComponent(
+                                                                                        arrivalTime,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        Short.MAX_VALUE
                                                                                 )).addGap(18, 18, 18).addGroup(
                                                                                 jPanelRandomLayout.createParallelGroup(
                                                                                                           GroupLayout.Alignment.LEADING)
@@ -529,8 +537,9 @@ public class LoadConfigurationDialog extends JDialog {
                                                                                                                         GroupLayout.PREFERRED_SIZE
                                                                                                                 ))
                                                                                                 .addComponent(seconds))
-                                                                                          .addContainerGap(134,
-                                                                                                           Short.MAX_VALUE
+                                                                                          .addContainerGap(
+                                                                                                  134,
+                                                                                                  Short.MAX_VALUE
                                                                                           )));
 
         this.jPanelForNode.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
@@ -546,7 +555,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         this.comboBoxSchedulers.setModel(new DefaultComboBoxModel(this.schedulers));
 
-        final var numberOfTasks = new JLabel(this.translate("Number of" + " tasks"));
+        final var numberOfTasks = new JLabel(this.translate("Number of tasks"));
 
 
         this.jSpinnerNumTarefasNo.setModel(LoadConfigurationDialog.UNSIGNED_MODEL.get());
@@ -563,7 +572,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         this.jSpinnerMaxComuNo.setModel(new SpinnerNumberModel(0.0f, 0.0f, null, 1.0f));
 
-        final var tableAdd = ispd.gui.utils.ButtonBuilder.basicButton(this.translate("Add"), this::onTableAddClick);
+        final var tableAdd = basicButton(this.translate("Add"), this::onTableAddClick);
 
         this.jTable1.setModel(new DefaultTableModel(this.tableRow, this.tableColumn));
         this.jScrollPaneTabela.setViewportView(this.jTable1);
@@ -572,7 +581,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         final var minimum = new JLabel(this.translate("Minimum"));
 
-        final var remove = ispd.gui.utils.ButtonBuilder.basicButton(this.translate("Remove"), this::onTableAddClick1);
+        final var remove = basicButton(this.translate("Remove"), this::onTableAddClick1);
 
         final var jPanelForNodeLayout = new GroupLayout(this.jPanelForNode);
         this.jPanelForNode.setLayout(jPanelForNodeLayout);
@@ -852,7 +861,7 @@ public class LoadConfigurationDialog extends JDialog {
         final var optionSelect = new JLabel(this.translate("Select the desired option"));
 
         final var next =
-                ispd.gui.utils.ButtonBuilder.basicButton("%s >>".formatted(this.translate("Next")), this::onNextClick);
+                basicButton("%s >>".formatted(this.translate("Next")), this::onNextClick);
 
         final GroupLayout jPanelTraceLayout = new GroupLayout(this.jPanelTrace);
         this.jPanelTrace.setLayout(jPanelTraceLayout);
@@ -895,7 +904,8 @@ public class LoadConfigurationDialog extends JDialog {
                                                                                                                                                                                    this.jRadioButtonConvTrace)
                                                                                                                                                                            .addComponent(
                                                                                                                                                                                    this.jRadioButtonWmsx))))
-                                                                                                                           .addGap(0,
+                                                                                                                           .addGap(
+                                                                                                                                   0,
                                                                                                                                    48,
                                                                                                                                    Short.MAX_VALUE
                                                                                                                            ))
@@ -932,12 +942,12 @@ public class LoadConfigurationDialog extends JDialog {
         final var externalSelect = new JLabel(this.translate("Select a external format trace file to convert:"));
 
         final var openExternal =
-                ispd.gui.utils.ButtonBuilder.basicButton(this.translate("Open"), this::onOpenExternalClicked);
+                basicButton(this.translate("Open"), this::onOpenExternalClicked);
 
         final var notifications = new JLabel(this.translate("Notifications"));
 
         final var convertExternal =
-                ispd.gui.utils.ButtonBuilder.basicButton(this.translate("Convert"), this::onConvertExternalClicked);
+                basicButton(this.translate("Convert"), this::onConvertExternalClicked);
 
         this.jTextFieldCaminhoTrace.addActionListener(LoadConfigurationDialog.DO_NOTHING);
 
@@ -946,8 +956,9 @@ public class LoadConfigurationDialog extends JDialog {
         this.jTextNotifTrace.setPreferredSize(new Dimension(164, 74));
         jScrollPane2.setViewportView(this.jTextNotifTrace);
 
-        final var previous = ispd.gui.utils.ButtonBuilder.basicButton("<< %s".formatted(this.translate("Previous")),
-                                                                      this::onPreviousClick
+        final var previous = basicButton(
+                "<< %s".formatted(this.translate("Previous")),
+                this::onPreviousClick
         );
 
         final GroupLayout jPanelConvertTraceLayout = new GroupLayout(this.jPanelConvertTrace);
@@ -958,7 +969,8 @@ public class LoadConfigurationDialog extends JDialog {
                                                         jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                                                 .addComponent(jScrollPane2,
                                                                                               GroupLayout.DEFAULT_SIZE, 474,
-                                                                                              Short.MAX_VALUE).addComponent(externalSelect)
+                                                                                              Short.MAX_VALUE
+                                                                                ).addComponent(externalSelect)
                                                                                 .addComponent(notifications).addGroup(
                                                                                         jPanelConvertTraceLayout.createSequentialGroup()
                                                                                                                 .addComponent(openExternal, GroupLayout.PREFERRED_SIZE,
@@ -971,8 +983,10 @@ public class LoadConfigurationDialog extends JDialog {
                                                                                                                 )
                                                                                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                                                                                 .addComponent(convertExternal))
-                                                                                .addComponent(previous,
-                                                                                 GroupLayout.Alignment.TRAILING))
+                                                                                .addComponent(
+                                                                                        previous,
+                                                                                        GroupLayout.Alignment.TRAILING
+                                                                                ))
                                                 .addContainerGap()));
         jPanelConvertTraceLayout.setVerticalGroup(
                 jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
@@ -980,10 +994,11 @@ public class LoadConfigurationDialog extends JDialog {
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addGroup(
                                                         jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                                 .addComponent(openExternal)
-                                                                                .addComponent(this.jTextFieldCaminhoTrace,
-                                                                                              GroupLayout.PREFERRED_SIZE,
-                                                                                              GroupLayout.DEFAULT_SIZE,
-                                                                                              GroupLayout.PREFERRED_SIZE
+                                                                                .addComponent(
+                                                                                        this.jTextFieldCaminhoTrace,
+                                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        GroupLayout.PREFERRED_SIZE
                                                                                 ).addComponent(convertExternal))
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addComponent(notifications)
@@ -1011,11 +1026,12 @@ public class LoadConfigurationDialog extends JDialog {
 
         jScrollPane1.setViewportView(this.jTextNotification);
 
-        final var previous2 = ispd.gui.utils.ButtonBuilder.basicButton("<< %s".formatted(this.translate("Previous")),
-                                                                       this::onPrevious2Click
+        final var previous2 = basicButton(
+                "<< %s".formatted(this.translate("Previous")),
+                this::onPrevious2Click
         );
 
-        final var openWmsx = ispd.gui.utils.ButtonBuilder.basicButton(this.translate("Open"), this::onOpenWmsxClick);
+        final var openWmsx = basicButton(this.translate("Open"), this::onOpenWmsxClick);
 
         final GroupLayout jPanelSelecionaTraceLayout = new GroupLayout(this.jPanelPickTrace);
         this.jPanelPickTrace.setLayout(jPanelSelecionaTraceLayout);
@@ -1026,14 +1042,16 @@ public class LoadConfigurationDialog extends JDialog {
                                 jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                           .addComponent(jLabel20)
                                                           .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 476,
-                                                                        Short.MAX_VALUE)
+                                                                        Short.MAX_VALUE
+                                                          )
                                                           .addComponent(previous2, GroupLayout.Alignment.TRAILING)
                                                           .addComponent(jLabel21).addGroup(
                                                                   jPanelSelecionaTraceLayout.createSequentialGroup()
-                                                                                            .addComponent(openWmsx,
-                                                                                             GroupLayout.PREFERRED_SIZE,
-                                                                                                          71,
-                                                                                                          GroupLayout.PREFERRED_SIZE
+                                                                                            .addComponent(
+                                                                                                    openWmsx,
+                                                                                                    GroupLayout.PREFERRED_SIZE,
+                                                                                                    71,
+                                                                                                    GroupLayout.PREFERRED_SIZE
                                                                                             ).addPreferredGap(
                                                                                                     LayoutStyle.ComponentPlacement.RELATED)
                                                                                             .addComponent(this.jTextFieldCaminhoWMS,
@@ -1046,10 +1064,11 @@ public class LoadConfigurationDialog extends JDialog {
                                                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(
                                                           jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                                                                     .addComponent(openWmsx)
-                                                                                    .addComponent(this.jTextFieldCaminhoWMS,
-                                                                                                  GroupLayout.PREFERRED_SIZE,
-                                                                                                  GroupLayout.DEFAULT_SIZE,
-                                                                                                  GroupLayout.PREFERRED_SIZE
+                                                                                    .addComponent(
+                                                                                            this.jTextFieldCaminhoWMS,
+                                                                                            GroupLayout.PREFERRED_SIZE,
+                                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                                            GroupLayout.PREFERRED_SIZE
                                                                                     )).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
                                                   .addComponent(jLabel21)
                                                   .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
@@ -1061,13 +1080,14 @@ public class LoadConfigurationDialog extends JDialog {
         this.jFileExternalTrace.setAcceptAllFileFilterUsed(false);
         this.jFileExternalTrace.setFileFilter(this.traceFileFilter);
 
-        this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setTitle(this.translate("Model of tasks"));
         this.setMinimumSize(new Dimension(550, 450));
         this.setResizable(false);
 
-        jPanelModo.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)),
-                                                              this.translate("Insertion mode for the workloads")
+        jPanelModo.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(0, 0, 0)),
+                this.translate("Insertion mode for the workloads")
         ));
         jPanelModo.setMaximumSize(new Dimension(500, 60));
         jPanelModo.setMinimumSize(new Dimension(500, 60));
@@ -1100,8 +1120,9 @@ public class LoadConfigurationDialog extends JDialog {
                                                                             this.jRadioButtonTraces,
                                                                             GroupLayout.PREFERRED_SIZE, 72,
                                                                             GroupLayout.PREFERRED_SIZE
-                                                                    ).addContainerGap(GroupLayout.DEFAULT_SIZE,
-                                                                                      Short.MAX_VALUE
+                                                                    ).addContainerGap(
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            Short.MAX_VALUE
                                                                     )));
 
         jPanelModoLayout.setVerticalGroup(jPanelModoLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
@@ -1171,9 +1192,10 @@ public class LoadConfigurationDialog extends JDialog {
                 this.jTextNotification.setText("""
                                                File %s
                                                \t- File format: %s
-                                               \t- File has a workload of %d tasks""".formatted(this.file.getName(),
-                                                                                                this.traceType,
-                                                                                                this.traceTaskNumber
+                                               \t- File has a workload of %d tasks""".formatted(
+                        this.file.getName(),
+                        this.traceType,
+                        this.traceTaskNumber
                 ));
                 this.setTipo(WorkloadGeneratorType.TRACE);
             }
@@ -1181,7 +1203,6 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onTableAddClick (final ActionEvent evt) {
-
         final Vector linha = new Vector(8);
         linha.add("app" + this.indexTable);
         this.indexTable++;
@@ -1205,7 +1226,6 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void jRadioButtonwmsxActionPerformed (final ActionEvent evt) {
-
         if (this.jRadioButtonWmsx.isSelected()) {
             this.jRadioButtonWmsx.setSelected(true);
             this.jRadioButtonConvTrace.setSelected(false);
@@ -1221,7 +1241,6 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void jRadioButtonConvTraceActionPerformed (final ActionEvent evt) {
-
         if (this.jRadioButtonConvTrace.isSelected()) {
             this.jRadioButtonWmsx.setSelected(false);
             this.jRadioButtonConvTrace.setSelected(true);
@@ -1241,7 +1260,6 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onOpenExternalClicked (final ActionEvent evt) {
-
         this.traceFileFilter.setDescricao(this.translate("External Trace " + "File"));
         final String[] exts = { ".swf", ".gwf" };
         this.traceFileFilter.setExtensao(exts);
@@ -1251,7 +1269,6 @@ public class LoadConfigurationDialog extends JDialog {
             this.file = this.jFileExternalTrace.getSelectedFile();
             this.jTextFieldCaminhoTrace.setText(this.file.getAbsolutePath());
         }
-
     }
 
     private void onConvertExternalClicked (final ActionEvent evt) {
@@ -1316,12 +1333,12 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void makeLayoutAndPack (final Component panel) {
-        final var ok = ispd.gui.utils.ButtonBuilder.aButton(this.translate("OK"), this::onOkClick)
-                                                   .withPreferredSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE)
-                                                   .build();
+        final var ok = aButton(this.translate("OK"), this::onOkClick)
+                .withPreferredSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE)
+                .build();
 
-        final var cancel = ispd.gui.utils.ButtonBuilder.aButton(this.translate("Cancel"), this::onCancelClick)
-                                                       .withSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE).build();
+        final var cancel = aButton(this.translate("Cancel"), this::onCancelClick)
+                .withSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE).build();
 
         final var layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
@@ -1331,36 +1348,40 @@ public class LoadConfigurationDialog extends JDialog {
                               layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
                                             layout.createSequentialGroup().addGap(150, 150, 150)
                                                   .addComponent(cancel, GroupLayout.PREFERRED_SIZE, 120,
-                                                                GroupLayout.PREFERRED_SIZE)
+                                                                GroupLayout.PREFERRED_SIZE
+                                                  )
                                                   .addGap(28, 28, 28)
                                                   .addComponent(ok, GroupLayout.PREFERRED_SIZE, 124,
-                                                   GroupLayout.PREFERRED_SIZE))
+                                                                GroupLayout.PREFERRED_SIZE
+                                                  ))
                                     .addComponent(this.jScrollPaneSelecionado, GroupLayout.DEFAULT_SIZE,
                                                   GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE
                                     )
                                     .addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
-                                     Short.MAX_VALUE))
+                                                  Short.MAX_VALUE
+                                    ))
                       .addContainerGap()));
 
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                      .addGroup(GroupLayout.Alignment.TRAILING,
-                                                layout.createSequentialGroup().addContainerGap()
-                                                      .addComponent(panel, GroupLayout.DEFAULT_SIZE,
-                                                                    GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE
-                                                      ).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                      .addComponent(this.jScrollPaneSelecionado,
-                                                                    GroupLayout.PREFERRED_SIZE, 311,
-                                                                    GroupLayout.PREFERRED_SIZE
-                                                      ).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                                      .addGroup(
-                                                              layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                                    .addComponent(cancel, GroupLayout.PREFERRED_SIZE,
-                                                                                  GroupLayout.DEFAULT_SIZE,
-                                                                                  GroupLayout.PREFERRED_SIZE
-                                                                    ).addComponent(ok, GroupLayout.PREFERRED_SIZE,
-                                                                                   GroupLayout.DEFAULT_SIZE,
-                                                                                   GroupLayout.PREFERRED_SIZE
-                                                                    )).addContainerGap()
+                                      .addGroup(
+                                              GroupLayout.Alignment.TRAILING,
+                                              layout.createSequentialGroup().addContainerGap()
+                                                    .addComponent(panel, GroupLayout.DEFAULT_SIZE,
+                                                                  GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE
+                                                    ).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                                    .addComponent(this.jScrollPaneSelecionado,
+                                                                  GroupLayout.PREFERRED_SIZE, 311,
+                                                                  GroupLayout.PREFERRED_SIZE
+                                                    ).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                                    .addGroup(
+                                                            layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                                  .addComponent(cancel, GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE
+                                                                  ).addComponent(ok, GroupLayout.PREFERRED_SIZE,
+                                                                                 GroupLayout.DEFAULT_SIZE,
+                                                                                 GroupLayout.PREFERRED_SIZE
+                                                                  )).addContainerGap()
                                       ));
 
         this.pack();
@@ -1398,16 +1419,16 @@ public class LoadConfigurationDialog extends JDialog {
     private void onOkClick (final ActionEvent evt) {
         if (this.jRadioButtonRandom.isSelected()) {
             try {
-                final var taskCount = (int) this.jSpinnerNumTarefas.getValue();
-                final var minComp = (double) this.jSpinnerMinComputacao.getValue();
-                final var maxComp = (double) this.jSpinnerMaxComputacao.getValue();
-                final var aveComp = (double) this.jSpinnerAverageComputacao.getValue();
-                final double probComp = (double) this.jSpinnerProbabilityComputacao.getValue();
-                final var minComun = (double) this.jSpinnerMinComunicacao.getValue();
-                final var maxComun = (double) this.jSpinnerMaxComunicacao.getValue();
-                final var aveComun = (double) this.jSpinnerAverageComunicacao.getValue();
+                final var    taskCount = (int) this.jSpinnerNumTarefas.getValue();
+                final var    minComp   = (double) this.jSpinnerMinComputacao.getValue();
+                final var    maxComp   = (double) this.jSpinnerMaxComputacao.getValue();
+                final var    aveComp   = (double) this.jSpinnerAverageComputacao.getValue();
+                final double probComp  = (double) this.jSpinnerProbabilityComputacao.getValue();
+                final var    minComun  = (double) this.jSpinnerMinComunicacao.getValue();
+                final var    maxComun  = (double) this.jSpinnerMaxComunicacao.getValue();
+                final var    aveComun  = (double) this.jSpinnerAverageComunicacao.getValue();
                 final double probComun = (double) this.jSpinnerProbabilityComunicacao.getValue();
-                final var timeArriv = (int) this.jSpinnerTimeOfArrival.getValue();
+                final var    timeArriv = (int) this.jSpinnerTimeOfArrival.getValue();
                 this.loadGenerator =
                         new GlobalWorkloadGenerator(taskCount, minComp, maxComp, aveComp, probComp, minComun, maxComun,
                                                     aveComun, probComun, timeArriv
@@ -1418,7 +1439,7 @@ public class LoadConfigurationDialog extends JDialog {
         } else if (this.jRadioButtonForNode.isSelected()) {
             try {
                 final List<WorkloadGenerator> configuracaoNo = new ArrayList<>(this.tableRow.size());
-                final var idSupplier = new SequentialIntSupplier();
+                final var                     idSupplier     = new SequentialIntSupplier();
                 for (final List item : this.tableRow) {
                     configuracaoNo.add(PerNodeWorkloadGenerator.fromTableRow(item, idSupplier));
                 }
@@ -1451,7 +1472,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         @Override
         public Icon getIcon (final File filePath) {
-            if (!"wmsx".equals(SomeFileView.getFileExtension(filePath))) {
+            if (!"wmsx".equals(getFileExtension(filePath))) {
                 return null;
             }
 

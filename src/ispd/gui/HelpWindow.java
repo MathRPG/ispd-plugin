@@ -51,14 +51,14 @@ import ispd.gui.auxiliar.HtmlPane;
 public class HelpWindow extends JFrame implements TreeSelectionListener {
 
     private static final boolean     DEBUG            = false;
-    private static final Dimension   CONVENIENT_SIZE  =
-            new Dimension(700, 400);
+    private static final Dimension   CONVENIENT_SIZE  = new Dimension(700, 400);
     private static final int         DIVIDER_LOCATION = 200;
     private final        JEditorPane htmlPane;
     private final        JTree       tree;
     private              URL         helpURL;
 
-    HelpWindow () {
+    public HelpWindow () {
+        super();
         this.setTitle("Help");
         this.setMinimumSize(HelpWindow.CONVENIENT_SIZE);
         final var image =
@@ -68,14 +68,12 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
         this.setIconImage(image);
 
         //Create the nodes.
-        final var top = new DefaultMutableTreeNode(
-                "This Project");
-        HelpWindow.createNodes(top);
+        final var top = new DefaultMutableTreeNode("This Project");
+        createNodes(top);
 
         //Create a tree that allows one selection at a time.
         this.tree = new JTree(top);
-        this.tree.getSelectionModel().setSelectionMode
-                (TreeSelectionModel.SINGLE_TREE_SELECTION);
+        this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
         //Listen for when the selection changes.
         this.tree.addTreeSelectionListener(this);
@@ -107,8 +105,7 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
         final var category = new DefaultMutableTreeNode("Interface");
         top.add(category);
 
-        category.add(new DefaultMutableTreeNode(new BookInfo(
-                "Icons", "html/icones.html")));
+        category.add(new DefaultMutableTreeNode(new BookInfo("Icons", "html/icones.html")));
     }
 
     private void initHelp () {
@@ -142,8 +139,7 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
      * Required by TreeSelectionListener interface.
      */
     public void valueChanged (final TreeSelectionEvent e) {
-        final DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-                this.tree.getLastSelectedPathComponent();
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.tree.getLastSelectedPathComponent();
 
         if (node == null) {return;}
 
@@ -180,7 +176,7 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
             return this.bookName;
         }
 
-        URL getBookURL () {
+         private URL getBookURL () {
             return this.bookURL;
         }
     }

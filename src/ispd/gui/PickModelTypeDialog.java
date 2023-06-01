@@ -19,8 +19,7 @@ public class PickModelTypeDialog extends JDialog {
     public static final  int          GRID        = 0;
     public static final  int          IAAS        = 1;
     public static final  int          PAAS        = 2;
-    private static final Font         WINDOW_FONT =
-            new Font("Tahoma", Font.PLAIN, 12);
+    private static final Font         WINDOW_FONT = new Font("Tahoma", Font.PLAIN, 12);
     private final        JRadioButton jRadioGrid;
     private final        JRadioButton jRadioIaaS;
     private final        JRadioButton jRadioPaaS;
@@ -29,12 +28,9 @@ public class PickModelTypeDialog extends JDialog {
     PickModelTypeDialog (final Frame owner, final boolean modal) {
         super(owner, modal);
         this.initWindowProperties();
-        this.jRadioGrid = PickModelTypeDialog.configuredRadioButton(
-                "Grid", this::gridButtonClicked);
-        this.jRadioIaaS = PickModelTypeDialog.configuredRadioButton(
-                "Cloud - IaaS", this::iaasButtonClicked);
-        this.jRadioPaaS = PickModelTypeDialog.configuredRadioButton(
-                "Cloud - PaaS", this::paasButtonClicked);
+        this.jRadioGrid = configuredRadioButton("Grid", this::gridButtonClicked);
+        this.jRadioIaaS = configuredRadioButton("Cloud - IaaS", this::iaasButtonClicked);
+        this.jRadioPaaS = configuredRadioButton("Cloud - PaaS", this::paasButtonClicked);
         this.jRadioGrid.setSelected(true);
         this.makeLayoutAndPack();
     }
@@ -44,10 +40,7 @@ public class PickModelTypeDialog extends JDialog {
         this.setFont(PickModelTypeDialog.WINDOW_FONT);
     }
 
-    private static JRadioButton configuredRadioButton (
-            final String text,
-            final ActionListener action
-    ) {
+    private static JRadioButton configuredRadioButton (final String text, final ActionListener action) {
         final var button = new JRadioButton();
         button.setText(text);
         button.addActionListener(action);
@@ -70,9 +63,8 @@ public class PickModelTypeDialog extends JDialog {
     }
 
     private void makeLayoutAndPack () {
-        final var ok = ButtonBuilder.basicButton("OK!", this::onOkClick);
-        final var title = new JLabel(
-                "Choose the service that do you want to model");
+        final var ok            = ButtonBuilder.basicButton("OK!", this::onOkClick);
+        final var title         = new JLabel("Choose the service that do you want to model");
         final var pickModelType = new JPanel();
         final var groupLayout   = new GroupLayout(pickModelType);
         pickModelType.setLayout(groupLayout);

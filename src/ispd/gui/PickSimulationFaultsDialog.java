@@ -1,10 +1,14 @@
 package ispd.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.util.logging.Logger;
 
+import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -46,9 +50,7 @@ public class PickSimulationFaultsDialog extends JFrame {
     }
 
     private void initComponents () {
-
-        final JPanel panelJSelecionarFalhas =
-                new JPanel();
+        final JPanel panelJSelecionarFalhas = new JPanel();
         this.ckbOmissao          = new JCheckBox();
         this.cbkOmissaoHardware  = new JCheckBox();
         this.cbkOmissaoSoftware  = new JCheckBox();
@@ -75,13 +77,10 @@ public class PickSimulationFaultsDialog extends JFrame {
 
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setTitle("SelectFaults");
-        this.setLocation(new java.awt.Point(300, 100));
+        this.setLocation(new Point(300, 100));
 
-        panelJSelecionarFalhas.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(0, 0, 0)));
-        panelJSelecionarFalhas.setMaximumSize(new java.awt.Dimension(
-                159,
-                32769
-        ));
+        panelJSelecionarFalhas.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
+        panelJSelecionarFalhas.setMaximumSize(new Dimension(159, 32769));
         panelJSelecionarFalhas.setOpaque(false);
 
         this.ckbOmissao.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -160,8 +159,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.cbxTransiente.setText("Transient or intermitent");
         this.cbxTransiente.setEnabled(false);
 
-        final GroupLayout PanelJSelecionarFalhasLayout =
-                new GroupLayout(panelJSelecionarFalhas);
+        final GroupLayout PanelJSelecionarFalhasLayout = new GroupLayout(panelJSelecionarFalhas);
         panelJSelecionarFalhas.setLayout(PanelJSelecionarFalhasLayout);
         PanelJSelecionarFalhasLayout.setHorizontalGroup(
                 PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -349,15 +347,13 @@ public class PickSimulationFaultsDialog extends JFrame {
                                                                                   ))
         );
 
-        jButtonSelecionarFalhas.setText("Select the faults and return to the " +
-                                        "Main screen");
+        jButtonSelecionarFalhas.setText("Select the faults and return to the Main screen");
         jButtonSelecionarFalhas.addActionListener(this::jButtonSelecionarFalhasActionPerformed);
 
         jLabel22.setFont(new Font("Tahoma", Font.BOLD, 11));
         jLabel22.setText("Select Faults");
 
-        final GroupLayout layout =
-                new GroupLayout(this.getContentPane());
+        final GroupLayout layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -409,16 +405,12 @@ public class PickSimulationFaultsDialog extends JFrame {
     }
 
     private void ckbOmissaoActionPerformed (final ActionEvent evt) {
-
         if (this.ckbOmissao.isSelected()) {
             this.cbkOmissaoHardware.setEnabled(true);
             this.cbkOmissaoSoftware.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Omission Faults.");
-
         } else {
-            JOptionPane.showMessageDialog(null, "Omission faults not selected" +
-                                                ".");
-
+            JOptionPane.showMessageDialog(null, "Omission faults not selected.");
         }
     }
 
@@ -430,16 +422,15 @@ public class PickSimulationFaultsDialog extends JFrame {
             this.cbxNegacaoService.setEnabled(true);
             this.cbxHDCheio.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Development failure");
-        } else {JOptionPane.showMessageDialog(null, "Failure not selected");}
+        } else {
+            JOptionPane.showMessageDialog(null, "Failure not selected");
+        }
     }
 
     private void cbxNegacaoServiceActionPerformed (final ActionEvent evt) {
-
     }
 
     private void cbxHDCheioActionPerformed (final ActionEvent evt) {
-
-
     }
 
     private void cbxFalhaRespostaActionPerformed (final ActionEvent evt) {
@@ -447,7 +438,9 @@ public class PickSimulationFaultsDialog extends JFrame {
             this.cbxValores.setEnabled(true);
             this.cbxEstado.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Response faults.");
-        } else {JOptionPane.showMessageDialog(null, "Not response faults.");}
+        } else {
+            JOptionPane.showMessageDialog(null, "Not response faults.");
+        }
     }
 
     private void cbxInteracaoActionPerformed (final ActionEvent evt) {
@@ -456,8 +449,9 @@ public class PickSimulationFaultsDialog extends JFrame {
             this.cbxInterdependencia.setEnabled(true);
             this.cbxIncompatibilidade.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Development failure");
-        } else {JOptionPane.showMessageDialog(null, "Failure not selected");}
-
+        } else {
+            JOptionPane.showMessageDialog(null, "Failure not selected");
+        }
     }
 
     private void cbxInterdependenciaActionPerformed (final ActionEvent evt) {
@@ -470,7 +464,9 @@ public class PickSimulationFaultsDialog extends JFrame {
             this.cbxFPermanentes.setEnabled(true);
             this.cbxDesenhoIncorreto.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Development failure");
-        } else {JOptionPane.showMessageDialog(null, "Failure not selected");}
+        } else {
+            JOptionPane.showMessageDialog(null, "Failure not selected");
+        }
     }
 
     private void cbxTempoRespostaActionPerformed (final ActionEvent evt) {
@@ -484,16 +480,12 @@ public class PickSimulationFaultsDialog extends JFrame {
     }
 
     private void cbxPrecoceActionPerformed (final ActionEvent evt) {
-
-
     }
 
     private void cbxIncompatibilidadeActionPerformed (final ActionEvent evt) {
-
     }
 
     private void cbxSoftwareActionPerformed (final ActionEvent evt) {
-
         if (this.cbxSoftware.isSelected()) {
             this.cbxTransiente.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Development failure");
@@ -505,7 +497,6 @@ public class PickSimulationFaultsDialog extends JFrame {
     private void jButtonSelecionarFalhasActionPerformed (final ActionEvent evt) {
         if (this.cbkOmissaoHardware.isSelected()) {
             this.OmissaoHardware = 1;
-
         } else {
             this.OmissaoHardware = 0;
         }
@@ -515,18 +506,16 @@ public class PickSimulationFaultsDialog extends JFrame {
 
     public static void main (final String[] args) {
         try {
-            for (final UIManager.LookAndFeelInfo info :
-                    UIManager.getInstalledLookAndFeels()) {
+            for (final UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (final ClassNotFoundException |
-                       UnsupportedLookAndFeelException |
+        } catch (final ClassNotFoundException | UnsupportedLookAndFeelException |
                        IllegalAccessException | InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PickSimulationFaultsDialog.class.getName())
-                                    .log(java.util.logging.Level.SEVERE, null, ex);
+            Logger.getLogger(PickSimulationFaultsDialog.class.getName())
+                  .log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */

@@ -1,5 +1,8 @@
 package ispd.gui;
 
+import static ispd.gui.utils.ButtonBuilder.aButton;
+import static ispd.gui.utils.ButtonBuilder.basicButton;
+
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -21,15 +24,12 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableModel;
 
-import ispd.gui.utils.ButtonBuilder;
-
 /**
  * Window to add and remove users from modeled simulation.
  */
 public class UserConfigurationDialog extends JDialog {
 
-    private static final Dimension           BUTTON_PREFERRED_SIZE =
-            new Dimension(45, 45);
+    private static final Dimension           BUTTON_PREFERRED_SIZE = new Dimension(45, 45);
     private final        ResourceBundle      translator;
     private final        Vector<Vector>      users;
     private final        Vector<String>      profiles;
@@ -37,10 +37,8 @@ public class UserConfigurationDialog extends JDialog {
     private              JScrollPane         jScrollPane1;
     private              JTable              table;
 
-    UserConfigurationDialog (
-            final Frame parent, final boolean modal,
-            final Set<? super String> users,
-            final ResourceBundle translator,
+    public UserConfigurationDialog (
+            final Frame parent, final boolean modal, final Set<? super String> users, final ResourceBundle translator,
             final Map<String, Double> profiles
     ) {
         super(parent, modal);
@@ -49,8 +47,7 @@ public class UserConfigurationDialog extends JDialog {
 
         this.profiles = new Vector<>(0);
         this.profiles.add("Users");
-        this.profiles.add(
-                "Limite de Consumo (Porcentagem do consumo da porção)");
+        this.profiles.add("Limite de Consumo (Porcentagem do consumo da porção)");
 
         for (final var user : users) {
             final Vector userAndDouble = new Vector<String>(0);
@@ -72,30 +69,24 @@ public class UserConfigurationDialog extends JDialog {
 
         final JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
-        toolbar.add(ButtonBuilder
-                            .aButton(this.translate("Add"), this::onAddClick)
+        toolbar.add(aButton(this.translate("Add"), this::onAddClick)
                             .nonFocusable()
-                            .withIcon(new ImageIcon(this.getResource(
-                                    "/ispd/gui/imagens/insert-object.png")))
+                            .withIcon(new ImageIcon(this.getResource("/ispd/gui/imagens/insert-object.png")))
                             .withSize(UserConfigurationDialog.BUTTON_PREFERRED_SIZE)
                             .withCenterBottomTextPosition()
                             .build());
 
-        toolbar.add(ButtonBuilder
-                            .aButton(this.translate("Remove"), this::onRemoveClick)
+        toolbar.add(aButton(this.translate("Remove"), this::onRemoveClick)
                             .nonFocusable()
-                            .withIcon(new ImageIcon(this.getResource(
-                                    "/ispd/gui/imagens/window-close.png")))
+                            .withIcon(new ImageIcon(this.getResource("/ispd/gui/imagens/window-close.png")))
                             .withSize(UserConfigurationDialog.BUTTON_PREFERRED_SIZE)
                             .withCenterBottomTextPosition()
                             .build());
 
-        final var jButtonOk = ButtonBuilder.basicButton(
-                this.translate("OK"), (e) -> this.setVisible(false));
+        final var jButtonOk = basicButton(this.translate("OK"), (e) -> this.setVisible(false));
 
         this.table = new JTable();
-        this.table.setModel(new SomeDefaultTableModel(
-                this.users, this.profiles));
+        this.table.setModel(new SomeDefaultTableModel(this.users, this.profiles));
 
         this.jScrollPane1 = new JScrollPane();
         this.jScrollPane1.setViewportView(this.table);
@@ -165,11 +156,10 @@ public class UserConfigurationDialog extends JDialog {
         );
 
 
-        final Double result =
-                Double.parseDouble(JOptionPane.showInputDialog(
-                        this,
-                        "Enter user power comsumption limit"
-                ));
+        final Double result = Double.parseDouble(JOptionPane.showInputDialog(
+                this,
+                "Enter user power comsumption limit"
+        ));
 
         if (!this.userSet.contains(add) && !add.isEmpty()) {
             this.userSet.add(add);
@@ -187,15 +177,11 @@ public class UserConfigurationDialog extends JDialog {
 
     private void onRemoveClick (final ActionEvent evt) {
         if (this.table.getSelectedRow() == -1) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    this.translate("A user should be selected")
-            );
+            JOptionPane.showMessageDialog(this, this.translate("A user should be selected"));
             return;
         }
 
-        final var profile =
-                this.table.getValueAt(this.table.getSelectedRow(), 0).toString();
+        final var profile = this.table.getValueAt(this.table.getSelectedRow(), 0).toString();
         final int choice = JOptionPane.showConfirmDialog(
                 this,
                 "%s%s".formatted(this.translate(
@@ -222,8 +208,7 @@ public class UserConfigurationDialog extends JDialog {
         return ret;
     }
 
-    HashMap<String, Double> getLimite () {
-
+    public HashMap<String, Double> getLimite () {
         final HashMap<String, Double> ret = new HashMap<>(0);
         for (final List userList : this.users) {
             ret.put(
@@ -234,20 +219,14 @@ public class UserConfigurationDialog extends JDialog {
         return ret;
     }
 
-    private static class SomeDefaultTableModel extends DefaultTableModel {
+    private static final class SomeDefaultTableModel extends DefaultTableModel {
 
-        SomeDefaultTableModel (
-                final Vector<Vector> users,
-                final Vector<String> profiles
-        ) {
+        private SomeDefaultTableModel (final Vector<Vector> users, final Vector<String> profiles) {
             super(users, profiles);
         }
 
         @Override
-        public boolean isCellEditable (
-                final int rowIndex,
-                final int columnIndex
-        ) {
+        public boolean isCellEditable (final int rowIndex, final int columnIndex) {
             return true;
         }
     }

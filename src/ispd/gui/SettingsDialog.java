@@ -22,7 +22,7 @@ import javax.swing.text.NumberFormatter;
 
 import ispd.arquivo.xml.ConfiguracaoISPD;
 
-class SettingsDialog extends JDialog {
+public class SettingsDialog extends JDialog {
 
     private final ConfiguracaoISPD    config;
     private       JCheckBox           jCheckBoxBarChartProcessing;
@@ -38,10 +38,7 @@ class SettingsDialog extends JDialog {
     private       JFormattedTextField jTextFieldNumSim;
     private       JFormattedTextField jTextFieldThread;
 
-    SettingsDialog (
-            final Frame parent, final boolean modal,
-            final ConfiguracaoISPD config
-    ) {
+    public SettingsDialog (final Frame parent, final boolean modal, final ConfiguracaoISPD config) {
         super(parent, modal);
         this.config = config;
         this.initComponents();
@@ -379,7 +376,7 @@ class SettingsDialog extends JDialog {
             } else {
                 this.jTextFieldThread.setValue(this.config.getNumberOfThreads());
             }
-        } catch (final NumberFormatException ex) {
+        } catch (final NumberFormatException ignored) {
             this.jTextFieldThread.setValue(this.config.getNumberOfThreads());
         }
     }
@@ -396,7 +393,7 @@ class SettingsDialog extends JDialog {
             } else {
                 this.jTextFieldNumSim.setValue(this.config.getNumberOfSimulations());
             }
-        } catch (final NumberFormatException ex) {
+        } catch (final NumberFormatException ignored) {
             this.jTextFieldNumSim.setValue(this.config.getNumberOfSimulations());
         }
     }
