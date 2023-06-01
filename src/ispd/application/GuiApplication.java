@@ -12,17 +12,16 @@ import ispd.gui.SplashWindow;
 
 public class GuiApplication implements Application {
 
-    private static final String GUI_LOOK_AND_FEEL_CLASS_NAME =
-            "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+    private static final String GUI_LOOK_AND_FEEL_CLASS_NAME = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
 
     @Override
     public void run () {
-        GuiApplication.openGui();
+        openGui();
     }
 
     private static void openGui () {
         final var splash     = new SplashWindow();
-        final var mainWindow = GuiApplication.initializeApplication();
+        final var mainWindow = initializeApplication();
         splash.dispose();
         mainWindow.setVisible(true);
     }
@@ -31,9 +30,9 @@ public class GuiApplication implements Application {
         final var exceptionLogger = new LogExceptions(null);
         Thread.setDefaultUncaughtExceptionHandler(exceptionLogger);
 
-        GuiApplication.setGuiLookAndFeel();
+        setGuiLookAndFeel();
 
-        final var mainWindow = GuiApplication.buildMainWindow();
+        final var mainWindow = buildMainWindow();
 
 
         exceptionLogger.setParentComponent(mainWindow);
@@ -44,11 +43,9 @@ public class GuiApplication implements Application {
     private static void setGuiLookAndFeel () {
         try {
             UIManager.setLookAndFeel(GuiApplication.GUI_LOOK_AND_FEEL_CLASS_NAME);
-        } catch (final ClassNotFoundException |
-                       IllegalAccessException |
-                       InstantiationException |
-                       UnsupportedLookAndFeelException ex) {
-            GuiApplication.logWithMainLogger(ex);
+        } catch (final ClassNotFoundException | IllegalAccessException | InstantiationException |
+                       UnsupportedLookAndFeelException e) {
+            logWithMainLogger(e);
         }
     }
 
@@ -59,8 +56,6 @@ public class GuiApplication implements Application {
     }
 
     private static void logWithMainLogger (final Throwable ex) {
-
-        Logger.getLogger(GuiApplication.class.getName())
-              .log(Level.SEVERE, null, ex);
+        Logger.getLogger(GuiApplication.class.getName()).log(Level.SEVERE, null, ex);
     }
 }

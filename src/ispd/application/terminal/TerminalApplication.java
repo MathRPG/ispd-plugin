@@ -7,7 +7,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.w3c.dom.Document;
 
-import java.awt.Color;
 import java.io.File;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -50,28 +49,20 @@ public class TerminalApplication implements Application {
      * @param args
      *         Arguments from the command line.
      */
-    public TerminalApplication (String[] args) {
-        this.options = getAllOptions();
-        final CommandLine cmd = commandLinePreparation(this.options, args);
+    public TerminalApplication (final String[] args) {
+        this.options = ispd.application.terminal.TerminalApplication.getAllOptions();
+        final var cmd = this.commandLinePreparation(this.options, args);
 
-        this.mode          = setMode(cmd);
-        this.serverPort    = setPort(cmd);
-        this.nExecutions   = setNExecutions(cmd);
-        this.nThreads      = setNThreads(cmd);
-        this.inputFile     = setInputFile(cmd);
-        this.outputFolder  = setOutputFolder(cmd);
-        this.parallel      = setParallelSimulation(cmd);
-        this.serverAddress = setServerAddress(cmd);
+        this.mode          = this.setMode(cmd);
+        this.serverPort    = this.setPort(cmd);
+        this.nExecutions   = this.setNExecutions(cmd);
+        this.nThreads      = this.setNThreads(cmd);
+        this.inputFile     = this.setInputFile(cmd);
+        this.outputFolder  = this.setOutputFolder(cmd);
+        this.parallel      = this.setParallelSimulation(cmd);
+        this.serverAddress = this.setServerAddress(cmd);
 
-        this.simulationProgress = new ProgressoSimulacao() {
-            @Override
-            public void incProgresso (int n) {
-            }
-
-            @Override
-            public void print (String text, Color cor) {
-            }
-        };
+        this.simulationProgress = new ispd.application.terminal.TerminalApplication.SilentSimulationProgress();
 
         if ((this.mode == Modes.CLIENT || this.mode == Modes.SIMULATE) && this.inputFile.isEmpty()) {
             System.out.println("It needs a model to simulate.");
@@ -85,8 +76,8 @@ public class TerminalApplication implements Application {
      *
      * @return An object for options of the command line from Common Cli.
      */
-    private Options getAllOptions () {
-        final Options options = new Options();
+    private static Options getAllOptions () {
+        final var options = new Options();
 
         options.addOption("h", "help", false, "print this help message.");
         options.addOption("v", "version", false, "print the version of iSPD.");
@@ -118,7 +109,7 @@ public class TerminalApplication implements Application {
     private CommandLine commandLinePreparation (final Options options, final String[] args) {
         try {
             return (new DefaultParser()).parse(options, args);
-        } catch (ParseException e) {
+        } catch (final ParseException e) {
             System.out.println(e.getMessage());
             System.exit(1);
             throw new AssertionError("Should not be reachable.");
@@ -152,7 +143,8 @@ public class TerminalApplication implements Application {
      * @return A value from the command line or the default port.
      */
     private int setPort (final CommandLine cmd) {
-        return cmd.hasOption("P") ? setValueFromOption(cmd, "P") : DEFAULT_PORT;
+        return cmd.hasOption("P") ? this.setValueFromOption(cmd, "P")
+                                  : ispd.application.terminal.TerminalApplication.DEFAULT_PORT;
     }
 
     /**
@@ -164,7 +156,7 @@ public class TerminalApplication implements Application {
      * @return A number got from the command line or the default 1.
      */
     private int setNExecutions (final CommandLine cmd) {
-        return cmd.hasOption("e") ? setValueFromOption(cmd, "e") : 1;
+        return cmd.hasOption("e") ? this.setValueFromOption(cmd, "e") : 1;
     }
 
     /**
@@ -175,12 +167,12 @@ public class TerminalApplication implements Application {
      *
      * @return A number got from the command line or the default 1.
      */
-    private int setNThreads (CommandLine cmd) {
+    private int setNThreads (final CommandLine cmd) {
         if (!cmd.hasOption("t")) {
             return 1;
         }
 
-        final int threads = setValueFromOption(cmd, "t");
+        final int threads = this.setValueFromOption(cmd, "t");
 
         if (this.nExecutions < 1) {
             System.out.println("Number of executions is invalid (" + this.nExecutions + ")");
@@ -198,7 +190,7 @@ public class TerminalApplication implements Application {
      *
      * @return A configuration file with information for the simulation
      */
-    private Optional<File> setInputFile (CommandLine cmd) {
+    private Optional<File> setInputFile (final CommandLine cmd) {
         if (cmd.hasOption("in")) {
             return Optional.of(new File(cmd.getOptionValue("in")));
         }
@@ -232,7 +224,7 @@ public class TerminalApplication implements Application {
      *
      * @return True if there is "p" in the command line of false otherwise.
      */
-    private boolean setParallelSimulation (CommandLine cmd) {
+    private boolean setParallelSimulation (final CommandLine cmd) {
         return cmd.hasOption("p");
     }
 
@@ -247,10 +239,10 @@ public class TerminalApplication implements Application {
     private Inet4Address setServerAddress (final CommandLine cmd) {
         try {
             if (!cmd.hasOption("a")) {
-                return (Inet4Address) Inet4Address.getByName("127.0.0.1");
+                return (Inet4Address) java.net.InetAddress.getByName("127.0.0.1");
             }
-            return (Inet4Address) Inet4Address.getByName(cmd.getOptionValue("a"));
-        } catch (UnknownHostException e) {
+            return (Inet4Address) java.net.InetAddress.getByName(cmd.getOptionValue("a"));
+        } catch (final UnknownHostException e) {
             System.out.println("Error at getting the server address from " + "command line. (" + e.getMessage() + ")");
             System.exit(1);
             throw new AssertionError("should not be reached");
@@ -270,7 +262,7 @@ public class TerminalApplication implements Application {
     private int setValueFromOption (final CommandLine cmd, final String op) {
         try {
             return Integer.parseInt(cmd.getOptionValue(op));
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             System.out.println("\"" + cmd.getOptionValue(op) + "\" is not a valid number");
             System.exit(1);
             throw new AssertionError("should not be reached");
@@ -295,7 +287,7 @@ public class TerminalApplication implements Application {
                                                                           """);
             case SIMULATE -> {
                 if (this.inputFile.isPresent()) {
-                    var file = this.inputFile.get();
+                    final var file = this.inputFile.get();
 
                     if (file.getName().endsWith(".imsx") && file.exists()) {
                         this.runNSimulations();
@@ -318,16 +310,16 @@ public class TerminalApplication implements Application {
         System.out.println("Simulation Initiated.");
         System.out.print("Opening iconic model. ->");
 
-        final Document model         = getModelFromFile();
-        final Metricas metrics       = new Metricas(IconicoXML.newListUsers(model));
+        final Document model         = this.getModelFromFile();
+        final var      metrics       = new Metricas(IconicoXML.newListUsers(model));
         double         totalDuration = 0.0;
         for (int i = 1; i <= this.nExecutions; i++) {
             System.out.println("* Simulation " + i);
 
-            final double   preSimInstant    = System.currentTimeMillis();
-            final Metricas simMetric        = runASimulation(model);
-            final double   postSimInstant   = System.currentTimeMillis();
-            final double   totalSimDuration = (postSimInstant - preSimInstant) / 1000.0;
+            final double preSimInstant    = System.currentTimeMillis();
+            final var    simMetric        = this.runASimulation(model);
+            final double postSimInstant   = System.currentTimeMillis();
+            final double totalSimDuration = (postSimInstant - preSimInstant) / 1000.0;
 
             System.out.println("Simulation Execution Time = " + totalSimDuration + "seconds");
 
@@ -335,7 +327,7 @@ public class TerminalApplication implements Application {
             metrics.addMetrica(simMetric);
         }
 
-        printSimulationResults(metrics, totalDuration);
+        this.printSimulationResults(metrics, totalDuration);
     }
 
     /**
@@ -385,7 +377,7 @@ public class TerminalApplication implements Application {
             this.simulationProgress.validarInicioSimulacao(model);
 
             return model;
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             System.out.println(ex.getMessage());
             System.exit(-1);
             throw new AssertionError("Code shouldn't be reachable.");
@@ -401,9 +393,9 @@ public class TerminalApplication implements Application {
      * @return The metrics resulted from the simulation
      */
     private Metricas runASimulation (final Document model) {
-        final var queueNetwork = createQueueNetwork(model);
-        final var jobs         = createJobsList(model, queueNetwork);
-        final var sim          = selectSimulation(queueNetwork, jobs);
+        final var queueNetwork = this.createQueueNetwork(model);
+        final var jobs         = this.createJobsList(model, queueNetwork);
+        final var sim          = this.selectSimulation(queueNetwork, jobs);
 
         sim.createRouting();
         sim.simulate();
@@ -467,10 +459,10 @@ public class TerminalApplication implements Application {
             try {
                 final var simServer    = new Server(this.serverPort);
                 final var newModel     = simServer.getMetricsFromClient();
-                final var modelMetrics = runASimulation(newModel);
+                final var modelMetrics = this.runASimulation(newModel);
 
                 simServer.returnMetricsToClient(modelMetrics);
-            } catch (UnknownHostException e) {
+            } catch (final UnknownHostException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -482,7 +474,7 @@ public class TerminalApplication implements Application {
      */
     private void clientSimulate () {
         final var simClient = new Client(this.serverAddress, this.serverPort);
-        final var model     = getModelFromFile();
+        final var model     = this.getModelFromFile();
 
         simClient.sendModelToServer(model);
         final var metrics = simClient.receiveMetricsFromServer();
@@ -497,8 +489,19 @@ public class TerminalApplication implements Application {
         HELP("h"), VERSION("v"), SIMULATE(""), CLIENT("c"), SERVER("s");
         private final String str;
 
-        Modes (String s) {
+        Modes (final String s) {
             this.str = s;
+        }
+    }
+
+    private static final class SilentSimulationProgress extends ProgressoSimulacao {
+
+        @Override
+        public void incProgresso (final int n) {
+        }
+
+        @Override
+        public void print (final String text, final java.awt.Color cor) {
         }
     }
 }

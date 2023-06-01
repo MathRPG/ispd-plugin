@@ -43,7 +43,7 @@ public class Server {
             this.clientAddress = inputSocket.getInetAddress();
 
             return (Document) inputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (final IOException | ClassNotFoundException e) {
             System.out.println("Couldn't create the server socket.");
             throw new RuntimeException(e);
         }
@@ -55,13 +55,13 @@ public class Server {
      * @param modelMetrics
      *         Metrics from a simulation result
      */
-    public void returnMetricsToClient (Metricas modelMetrics) {
+    public void returnMetricsToClient (final Metricas modelMetrics) {
         try (
                 final var outputSocket = new Socket(this.clientAddress, this.clientPort);
                 final var outputStream = new ObjectOutputStream(outputSocket.getOutputStream())
         ) {
             outputStream.writeObject(modelMetrics);
-        } catch (IOException e) {
+        } catch (final IOException ignored) {
             System.out.println("Couldn't create the client socket.");
         }
     }
