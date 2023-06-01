@@ -11,12 +11,10 @@ import ispd.arquivo.xml.ConfiguracaoISPD;
 import ispd.policy.Policy;
 import ispd.policy.PolicyLoader;
 
-/* package=private */
-abstract class GenericPolicyLoader <T extends Policy<?>>
-        implements PolicyLoader<T> {
 
-    private static final URLClassLoader classLoader =
-            GenericPolicyLoader.makeClassLoader();
+public abstract class GenericPolicyLoader <T extends Policy<?>> implements PolicyLoader<T> {
+
+    private static final URLClassLoader CLASS_LOADER = makeClassLoader();
 
     private static URLClassLoader makeClassLoader () {
         try {
@@ -35,16 +33,13 @@ abstract class GenericPolicyLoader <T extends Policy<?>>
     public T loadPolicy (final String policyName) {
         final var clsName = this.getClassPath() + policyName;
         try {
-            final var cls = GenericPolicyLoader.classLoader.loadClass(clsName);
+            final var cls = GenericPolicyLoader.CLASS_LOADER.loadClass(clsName);
             return (T) cls.getConstructor().newInstance();
         } catch (final ClassNotFoundException | InvocationTargetException |
                        InstantiationException | IllegalAccessException |
                        NoSuchMethodException | ClassCastException e) {
-            Logger.getLogger(GenericPolicyLoader.class.getName()).log(
-                    Level.SEVERE,
-                    "Could not load policy '%s'!\n".formatted(policyName),
-                    e
-            );
+            Logger.getLogger(GenericPolicyLoader.class.getName())
+                  .log(Level.SEVERE, "Could not load policy '%s'!\n".formatted(policyName), e);
 
             throw new RuntimeException(e);
         }

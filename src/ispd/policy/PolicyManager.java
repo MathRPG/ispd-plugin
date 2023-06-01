@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO: Rename methods; document
 public interface PolicyManager {
 
     String NO_POLICY = "---";

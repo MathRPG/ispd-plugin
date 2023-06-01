@@ -24,10 +24,7 @@ public class UserProcessingControl {
     @Unsigned
     private       double usedProcessingPower = 0.0;
 
-    public UserProcessingControl (
-            final String userId,
-            final Collection<? extends CS_Processamento> systemMachines
-    ) {
+    public UserProcessingControl (final String userId, final Collection<? extends CS_Processamento> systemMachines) {
         this.userId = userId;
 
         this.ownedMachinesProcessingPower = this

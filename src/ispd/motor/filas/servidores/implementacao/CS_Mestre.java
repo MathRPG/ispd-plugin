@@ -465,18 +465,6 @@ public class CS_Mestre extends CS_Processamento
     }
 
     @Override
-    public void processTask (final Tarefa task) {
-        task.iniciarEsperaProcessamento(this.simulacao.getTime(this));
-        final FutureEvent evtFut = new FutureEvent(
-                this.simulacao.getTime(this),
-                FutureEvent.ATENDIMENTO,
-                this, task
-        );
-        //Event adicionado a lista de evntos futuros
-        this.simulacao.addFutureEvent(evtFut);
-    }
-
-    @Override
     public Tarefa cloneTask (final Tarefa task) {
         final Tarefa tarefa = new Tarefa(task);
         this.simulacao.addJob(tarefa);
@@ -490,22 +478,6 @@ public class CS_Mestre extends CS_Processamento
             final int messageType
     ) {
         final Mensagem msg = new Mensagem(this, messageType, task);
-        msg.setCaminho(this.escalonador.escalonarRota(slave));
-        final FutureEvent evtFut = new FutureEvent(
-                this.simulacao.getTime(this),
-                FutureEvent.MENSAGEM,
-                msg.getCaminho().remove(0),
-                msg
-        );
-        //Event adicionado a lista de evntos futuros
-        this.simulacao.addFutureEvent(evtFut);
-    }
-
-    @Override
-    public void updateSubordinate (final CS_Processamento slave) {
-        final Mensagem msg = new Mensagem(this, 0.011444091796875,
-                                          Mensagens.ATUALIZAR
-        );
         msg.setCaminho(this.escalonador.escalonarRota(slave));
         final FutureEvent evtFut = new FutureEvent(
                 this.simulacao.getTime(this),

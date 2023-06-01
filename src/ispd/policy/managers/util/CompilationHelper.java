@@ -16,16 +16,13 @@ import ispd.policy.managers.FilePolicyManager;
 
 public class CompilationHelper {
 
-    private final Optional<Tool> compiler = Optional.ofNullable(
-            ToolProvider.getSystemJavaCompiler());
+    private final Optional<Tool> compiler = Optional.ofNullable(ToolProvider.getSystemJavaCompiler());
     private final File           target;
 
-    /* package-private */
     public CompilationHelper (final File target) {
         this.target = target;
     }
 
-    /* package-private */
     public String compile () {
         return this.compiler
                 .map(this::compileWithSystemTool)
@@ -53,9 +50,9 @@ public class CompilationHelper {
         final var process = Runtime.getRuntime().exec(command);
 
         try (
-                final var err = new BufferedReader(new InputStreamReader(
-                        process.getErrorStream(), StandardCharsets.UTF_8
-                ))
+                final var err = new BufferedReader(
+                        new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8)
+                )
         ) {
             return err.lines().collect(Collectors.joining("\n"));
         }

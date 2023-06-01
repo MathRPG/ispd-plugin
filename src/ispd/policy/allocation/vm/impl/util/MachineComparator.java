@@ -5,9 +5,7 @@ import java.util.Comparator;
 
 import ispd.motor.filas.servidores.CS_Processamento;
 
-/* package-private */
-abstract class MachineComparator <T extends CS_Processamento>
-        implements Comparator<T>, Serializable {
+public abstract class MachineComparator <T extends CS_Processamento> implements Comparator<T>, Serializable {
 
     @Override
     public int compare (final T m1, final T m2) {

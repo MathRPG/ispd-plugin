@@ -42,7 +42,7 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
         task.setLocalProcessamento(resource);
         task.setCaminho(this.escalonarRota(resource));
 
-        //Verifica se não é caso de preempção
+        // Verifica se não é caso de preempção
         final var sc = this.slaveControls.get(resource);
         if (sc.isFree()) {
             userStatus.decreaseTaskDemand();
@@ -63,7 +63,7 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
     @Override
     public CS_Processamento escalonarRecurso () {
         String user;
-        //Buscando recurso livre
+        // Buscando recurso livre
         CS_Processamento selec = null;
 
         for (int i = 0; i < this.escravos.size(); i++) {
@@ -226,8 +226,7 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
             return;
         }
 
-        //Em caso de preempção, é procurada a tarefa correspondente para ser
-        // enviada ao escravo agora desocupado
+        // Em caso de preempção, é procurada a tarefa correspondente para ser enviada ao escravo agora desocupado
         int j;
         int indexControle = -1;
         for (j = 0; j < this.preemptionEntries.size(); j++) {

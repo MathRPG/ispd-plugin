@@ -17,11 +17,7 @@ public interface SchedulingMaster extends PolicyMaster {
 
     void sendTask (Tarefa task);
 
-    void processTask (Tarefa task);
-
     Tarefa cloneTask (Tarefa task);
 
     void sendMessage (Tarefa task, CS_Processamento slave, int messageType);
-
-    void updateSubordinate (CS_Processamento slave);
 }

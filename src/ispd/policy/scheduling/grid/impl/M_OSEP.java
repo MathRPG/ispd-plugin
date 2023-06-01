@@ -62,25 +62,24 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
 
     @Override
     public Tarefa escalonarTarefa () {
-        //Usuários com maior diferença entre uso e posse terão preferência
+        // Usuários com maior diferença entre uso e posse terão preferência
         double difUsuarioMinimo   = -1;
         int    indexUsuarioMinimo = -1;
-        //Encontrar o usuário que está mais abaixo da sua propriedade
+        // Encontrar o usuário que está mais abaixo da sua propriedade
         for (int i = 0; i < this.metricaUsuarios.getUsuarios().size(); i++) {
             final var userId = this.metricaUsuarios.getUsuarios().get(i);
 
-            //Verificar se existem tarefas do usuário corrente
+            // Verificar se existem tarefas do usuário corrente
             boolean demanda = false;
 
-            for (final Tarefa tarefa : this.tarefas) {
+            for (final var tarefa : this.tarefas) {
                 if (tarefa.getProprietario().equals(userId)) {
                     demanda = true;
                     break;
                 }
             }
 
-            //Caso existam tarefas do usuário corrente e ele esteja com uso
-            // menor que sua posse
+            // Caso existam tarefas do usuário corrente e ele esteja com uso menor que sua posse
             final var uc = this.userControls.get(userId);
 
             if ((uc.currentlyUsedProcessingPower() < uc.getOwnedMachinesProcessingPower()) && demanda) {
@@ -195,8 +194,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
             return;
         }
 
-        //Em caso de preempção, é procurada a tarefa correspondente para ser
-        // enviada ao escravo agora desocupado
+        // Em caso de preempção, é procurada a tarefa correspondente para ser enviada ao escravo agora desocupado
         int j;
         int indexControle = -1;
         for (j = 0; j < this.preemptionEntries.size(); j++) {
@@ -253,8 +251,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
 
         if (machine == null) {return null;}
 
-        //Fazer a preempção
-        //Verifica se vale apena fazer preempção
+        // Fazer a preempção Verifica se vale apena fazer preempção
         final Tarefa tar =
                 this.taskToPreemptIn(machine);
 
