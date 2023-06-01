@@ -12,10 +12,12 @@ package ispd.utils;
  * pair's value is {@code 3}. Moreover, these values can be accessed by
  * {@link #getFirst()} and {@link #getSecond()} methods, respectively.
  *
- * @param <T> the first value type
- * @param <U> the second value type
+ * @param <T>
+ *         the first value type
+ * @param <U>
+ *         the second value type
  */
-public final class Pair<T, U> {
+public final class Pair <T, U> {
 
     /**
      * The first pair's value.
@@ -30,11 +32,13 @@ public final class Pair<T, U> {
     /**
      * Constructor which specifies the first and second value.
      *
-     * @param first  the first value.
-     * @param second the second value.
+     * @param first
+     *         the first value.
+     * @param second
+     *         the second value.
      */
-    public Pair(final T first, final U second) {
-        this.first = first;
+    public Pair (final T first, final U second) {
+        this.first  = first;
         this.second = second;
     }
 
@@ -43,7 +47,7 @@ public final class Pair<T, U> {
      *
      * @return the first pair's value.
      */
-    public T getFirst() {
+    public T getFirst () {
         return this.first;
     }
 
@@ -52,7 +56,7 @@ public final class Pair<T, U> {
      *
      * @return the second pair's value.
      */
-    public U getSecond() {
+    public U getSecond () {
         return this.second;
     }
 
