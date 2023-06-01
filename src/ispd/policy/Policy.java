@@ -1,48 +1,49 @@
 package ispd.policy;
 
+import java.util.List;
+
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 
-import java.util.List;
-
 public abstract class Policy <T extends PolicyMaster> {
-    protected T mestre = null;
-    protected List<List> caminhoEscravo = null;
-    protected List<CS_Processamento> escravos = null;
 
-    public abstract void iniciar();
+    protected T                      mestre         = null;
+    protected List<List>             caminhoEscravo = null;
+    protected List<CS_Processamento> escravos       = null;
 
-    public abstract List<CentroServico> escalonarRota(CentroServico destino);
+    public abstract void iniciar ();
 
-    public abstract void escalonar();
+    public abstract List<CentroServico> escalonarRota (CentroServico destino);
 
-    public abstract CS_Processamento escalonarRecurso();
+    public abstract void escalonar ();
 
-    public Double getTempoAtualizar() {
+    public abstract CS_Processamento escalonarRecurso ();
+
+    public Double getTempoAtualizar () {
         return null;
     }
 
-    public T getMestre() {
+    public T getMestre () {
         return this.mestre;
     }
 
-    public void setMestre(final T mestre) {
+    public void setMestre (final T mestre) {
         this.mestre = mestre;
     }
 
-    public List<List> getCaminhoEscravo() {
+    public List<List> getCaminhoEscravo () {
         return this.caminhoEscravo;
     }
 
-    public void setCaminhoEscravo(final List<List> caminhoEscravo) {
+    public void setCaminhoEscravo (final List<List> caminhoEscravo) {
         this.caminhoEscravo = caminhoEscravo;
     }
 
-    public List<CS_Processamento> getEscravos() {
+    public List<CS_Processamento> getEscravos () {
         return this.escravos;
     }
 
-    public void addEscravo(final CS_Processamento newSlave) {
+    public void addEscravo (final CS_Processamento newSlave) {
         this.escravos.add(newSlave);
     }
 }

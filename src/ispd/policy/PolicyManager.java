@@ -6,28 +6,29 @@ import java.util.List;
 
 // TODO: Rename methods; document
 public interface PolicyManager {
+
     String NO_POLICY = "---";
 
-    ArrayList<String> listar();
+    ArrayList<String> listar ();
 
     /**
      * @return Basic template for writing an allocation policy's source code
      */
-    String getPolicyTemplate(String policyName);
+    String getPolicyTemplate (String policyName);
 
-    File directory();
+    File directory ();
 
-    boolean escrever(String nome, String codigo);
+    boolean escrever (String nome, String codigo);
 
-    String compilar(String nome);
+    String compilar (String nome);
 
-    String ler(String policy);
+    String ler (String policy);
 
-    boolean remover(String policy);
+    boolean remover (String policy);
 
-    boolean importJavaPolicy(File arquivo);
+    boolean importJavaPolicy (File arquivo);
 
-    List listarAdicionados();
+    List listarAdicionados ();
 
-    List listarRemovidos();
+    List listarRemovidos ();
 }
