@@ -4,13 +4,10 @@ import java.io.Serializable;
 
 public class MetricasAlocacao implements Serializable {
 
-    //Lista de atributos
-    private String id;
-    private int    numVMs;
-    //métodos
+    private final String id;
+    private       int    numVMs;
 
-    //construtor da classe
-    public MetricasAlocacao (String id) {
+    public MetricasAlocacao (final String id) {
         this.id     = id;
         this.numVMs = 0;
     }
@@ -20,12 +17,10 @@ public class MetricasAlocacao implements Serializable {
     }
 
     public int getNumVMs () {
-        return numVMs;
+        return this.numVMs;
     }
 
     public String getId () {
-        return id;
+        return this.id;
     }
-
-
 }

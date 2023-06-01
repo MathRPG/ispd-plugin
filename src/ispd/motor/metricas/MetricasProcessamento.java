@@ -8,19 +8,19 @@ import java.io.Serializable;
  */
 public class MetricasProcessamento implements Serializable {
 
+    private final String id;
+    private final String proprietario;
+    private final int    numeroMaquina;
     /**
      * Armazena o total de processamento realizado em MFlops
      */
-    private double MFlopsProcessados;
+    private       double MFlopsProcessados;
     /**
      * armazena o total de processamento realizado em segundos
      */
-    private double SegundosDeProcessamento;
-    private String id;
-    private String proprietario;
-    private int    numeroMaquina;
+    private       double SegundosDeProcessamento;
 
-    public MetricasProcessamento (String id, int numeroMaquina, String proprietario) {
+    public MetricasProcessamento (final String id, final int numeroMaquina, final String proprietario) {
         this.MFlopsProcessados       = 0;
         this.SegundosDeProcessamento = 0;
         this.id                      = id;
@@ -28,39 +28,39 @@ public class MetricasProcessamento implements Serializable {
         this.proprietario            = proprietario;
     }
 
-    public void incMflopsProcessados (double MflopsProcessados) {
+    public void incMflopsProcessados (final double MflopsProcessados) {
         this.MFlopsProcessados += MflopsProcessados;
     }
 
-    public void incSegundosDeProcessamento (double SegundosProcessados) {
+    public void incSegundosDeProcessamento (final double SegundosProcessados) {
         this.SegundosDeProcessamento += SegundosProcessados;
     }
 
     public double getMFlopsProcessados () {
-        return MFlopsProcessados;
+        return this.MFlopsProcessados;
     }
 
     public double getSegundosDeProcessamento () {
-        return SegundosDeProcessamento;
+        return this.SegundosDeProcessamento;
     }
 
-    void setSegundosDeProcessamento (double d) {
+    void setSegundosDeProcessamento (final double d) {
         this.SegundosDeProcessamento = d;
     }
 
     public String getId () {
-        return id;
+        return this.id;
     }
 
     public String getProprietario () {
-        return proprietario;
+        return this.proprietario;
     }
 
     public int getnumeroMaquina () {
-        return numeroMaquina;
+        return this.numeroMaquina;
     }
 
-    void setMflopsProcessados (double d) {
+    void setMflopsProcessados (final double d) {
         this.MFlopsProcessados = d;
     }
 }
