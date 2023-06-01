@@ -23,9 +23,7 @@ public class UserOperationTime implements Comparable<UserOperationTime> {
      * @param userId
      *         the user id
      */
-    public UserOperationTime (
-            final double time, final boolean startTime, final double nodeUse, final int userId
-    ) {
+    public UserOperationTime (final double time, final boolean startTime, final double nodeUse, final int userId) {
         this.time      = time;
         this.startTime = startTime;
         this.nodeUse   = nodeUse;

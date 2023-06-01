@@ -13,19 +13,13 @@ public class MultipleExtensionFileFilter extends FileFilter {
     private       String   description;
     private       String[] extensions;
 
-    public MultipleExtensionFileFilter (
-            final String description, final String[] extensions,
-            final boolean allowDirs
-    ) {
+    public MultipleExtensionFileFilter (final String description, final String[] extensions, final boolean allowDirs) {
         this.description = description;
         this.extensions  = extensions;
         this.allowDirs   = allowDirs;
     }
 
-    public MultipleExtensionFileFilter (
-            final String description, final String extension,
-            final boolean allowDirs
-    ) {
+    public MultipleExtensionFileFilter (final String description, final String extension, final boolean allowDirs) {
         this.description = description;
         this.extensions  = new String[] { extension };
         this.allowDirs   = allowDirs;
@@ -35,11 +29,13 @@ public class MultipleExtensionFileFilter extends FileFilter {
         if (file.isDirectory() && this.allowDirs) {
             return true;
         }
+
         for (final String ext : this.extensions) {
             if (file.getName().toLowerCase().endsWith(ext)) {
                 return true;
             }
         }
+
         return false;
     }
 

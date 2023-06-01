@@ -40,18 +40,17 @@ public class HtmlPane extends JEditorPane implements HyperlinkListener {
             return;
         }
 
-        if (event instanceof HTMLFrameHyperlinkEvent ev) {
+        if (event instanceof final HTMLFrameHyperlinkEvent ev) {
             final var doc = (HTMLDocument) this.getDocument();
             doc.processHTMLFrameHyperlinkEvent(ev);
             return;
         }
 
-        HtmlPane.openDefaultBrowser(event.getURL());
+        openDefaultBrowser(event.getURL());
     }
 
     private void jumpToAnchor (final String anchorDesc) {
-        final int pos = this.getStringPositionInDoc(
-                this.searchStringFromAnchorDesc(anchorDesc));
+        final int pos = this.getStringPositionInDoc(this.searchStringFromAnchorDesc(anchorDesc));
 
         if (pos <= HtmlPane.SET_CARET_POSITION_UPPER_BOUND) {
             this.setCaretPosition(0);
@@ -75,9 +74,7 @@ public class HtmlPane extends JEditorPane implements HyperlinkListener {
      *         address for browser to open
      */
     public static void openDefaultBrowser (final URL url) {
-        final var desktop =
-                Desktop.isDesktopSupported()
-                ? Desktop.getDesktop() : null;
+        final var desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
 
         if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
             return;
@@ -90,7 +87,7 @@ public class HtmlPane extends JEditorPane implements HyperlinkListener {
     }
 
     private int getStringPositionInDoc (final String s) {
-        return HtmlPane.getDocText(this.getDocument()).lastIndexOf(s);
+        return getDocText(this.getDocument()).lastIndexOf(s);
     }
 
     private String searchStringFromAnchorDesc (final String desc) {
