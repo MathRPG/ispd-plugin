@@ -1,22 +1,23 @@
 package ispd.policy.scheduling.grid.impl.util;
 
-import ispd.motor.filas.Tarefa;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import ispd.motor.filas.Tarefa;
+
 public class SlaveControl {
-    private SlaveStatus status = SlaveStatus.FREE;
+
+    private SlaveStatus            status            = SlaveStatus.FREE;
     private List<? extends Tarefa> tasksInProcessing = new ArrayList<>();
 
-    public boolean canHostNewTask() {
+    public boolean canHostNewTask () {
         return switch (this.status) {
             case FREE, OCCUPIED -> true;
             default -> false;
         };
     }
 
-    public void updateStatusIfNeeded() {
+    public void updateStatusIfNeeded () {
         this.status = switch (this.status) {
             case BLOCKED -> SlaveStatus.UNCERTAIN;
             case UNCERTAIN -> this.statusForProcessingQueue();
@@ -24,61 +25,61 @@ public class SlaveControl {
         };
     }
 
-    private SlaveStatus statusForProcessingQueue() {
+    private SlaveStatus statusForProcessingQueue () {
         return this.tasksInProcessing.isEmpty()
-                ? SlaveStatus.FREE
-                : SlaveStatus.OCCUPIED;
+               ? SlaveStatus.FREE
+               : SlaveStatus.OCCUPIED;
     }
 
-    public Tarefa firstTaskInProcessing() {
+    public Tarefa firstTaskInProcessing () {
         return this.tasksInProcessing.get(0);
     }
 
-    public boolean isOccupied() {
+    public boolean isOccupied () {
         return this.status == SlaveStatus.OCCUPIED;
     }
 
-    public boolean isFree() {
+    public boolean isFree () {
         return this.status == SlaveStatus.FREE;
     }
 
-    public boolean isBlocked() {
+    public boolean isBlocked () {
         return this.status == SlaveStatus.BLOCKED;
     }
 
-    public boolean isUncertain() {
+    public boolean isUncertain () {
         return this.status == SlaveStatus.UNCERTAIN;
     }
 
-    public boolean isPreempted() {
+    public boolean isPreempted () {
         return this.status == SlaveStatus.PREEMPTED;
     }
 
-    public void setAsOccupied() {
+    public void setAsOccupied () {
         this.status = SlaveStatus.OCCUPIED;
     }
 
-    public void setAsFree() {
+    public void setAsFree () {
         this.status = SlaveStatus.FREE;
     }
 
-    public void setAsBlocked() {
+    public void setAsBlocked () {
         this.status = SlaveStatus.BLOCKED;
     }
 
-    public void setAsUncertain() {
+    public void setAsUncertain () {
         this.status = SlaveStatus.UNCERTAIN;
     }
 
-    public void setAsPreempted() {
+    public void setAsPreempted () {
         this.status = SlaveStatus.PREEMPTED;
     }
 
-    public void setTasksInProcessing(final List<? extends Tarefa> tasksInProcessing) {
+    public void setTasksInProcessing (final List<? extends Tarefa> tasksInProcessing) {
         this.tasksInProcessing = tasksInProcessing;
     }
 
-    public boolean hasTasksInProcessing() {
+    public boolean hasTasksInProcessing () {
         return !this.tasksInProcessing.isEmpty();
     }
 

@@ -1,26 +1,27 @@
 package ispd.policy.scheduling;
 
+import java.util.Set;
+
 import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.policy.PolicyCondition;
 import ispd.policy.PolicyMaster;
 
-import java.util.Set;
-
 public interface SchedulingMaster extends PolicyMaster {
-    void executeScheduling();
 
-    Set<PolicyCondition> getSchedulingConditions();
+    void executeScheduling ();
 
-    void setSchedulingConditions(Set<PolicyCondition> newConditions);
+    Set<PolicyCondition> getSchedulingConditions ();
 
-    void sendTask(Tarefa task);
+    void setSchedulingConditions (Set<PolicyCondition> newConditions);
 
-    void processTask(Tarefa task);
+    void sendTask (Tarefa task);
 
-    Tarefa cloneTask(Tarefa task);
+    void processTask (Tarefa task);
 
-    void sendMessage(Tarefa task, CS_Processamento slave, int messageType);
+    Tarefa cloneTask (Tarefa task);
 
-    void updateSubordinate(CS_Processamento slave);
+    void sendMessage (Tarefa task, CS_Processamento slave, int messageType);
+
+    void updateSubordinate (CS_Processamento slave);
 }
