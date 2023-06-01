@@ -37,7 +37,7 @@ public class VirtualMachine {
     private String VMM;
 
     /**
-     * Constructor of {@link VirtualMachine} which specifies
+     * Constructor of  which specifies
      * the id, owner, VMM, core count, allocated memory,
      * allocated disk and the running operating system.
      *
@@ -59,8 +59,8 @@ public class VirtualMachine {
      *         the running operating system
      */
     public VirtualMachine (
-            final String id, final String owner, final String VMM, final int coreCount, final double allocatedMemory,
-            final double allocatedDisk, final String operatingSystem
+            final String id, final String owner, final String VMM, final int coreCount,
+            final double allocatedMemory, final double allocatedDisk, final String operatingSystem
     ) {
         this.name            = id;
         this.owner           = owner;
@@ -105,9 +105,7 @@ public class VirtualMachine {
      * @param allocatedMemory
      *         the allocated memory
      */
-    public void setAllocatedMemory (
-            final double allocatedMemory
-    ) {
+    public void setAllocatedMemory (final double allocatedMemory) {
         this.allocatedMemory = allocatedMemory;
     }
 
@@ -126,9 +124,7 @@ public class VirtualMachine {
      * @param allocatedDisk
      *         the allocated disk
      */
-    public void setAllocatedDisk (
-            final double allocatedDisk
-    ) {
+    public void setAllocatedDisk (final double allocatedDisk) {
         this.allocatedDisk = allocatedDisk;
     }
 
@@ -186,9 +182,7 @@ public class VirtualMachine {
      *         the running operating system
      *         to be set
      */
-    public void setOperatingSystem (
-            final String operatingSystem
-    ) {
+    public void setOperatingSystem (final String operatingSystem) {
         this.operatingSystem = operatingSystem;
     }
 
@@ -207,7 +201,7 @@ public class VirtualMachine {
      * @param VMM
      *         the VMM to be set
      */
-    public void setVMM (String VMM) {
+    public void setVMM (final String VMM) {
         this.VMM = VMM;
     }
 }

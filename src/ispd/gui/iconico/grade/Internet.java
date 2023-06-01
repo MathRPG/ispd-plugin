@@ -34,9 +34,7 @@ public class Internet extends VertexGridItem {
      * @param globalId
      *         the global identifier
      */
-    public Internet (
-            final int x, final int y, final int localId, final int globalId
-    ) {
+    public Internet (final int x, final int y, final int localId, final int globalId) {
         super(localId, globalId, "net", x, y);
     }
 
@@ -50,16 +48,26 @@ public class Internet extends VertexGridItem {
      * @return the internet attributes
      */
     @Override
-    public String makeDescription (
-            final ResourceBundle translator
-    ) {
+    public String makeDescription (final ResourceBundle translator) {
         return (
-                "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s:" + " %s<br>%s: %s"
-        ).formatted(translator.getString("Local ID:"), this.id.getLocalId(), translator.getString("Global ID:"),
-                    this.id.getGlobalId(), translator.getString("Label"), this.id.getName(),
-                    translator.getString("X-coordinate:"), this.getX(), translator.getString("Y-coordinate:"),
-                    this.getY(), translator.getString("Bandwidth"), this.bandwidth, translator.getString("Latency"),
-                    this.latency, translator.getString("Load Factor"), this.loadFactor
+                "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: %s<br>%s: %s"
+        ).formatted(
+                translator.getString("Local ID:"),
+                this.id.getLocalId(),
+                translator.getString("Global ID:"),
+                this.id.getGlobalId(),
+                translator.getString("Label"),
+                this.id.getName(),
+                translator.getString("X-coordinate:"),
+                this.getX(),
+                translator.getString("Y-coordinate:"),
+                this.getY(),
+                translator.getString("Bandwidth"),
+                this.bandwidth,
+                translator.getString("Latency"),
+                this.latency,
+                translator.getString("Load Factor"),
+                this.loadFactor
         );
     }
 
@@ -67,13 +75,11 @@ public class Internet extends VertexGridItem {
      * {@inheritDoc}
      */
     @Override
-    public Internet makeCopy (
-            final int mousePosX, final int mousePosY, final int globalId, final int localId
-    ) {
+    public Internet makeCopy (final int mousePosX, final int mousePosY, final int globalId, final int localId) {
         final var internet = new Internet(mousePosX, mousePosY, globalId, localId);
-        internet.bandwidth = this.bandwidth;
+        internet.bandwidth  = this.bandwidth;
         internet.loadFactor = this.loadFactor;
-        internet.latency = this.latency;
+        internet.latency    = this.latency;
         internet.checkConfiguration();
         return internet;
     }
@@ -87,8 +93,6 @@ public class Internet extends VertexGridItem {
     private void checkConfiguration () {
         this.configured = this.bandwidth > 0 && this.latency > 0;
     }
-
-    /* Getters & Setters */
 
     /**
      * Returns the bandwidth.
@@ -149,8 +153,6 @@ public class Internet extends VertexGridItem {
         this.checkConfiguration();
     }
 
-    /* getImage */
-
     /**
      * Returns the internet image.
      *
@@ -158,6 +160,6 @@ public class Internet extends VertexGridItem {
      */
     @Override
     public Image getImage () {
-        return DesenhoGrade.internetIcon;
+        return DesenhoGrade.INTERNET_ICON;
     }
 }

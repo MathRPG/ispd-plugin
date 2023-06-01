@@ -16,8 +16,7 @@ public class Link extends EdgeGridItem {
      * it is used to draw the link using this color since
      * this link is configured.
      */
-    private static final Color DARK_GREEN
-            = new Color(0, 130, 0);
+    private static final Color DARK_GREEN = new Color(0, 130, 0);
 
     private final Polygon arrowPolygon;
 
@@ -37,7 +36,7 @@ public class Link extends EdgeGridItem {
     private double latency;
 
     /**
-     * Constructor of {@link Link} which specifies the source,
+     * Constructor of  which specifies the source,
      * destination vertices and the local and global
      * identifiers.
      *
@@ -50,15 +49,8 @@ public class Link extends EdgeGridItem {
      * @param globalId
      *         the global identifier
      */
-    public Link (
-            final Vertex source,
-            final Vertex destination,
-            final int localId,
-            final int globalId
-    ) {
-        super(localId, globalId, "link", source,
-              destination, true
-        );
+    public Link (final Vertex source, final Vertex destination, final int localId, final int globalId) {
+        super(localId, globalId, "link", source, destination, true);
         this.arrowPolygon = new Polygon();
     }
 
@@ -113,20 +105,18 @@ public class Link extends EdgeGridItem {
         if (this.isSelected()) {
             g.setColor(Color.BLACK);
         } else if (this.isConfigured()) {
-            g.setColor(DARK_GREEN);
+            g.setColor(ispd.gui.iconico.grade.Link.DARK_GREEN);
         } else {
             g.setColor(Color.RED);
         }
 
-        g.drawLine(this.getSource().getX(), this.getSource().getY(),
-                   this.getDestination().getX(), this.getDestination().getY()
+        g.drawLine(
+                this.getSource().getX(), this.getSource().getY(), this.getDestination().getX(),
+                this.getDestination().getY()
         );
         g.fillPolygon(this.arrowPolygon);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean contains (final int x, final int y) {
         return this.arrowPolygon.contains(x, y);
@@ -149,10 +139,7 @@ public class Link extends EdgeGridItem {
      */
     @Override
     public Integer getX () {
-        return Link.biasedMidPoint(
-                this.getSource().getX(),
-                this.getDestination().getX()
-        );
+        return biasedMidPoint(this.getSource().getX(), this.getDestination().getX());
     }
 
     /**
@@ -162,10 +149,7 @@ public class Link extends EdgeGridItem {
      */
     @Override
     public Integer getY () {
-        return Link.biasedMidPoint(
-                this.getSource().getY(),
-                this.getDestination().getY()
-        );
+        return biasedMidPoint(this.getSource().getY(), this.getDestination().getY());
     }
 
     /**
@@ -181,10 +165,7 @@ public class Link extends EdgeGridItem {
      *
      * @return a weighted mean between these points
      */
-    private static int biasedMidPoint (
-            final int p1,
-            final int p2
-    ) {
+    private static int biasedMidPoint (final int p1, final int p2) {
         return (p1 + 7 * p2) / 8;
     }
 
@@ -195,8 +176,6 @@ public class Link extends EdgeGridItem {
     public Set<GridItem> getInboundConnections () {
         throw new UnsupportedOperationException();
     }
-
-    /* Getters & Setters */
 
     /**
      * It throws {@link UnsupportedOperationException}.
@@ -216,9 +195,7 @@ public class Link extends EdgeGridItem {
      * @return the link attributes
      */
     @Override
-    public String makeDescription (
-            final ResourceBundle translator
-    ) {
+    public String makeDescription (final ResourceBundle translator) {
         return (
                 "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s %d<br>%s " +
                 "%d<br>%s: %s<br>%s: %s<br>%s: %s"
@@ -238,19 +215,9 @@ public class Link extends EdgeGridItem {
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public Link makeCopy (
-            final int mousePosX,
-            final int mousePosY,
-            final int globalId,
-            final int localId
-    ) {
-        final var link = new Link(null, null,
-                                  globalId, localId
-        );
+    public Link makeCopy (final int mousePosX, final int mousePosY, final int globalId, final int localId) {
+        final var link = new Link(null, null, globalId, localId);
         link.bandwidth  = this.bandwidth;
         link.latency    = this.latency;
         link.loadFactor = this.loadFactor;
@@ -264,8 +231,7 @@ public class Link extends EdgeGridItem {
      * to {@code true}; otherwise, is set to {@code false}.
      */
     private void checkConfiguration () {
-        this.configured = this.bandwidth > 0
-                          && this.latency > 0;
+        this.configured = this.bandwidth > 0 && this.latency > 0;
     }
 
     /**
@@ -307,8 +273,6 @@ public class Link extends EdgeGridItem {
         this.loadFactor = loadFactor;
     }
 
-    /* getImage */
-
     /**
      * Returns the latency.
      *
@@ -326,6 +290,6 @@ public class Link extends EdgeGridItem {
      */
     public void setLatency (final double latency) {
         this.latency = latency;
-        checkConfiguration();
+        this.checkConfiguration();
     }
 }
