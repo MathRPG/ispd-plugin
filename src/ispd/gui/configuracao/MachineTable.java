@@ -35,13 +35,13 @@ public class MachineTable extends AbstractTableModel {
     private static final int               COLUMN_COUNT = 2;
     private final        JButton           slaves       = this.setButton();
     private final        JComboBox<?>      schedulers   =
-            new JComboBox<Object>(GridSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new));
+            new JComboBox<>(GridSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new));
     private final        JComboBox<String> users        = new JComboBox<>();
     private final        JList<GridItem>   slaveList    = new JList<>();
     private              ResourceBundle    words;
     private              Machine           machine      = null;
 
-    MachineTable (final ResourceBundle words) {
+    public MachineTable (final ResourceBundle words) {
         this.words = words;
         new CheckListRenderer(this.slaveList);
     }
@@ -79,11 +79,15 @@ public class MachineTable extends AbstractTableModel {
         switch (columnIndex) {
             case MachineTable.TYPE -> {
                 final var name = this.returnNameForIndex(rowIndex);
-                if (name != null) {return name;}
+                if (name != null) {
+                    return name;
+                }
             }
             case MachineTable.VALUE -> {
                 final var val = this.getValueForMachine(rowIndex);
-                if (val != null) {return val;}
+                if (val != null) {
+                    return val;
+                }
             }
         }
 
@@ -148,9 +152,7 @@ public class MachineTable extends AbstractTableModel {
     }
 
     @Override
-    public void setValueAt (
-            final Object aValue, final int rowIndex, final int columnIndex
-    ) {
+    public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
         if (columnIndex != MachineTable.VALUE || this.machine == null) {
             return;
         }
@@ -198,7 +200,7 @@ public class MachineTable extends AbstractTableModel {
                 return;
             }
 
-            final var modelList = new DefaultListModel<GridItem>();
+            final var modelList     = new DefaultListModel<GridItem>();
             final var connectedList = MachineTable.this.machine.connectedSchedulableNodes();
 
             for (final var item : connectedList) {
@@ -207,7 +209,8 @@ public class MachineTable extends AbstractTableModel {
 
             MachineTable.this.slaveList.setModel(modelList);
 
-            MachineTable.this.machine.getSlaves().stream().mapToInt(connectedList::indexOf)
+            MachineTable.this.machine.getSlaves().stream()
+                                     .mapToInt(connectedList::indexOf)
                                      .forEachOrdered(i -> MachineTable.this.slaveList.addSelectionInterval(i, i));
 
             MachineTable.this.slaveList.setVisible(true);
@@ -218,9 +221,9 @@ public class MachineTable extends AbstractTableModel {
                 return;
             }
 
-            final int option = JOptionPane.showConfirmDialog(MachineTable.this.slaves, MachineTable.this.slaveList,
-                                                             "Select the slaves", JOptionPane.OK_CANCEL_OPTION,
-                                                             JOptionPane.PLAIN_MESSAGE
+            final int option = JOptionPane.showConfirmDialog(
+                    MachineTable.this.slaves, MachineTable.this.slaveList, "Select the slaves",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
             );
 
             if (option != JOptionPane.OK_OPTION) {

@@ -21,7 +21,7 @@ public class LinkTable extends AbstractTableModel {
     private              GridItem       link         = null;
     private              ResourceBundle words;
 
-    LinkTable (final ResourceBundle words) {
+    public LinkTable (final ResourceBundle words) {
         this.words = words;
     }
 
@@ -44,11 +44,15 @@ public class LinkTable extends AbstractTableModel {
         switch (columnIndex) {
             case LinkTable.TYPE -> {
                 final var name = this.getRowName(rowIndex);
-                if (name != null) {return name;}
+                if (name != null) {
+                    return name;
+                }
             }
             case LinkTable.VALUE -> {
                 final var value = this.getRowValue(rowIndex);
-                if (value != null) {return value;}
+                if (value != null) {
+                    return value;
+                }
             }
         }
 
@@ -114,9 +118,7 @@ public class LinkTable extends AbstractTableModel {
     }
 
     @Override
-    public void setValueAt (
-            final Object aValue, final int rowIndex, final int columnIndex
-    ) {
+    public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
         if (columnIndex != LinkTable.VALUE || this.link == null) {
             return;
         }

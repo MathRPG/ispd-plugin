@@ -17,7 +17,7 @@ public class CheckListRenderer extends DefaultListSelectionModel implements List
     private final        JCheckBox checkBox;
     private final        Color     selectionBackground;
 
-    CheckListRenderer (final JList<?> list) {
+    public CheckListRenderer (final JList<?> list) {
         this.checkBox            = new JCheckBox();
         this.selectionBackground = list.getSelectionBackground();
         list.setCellRenderer(this);

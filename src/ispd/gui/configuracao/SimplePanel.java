@@ -9,7 +9,6 @@ public class SimplePanel extends JPanel {
     private final JLabel label = new JLabel();
 
     public SimplePanel () {
-
         this.initComponents();
     }
 
