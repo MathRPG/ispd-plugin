@@ -13,66 +13,61 @@ import ispd.motor.filas.servidores.CentroServico;
 
 public class CS_Link extends CS_Comunicacao {
 
-    private CentroServico  conexoesEntrada;
-    private CentroServico  conexoesSaida;
-    private List<Tarefa>   filaPacotes;
-    private List<Mensagem> filaMensagens;
-    private boolean        linkDisponivel;
-    private boolean        linkDisponivelMensagem;
-    private double         tempoTransmitirMensagem;
+    private final List<Tarefa>   filaPacotes;
+    private final List<Mensagem> filaMensagens;
+    private       CentroServico  conexoesEntrada;
+    private       CentroServico  conexoesSaida;
+    private       boolean        linkDisponivel;
+    private       boolean        linkDisponivelMensagem;
 
-    public CS_Link (String id, double LarguraBanda, double Ocupacao, double Latencia) {
+    public CS_Link (final String id, final double LarguraBanda, final double Ocupacao, final double Latencia) {
         super(id, LarguraBanda, Ocupacao, Latencia);
-        this.conexoesEntrada         = null;
-        this.conexoesSaida           = null;
-        this.linkDisponivel          = true;
-        this.filaPacotes             = new ArrayList<Tarefa>();
-        this.filaMensagens           = new ArrayList<Mensagem>();
-        this.tempoTransmitirMensagem = 0;
-        this.linkDisponivelMensagem  = true;
+        this.conexoesEntrada        = null;
+        this.conexoesSaida          = null;
+        this.linkDisponivel         = true;
+        this.filaPacotes            = new ArrayList<>();
+        this.filaMensagens          = new ArrayList<>();
+        this.linkDisponivelMensagem = true;
     }
 
     public CentroServico getConexoesEntrada () {
-        return conexoesEntrada;
+        return this.conexoesEntrada;
     }
 
-    public void setConexoesEntrada (CentroServico conexoesEntrada) {
+    public void setConexoesEntrada (final CentroServico conexoesEntrada) {
         this.conexoesEntrada = conexoesEntrada;
     }
 
     @Override
-    public void chegadaDeCliente (Simulation simulacao, Tarefa cliente) {
+    public void chegadaDeCliente (final Simulation simulacao, final Tarefa cliente) {
         cliente.iniciarEsperaComunicacao(simulacao.getTime(this));
-        if (linkDisponivel) {
+        if (this.linkDisponivel) {
             //indica que recurso está ocupado
-            linkDisponivel = false;
+            this.linkDisponivel = false;
             //cria evento para iniciar o atendimento imediatamente
-            FutureEvent novoEvt = new FutureEvent(
-                    simulacao.getTime(this),
-                    FutureEvent.ATENDIMENTO,
-                    this,
-                    cliente
-            );
+            final FutureEvent novoEvt =
+                    new FutureEvent(simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente);
             simulacao.addFutureEvent(novoEvt);
         } else {
-            filaPacotes.add(cliente);
+            this.filaPacotes.add(cliente);
         }
     }
 
     @Override
-    public void atendimento (Simulation simulacao, Tarefa cliente) {
-        if (!conexoesSaida.equals(cliente.getCaminho().get(0))) {
-            System.out.println("link " + this.getId() + " tarefa " + cliente.getIdentificador() + " tempo " +
-                               simulacao.getTime(this) + " local " + cliente.getCaminho().get(0).getId());
+    public void atendimento (final Simulation simulacao, final Tarefa cliente) {
+        if (!this.conexoesSaida.equals(cliente.getCaminho().get(0))) {
+            System.out.println(
+                    "link " + this.getId() + " tarefa " + cliente.getIdentificador() + " tempo " +
+                    simulacao.getTime(this) + " local " + cliente.getCaminho().get(0).getId()
+            );
             throw new IllegalArgumentException("O destino da mensagem é um recurso sem conexão com este link");
         } else {
             cliente.finalizarEsperaComunicacao(simulacao.getTime(this));
             cliente.iniciarAtendimentoComunicacao(simulacao.getTime(this));
             //Gera evento para atender proximo cliente da lista
-            FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this) + tempoTransmitir(cliente.getTamComunicacao()),
-                    FutureEvent.SAIDA,
-                    this, cliente
+            final FutureEvent evtFut = new FutureEvent(
+                    simulacao.getTime(this) + this.tempoTransmitir(cliente.getTamComunicacao()),
+                    FutureEvent.SAIDA, this, cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -80,97 +75,84 @@ public class CS_Link extends CS_Comunicacao {
     }
 
     @Override
-    public void saidaDeCliente (Simulation simulacao, Tarefa cliente) {
+    public void saidaDeCliente (final Simulation simulacao, final Tarefa cliente) {
         //Incrementa o número de Mbits transmitido por este link
         this.getMetrica().incMbitsTransmitidos(cliente.getTamComunicacao());
         //Incrementa o tempo de transmissão
-        double tempoTrans = this.tempoTransmitir(cliente.getTamComunicacao());
+        final double tempoTrans = this.tempoTransmitir(cliente.getTamComunicacao());
         this.getMetrica().incSegundosDeTransmissao(tempoTrans);
         //Incrementa o tempo de transmissão no pacote
         cliente.finalizarAtendimentoComunicacao(simulacao.getTime(this));
         //Gera evento para chegada da tarefa no proximo servidor
-        FutureEvent evtFut = new FutureEvent(
-                simulacao.getTime(this),
-                FutureEvent.CHEGADA,
-                cliente.getCaminho().remove(0), cliente
-        );
+        FutureEvent evtFut =
+                new FutureEvent(simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente);
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
-        if (filaPacotes.isEmpty()) {
+        if (this.filaPacotes.isEmpty()) {
             //Indica que está livre
             this.linkDisponivel = true;
         } else {
             //Gera evento para atender proximo cliente da lista
-            Tarefa proxCliente = filaPacotes.remove(0);
-            evtFut = new FutureEvent(
-                    simulacao.getTime(this),
-                    FutureEvent.ATENDIMENTO,
-                    this, proxCliente
-            );
+            final Tarefa proxCliente = this.filaPacotes.remove(0);
+            evtFut = new FutureEvent(simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente);
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         }
     }
 
     @Override
-    public void requisicao (Simulation simulacao, Mensagem cliente, int tipo) {
+    public void requisicao (final Simulation simulacao, final Mensagem cliente, final int tipo) {
         if (tipo == FutureEvent.SAIDA_MENSAGEM) {
-            tempoTransmitirMensagem += tempoTransmitir(cliente.getTamComunicacao());
+            this.tempoTransmitir(cliente.getTamComunicacao());
             //Incrementa o número de Mbits transmitido por este link
             this.getMetrica().incMbitsTransmitidos(cliente.getTamComunicacao());
             //Incrementa o tempo de transmissão
-            double tempoTrans = this.tempoTransmitir(cliente.getTamComunicacao());
+            final double tempoTrans = this.tempoTransmitir(cliente.getTamComunicacao());
             this.getMetrica().incSegundosDeTransmissao(tempoTrans);
             //Gera evento para chegada da mensagem no proximo servidor
             FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this) + tempoTrans,
-                    FutureEvent.MENSAGEM,
-                    cliente.getCaminho().remove(0), cliente
+                    simulacao.getTime(this) + tempoTrans, FutureEvent.MENSAGEM, cliente.getCaminho().remove(0), cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
-            if (!filaMensagens.isEmpty()) {
+            if (!this.filaMensagens.isEmpty()) {
                 //Gera evento para chegada da mensagem no proximo servidor
                 evtFut = new FutureEvent(
                         simulacao.getTime(this) + tempoTrans,
-                        FutureEvent.SAIDA_MENSAGEM,
-                        this, filaMensagens.remove(0)
+                        FutureEvent.SAIDA_MENSAGEM, this, this.filaMensagens.remove(0)
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             } else {
-                linkDisponivelMensagem = true;
+                this.linkDisponivelMensagem = true;
             }
-        } else if (linkDisponivelMensagem) {
-            linkDisponivelMensagem = false;
+        } else if (this.linkDisponivelMensagem) {
+            this.linkDisponivelMensagem = false;
             //Gera evento para chegada da mensagem no proximo servidor
-            FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this),
-                    FutureEvent.SAIDA_MENSAGEM,
-                    this, cliente
-            );
+            final FutureEvent evtFut =
+                    new FutureEvent(simulacao.getTime(this), FutureEvent.SAIDA_MENSAGEM, this, cliente);
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         } else {
-            filaMensagens.add(cliente);
+            this.filaMensagens.add(cliente);
         }
     }
 
     @Override
     public CentroServico getConexoesSaida () {
-        return conexoesSaida;
+        return this.conexoesSaida;
     }
 
-    public void setConexoesSaida (CentroServico conexoesSaida) {
+    public void setConexoesSaida (final CentroServico conexoesSaida) {
         this.conexoesSaida = conexoesSaida;
     }
 
     @Override
     public Integer getCargaTarefas () {
-        if (linkDisponivel && linkDisponivelMensagem) {
+        if (this.linkDisponivel && this.linkDisponivelMensagem) {
             return 0;
         } else {
-            return (filaMensagens.size() + filaPacotes.size()) + 1;
+            return (this.filaMensagens.size() + this.filaPacotes.size()) + 1;
         }
     }
 }

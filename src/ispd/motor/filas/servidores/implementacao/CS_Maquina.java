@@ -12,25 +12,20 @@ import ispd.motor.filas.servidores.CS_Comunicacao;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 
-
 public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
 
-    private List<CS_Comunicacao>   conexoesEntrada;
-    private List<CS_Comunicacao>   conexoesSaida;
-    private List<Tarefa>           filaTarefas;
-    private List<CS_Processamento> mestres;
-    private List<List>             caminhoMestre;
-    private int                    processadoresDisponiveis;
-    //Dados dinamicos
-    private List<Tarefa>           tarefaEmExecucao;
-    //Adição de falhas
-    private List<Double>           falhas      = new ArrayList<Double>();
-    private List<Double>           recuperacao = new ArrayList<Double>();
-    private boolean                erroRecuperavel;
-    private boolean                falha       = false;
-    private List<Tarefa>           historicoProcessamento;
-
-    //TO DO: INCLUIR INFORMAÇÕES DE MEMÓRIA E DISCO
+    private final List<CS_Comunicacao>   conexoesEntrada;
+    private final List<CS_Comunicacao>   conexoesSaida;
+    private final List<Tarefa>           filaTarefas;
+    private final List<CS_Processamento> mestres;
+    private final List<Tarefa>           tarefaEmExecucao;
+    private final List<Double>           falhas      = new ArrayList<>();
+    private final List<Double>           recuperacao = new ArrayList<>();
+    private final List<Tarefa>           historicoProcessamento;
+    private       List<List>             caminhoMestre;
+    private       int                    processadoresDisponiveis;
+    private       boolean                erroRecuperavel;
+    private       boolean                falha       = false;
 
     /**
      * Constructor which specifies the machine configuration,
@@ -55,10 +50,7 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
      *         for specify the machine number and energy consumption.
      */
     public CS_Maquina (
-            final String id,
-            final String owner,
-            final double computationalPower,
-            final int coreCount,
+            final String id, final String owner, final double computationalPower, final int coreCount,
             final double loadFactor
     ) {
         this(id, owner, computationalPower, coreCount, loadFactor, 0, 0.0);
@@ -85,13 +77,8 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
      *         the energy consumption
      */
     public CS_Maquina (
-            final String id,
-            final String owner,
-            final double computationalPower,
-            final int coreCount,
-            final double loadFactor,
-            final int machineNumber,
-            final double energy
+            final String id, final String owner, final double computationalPower, final int coreCount,
+            final double loadFactor, final int machineNumber, final double energy
     ) {
         super(id, owner, computationalPower, coreCount, loadFactor, machineNumber, energy);
         this.conexoesEntrada          = new ArrayList<>();
@@ -128,12 +115,8 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
      *         for specify the machine number.
      */
     public CS_Maquina (
-            final String id,
-            final String owner,
-            final double computationalPower,
-            final int coreCount,
-            final double loadFactor,
-            final double energy
+            final String id, final String owner, final double computationalPower, final int coreCount,
+            final double loadFactor, final double energy
     ) {
         this(id, owner, computationalPower, coreCount, loadFactor, 0, energy);
     }
@@ -163,175 +146,143 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
      *         for specify the energy consumption
      */
     public CS_Maquina (
-            final String id,
-            final String owner,
-            final double computationalPower,
-            final int coreCount,
-            final double loadFactor,
-            final int machineNumber
+            final String id, final String owner, final double computationalPower, final int coreCount,
+            final double loadFactor, final int machineNumber
     ) {
         this(id, owner, computationalPower, coreCount, loadFactor, machineNumber, 0.0);
     }
 
     @Override
-    public void addConexoesEntrada (CS_Link conexao) {
+    public void addConexoesEntrada (final CS_Link conexao) {
         this.conexoesEntrada.add(conexao);
     }
 
     @Override
-    public void addConexoesSaida (CS_Link conexao) {
+    public void addConexoesSaida (final CS_Link conexao) {
         this.conexoesSaida.add(conexao);
     }
 
-    public void addConexoesEntrada (CS_Switch conexao) {
+    public void addConexoesEntrada (final CS_Switch conexao) {
         this.conexoesEntrada.add(conexao);
     }
 
-    public void addConexoesSaida (CS_Switch conexao) {
+    public void addConexoesSaida (final CS_Switch conexao) {
         this.conexoesSaida.add(conexao);
     }
 
     @Override
-    public void chegadaDeCliente (Simulation simulacao, Tarefa cliente) {
+    public void chegadaDeCliente (final Simulation simulacao, final Tarefa cliente) {
         if (cliente.getEstado() != Tarefa.CANCELADO) {
             cliente.iniciarEsperaProcessamento(simulacao.getTime(this));
-            if (processadoresDisponiveis != 0) {
+            if (this.processadoresDisponiveis != 0) {
                 //indica que recurso está ocupado
-                processadoresDisponiveis--;
+                this.processadoresDisponiveis--;
                 //cria evento para iniciar o atendimento imediatamente
-                FutureEvent novoEvt = new FutureEvent(
-                        simulacao.getTime(this),
-                        FutureEvent.ATENDIMENTO,
-                        this,
-                        cliente
+                final FutureEvent novoEvt = new FutureEvent(
+                        simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente
                 );
                 simulacao.addFutureEvent(novoEvt);
             } else {
-                filaTarefas.add(cliente);
+                this.filaTarefas.add(cliente);
             }
-            historicoProcessamento.add(cliente);
+            this.historicoProcessamento.add(cliente);
         }
     }
 
     @Override
-    public void atendimento (Simulation simulacao, Tarefa cliente) {
+    public void atendimento (final Simulation simulacao, final Tarefa cliente) {
         cliente.finalizarEsperaProcessamento(simulacao.getTime(this));
         cliente.iniciarAtendimentoProcessamento(simulacao.getTime(this));
-        tarefaEmExecucao.add(cliente);
-        Double next =
-                simulacao.getTime(this) + tempoProcessar(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
-        if (!falhas.isEmpty() && next > falhas.get(0)) {
-            Double tFalha = falhas.remove(0);
+        this.tarefaEmExecucao.add(cliente);
+        final Double next = simulacao.getTime(this)
+                            + this.tempoProcessar(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
+        if (!this.falhas.isEmpty() && next > this.falhas.get(0)) {
+            Double tFalha = this.falhas.remove(0);
             if (tFalha < simulacao.getTime(this)) {
                 tFalha = simulacao.getTime(this);
             }
-            Mensagem msg = new Mensagem(this, Mensagens.FALHAR, cliente);
-            FutureEvent evt = new FutureEvent(
-                    tFalha,
-                    FutureEvent.MENSAGEM,
-                    this,
-                    msg
+            final Mensagem msg = new Mensagem(this, Mensagens.FALHAR, cliente);
+            final FutureEvent evt = new FutureEvent(
+                    tFalha, FutureEvent.MENSAGEM, this, msg
             );
             simulacao.addFutureEvent(evt);
         } else {
-            falha = false;
+            this.falha = false;
             //Gera evento para atender proximo cliente da lista
-            FutureEvent evtFut = new FutureEvent(
-                    next,
-                    FutureEvent.SAIDA,
-                    this, cliente
-            );
+            final FutureEvent evtFut = new FutureEvent(next, FutureEvent.SAIDA, this, cliente);
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         }
     }
 
     @Override
-    public void saidaDeCliente (Simulation simulacao, Tarefa cliente) {
+    public void saidaDeCliente (final Simulation simulacao, final Tarefa cliente) {
         //Incrementa o número de Mbits transmitido por este link
         this.getMetrica().incMflopsProcessados(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
         //Incrementa o tempo de processamento
-        double tempoProc = this.tempoProcessar(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
+        final double tempoProc = this.tempoProcessar(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
         this.getMetrica().incSegundosDeProcessamento(tempoProc);
         //Incrementa o tempo de transmissão no pacote
         cliente.finalizarAtendimentoProcessamento(simulacao.getTime(this));
-        tarefaEmExecucao.remove(cliente);
+        this.tarefaEmExecucao.remove(cliente);
         //eficiencia calculada apenas nas classes CS_Maquina
         cliente.calcEficiencia(this.getPoderComputacional());
         //Devolve tarefa para o mestre
-        if (mestres.contains(cliente.getOrigem())) {
-            int                 index   = mestres.indexOf(cliente.getOrigem());
-            List<CentroServico> caminho = new ArrayList<CentroServico>((List<CentroServico>) caminhoMestre.get(index));
+        if (this.mestres.contains(cliente.getOrigem())) {
+            final int                 index   = this.mestres.indexOf(cliente.getOrigem());
+            final List<CentroServico> caminho = new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
             cliente.setCaminho(caminho);
             //Gera evento para chegada da tarefa no proximo servidor
-            FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this),
-                    FutureEvent.CHEGADA,
-                    cliente.getCaminho().remove(0),
-                    cliente
+            final FutureEvent evtFut = new FutureEvent(
+                    simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         } else {
             //buscar menor caminho!!!
-            CS_Processamento novoMestre = (CS_Processamento) cliente.getOrigem();
-            List<CentroServico> caminho = new ArrayList<CentroServico>(
-                    CS_Maquina.getMenorCaminhoIndireto(this, novoMestre));
+            final CS_Processamento    novoMestre = (CS_Processamento) cliente.getOrigem();
+            final List<CentroServico> caminho    = new ArrayList<>(getMenorCaminhoIndireto(this, novoMestre));
             this.addMestre(novoMestre);
             this.caminhoMestre.add(caminho);
-            cliente.setCaminho(new ArrayList<CentroServico>(caminho));
+            cliente.setCaminho(new ArrayList<>(caminho));
             //Gera evento para chegada da tarefa no proximo servidor
-            FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this),
-                    FutureEvent.CHEGADA,
-                    cliente.getCaminho().remove(0),
-                    cliente
+            final FutureEvent evtFut = new FutureEvent(
+                    simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         }
-        if (filaTarefas.isEmpty()) {
+        if (this.filaTarefas.isEmpty()) {
             //Indica que está livre
             this.processadoresDisponiveis++;
         } else {
             //Gera evento para atender proximo cliente da lista
-            Tarefa proxCliente = filaTarefas.remove(0);
-            FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this),
-                    FutureEvent.ATENDIMENTO,
-                    this, proxCliente
+            final Tarefa proxCliente = this.filaTarefas.remove(0);
+            final FutureEvent evtFut = new FutureEvent(
+                    simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         }
     }
 
-    public void addMestre (CS_Processamento mestre) {
+    public void addMestre (final CS_Processamento mestre) {
         this.mestres.add(mestre);
     }
 
     @Override
-    public void requisicao (Simulation simulacao, Mensagem mensagem, int tipo) {
+    public void requisicao (final Simulation simulacao, final Mensagem mensagem, final int tipo) {
         if (mensagem != null) {
             if (mensagem.getTipo() == Mensagens.ATUALIZAR) {
-                atenderAtualizacao(simulacao, mensagem);
+                this.atenderAtualizacao(simulacao, mensagem);
             } else if (mensagem.getTarefa() != null && mensagem.getTarefa().getLocalProcessamento().equals(this)) {
                 switch (mensagem.getTipo()) {
-                    case Mensagens.PARAR:
-                        atenderParada(simulacao, mensagem);
-                        break;
-                    case Mensagens.CANCELAR:
-                        atenderCancelamento(simulacao, mensagem);
-                        break;
-                    case Mensagens.DEVOLVER:
-                        atenderDevolucao(simulacao, mensagem);
-                        break;
-                    case Mensagens.DEVOLVER_COM_PREEMPCAO:
-                        atenderDevolucaoPreemptiva(simulacao, mensagem);
-                        break;
-                    case Mensagens.FALHAR:
-                        atenderFalha(simulacao, mensagem);
-                        break;
+                    case ispd.motor.Mensagens.PARAR -> this.atenderParada(simulacao, mensagem);
+                    case ispd.motor.Mensagens.CANCELAR -> this.atenderCancelamento(simulacao, mensagem);
+                    case ispd.motor.Mensagens.DEVOLVER -> this.atenderDevolucao(simulacao, mensagem);
+                    case ispd.motor.Mensagens.DEVOLVER_COM_PREEMPCAO -> this.atenderDevolucaoPreemptiva(
+                            simulacao, mensagem);
+                    case ispd.motor.Mensagens.FALHAR -> this.atenderFalha(simulacao, mensagem);
                 }
             }
         }
@@ -344,38 +295,36 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
 
     @Override
     public Integer getCargaTarefas () {
-        if (falha) {
+        if (this.falha) {
             return -100;
         } else {
-            return (filaTarefas.size() + tarefaEmExecucao.size());
+            return (this.filaTarefas.size() + this.tarefaEmExecucao.size());
         }
     }
 
     @Override
-    public void atenderCancelamento (Simulation simulacao, Mensagem mensagem) {
+    public void atenderCancelamento (final Simulation simulacao, final Mensagem mensagem) {
         if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
             //remover evento de saida do cliente do servidor
             simulacao.removeFutureEvent(FutureEvent.SAIDA, this, mensagem.getTarefa());
-            tarefaEmExecucao.remove(mensagem.getTarefa());
+            this.tarefaEmExecucao.remove(mensagem.getTarefa());
             //gerar evento para atender proximo cliente
-            if (filaTarefas.isEmpty()) {
+            if (this.filaTarefas.isEmpty()) {
                 //Indica que está livre
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                Tarefa proxCliente = filaTarefas.remove(0);
-                FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this),
-                        FutureEvent.ATENDIMENTO,
-                        this, proxCliente
+                final Tarefa proxCliente = this.filaTarefas.remove(0);
+                final FutureEvent evtFut = new FutureEvent(
+                        simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
         }
-        double inicioAtendimento = mensagem.getTarefa().cancelar(simulacao.getTime(this));
-        double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-        double mflopsProcessados = this.getMflopsProcessados(tempoProc);
+        final double inicioAtendimento = mensagem.getTarefa().cancelar(simulacao.getTime(this));
+        final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+        final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
         //Incrementa o número de Mflops processados por este recurso
         this.getMetrica().incMflopsProcessados(mflopsProcessados);
         //Incrementa o tempo de processamento
@@ -386,22 +335,18 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
     }
 
     @Override
-    public void atenderParada (Simulation simulacao, Mensagem mensagem) {
+    public void atenderParada (final Simulation simulacao, final Mensagem mensagem) {
         if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
             //remover evento de saida do cliente do servidor
-            boolean remover = simulacao.removeFutureEvent(
-                    FutureEvent.SAIDA,
-                    this,
-                    mensagem.getTarefa()
-            );
+            simulacao.removeFutureEvent(FutureEvent.SAIDA, this, mensagem.getTarefa());
             //gerar evento para atender proximo cliente
-            if (filaTarefas.isEmpty()) {
+            if (this.filaTarefas.isEmpty()) {
                 //Indica que está livre
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                Tarefa proxCliente = filaTarefas.remove(0);
-                FutureEvent evtFut = new FutureEvent(
+                final Tarefa proxCliente = this.filaTarefas.remove(0);
+                final FutureEvent evtFut = new FutureEvent(
                         simulacao.getTime(this),
                         FutureEvent.ATENDIMENTO,
                         this, proxCliente
@@ -409,29 +354,26 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
-            double inicioAtendimento = mensagem.getTarefa().parar(simulacao.getTime(this));
-            double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-            double mflopsProcessados = this.getMflopsProcessados(tempoProc);
+            final double inicioAtendimento = mensagem.getTarefa().parar(simulacao.getTime(this));
+            final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+            final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
             //Incrementa o número de Mflops processados por este recurso
             this.getMetrica().incMflopsProcessados(mflopsProcessados);
             //Incrementa o tempo de processamento
             this.getMetrica().incSegundosDeProcessamento(tempoProc);
             //Incrementa procentagem da tarefa processada
             mensagem.getTarefa().setMflopsProcessado(mflopsProcessados);
-            tarefaEmExecucao.remove(mensagem.getTarefa());
-            filaTarefas.add(mensagem.getTarefa());
+            this.tarefaEmExecucao.remove(mensagem.getTarefa());
+            this.filaTarefas.add(mensagem.getTarefa());
         }
     }
 
     @Override
-    public void atenderDevolucao (Simulation simulacao, Mensagem mensagem) {
-        boolean remover = filaTarefas.remove(mensagem.getTarefa());
+    public void atenderDevolucao (final Simulation simulacao, final Mensagem mensagem) {
+        final boolean remover = this.filaTarefas.remove(mensagem.getTarefa());
         if (remover) {
-            FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this),
-                    FutureEvent.CHEGADA,
-                    mensagem.getTarefa().getOrigem(),
-                    mensagem.getTarefa()
+            final FutureEvent evtFut = new FutureEvent(
+                    simulacao.getTime(this), FutureEvent.CHEGADA, mensagem.getTarefa().getOrigem(), mensagem.getTarefa()
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -439,52 +381,42 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
     }
 
     @Override
-    public void atenderDevolucaoPreemptiva (Simulation simulacao, Mensagem mensagem) {
+    public void atenderDevolucaoPreemptiva (final Simulation simulacao, final Mensagem mensagem) {
         boolean remover = false;
         if (mensagem.getTarefa().getEstado() == Tarefa.PARADO) {
-            remover = filaTarefas.remove(mensagem.getTarefa());
+            remover = this.filaTarefas.remove(mensagem.getTarefa());
         } else if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
-            remover = simulacao.removeFutureEvent(
-                    FutureEvent.SAIDA,
-                    this,
-                    mensagem.getTarefa()
-            );
+            remover = simulacao.removeFutureEvent(FutureEvent.SAIDA, this, mensagem.getTarefa());
             //gerar evento para atender proximo cliente
-            if (filaTarefas.isEmpty()) {
+            if (this.filaTarefas.isEmpty()) {
                 //Indica que está livre
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                Tarefa proxCliente = filaTarefas.remove(0);
-                FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this),
-                        FutureEvent.ATENDIMENTO,
-                        this, proxCliente
-                );
+                final Tarefa proxCliente = this.filaTarefas.remove(0);
+                final FutureEvent evtFut =
+                        new FutureEvent(simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente);
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
-            double inicioAtendimento = mensagem.getTarefa().parar(simulacao.getTime(this));
-            double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-            double mflopsProcessados = this.getMflopsProcessados(tempoProc);
+            final double inicioAtendimento = mensagem.getTarefa().parar(simulacao.getTime(this));
+            final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+            final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
             //Incrementa o número de Mflops processados por este recurso
             this.getMetrica().incMflopsProcessados(mflopsProcessados);
             //Incrementa o tempo de processamento
             this.getMetrica().incSegundosDeProcessamento(tempoProc);
             //Incrementa procentagem da tarefa processada
-            double numCP = ((int) (mflopsProcessados / mensagem.getTarefa().getCheckPoint())) *
-                           mensagem.getTarefa().getCheckPoint();
+            final double numCP = ((int) (mflopsProcessados / mensagem.getTarefa().getCheckPoint())) *
+                                 mensagem.getTarefa().getCheckPoint();
             mensagem.getTarefa().setMflopsProcessado(numCP);
             //Incrementa desperdicio
             mensagem.getTarefa().incMflopsDesperdicados(mflopsProcessados - numCP);
-            tarefaEmExecucao.remove(mensagem.getTarefa());
+            this.tarefaEmExecucao.remove(mensagem.getTarefa());
         }
         if (remover) {
-            FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this),
-                    FutureEvent.CHEGADA,
-                    mensagem.getTarefa().getOrigem(),
-                    mensagem.getTarefa()
+            final FutureEvent evtFut = new FutureEvent(
+                    simulacao.getTime(this), FutureEvent.CHEGADA, mensagem.getTarefa().getOrigem(), mensagem.getTarefa()
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -492,97 +424,89 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
     }
 
     @Override
-    public void atenderAtualizacao (Simulation simulacao, Mensagem mensagem) {
+    public void atenderAtualizacao (final Simulation simulacao, final Mensagem mensagem) {
         //enviar resultados
-        int                 index        = mestres.indexOf(mensagem.getOrigem());
-        List<CentroServico> caminho      = new ArrayList<CentroServico>((List<CentroServico>) caminhoMestre.get(index));
-        Mensagem            novaMensagem =
+        final int                 index   = this.mestres.indexOf(mensagem.getOrigem());
+        final List<CentroServico> caminho = new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
+        final Mensagem novaMensagem =
                 new Mensagem(this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR);
         //Obtem informações dinâmicas
-        novaMensagem.setProcessadorEscravo(new ArrayList<Tarefa>(tarefaEmExecucao));
-        novaMensagem.setFilaEscravo(new ArrayList<Tarefa>(filaTarefas));
+        novaMensagem.setProcessadorEscravo(new ArrayList<>(this.tarefaEmExecucao));
+        novaMensagem.setFilaEscravo(new ArrayList<>(this.filaTarefas));
         novaMensagem.setCaminho(caminho);
-        FutureEvent evtFut = new FutureEvent(
-                simulacao.getTime(this),
-                FutureEvent.MENSAGEM,
-                novaMensagem.getCaminho().remove(0),
-                novaMensagem
+        final FutureEvent evtFut = new FutureEvent(
+                simulacao.getTime(this), FutureEvent.MENSAGEM, novaMensagem.getCaminho().remove(0), novaMensagem
         );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
     }
 
     @Override
-    public void atenderRetornoAtualizacao (Simulation simulacao, Mensagem mensagem) {
+    public void atenderRetornoAtualizacao (final Simulation simulacao, final Mensagem mensagem) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void atenderFalha (Simulation simulacao, Mensagem mensagem) {
-        double tempoRec = recuperacao.remove(0);
-        for (Tarefa tar : tarefaEmExecucao) {
+    public void atenderFalha (final Simulation simulacao, final Mensagem mensagem) {
+        final double tempoRec = this.recuperacao.remove(0);
+        for (final Tarefa tar : this.tarefaEmExecucao) {
             if (tar.getEstado() == Tarefa.PROCESSANDO) {
-                falha = true;
-                double inicioAtendimento = tar.parar(simulacao.getTime(this));
-                double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-                double mflopsProcessados = this.getMflopsProcessados(tempoProc);
+                this.falha = true;
+                final double inicioAtendimento = tar.parar(simulacao.getTime(this));
+                final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+                final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
                 //Incrementa o número de Mflops processados por este recurso
                 this.getMetrica().incMflopsProcessados(mflopsProcessados);
                 //Incrementa o tempo de processamento
                 this.getMetrica().incSegundosDeProcessamento(tempoProc);
                 //Incrementa procentagem da tarefa processada
-                double numCP = ((int) (mflopsProcessados / tar.getCheckPoint())) * tar.getCheckPoint();
+                final double numCP = ((int) (mflopsProcessados / tar.getCheckPoint())) * tar.getCheckPoint();
                 tar.setMflopsProcessado(numCP);
                 tar.incMflopsDesperdicados(mflopsProcessados - numCP);
-                if (erroRecuperavel) {
+                if (this.erroRecuperavel) {
                     //Reiniciar atendimento da tarefa
                     tar.iniciarEsperaProcessamento(simulacao.getTime(this));
                     //cria evento para iniciar o atendimento imediatamente
-                    FutureEvent novoEvt = new FutureEvent(
-                            simulacao.getTime(this) + tempoRec,
-                            FutureEvent.ATENDIMENTO,
-                            this,
-                            tar
-                    );
+                    final FutureEvent novoEvt =
+                            new FutureEvent(simulacao.getTime(this) + tempoRec, FutureEvent.ATENDIMENTO, this, tar);
                     simulacao.addFutureEvent(novoEvt);
                 } else {
                     tar.setEstado(Tarefa.FALHA);
                 }
             }
         }
-        if (!erroRecuperavel) {
-            processadoresDisponiveis += tarefaEmExecucao.size();
-            filaTarefas.clear();
+        if (!this.erroRecuperavel) {
+            this.processadoresDisponiveis += this.tarefaEmExecucao.size();
+            this.filaTarefas.clear();
         }
-        tarefaEmExecucao.clear();
+        this.tarefaEmExecucao.clear();
     }
 
     @Override
-    public void atenderAckAlocacao (Simulation simulacao, Mensagem mensagem) {
-        throw new UnsupportedOperationException(
-                "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void atenderAckAlocacao (final Simulation simulacao, final Mensagem mensagem) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void determinarCaminhos () throws LinkageError {
         //Instancia objetos
-        caminhoMestre = new ArrayList<List>(mestres.size());
+        this.caminhoMestre = new ArrayList<>(this.mestres.size());
         //Busca pelos caminhos
-        for (int i = 0; i < mestres.size(); i++) {
-            caminhoMestre.add(i, CS_Maquina.getMenorCaminho(this, mestres.get(i)));
+        for (int i = 0; i < this.mestres.size(); i++) {
+            this.caminhoMestre.add(i, getMenorCaminho(this, this.mestres.get(i)));
         }
         //verifica se todos os mestres são alcansaveis
-        for (int i = 0; i < mestres.size(); i++) {
-            if (caminhoMestre.get(i).isEmpty()) {
+        for (int i = 0; i < this.mestres.size(); i++) {
+            if (this.caminhoMestre.get(i).isEmpty()) {
                 throw new LinkageError();
             }
         }
     }
 
-    public void addFalha (Double tFalha, double tRec, boolean recuperavel) {
-        falhas.add(tFalha);
-        recuperacao.add(tRec);
-        erroRecuperavel = recuperavel;
+    public void addFalha (final Double tFalha, final double tRec, final boolean recuperavel) {
+        this.falhas.add(tFalha);
+        this.recuperacao.add(tRec);
+        this.erroRecuperavel = recuperavel;
     }
 
     public List<Tarefa> getHistorico () {

@@ -159,8 +159,7 @@ public class ServiceCenterBuilder {
                 e.owner(),
                 (int) e.power(),
                 e.memAlloc(),
-                e.diskAlloc(),
-                e.opSystem()
+                e.diskAlloc()
         );
     }
 
