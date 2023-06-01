@@ -31,10 +31,7 @@ public class CollectionWorkloadGenerator implements WorkloadGenerator {
      * @param list
      *         list of {@link WorkloadGenerator}s
      */
-    public CollectionWorkloadGenerator (
-            final WorkloadGeneratorType type,
-            final List<WorkloadGenerator> list
-    ) {
+    public CollectionWorkloadGenerator (final WorkloadGeneratorType type, final List<WorkloadGenerator> list) {
         this.type = type;
         this.list = list;
     }
