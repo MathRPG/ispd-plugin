@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,13 +46,14 @@ public abstract class ProgressoSimulacao {
     private void doTask (final String taskName, final Runnable task) {
         this.printTaskName(taskName);
         task.run();
-        this.incProgresso(5);//[5%] --> 10%
+        this.incProgresso(5);
         this.println("OK", Color.green);
     }
 
     private void writeIconicModel (final String model, final File file) {
         try (
-                final FileWriter fw = new FileWriter(file); final PrintWriter pw = new PrintWriter(fw, true)
+                final FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
+                final PrintWriter pw = new PrintWriter(fw, true)
         ) {
             pw.print(model);
         } catch (final IOException ex) {

@@ -415,16 +415,6 @@ public class CS_VMM extends CS_Processamento
         }
     }
 
-    @Override
-    public void atenderDesligamento (
-            final Simulation simulacao,
-            final Mensagem mensagem
-    ) {
-        throw new UnsupportedOperationException("Not supported yet."); // To
-        // change body of generated methods, choose Tools
-        // | Templates.
-    }
-
     private void determinarCaminhoVM (
             final CS_Processamento vm,
             final List<CentroServico> caminhoVM

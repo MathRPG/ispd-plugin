@@ -2,6 +2,7 @@ package ispd.motor;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.PriorityQueue;
@@ -30,9 +31,7 @@ public class SimulacaoSequencial extends Simulation {
      * @throws IllegalArgumentException
      */
     public SimulacaoSequencial (
-            final ProgressoSimulacao window,
-            final RedeDeFilas queueNetwork,
-            final List<Tarefa> jobs
+            final ProgressoSimulacao window, final RedeDeFilas queueNetwork, final List<Tarefa> jobs
     ) {
         super(window, queueNetwork, jobs);
 
@@ -45,8 +44,7 @@ public class SimulacaoSequencial extends Simulation {
         }
 
         if (jobs == null || jobs.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "One or more  workloads have not been configured.");
+            throw new IllegalArgumentException("One or more  workloads have not been configured.");
         }
 
         window.print("Creating routing.");
@@ -59,8 +57,7 @@ public class SimulacaoSequencial extends Simulation {
             //Cede acesso ao mestre a fila de eventos futuros
             temp.setSimulation(this);
             //Encontra menor caminho entre o mestre e seus escravos
-            mst.determinarCaminhos(); //mestre encontra caminho para seus
-            // escravos
+            mst.determinarCaminhos(); //mestre encontra caminho para seus escravos
         }
 
         window.incProgresso(5);
@@ -71,11 +68,11 @@ public class SimulacaoSequencial extends Simulation {
         } else {
             for (final CS_Maquina maq : queueNetwork.getMaquinas()) {
                 //Encontra menor caminho entre o escravo e seu mestre
-                maq.determinarCaminhos();//escravo encontra caminhos para seu
-                // mestre
+                maq.determinarCaminhos();//escravo encontra caminhos para seu mestre
             }
         }
         //fim roteamento
+
         window.incProgresso(5);
     }
 
@@ -166,26 +163,14 @@ public class SimulacaoSequencial extends Simulation {
         Objects.requireNonNull(eventoAtual);
         this.time = eventoAtual.getCreationTime();
         switch (eventoAtual.getType()) {
-            case FutureEvent.CHEGADA -> eventoAtual.getServidor().chegadaDeCliente(
-                    this,
-                    (Tarefa) eventoAtual.getClient()
-            );
-            case FutureEvent.ATENDIMENTO -> eventoAtual.getServidor().atendimento(
-                    this,
-                    (Tarefa) eventoAtual.getClient()
-            );
-            case FutureEvent.SAIDA -> eventoAtual.getServidor().saidaDeCliente(
-                    this,
-                    (Tarefa) eventoAtual.getClient()
-            );
-            case FutureEvent.ESCALONAR -> eventoAtual.getServidor().requisicao(this, null,
-                                                                               FutureEvent.ESCALONAR
-            );
-            default -> eventoAtual.getServidor().requisicao(
-                    this,
-                    (Mensagem) eventoAtual.getClient(),
-                    eventoAtual.getType()
-            );
+            case FutureEvent.CHEGADA -> eventoAtual.getServidor()
+                                                   .chegadaDeCliente(this, (Tarefa) eventoAtual.getClient());
+            case FutureEvent.ATENDIMENTO -> eventoAtual.getServidor()
+                                                       .atendimento(this, (Tarefa) eventoAtual.getClient());
+            case FutureEvent.SAIDA -> eventoAtual.getServidor().saidaDeCliente(this, (Tarefa) eventoAtual.getClient());
+            case FutureEvent.ESCALONAR -> eventoAtual.getServidor().requisicao(this, null, FutureEvent.ESCALONAR);
+            default -> eventoAtual.getServidor()
+                                  .requisicao(this, (Mensagem) eventoAtual.getClient(), eventoAtual.getType());
         }
     }
 
@@ -195,14 +180,9 @@ public class SimulacaoSequencial extends Simulation {
     }
 
     @Override
-    public boolean removeFutureEvent (
-            final int eventType,
-            final CentroServico eventServer,
-            final Client eventClient
-    ) {
+    public boolean removeFutureEvent (final int eventType, final CentroServico eventServer, final Client eventClient) {
         //remover evento de saida do cliente do servidor
-        final java.util.Iterator<FutureEvent> interator =
-                this.eventos.iterator();
+        final Iterator<FutureEvent> interator = this.eventos.iterator();
         while (interator.hasNext()) {
             final FutureEvent ev = interator.next();
             if (ev.getType() == eventType

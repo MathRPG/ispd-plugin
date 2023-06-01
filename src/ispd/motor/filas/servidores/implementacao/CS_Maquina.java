@@ -564,12 +564,6 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
     }
 
     @Override
-    public void atenderDesligamento (Simulation simulacao, Mensagem mensagem) {
-        throw new UnsupportedOperationException(
-                "Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public void determinarCaminhos () throws LinkageError {
         //Instancia objetos
         caminhoMestre = new ArrayList<List>(mestres.size());
