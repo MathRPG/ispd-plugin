@@ -19,11 +19,9 @@ import ispd.motor.metricas.Metricas;
  */
 public class ResultsDialog extends JDialog {
 
-    public static final Dimension CHART_PREFERRED_SIZE
-            = new Dimension(600, 400);
+    public static final Dimension CHART_PREFERRED_SIZE = new Dimension(600, 400);
 
-    public static final Font COURIER_NEW_FONT_BOLD
-            = new Font("Courier New", Font.BOLD, 14);
+    public static final Font COURIER_NEW_FONT_BOLD = new Font("Courier New", Font.BOLD, 14);
 
     private final Metricas                   metrics;
     private final RedeDeFilas                queueNetwork;
@@ -49,19 +47,14 @@ public class ResultsDialog extends JDialog {
      *         {@code null}
      */
     public ResultsDialog (
-            final Frame owner,
-            final Metricas metrics,
-            final RedeDeFilas queueNetwork,
-            final List<Tarefa> tasks
+            final Frame owner, final Metricas metrics, final RedeDeFilas queueNetwork, final List<Tarefa> tasks
     ) {
         super(owner, true);
 
-        /* Ensure the metrics is not null */
         if (metrics == null) {
             throw new NullPointerException("metrics is null. It was not possible to show the results.");
         }
 
-        /* Ensure the queue network is not null */
         if (queueNetwork == null) {
             throw new NullPointerException("queue network is null. It was not possible to show the results.");
         }
@@ -79,9 +72,6 @@ public class ResultsDialog extends JDialog {
         this.initDialogComponents();
         this.pack();
     }
-
-    /* Private Methods */
-    /* Dialog Related Methods */
 
     /**
      * It initializes all components that is going to be displayed in this dialog.
@@ -106,5 +96,4 @@ public class ResultsDialog extends JDialog {
 
         this.add(mainPane);
     }
-
 }

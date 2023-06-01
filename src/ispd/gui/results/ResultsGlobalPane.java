@@ -29,7 +29,7 @@ import ispd.motor.metricas.MetricasGlobais;
  * A {@link ResultsGlobalPane} is a class used to display the general results
  * from the performed simulation.
  */
-/* package-private */ class ResultsGlobalPane extends JScrollPane {
+public class ResultsGlobalPane extends JScrollPane {
 
     private final SimulationResultChartMaker charts;
     private final List<Tarefa>               tasks;
@@ -43,9 +43,7 @@ import ispd.motor.metricas.MetricasGlobais;
      *         the simulation metrics
      */
     public ResultsGlobalPane (
-            final Metricas metrics,
-            final SimulationResultChartMaker charts,
-            final List<Tarefa> tasks
+            final Metricas metrics, final SimulationResultChartMaker charts, final List<Tarefa> tasks
     ) {
         this.html   = new SalvarResultadosHTML();
         this.charts = charts;
@@ -79,9 +77,6 @@ import ispd.motor.metricas.MetricasGlobais;
         textArea.setText(this.makeGlobalResultsText(metrics.getMetricasGlobais()));
     }
 
-    /* Private Methods */
-    /* Utility Global Pane Methods */
-
     /**
      * It creates and initializes the button that is used to save the simulation
      * results in an HTML file.
@@ -91,7 +86,6 @@ import ispd.motor.metricas.MetricasGlobais;
     private JButton makeSaveHtmlButton () {
         final var button = new JButton();
 
-        //noinspection ConstantConditions
         button.setIcon(new ImageIcon(this.getClass().getResource("/ispd/gui/imagens/document-save_1.png")));
         button.setToolTipText("Save results as HTML");
         button.setFocusable(false);
@@ -101,8 +95,6 @@ import ispd.motor.metricas.MetricasGlobais;
 
         return button;
     }
-
-    /* Button Creation Methods */
 
     /**
      * It creates and initializes the traces button that is used to save the
@@ -154,8 +146,6 @@ import ispd.motor.metricas.MetricasGlobais;
         return sb.toString();
     }
 
-    /* Button Click Handling Methods */
-
     /**
      * It creates an instance of {@link ActionListener} to handle the click event
      * on the {@code Save HTML} button. This button when is clicked save all
@@ -188,9 +178,8 @@ import ispd.motor.metricas.MetricasGlobais;
                     /* Open the default browser to the selected URL */
                     HtmlPane.openDefaultBrowser(url);
                 }
-                case JFileChooser.ERROR_OPTION -> throw new IllegalStateException("An unexpected error has occurred." +
-                                                                                  "Please contact the project " +
-                                                                                  "administrators.");
+                case JFileChooser.ERROR_OPTION -> throw new IllegalStateException(
+                        "An unexpected error has occurred. Please contact the project administrators.");
             }
         };
     }
@@ -220,13 +209,9 @@ import ispd.motor.metricas.MetricasGlobais;
                     new TraceXML(selectedFile.getAbsolutePath())
                             .geraTraceSim(this.tasks);
                 }
-                case JFileChooser.ERROR_OPTION -> throw new IllegalStateException("An unexpected error has occurred." +
-                                                                                  " Please contact the project " +
-                                                                                  "administrators.");
+                case JFileChooser.ERROR_OPTION -> throw new IllegalStateException(
+                        "An unexpected error has occurred. Please contact the project administrators.");
             }
         };
     }
-
-    /* Utility Button Methods */
-
 }

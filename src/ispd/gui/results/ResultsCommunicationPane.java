@@ -11,7 +11,7 @@ import ispd.gui.utils.MultipaneButton;
  * containing the bar and pie chart of the performed communication obtained
  * from the performed simulation.
  */
-/* package-private */ class ResultsCommunicationPane extends Multipane {
+public class ResultsCommunicationPane extends Multipane {
 
     /**
      * Constructor which creates a pane that contains results of communication

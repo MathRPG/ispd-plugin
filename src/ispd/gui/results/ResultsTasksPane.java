@@ -13,7 +13,7 @@ import ispd.motor.metricas.Metricas;
  * @see ResultsUsersPane for see the information about processing and communication
  *         performed for resolve the tasks for each user
  */
-/* package-private */ class ResultsTasksPane extends JScrollPane {
+public class ResultsTasksPane extends JScrollPane {
 
     /**
      * Constructor which creates a pane that contains information about the
@@ -45,10 +45,10 @@ import ispd.motor.metricas.Metricas;
      * @return the task results text
      */
     private String makeTasksResultsText (final Metricas metrics) {
-        final var sb = new StringBuilder();
+        final var sb                         = new StringBuilder();
         final var avgSystemCommunicationTime =
                 metrics.getTempoMedioFilaComunicacao() + metrics.getTempoMedioComunicacao();
-        final var avgSystemProcessingTime =
+        final var avgSystemProcessingTime    =
                 metrics.getTempoMedioFilaProcessamento() + metrics.getTempoMedioProcessamento();
 
         /* Communication task information */
