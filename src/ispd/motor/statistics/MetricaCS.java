@@ -4,28 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MetricaCS {
-    private int idCS;
+
+    private int                   idCS;
     private List<MedidasServidor> servidores;
-    private int numServ;
+    private int                   numServ;
 
 
-    public MetricaCS(int cs) {
-        idCS = cs;
+    public MetricaCS (int cs) {
+        idCS       = cs;
         servidores = new ArrayList<MedidasServidor>();
-        numServ = 0;
+        numServ    = 0;
     }
 
-    public int getCS() {
+    public int getCS () {
         return idCS;
     }
 
-    public void addMedidasServidor(int id, int tipoServ) {
+    public void addMedidasServidor (int id, int tipoServ) {
         MedidasServidor serv = new MedidasServidor(id, tipoServ);
         servidores.add(serv);
         numServ++;
     }
 
-    public void addNoMedidasServidor(int id, int estado, Double tempo) {
+    public void addNoMedidasServidor (int id, int estado, Double tempo) {
         for (MedidasServidor temp : servidores) {
             if (temp.getID() == id) {
                 temp.addNoMedidasServidor(estado, tempo);
@@ -34,7 +35,7 @@ public class MetricaCS {
         }
     }
 
-    public Double finalizaServProc() {
+    public Double finalizaServProc () {
         Double aux = 0.0;
         for (MedidasServidor temp : servidores) {
             if (temp.getTipo() == 0) {
@@ -45,7 +46,7 @@ public class MetricaCS {
         return aux;
     }
 
-    public Double finalizaServCom() {
+    public Double finalizaServCom () {
         Double aux = 0.0;
         for (MedidasServidor temp : servidores) {
             if (temp.getTipo() == 1) {
@@ -56,13 +57,13 @@ public class MetricaCS {
         return aux;
     }
 
-    public void imprimeServ() {
+    public void imprimeServ () {
         for (MedidasServidor temp : servidores) {
             temp.imprimeValores();
         }
     }
 
-    public int getNumServ() {
+    public int getNumServ () {
         return numServ;
     }
 

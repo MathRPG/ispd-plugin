@@ -5,6 +5,5 @@ package ispd.gui.iconico;
  * available ruler orientation.
  */
 public enum RulerOrientation {
-    HORIZONTAL,
-    VERTICAL
+    HORIZONTAL, VERTICAL
 }

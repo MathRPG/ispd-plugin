@@ -1,73 +1,34 @@
-/* ==========================================================
- * iSPD : iconic Simulator of Parallel and Distributed System
- * ==========================================================
- *
- * (C) Copyright 2010-2014, by Grupo de pesquisas em Sistemas Paralelos e Distribuídos da Unesp (GSPD).
- *
- * Project Info:  http://gspd.dcce.ibilce.unesp.br/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
- * Other names may be trademarks of their respective owners.]
- *
- * ---------------
- * CS_Processamento.java
- * ---------------
- * (C) Copyright 2014, by Grupo de pesquisas em Sistemas Paralelos e Distribuídos da Unesp (GSPD).
- *
- * Original Author:  Denison Menezes (for GSPD);
- * Contributor(s):   -;
- *
- * Changes
- * -------
- * 
- * 09-Set-2014 : Version 2.0;
- *
- */
 package ispd.motor.filas.servidores;
 
-import ispd.policy.allocation.vm.VmMaster;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import ispd.gui.auxiliar.ParesOrdenadosUso;
+import ispd.motor.filas.servidores.implementacao.CS_Internet;
 import ispd.motor.filas.servidores.implementacao.CS_Link;
 import ispd.motor.filas.servidores.implementacao.CS_Switch;
-import ispd.motor.filas.servidores.implementacao.CS_Internet;
-import ispd.policy.scheduling.grid.GridMaster;
 import ispd.motor.metricas.MetricasProcessamento;
-import java.util.ArrayList;
-import java.util.List;
-import ispd.gui.auxiliar.ParesOrdenadosUso;
-import java.util.Collections;
+import ispd.policy.allocation.vm.VmMaster;
+import ispd.policy.scheduling.grid.GridMaster;
 
 /**
  * Classe abstrata que representa os servidores de processamento do modelo de fila,
  * Esta classe possui atributos referente a este ripo de servidor, e indica como
  * calcular o tempo gasto para processar uma tarefa.
- * @author denison
  */
 public abstract class CS_Processamento extends CentroServico {
 
     /**
      * Identificador do centro de serviço, deve ser o mesmo do modelo icônico
      */
-    private double poderComputacional;
-    private int numeroProcessadores;
-    private double Ocupacao;
-    private double PoderComputacionalDisponivelPorProcessador;
-    private MetricasProcessamento metrica;
+    private double                  poderComputacional;
+    private int                     numeroProcessadores;
+    private double                  Ocupacao;
+    private double                  PoderComputacionalDisponivelPorProcessador;
+    private MetricasProcessamento   metrica;
     private List<ParesOrdenadosUso> lista_pares = new ArrayList<ParesOrdenadosUso>();
-    private Double consumoEnergia;
+    private Double                  consumoEnergia;
 
     /**
      * Constructor which specifies the configuration of
@@ -77,22 +38,30 @@ public abstract class CS_Processamento extends CentroServico {
      * Using this constructor the energy consumption is
      * set as default to 0.
      *
-     * @param id the id
-     * @param owner the owner
-     * @param computationalPower the computational power
-     * @param coreCount the core count
-     * @param loadFactor the load factor
-     * @param machineNumber the machine number
+     * @param id
+     *         the id
+     * @param owner
+     *         the owner
+     * @param computationalPower
+     *         the computational power
+     * @param coreCount
+     *         the core count
+     * @param loadFactor
+     *         the load factor
+     * @param machineNumber
+     *         the machine number
      *
      * @see #CS_Processamento(String, String, double, int, double, int, double)
-     *                        for specify the energy consumption
+     *         for specify the energy consumption
      */
-    public CS_Processamento(final String id,
-                            final String owner,
-                            final double computationalPower,
-                            final int coreCount,
-                            final double loadFactor,
-                            final int machineNumber) {
+    public CS_Processamento (
+            final String id,
+            final String owner,
+            final double computationalPower,
+            final int coreCount,
+            final double loadFactor,
+            final int machineNumber
+    ) {
         this(id, owner, computationalPower, coreCount, loadFactor, machineNumber, 0.0);
     }
 
@@ -102,151 +71,56 @@ public abstract class CS_Processamento extends CentroServico {
      * power, core count, load factor, machine number and
      * energy consumption.
      *
-     * @param id the id
-     * @param owner the owner
-     * @param computationalPower the computational power
-     * @param coreCount the core count
-     * @param loadFactor the load factor
-     * @param machineNumber the machine number
-     * @param energy the energy
+     * @param id
+     *         the id
+     * @param owner
+     *         the owner
+     * @param computationalPower
+     *         the computational power
+     * @param coreCount
+     *         the core count
+     * @param loadFactor
+     *         the load factor
+     * @param machineNumber
+     *         the machine number
+     * @param energy
+     *         the energy
      */
-    public CS_Processamento(final String id,
-                            final String owner,
-                            final double computationalPower,
-                            final int coreCount,
-                            final double loadFactor,
-                            final int machineNumber,
-                            final double energy) {
-        this.poderComputacional = computationalPower;
-        this.numeroProcessadores = coreCount;
-        this.Ocupacao = loadFactor;
-        this.PoderComputacionalDisponivelPorProcessador = (computationalPower
-                - (computationalPower * loadFactor)) / coreCount;
-        this.consumoEnergia = energy;
-        this.metrica = new MetricasProcessamento(id, machineNumber, owner);
-    }
-
-    public int getnumeroMaquina(){
-        return metrica.getnumeroMaquina();
-    }
-    
-    public Double getConsumoEnergia(){
-        return this.consumoEnergia;
-    }
-    
-    public double getOcupacao() {
-        return Ocupacao;
-    }
-
-    public double getPoderComputacional() {
-        return poderComputacional;
-    }
-
-    @Override
-    public String getId() {
-        return metrica.getId();
-    }
-    
-   
-    public String getProprietario() {
-        return metrica.getProprietario();
-    }
-
-    public int getNumeroProcessadores() {
-        return numeroProcessadores;
-    }
-
-    public double tempoProcessar(double Mflops) {
-        return (Mflops / PoderComputacionalDisponivelPorProcessador);
-    }
-    
-    public double getMflopsProcessados(double tempoProc) {
-        return (tempoProc * PoderComputacionalDisponivelPorProcessador);
-    }
-
-    public MetricasProcessamento getMetrica() {
-        return metrica;
-    }
-
-    public void setPoderComputacionalDisponivelPorProcessador(double PoderComputacionalDisponivelPorProcessador) {
-        this.PoderComputacionalDisponivelPorProcessador = PoderComputacionalDisponivelPorProcessador;
-    }
-
-    public void setPoderComputacional(double poderComputacional) {
-        this.poderComputacional = poderComputacional;
-    }
-    
-    
-    
-
-    /**
-     * Utilizado para buscar as rotas entre os recursos e armazenar em uma tabela,
-     * deve retornar em erro se não encontrar nenhum caminho
-     */
-    public abstract void determinarCaminhos() throws LinkageError;
-    /**
-     * Método que determina todas as conexões entre dois recursos
-     * podendo haver conexões indiretas, passando por diverssos elementos de comunicação
-     * @param inicio CS_Internet inicial
-     * @param fim Recurso que está sendo buscado um caminho
-     * @return lista de caminho existentes
-     */
-    protected List<List> getCaminhos(CS_Comunicacao inicio, CentroServico fim, List itensVerificados) {
-        List<List> lista = new ArrayList<List>();
-        //Adiciona camino para elementos diretamente conectados
-        if (inicio instanceof CS_Link && inicio.getConexoesSaida().equals(fim)) {
-            List novoCaminho = new ArrayList<CentroServico>();
-            novoCaminho.add(inicio);
-            novoCaminho.add(fim);
-            lista.add(novoCaminho);
-        } //Adiciona caminho para elementos diretamentes conectados por um switch
-        else if (inicio instanceof CS_Switch) {
-            CS_Switch Switch = (CS_Switch) inicio;
-            for (CentroServico saida : Switch.getConexoesSaida()) {
-                if (saida.equals(fim)) {
-                    List novoCaminho = new ArrayList<CentroServico>();
-                    novoCaminho.add(inicio);
-                    novoCaminho.add(fim);
-                    lista.add(novoCaminho);
-                }
-            }
-        } //faz chamada recursiva para novo caminho
-        else if (inicio.getConexoesSaida() instanceof CS_Internet && !itensVerificados.contains(inicio.getConexoesSaida())) {
-            CS_Internet net = (CS_Internet) inicio.getConexoesSaida();
-            itensVerificados.add(net);
-            List<List> recursivo = null;
-            for (CS_Link link : net.getConexoesSaida()) {
-                recursivo = getCaminhos(link, fim, itensVerificados);
-                if (recursivo != null) {
-                    for (List caminho : recursivo) {
-                        List novoCaminho = new ArrayList<CentroServico>();
-                        novoCaminho.add(inicio);
-                        novoCaminho.add(net);
-                        novoCaminho.addAll(caminho);
-                        lista.add(novoCaminho);
-                    }
-                }
-            }
-            itensVerificados.remove(net);
-        }
-        if (lista.isEmpty()) {
-            return null;
-        } else {
-            return lista;
-        }
+    public CS_Processamento (
+            final String id,
+            final String owner,
+            final double computationalPower,
+            final int coreCount,
+            final double loadFactor,
+            final int machineNumber,
+            final double energy
+    ) {
+        this.poderComputacional                         = computationalPower;
+        this.numeroProcessadores                        = coreCount;
+        this.Ocupacao                                   = loadFactor;
+        this.PoderComputacionalDisponivelPorProcessador = (
+                                                                  computationalPower
+                                                                  - (computationalPower * loadFactor)
+                                                          ) / coreCount;
+        this.consumoEnergia                             = energy;
+        this.metrica                                    = new MetricasProcessamento(id, machineNumber, owner);
     }
 
     /**
      * Retorna o menor caminho entre dois recursos de processamento
-     * @param origem recurso origem
-     * @param destino recurso destino
+     *
+     * @param origem
+     *         recurso origem
+     * @param destino
+     *         recurso destino
+     *
      * @return caminho completo a partir do primeiro link até o recurso destino
      */
-    public static List<CentroServico> getMenorCaminho(CS_Processamento origem, CS_Processamento destino) {
+    public static List<CentroServico> getMenorCaminho (CS_Processamento origem, CS_Processamento destino) {
         //cria vetor com distancia acumulada
         List<CentroServico> nosExpandidos = new ArrayList<CentroServico>();
-        List<Object[]> caminho = new ArrayList<Object[]>();
-        CentroServico atual = origem;
+        List<Object[]>      caminho       = new ArrayList<Object[]>();
+        CentroServico       atual         = origem;
         //armazena valor acumulado até atingir o nó atual
         Double acumulado = 0.0;
         do {
@@ -297,20 +171,20 @@ public abstract class CS_Processamento extends CentroServico {
             menorCaminho[3] = Double.MAX_VALUE;
             //busca menor caminho não expandido
             for (Object[] obj : caminho) {
-                Double menor = (Double) menorCaminho[1];
+                Double menor    = (Double) menorCaminho[1];
                 Double objAtual = (Double) obj[1];
                 if (menor > objAtual && !nosExpandidos.contains(obj[2])) {
                     menorCaminho = obj;
                 }
             }
             //atribui valor a atual com resultado da busca do menor caminho
-            atual = (CentroServico) menorCaminho[2];
+            atual     = (CentroServico) menorCaminho[2];
             acumulado = (Double) menorCaminho[1];
         } while (atual != null && atual != destino);
         if (atual == destino) {
             List<CentroServico> menorCaminho = new ArrayList<CentroServico>();
-            List<CentroServico> inverso = new ArrayList<CentroServico>();
-            Object[] obj;
+            List<CentroServico> inverso      = new ArrayList<CentroServico>();
+            Object[]            obj;
             while (atual != origem) {
                 int i = 0;
                 do {
@@ -331,15 +205,19 @@ public abstract class CS_Processamento extends CentroServico {
     /**
      * Retorna o menor caminho entre dois recursos de processamento indiretamente conectados
      * passando por mestres no caminho
-     * @param origem recurso origem
-     * @param destino recurso destino
+     *
+     * @param origem
+     *         recurso origem
+     * @param destino
+     *         recurso destino
+     *
      * @return caminho completo a partir do primeiro link até o recurso destino
      */
-    public static List<CentroServico> getMenorCaminhoIndireto(CS_Processamento origem, CS_Processamento destino) {
+    public static List<CentroServico> getMenorCaminhoIndireto (CS_Processamento origem, CS_Processamento destino) {
         //cria vetor com distancia acumulada
         ArrayList<CentroServico> nosExpandidos = new ArrayList<CentroServico>();
-        ArrayList<Object[]> caminho = new ArrayList<Object[]>();
-        CentroServico atual = origem;
+        ArrayList<Object[]>      caminho       = new ArrayList<Object[]>();
+        CentroServico            atual         = origem;
         //armazena valor acumulado até atingir o nó atual
         Double acumulado = 0.0;
         do {
@@ -390,20 +268,20 @@ public abstract class CS_Processamento extends CentroServico {
             menorCaminho[3] = Double.MAX_VALUE;
             //busca menor caminho não expandido
             for (Object[] obj : caminho) {
-                Double menor = (Double) menorCaminho[1];
+                Double menor    = (Double) menorCaminho[1];
                 Double objAtual = (Double) obj[1];
                 if (menor > objAtual && !nosExpandidos.contains(obj[2])) {
                     menorCaminho = obj;
                 }
             }
             //atribui valor a atual com resultado da busca do menor caminho
-            atual = (CentroServico) menorCaminho[2];
+            atual     = (CentroServico) menorCaminho[2];
             acumulado = (Double) menorCaminho[1];
         } while (atual != null && atual != destino);
         if (atual == destino) {
             List<CentroServico> menorCaminho = new ArrayList<CentroServico>();
-            List<CentroServico> inverso = new ArrayList<CentroServico>();
-            Object[] obj;
+            List<CentroServico> inverso      = new ArrayList<CentroServico>();
+            Object[]            obj;
             while (atual != origem) {
                 int i = 0;
                 do {
@@ -420,12 +298,12 @@ public abstract class CS_Processamento extends CentroServico {
         }
         return null;
     }
-    
-    public static List<CentroServico> getMenorCaminhoCloud(CS_Processamento origem, CS_Processamento destino) {
+
+    public static List<CentroServico> getMenorCaminhoCloud (CS_Processamento origem, CS_Processamento destino) {
         //cria vetor com distancia acumulada
         List<CentroServico> nosExpandidos = new ArrayList<CentroServico>();
-        List<Object[]> caminho = new ArrayList<Object[]>();
-        CentroServico atual = origem;
+        List<Object[]>      caminho       = new ArrayList<Object[]>();
+        CentroServico       atual         = origem;
         //armazena valor acumulado até atingir o nó atual
         Double acumulado = 0.0;
         do {
@@ -476,20 +354,20 @@ public abstract class CS_Processamento extends CentroServico {
             menorCaminho[3] = Double.MAX_VALUE;
             //busca menor caminho não expandido
             for (Object[] obj : caminho) {
-                Double menor = (Double) menorCaminho[1];
+                Double menor    = (Double) menorCaminho[1];
                 Double objAtual = (Double) obj[1];
                 if (menor > objAtual && !nosExpandidos.contains(obj[2])) {
                     menorCaminho = obj;
                 }
             }
             //atribui valor a atual com resultado da busca do menor caminho
-            atual = (CentroServico) menorCaminho[2];
+            atual     = (CentroServico) menorCaminho[2];
             acumulado = (Double) menorCaminho[1];
         } while (atual != null && atual != destino);
         if (atual == destino) {
             List<CentroServico> menorCaminho = new ArrayList<CentroServico>();
-            List<CentroServico> inverso = new ArrayList<CentroServico>();
-            Object[] obj;
+            List<CentroServico> inverso      = new ArrayList<CentroServico>();
+            Object[]            obj;
             while (atual != origem) {
                 int i = 0;
                 do {
@@ -510,15 +388,19 @@ public abstract class CS_Processamento extends CentroServico {
     /**
      * Retorna o menor caminho entre dois recursos de processamento indiretamente conectados
      * passando por mestres no caminho
-     * @param origem recurso origem
-     * @param destino recurso destino
+     *
+     * @param origem
+     *         recurso origem
+     * @param destino
+     *         recurso destino
+     *
      * @return caminho completo a partir do primeiro link até o recurso destino
      */
-    public static List<CentroServico> getMenorCaminhoIndiretoCloud(CS_Processamento origem, CS_Processamento destino) {
+    public static List<CentroServico> getMenorCaminhoIndiretoCloud (CS_Processamento origem, CS_Processamento destino) {
         //cria vetor com distancia acumulada
         ArrayList<CentroServico> nosExpandidos = new ArrayList<CentroServico>();
-        ArrayList<Object[]> caminho = new ArrayList<Object[]>();
-        CentroServico atual = origem;
+        ArrayList<Object[]>      caminho       = new ArrayList<Object[]>();
+        CentroServico            atual         = origem;
         //armazena valor acumulado até atingir o nó atual
         Double acumulado = 0.0;
         do {
@@ -569,20 +451,20 @@ public abstract class CS_Processamento extends CentroServico {
             menorCaminho[3] = Double.MAX_VALUE;
             //busca menor caminho não expandido
             for (Object[] obj : caminho) {
-                Double menor = (Double) menorCaminho[1];
+                Double menor    = (Double) menorCaminho[1];
                 Double objAtual = (Double) obj[1];
                 if (menor > objAtual && !nosExpandidos.contains(obj[2])) {
                     menorCaminho = obj;
                 }
             }
             //atribui valor a atual com resultado da busca do menor caminho
-            atual = (CentroServico) menorCaminho[2];
+            atual     = (CentroServico) menorCaminho[2];
             acumulado = (Double) menorCaminho[1];
         } while (atual != null && atual != destino);
         if (atual == destino) {
             List<CentroServico> menorCaminho = new ArrayList<CentroServico>();
-            List<CentroServico> inverso = new ArrayList<CentroServico>();
-            Object[] obj;
+            List<CentroServico> inverso      = new ArrayList<CentroServico>();
+            Object[]            obj;
             while (atual != origem) {
                 int i = 0;
                 do {
@@ -599,14 +481,125 @@ public abstract class CS_Processamento extends CentroServico {
         }
         return null;
     }
-    
-    
-     public void setTempoProcessamento(double inicio, double fim){
-        ParesOrdenadosUso par = new ParesOrdenadosUso(inicio,fim);
-        lista_pares.add(par); 
+
+    public int getnumeroMaquina () {
+        return metrica.getnumeroMaquina();
     }
-    
-    public List<ParesOrdenadosUso> getListaProcessamento(){
+
+    public Double getConsumoEnergia () {
+        return this.consumoEnergia;
+    }
+
+    public double getOcupacao () {
+        return Ocupacao;
+    }
+
+    public double getPoderComputacional () {
+        return poderComputacional;
+    }
+
+    public void setPoderComputacional (double poderComputacional) {
+        this.poderComputacional = poderComputacional;
+    }
+
+    @Override
+    public String getId () {
+        return metrica.getId();
+    }
+
+    public String getProprietario () {
+        return metrica.getProprietario();
+    }
+
+    public int getNumeroProcessadores () {
+        return numeroProcessadores;
+    }
+
+    public double tempoProcessar (double Mflops) {
+        return (Mflops / PoderComputacionalDisponivelPorProcessador);
+    }
+
+    public double getMflopsProcessados (double tempoProc) {
+        return (tempoProc * PoderComputacionalDisponivelPorProcessador);
+    }
+
+    public MetricasProcessamento getMetrica () {
+        return metrica;
+    }
+
+    public void setPoderComputacionalDisponivelPorProcessador (double PoderComputacionalDisponivelPorProcessador) {
+        this.PoderComputacionalDisponivelPorProcessador = PoderComputacionalDisponivelPorProcessador;
+    }
+
+    /**
+     * Utilizado para buscar as rotas entre os recursos e armazenar em uma tabela,
+     * deve retornar em erro se não encontrar nenhum caminho
+     */
+    public abstract void determinarCaminhos () throws LinkageError;
+
+    /**
+     * Método que determina todas as conexões entre dois recursos
+     * podendo haver conexões indiretas, passando por diverssos elementos de comunicação
+     *
+     * @param inicio
+     *         CS_Internet inicial
+     * @param fim
+     *         Recurso que está sendo buscado um caminho
+     *
+     * @return lista de caminho existentes
+     */
+    protected List<List> getCaminhos (CS_Comunicacao inicio, CentroServico fim, List itensVerificados) {
+        List<List> lista = new ArrayList<List>();
+        //Adiciona camino para elementos diretamente conectados
+        if (inicio instanceof CS_Link && inicio.getConexoesSaida().equals(fim)) {
+            List novoCaminho = new ArrayList<CentroServico>();
+            novoCaminho.add(inicio);
+            novoCaminho.add(fim);
+            lista.add(novoCaminho);
+        } //Adiciona caminho para elementos diretamentes conectados por um switch
+        else if (inicio instanceof CS_Switch) {
+            CS_Switch Switch = (CS_Switch) inicio;
+            for (CentroServico saida : Switch.getConexoesSaida()) {
+                if (saida.equals(fim)) {
+                    List novoCaminho = new ArrayList<CentroServico>();
+                    novoCaminho.add(inicio);
+                    novoCaminho.add(fim);
+                    lista.add(novoCaminho);
+                }
+            }
+        } //faz chamada recursiva para novo caminho
+        else if (inicio.getConexoesSaida() instanceof CS_Internet &&
+                 !itensVerificados.contains(inicio.getConexoesSaida())) {
+            CS_Internet net = (CS_Internet) inicio.getConexoesSaida();
+            itensVerificados.add(net);
+            List<List> recursivo = null;
+            for (CS_Link link : net.getConexoesSaida()) {
+                recursivo = getCaminhos(link, fim, itensVerificados);
+                if (recursivo != null) {
+                    for (List caminho : recursivo) {
+                        List novoCaminho = new ArrayList<CentroServico>();
+                        novoCaminho.add(inicio);
+                        novoCaminho.add(net);
+                        novoCaminho.addAll(caminho);
+                        lista.add(novoCaminho);
+                    }
+                }
+            }
+            itensVerificados.remove(net);
+        }
+        if (lista.isEmpty()) {
+            return null;
+        } else {
+            return lista;
+        }
+    }
+
+    public void setTempoProcessamento (double inicio, double fim) {
+        ParesOrdenadosUso par = new ParesOrdenadosUso(inicio, fim);
+        lista_pares.add(par);
+    }
+
+    public List<ParesOrdenadosUso> getListaProcessamento () {
         Collections.sort(lista_pares);
         return (this.lista_pares);
     }

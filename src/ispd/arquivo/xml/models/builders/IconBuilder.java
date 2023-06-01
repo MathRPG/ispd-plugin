@@ -17,18 +17,14 @@ import ispd.gui.iconico.grade.Machine;
  * @see GridItem
  */
 /* package-private */ class IconBuilder {
+
     /**
      * @return link icon from given element, with given origination and
-     * destination
+     *         destination
      */
     /* package-private */
-    static Link aLink(
-            final WrappedElement e,
-            final Vertex origination, final Vertex destination) {
-        final var link = new Link(
-                origination, destination,
-                e.iconId().local(), e.globalIconId()
-        );
+    static Link aLink (final WrappedElement e, final Vertex origination, final Vertex destination) {
+        final var link = new Link(origination, destination, e.iconId().local(), e.globalIconId());
 
         link.setSelected(false);
 
@@ -44,14 +40,10 @@ import ispd.gui.iconico.grade.Machine;
      * @return cluster icon from given element
      */
     /* package-private */
-    static Cluster aCluster(final WrappedElement e) {
+    static Cluster aCluster (final WrappedElement e) {
         final var info = IconInfo.fromElement(e);
 
-        final var cluster = new Cluster(
-                info.x(), info.y(),
-                info.localId(), info.globalId(),
-                e.power()
-        );
+        final var cluster = new Cluster(info.x(), info.y(), info.localId(), info.globalId(), e.power());
 
         cluster.getId().setName(e.id());
         cluster.setComputationalPower(e.power());
@@ -67,8 +59,7 @@ import ispd.gui.iconico.grade.Machine;
         return cluster;
     }
 
-    private static void setProcessingCenterCharacteristics(
-            final GridItem item, final WrappedElement e) {
+    private static void setProcessingCenterCharacteristics (final GridItem item, final WrappedElement e) {
         if (!e.hasCharacteristicAttribute()) {
             return;
         }
@@ -113,13 +104,10 @@ import ispd.gui.iconico.grade.Machine;
      * @return internet icon from given element
      */
     /* package-private */
-    static Internet anInternet(final WrappedElement e) {
+    static Internet anInternet (final WrappedElement e) {
         final var info = IconInfo.fromElement(e);
 
-        final Internet net = new Internet(
-                info.x(), info.y(),
-                info.localId(), info.globalId()
-        );
+        final Internet net = new Internet(info.x(), info.y(), info.localId(), info.globalId());
 
         net.getId().setName(e.id());
 
@@ -133,14 +121,10 @@ import ispd.gui.iconico.grade.Machine;
      * @return machine icon from given element
      */
     /* package-private */
-    static Machine aMachine(final WrappedElement m) {
+    static Machine aMachine (final WrappedElement m) {
         final var info = IconInfo.fromElement(m);
 
-        final var machine = new Machine(
-                info.x(), info.y(),
-                info.localId(), info.globalId(),
-                m.energy()
-        );
+        final var machine = new Machine(info.x(), info.y(), info.localId(), info.globalId(), m.energy());
 
         machine.getId().setName(m.id());
         machine.setComputationalPower(m.power());
@@ -153,15 +137,13 @@ import ispd.gui.iconico.grade.Machine;
     /**
      * Simple record to contain information in common between all icon objects
      */
-    private record IconInfo(int x, int y, int globalId, int localId) {
-        private static IconInfo fromElement(final WrappedElement e) {
-            final var position = e.position();
-            final var iconId = e.iconId();
+    private record IconInfo( int x, int y, int globalId, int localId ) {
 
-            return new IconInfo(
-                    position.x(), position.y(),
-                    iconId.global(), iconId.local()
-            );
+        private static IconInfo fromElement (final WrappedElement e) {
+            final var position = e.position();
+            final var iconId   = e.iconId();
+
+            return new IconInfo(position.x(), position.y(), iconId.global(), iconId.local());
         }
     }
 }

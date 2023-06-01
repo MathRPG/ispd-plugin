@@ -1,10 +1,10 @@
 package ispd.gui.results;
 
+import java.util.List;
+
 import ispd.gui.auxiliar.SimulationResultChartMaker;
 import ispd.gui.utils.Multipane;
 import ispd.gui.utils.MultipaneButton;
-
-import java.util.List;
 
 /**
  * A {@link ResultsComputingPowerPane} is a class that represents a multipane
@@ -17,9 +17,10 @@ import java.util.List;
      * Constructor which creates a pane that contains results of the computing
      * power usage through time for each machine, user and task in a bar chart.
      *
-     * @param charts the simulation chart maker
+     * @param charts
+     *         the simulation chart maker
      */
-    public ResultsComputingPowerPane(final SimulationResultChartMaker charts) {
+    public ResultsComputingPowerPane (final SimulationResultChartMaker charts) {
         super(List.of(
                 new MultipaneButton("Per machine", charts.getComputingPowerPerMachineChart()),
                 new MultipaneButton("Per user", charts.getComputingPowerPerUserChart()),

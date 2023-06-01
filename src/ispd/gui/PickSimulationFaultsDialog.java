@@ -1,28 +1,39 @@
 package ispd.gui;
 
-import javax.swing.*;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 
+import javax.swing.GroupLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.WindowConstants;
+
 public class PickSimulationFaultsDialog extends JFrame {
-    public int OmissaoHardware = 0;
-    public int OmissaoSoftware = 0;
-    public JCheckBox cbkOmissaoHardware;
-    public JCheckBox cbkOmissaoSoftware;
-    public JCheckBox cbxDesenhoIncorreto;
-    public JCheckBox cbxEstado;
-    public JCheckBox cbxFPermanentes;
-    public JCheckBox cbxHDCheio;
-    public JCheckBox cbxIncompatibilidade;
-    public JCheckBox cbxInterdependencia;
-    public JCheckBox cbxNegacaoService;
-    public JCheckBox cbxPrecoce;
-    public JCheckBox cbxSobrecargaTempo;
-    public JCheckBox cbxTardia;
-    public JCheckBox cbxTransiente;
-    public JCheckBox cbxValores;
+
+    public  int       OmissaoHardware = 0;
+    public  int       OmissaoSoftware = 0;
+    public  JCheckBox cbkOmissaoHardware;
+    public  JCheckBox cbkOmissaoSoftware;
+    public  JCheckBox cbxDesenhoIncorreto;
+    public  JCheckBox cbxEstado;
+    public  JCheckBox cbxFPermanentes;
+    public  JCheckBox cbxHDCheio;
+    public  JCheckBox cbxIncompatibilidade;
+    public  JCheckBox cbxInterdependencia;
+    public  JCheckBox cbxNegacaoService;
+    public  JCheckBox cbxPrecoce;
+    public  JCheckBox cbxSobrecargaTempo;
+    public  JCheckBox cbxTardia;
+    public  JCheckBox cbxTransiente;
+    public  JCheckBox cbxValores;
     private JCheckBox cbxEnvelhecimento;
     private JCheckBox cbxFalhaResposta;
     private JCheckBox cbxInteracao;
@@ -30,45 +41,47 @@ public class PickSimulationFaultsDialog extends JFrame {
     private JCheckBox ckbOmissao;
     private JCheckBox cbxDiversas;
 
-    public PickSimulationFaultsDialog() {
+    public PickSimulationFaultsDialog () {
         this.initComponents();
     }
 
-    private void initComponents() {
+    private void initComponents () {
 
         final JPanel panelJSelecionarFalhas =
                 new JPanel();
-        this.ckbOmissao = new JCheckBox();
-        this.cbkOmissaoHardware = new JCheckBox();
-        this.cbkOmissaoSoftware = new JCheckBox();
-        this.cbxEnvelhecimento = new JCheckBox();
-        this.cbxNegacaoService = new JCheckBox();
-        this.cbxHDCheio = new JCheckBox();
-        this.cbxFalhaResposta = new JCheckBox();
-        this.cbxValores = new JCheckBox();
-        this.cbxEstado = new JCheckBox();
-        this.cbxInteracao = new JCheckBox();
-        this.cbxSobrecargaTempo = new JCheckBox();
+        this.ckbOmissao          = new JCheckBox();
+        this.cbkOmissaoHardware  = new JCheckBox();
+        this.cbkOmissaoSoftware  = new JCheckBox();
+        this.cbxEnvelhecimento   = new JCheckBox();
+        this.cbxNegacaoService   = new JCheckBox();
+        this.cbxHDCheio          = new JCheckBox();
+        this.cbxFalhaResposta    = new JCheckBox();
+        this.cbxValores          = new JCheckBox();
+        this.cbxEstado           = new JCheckBox();
+        this.cbxInteracao        = new JCheckBox();
+        this.cbxSobrecargaTempo  = new JCheckBox();
         this.cbxInterdependencia = new JCheckBox();
-        this.cbxDiversas = new JCheckBox();
-        this.cbxFPermanentes = new JCheckBox();
+        this.cbxDiversas         = new JCheckBox();
+        this.cbxFPermanentes     = new JCheckBox();
         this.cbxDesenhoIncorreto = new JCheckBox();
         final JCheckBox cbxTempoResposta = new JCheckBox();
-        this.cbxPrecoce = new JCheckBox();
-        this.cbxTardia = new JCheckBox();
+        this.cbxPrecoce           = new JCheckBox();
+        this.cbxTardia            = new JCheckBox();
         this.cbxIncompatibilidade = new JCheckBox();
-        this.cbxSoftware = new JCheckBox();
-        this.cbxTransiente = new JCheckBox();
+        this.cbxSoftware          = new JCheckBox();
+        this.cbxTransiente        = new JCheckBox();
         final JButton jButtonSelecionarFalhas = new JButton();
-        final JLabel jLabel22 = new JLabel();
+        final JLabel  jLabel22                = new JLabel();
 
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setTitle("SelectFaults");
         this.setLocation(new java.awt.Point(300, 100));
 
         panelJSelecionarFalhas.setBorder(javax.swing.BorderFactory.createLineBorder(new Color(0, 0, 0)));
-        panelJSelecionarFalhas.setMaximumSize(new java.awt.Dimension(159,
-                32769));
+        panelJSelecionarFalhas.setMaximumSize(new java.awt.Dimension(
+                159,
+                32769
+        ));
         panelJSelecionarFalhas.setOpaque(false);
 
         this.ckbOmissao.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -152,85 +165,188 @@ public class PickSimulationFaultsDialog extends JFrame {
         panelJSelecionarFalhas.setLayout(PanelJSelecionarFalhasLayout);
         PanelJSelecionarFalhasLayout.setHorizontalGroup(
                 PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(PanelJSelecionarFalhasLayout.createSequentialGroup()
-                                .addGap(25, 25, 25)
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(this.ckbOmissao)
-                                        .addComponent(this.cbkOmissaoHardware)
-                                        .addComponent(this.cbkOmissaoSoftware)
-                                        .addComponent(this.cbxInteracao)
-                                        .addComponent(this.cbxSobrecargaTempo)
-                                        .addComponent(this.cbxInterdependencia)
-                                        .addComponent(this.cbxIncompatibilidade)
-                                        .addComponent(this.cbxSoftware))
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addGroup(PanelJSelecionarFalhasLayout.createSequentialGroup()
-                                                .addGap(18, 18, 18)
-                                                .addComponent(this.cbxTransiente)
-                                                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addGroup(GroupLayout.Alignment.TRAILING, PanelJSelecionarFalhasLayout.createSequentialGroup()
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
-                                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                        .addComponent(this.cbxEnvelhecimento)
-                                                        .addComponent(this.cbxNegacaoService)
-                                                        .addComponent(this.cbxHDCheio)
-                                                        .addComponent(this.cbxDiversas)
-                                                        .addComponent(this.cbxFPermanentes)
-                                                        .addComponent(this.cbxDesenhoIncorreto))
-                                                .addGap(40, 40, 40)
-                                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                        .addComponent(this.cbxTardia)
-                                                        .addComponent(this.cbxPrecoce)
-                                                        .addComponent(cbxTempoResposta)
-                                                        .addComponent(this.cbxEstado)
-                                                        .addComponent(this.cbxValores)
-                                                        .addComponent(this.cbxFalhaResposta))
-                                                .addGap(51, 51, 51))))
+                                            .addGroup(PanelJSelecionarFalhasLayout.createSequentialGroup()
+                                                                                  .addGap(25, 25, 25)
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.LEADING)
+                                                                                                    .addComponent(
+                                                                                                            this.ckbOmissao)
+                                                                                                    .addComponent(
+                                                                                                            this.cbkOmissaoHardware)
+                                                                                                    .addComponent(
+                                                                                                            this.cbkOmissaoSoftware)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxInteracao)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxSobrecargaTempo)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxInterdependencia)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxIncompatibilidade)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxSoftware))
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.LEADING)
+                                                                                                    .addGroup(
+                                                                                                            PanelJSelecionarFalhasLayout
+                                                                                                                    .createSequentialGroup()
+                                                                                                                    .addGap(
+                                                                                                                            18,
+                                                                                                                            18,
+                                                                                                                            18
+                                                                                                                    )
+                                                                                                                    .addComponent(
+                                                                                                                            this.cbxTransiente)
+                                                                                                                    .addContainerGap(
+                                                                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                                                                            Short.MAX_VALUE
+                                                                                                                    ))
+                                                                                                    .addGroup(
+                                                                                                            GroupLayout.Alignment.TRAILING,
+                                                                                                            PanelJSelecionarFalhasLayout
+                                                                                                                    .createSequentialGroup()
+                                                                                                                    .addPreferredGap(
+                                                                                                                            javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+                                                                                                                            34,
+                                                                                                                            Short.MAX_VALUE
+                                                                                                                    )
+                                                                                                                    .addGroup(
+                                                                                                                            PanelJSelecionarFalhasLayout
+                                                                                                                                    .createParallelGroup(
+                                                                                                                                            GroupLayout.Alignment.LEADING)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxEnvelhecimento)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxNegacaoService)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxHDCheio)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxDiversas)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxFPermanentes)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxDesenhoIncorreto))
+                                                                                                                    .addGap(
+                                                                                                                            40,
+                                                                                                                            40,
+                                                                                                                            40
+                                                                                                                    )
+                                                                                                                    .addGroup(
+                                                                                                                            PanelJSelecionarFalhasLayout
+                                                                                                                                    .createParallelGroup(
+                                                                                                                                            GroupLayout.Alignment.LEADING)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxTardia)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxPrecoce)
+                                                                                                                                    .addComponent(
+                                                                                                                                            cbxTempoResposta)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxEstado)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxValores)
+                                                                                                                                    .addComponent(
+                                                                                                                                            this.cbxFalhaResposta))
+                                                                                                                    .addGap(
+                                                                                                                            51,
+                                                                                                                            51,
+                                                                                                                            51
+                                                                                                                    )
+                                                                                                    )))
         );
         PanelJSelecionarFalhasLayout.setVerticalGroup(
                 PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(PanelJSelecionarFalhasLayout.createSequentialGroup()
-                                .addGap(41, 41, 41)
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(this.ckbOmissao,
-                                                GroupLayout.PREFERRED_SIZE,
-                                                23, GroupLayout.PREFERRED_SIZE)
-                                        .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                .addComponent(this.cbxEnvelhecimento)
-                                                .addComponent(this.cbxFalhaResposta)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(this.cbkOmissaoHardware)
-                                        .addComponent(this.cbxNegacaoService)
-                                        .addComponent(this.cbxValores))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(this.cbkOmissaoSoftware)
-                                        .addComponent(this.cbxHDCheio)
-                                        .addComponent(this.cbxEstado))
-                                .addGap(18, 18, 18)
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(this.cbxInteracao)
-                                        .addComponent(this.cbxDiversas)
-                                        .addComponent(cbxTempoResposta))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(this.cbxSobrecargaTempo)
-                                        .addComponent(this.cbxFPermanentes)
-                                        .addComponent(this.cbxPrecoce))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(this.cbxInterdependencia)
-                                        .addComponent(this.cbxDesenhoIncorreto)
-                                        .addComponent(this.cbxTardia))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(this.cbxIncompatibilidade)
-                                .addGap(18, 18, 18)
-                                .addGroup(PanelJSelecionarFalhasLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(this.cbxSoftware)
-                                        .addComponent(this.cbxTransiente))
-                                .addContainerGap(GroupLayout.DEFAULT_SIZE,
-                                        Short.MAX_VALUE))
+                                            .addGroup(PanelJSelecionarFalhasLayout.createSequentialGroup()
+                                                                                  .addGap(41, 41, 41)
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.LEADING)
+                                                                                                    .addComponent(
+                                                                                                            this.ckbOmissao,
+                                                                                                            GroupLayout.PREFERRED_SIZE,
+                                                                                                            23,
+                                                                                                            GroupLayout.PREFERRED_SIZE
+                                                                                                    )
+                                                                                                    .addGroup(
+                                                                                                            PanelJSelecionarFalhasLayout
+                                                                                                                    .createParallelGroup(
+                                                                                                                            GroupLayout.Alignment.BASELINE)
+                                                                                                                    .addComponent(
+                                                                                                                            this.cbxEnvelhecimento)
+                                                                                                                    .addComponent(
+                                                                                                                            this.cbxFalhaResposta)))
+                                                                                  .addPreferredGap(
+                                                                                          javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.BASELINE)
+                                                                                                    .addComponent(
+                                                                                                            this.cbkOmissaoHardware)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxNegacaoService)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxValores))
+                                                                                  .addPreferredGap(
+                                                                                          javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.BASELINE)
+                                                                                                    .addComponent(
+                                                                                                            this.cbkOmissaoSoftware)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxHDCheio)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxEstado))
+                                                                                  .addGap(18, 18, 18)
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.BASELINE)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxInteracao)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxDiversas)
+                                                                                                    .addComponent(
+                                                                                                            cbxTempoResposta))
+                                                                                  .addPreferredGap(
+                                                                                          javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.BASELINE)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxSobrecargaTempo)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxFPermanentes)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxPrecoce))
+                                                                                  .addPreferredGap(
+                                                                                          javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.BASELINE)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxInterdependencia)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxDesenhoIncorreto)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxTardia))
+                                                                                  .addPreferredGap(
+                                                                                          javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                                  .addComponent(
+                                                                                          this.cbxIncompatibilidade)
+                                                                                  .addGap(18, 18, 18)
+                                                                                  .addGroup(PanelJSelecionarFalhasLayout
+                                                                                                    .createParallelGroup(
+                                                                                                            GroupLayout.Alignment.BASELINE)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxSoftware)
+                                                                                                    .addComponent(
+                                                                                                            this.cbxTransiente))
+                                                                                  .addContainerGap(
+                                                                                          GroupLayout.DEFAULT_SIZE,
+                                                                                          Short.MAX_VALUE
+                                                                                  ))
         );
 
         jButtonSelecionarFalhas.setText("Select the faults and return to the " +
@@ -245,45 +361,54 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(jLabel22,
-                                                GroupLayout.PREFERRED_SIZE,
-                                                219, GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(jButtonSelecionarFalhas
-                                                ,
-                                                GroupLayout.DEFAULT_SIZE,
-                                                GroupLayout.DEFAULT_SIZE,
-                                                Short.MAX_VALUE)
-                                        .addComponent(panelJSelecionarFalhas,
-                                                GroupLayout.DEFAULT_SIZE,
-                                                GroupLayout.DEFAULT_SIZE,
-                                                Short.MAX_VALUE))
-                                .addContainerGap(31, Short.MAX_VALUE))
+                      .addGroup(layout.createSequentialGroup()
+                                      .addContainerGap()
+                                      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
+                                                      .addComponent(jLabel22,
+                                                                    GroupLayout.PREFERRED_SIZE,
+                                                                    219, GroupLayout.PREFERRED_SIZE
+                                                      )
+                                                      .addComponent(jButtonSelecionarFalhas
+                                                              ,
+                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                    Short.MAX_VALUE
+                                                      )
+                                                      .addComponent(
+                                                              panelJSelecionarFalhas,
+                                                              GroupLayout.DEFAULT_SIZE,
+                                                              GroupLayout.DEFAULT_SIZE,
+                                                              Short.MAX_VALUE
+                                                      ))
+                                      .addContainerGap(31, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
                 layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addGroup(GroupLayout.Alignment.TRAILING,
-                                layout.createSequentialGroup()
-                                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel22,
-                                                GroupLayout.PREFERRED_SIZE,
-                                                23, GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(panelJSelecionarFalhas,
-                                                GroupLayout.PREFERRED_SIZE,
-                                                GroupLayout.DEFAULT_SIZE,
-                                                GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jButtonSelecionarFalhas)
-                                        .addContainerGap(48, Short.MAX_VALUE))
+                      .addGroup(
+                              GroupLayout.Alignment.TRAILING,
+                              layout.createSequentialGroup()
+                                    .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(jLabel22,
+                                                  GroupLayout.PREFERRED_SIZE,
+                                                  23, GroupLayout.PREFERRED_SIZE
+                                    )
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(
+                                            panelJSelecionarFalhas,
+                                            GroupLayout.PREFERRED_SIZE,
+                                            GroupLayout.DEFAULT_SIZE,
+                                            GroupLayout.PREFERRED_SIZE
+                                    )
+                                    .addGap(18, 18, 18)
+                                    .addComponent(jButtonSelecionarFalhas)
+                                    .addContainerGap(48, Short.MAX_VALUE)
+                      )
         );
 
         this.pack();
     }
 
-    private void ckbOmissaoActionPerformed(final ActionEvent evt) {
+    private void ckbOmissaoActionPerformed (final ActionEvent evt) {
 
         if (this.ckbOmissao.isSelected()) {
             this.cbkOmissaoHardware.setEnabled(true);
@@ -297,62 +422,58 @@ public class PickSimulationFaultsDialog extends JFrame {
         }
     }
 
-    private void cbkOmissaoHardwareActionPerformed(final ActionEvent evt) {
+    private void cbkOmissaoHardwareActionPerformed (final ActionEvent evt) {
     }
 
-    private void cbxEnvelhecimentoActionPerformed(final ActionEvent evt) {
+    private void cbxEnvelhecimentoActionPerformed (final ActionEvent evt) {
         if (this.cbxEnvelhecimento.isSelected()) {
             this.cbxNegacaoService.setEnabled(true);
             this.cbxHDCheio.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Development failure");
-        } else
-            JOptionPane.showMessageDialog(null, "Failure not selected");
+        } else {JOptionPane.showMessageDialog(null, "Failure not selected");}
     }
 
-    private void cbxNegacaoServiceActionPerformed(final ActionEvent evt) {
-
-    }
-
-    private void cbxHDCheioActionPerformed(final ActionEvent evt) {
-
+    private void cbxNegacaoServiceActionPerformed (final ActionEvent evt) {
 
     }
 
-    private void cbxFalhaRespostaActionPerformed(final ActionEvent evt) {
+    private void cbxHDCheioActionPerformed (final ActionEvent evt) {
+
+
+    }
+
+    private void cbxFalhaRespostaActionPerformed (final ActionEvent evt) {
         if (this.cbxFalhaResposta.isSelected()) {
             this.cbxValores.setEnabled(true);
             this.cbxEstado.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Response faults.");
-        } else
-            JOptionPane.showMessageDialog(null, "Not response faults.");
+        } else {JOptionPane.showMessageDialog(null, "Not response faults.");}
     }
 
-    private void cbxInteracaoActionPerformed(final ActionEvent evt) {
+    private void cbxInteracaoActionPerformed (final ActionEvent evt) {
         if (this.cbxInteracao.isSelected()) {
             this.cbxSobrecargaTempo.setEnabled(true);
             this.cbxInterdependencia.setEnabled(true);
             this.cbxIncompatibilidade.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Development failure");
-        } else
-            JOptionPane.showMessageDialog(null, "Failure not selected");
+        } else {JOptionPane.showMessageDialog(null, "Failure not selected");}
 
     }
 
-    private void cbxInterdependenciaActionPerformed(final ActionEvent evt) {
+    private void cbxInterdependenciaActionPerformed (final ActionEvent evt) {
 
     }
 
-    private void cbxDiversasActionPerformed(final ActionEvent evt) {
+    private void cbxDiversasActionPerformed (final ActionEvent evt) {
 
         if (this.cbxDiversas.isSelected()) {
             this.cbxFPermanentes.setEnabled(true);
             this.cbxDesenhoIncorreto.setEnabled(true);
             JOptionPane.showMessageDialog(null, "Development failure");
-        } else
-            JOptionPane.showMessageDialog(null, "Failure not selected");
+        } else {JOptionPane.showMessageDialog(null, "Failure not selected");}
     }
 
-    private void cbxTempoRespostaActionPerformed(final ActionEvent evt) {
+    private void cbxTempoRespostaActionPerformed (final ActionEvent evt) {
         if (this.cbxDiversas.isSelected()) {
             this.cbxPrecoce.setEnabled(true);
             this.cbxTardia.setEnabled(true);
@@ -362,16 +483,16 @@ public class PickSimulationFaultsDialog extends JFrame {
         }
     }
 
-    private void cbxPrecoceActionPerformed(final ActionEvent evt) {
+    private void cbxPrecoceActionPerformed (final ActionEvent evt) {
 
 
     }
 
-    private void cbxIncompatibilidadeActionPerformed(final ActionEvent evt) {
+    private void cbxIncompatibilidadeActionPerformed (final ActionEvent evt) {
 
     }
 
-    private void cbxSoftwareActionPerformed(final ActionEvent evt) {
+    private void cbxSoftwareActionPerformed (final ActionEvent evt) {
 
         if (this.cbxSoftware.isSelected()) {
             this.cbxTransiente.setEnabled(true);
@@ -381,7 +502,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         }
     }
 
-    private void jButtonSelecionarFalhasActionPerformed(final ActionEvent evt) {
+    private void jButtonSelecionarFalhasActionPerformed (final ActionEvent evt) {
         if (this.cbkOmissaoHardware.isSelected()) {
             this.OmissaoHardware = 1;
 
@@ -392,7 +513,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.dispose();
     }
 
-    public static void main(final String[] args) {
+    public static void main (final String[] args) {
         try {
             for (final UIManager.LookAndFeelInfo info :
                     UIManager.getInstalledLookAndFeels()) {
@@ -404,7 +525,8 @@ public class PickSimulationFaultsDialog extends JFrame {
         } catch (final ClassNotFoundException |
                        UnsupportedLookAndFeelException |
                        IllegalAccessException | InstantiationException ex) {
-            java.util.logging.Logger.getLogger(PickSimulationFaultsDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(PickSimulationFaultsDialog.class.getName())
+                                    .log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */

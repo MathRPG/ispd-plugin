@@ -13,7 +13,7 @@ public enum RulerUnit {
          * @return the unit in centimeters unit
          */
         @Override
-        public int getUnit() {
+        public int getUnit () {
             /* 1 in = 2.54 cm */
             return (int) ((double) RulerUnit.INCH / 2.54D);
         }
@@ -23,17 +23,16 @@ public enum RulerUnit {
          * @return the increment in centimeters unit
          */
         @Override
-        public int getIncrement() {
+        public int getIncrement () {
             return this.getUnit();
         }
-    },
-    INCHES("in") {
+    }, INCHES("in") {
         /**
          * Returns the unit in inches unit.
          * @return the unit in inches unit
          */
         @Override
-        public int getUnit() {
+        public int getUnit () {
             return RulerUnit.INCH;
         }
 
@@ -42,7 +41,7 @@ public enum RulerUnit {
          * @return the increment in inches unit
          */
         @Override
-        public int getIncrement() {
+        public int getIncrement () {
             return this.getUnit() >> 1;
         }
     };
@@ -50,8 +49,7 @@ public enum RulerUnit {
     /**
      * It represents the screen resolution in dots-per-inch.
      */
-    private static final int INCH = Toolkit.getDefaultToolkit()
-            .getScreenResolution();
+    private static final int INCH = Toolkit.getDefaultToolkit().getScreenResolution();
 
     /**
      * It stores the unit symbol. Every symbol must be
@@ -62,9 +60,10 @@ public enum RulerUnit {
     /**
      * Constructor which specifies the unit symbol.
      *
-     * @param symbol the symbol
+     * @param symbol
+     *         the symbol
      */
-    /* package-private */ RulerUnit(final String symbol) {
+    /* package-private */ RulerUnit (final String symbol) {
         this.symbol = symbol;
     }
 
@@ -73,14 +72,14 @@ public enum RulerUnit {
      *
      * @return the ruler unit
      */
-    public abstract int getUnit();
+    public abstract int getUnit ();
 
     /**
      * Returns the ruler increment.
      *
      * @return the ruler increment
      */
-    public abstract int getIncrement();
+    public abstract int getIncrement ();
 
     /**
      * It returns the next unit described after this one.
@@ -100,7 +99,7 @@ public enum RulerUnit {
      *
      * @return the next unit described after this one
      */
-    public RulerUnit nextUnit() {
+    public RulerUnit nextUnit () {
         final var values = RulerUnit.values();
         return values[(this.ordinal() + 1) % values.length];
     }
@@ -110,7 +109,7 @@ public enum RulerUnit {
      *
      * @return the unit symbol
      */
-    public String getSymbol() {
+    public String getSymbol () {
         return this.symbol;
     }
 }

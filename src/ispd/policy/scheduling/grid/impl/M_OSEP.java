@@ -1,5 +1,9 @@
 package ispd.policy.scheduling.grid.impl;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import ispd.annotations.Policy;
 import ispd.motor.Mensagens;
 import ispd.motor.filas.Mensagem;
@@ -9,19 +13,16 @@ import ispd.policy.scheduling.grid.impl.util.PreemptionEntry;
 import ispd.policy.scheduling.grid.impl.util.SlaveControl;
 import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-
 @Policy
 public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
-    private final List<Tarefa> tasksInWaiting = new ArrayList<>();
+
+    private final List<Tarefa>          tasksInWaiting    = new ArrayList<>();
     private final List<PreemptionEntry> preemptionEntries = new ArrayList<>();
-    private Tarefa selectedTask = null;
-    private int slaveCounter = 0;
+    private       Tarefa                selectedTask      = null;
+    private       int                   slaveCounter      = 0;
 
     @Override
-    public void escalonar() {
+    public void escalonar () {
         final var task = this.escalonarTarefa();
         this.selectedTask = task;
 
@@ -48,22 +49,22 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
             this.preemptionEntries.add(new PreemptionEntry(sc.firstTaskInProcessing(), task));
 
             this.userControls.get(sc.firstTaskInProcessing().getProprietario())
-                    .decreaseUsedProcessingPower(resource.getPoderComputacional());
+                             .decreaseUsedProcessingPower(resource.getPoderComputacional());
 
         } else {
             final var userId = task.getProprietario();
             this.userControls.get(userId)
-                    .increaseUsedProcessingPower(resource.getPoderComputacional());
+                             .increaseUsedProcessingPower(resource.getPoderComputacional());
             this.mestre.sendTask(task);
         }
 
     }
 
     @Override
-    public Tarefa escalonarTarefa() {
+    public Tarefa escalonarTarefa () {
         //Usuários com maior diferença entre uso e posse terão preferência
-        double difUsuarioMinimo = -1;
-        int indexUsuarioMinimo = -1;
+        double difUsuarioMinimo   = -1;
+        int    indexUsuarioMinimo = -1;
         //Encontrar o usuário que está mais abaixo da sua propriedade
         for (int i = 0; i < this.metricaUsuarios.getUsuarios().size(); i++) {
             final var userId = this.metricaUsuarios.getUsuarios().get(i);
@@ -85,12 +86,12 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
             if ((uc.currentlyUsedProcessingPower() < uc.getOwnedMachinesProcessingPower()) && demanda) {
 
                 if (difUsuarioMinimo == (double) -1) {
-                    difUsuarioMinimo =
+                    difUsuarioMinimo   =
                             uc.getOwnedMachinesProcessingPower() - uc.currentlyUsedProcessingPower();
                     indexUsuarioMinimo = i;
                 } else {
                     if (difUsuarioMinimo < uc.getOwnedMachinesProcessingPower() - uc.currentlyUsedProcessingPower()) {
-                        difUsuarioMinimo =
+                        difUsuarioMinimo   =
                                 uc.getOwnedMachinesProcessingPower() - uc.currentlyUsedProcessingPower();
                         indexUsuarioMinimo = i;
                     }
@@ -105,11 +106,13 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
             int indexTarefa = -1;
 
             for (int i = 0; i < this.tarefas.size(); i++) {
-                if (this.tarefas.get(i).getProprietario().equals(this.metricaUsuarios.getUsuarios().get(indexUsuarioMinimo))) {
+                if (this.tarefas.get(i).getProprietario()
+                                .equals(this.metricaUsuarios.getUsuarios().get(indexUsuarioMinimo))) {
                     if (indexTarefa == -1) {
                         indexTarefa = i;
                     } else {
-                        if (this.tarefas.get(indexTarefa).getTamProcessamento() > this.tarefas.get(i).getTamProcessamento()) {
+                        if (this.tarefas.get(indexTarefa).getTamProcessamento() >
+                            this.tarefas.get(i).getTamProcessamento()) {
                             indexTarefa = i;
                         }
                     }
@@ -129,19 +132,19 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public void addTarefaConcluida(final Tarefa tarefa) {
+    public void addTarefaConcluida (final Tarefa tarefa) {
         super.addTarefaConcluida(tarefa);
         final var maq = tarefa.getCSLProcessamento();
         this.userControls.get(tarefa.getProprietario())
-                .decreaseUsedProcessingPower(maq.getPoderComputacional());
+                         .decreaseUsedProcessingPower(maq.getPoderComputacional());
     }
 
     @Override
-    public void resultadoAtualizar(final Mensagem mensagem) {
+    public void resultadoAtualizar (final Mensagem mensagem) {
         super.resultadoAtualizar(mensagem);
 
         this.slaveControls.get((CS_Processamento) mensagem.getOrigem())
-                .setTasksInProcessing(mensagem.getProcessadorEscravo());
+                          .setTasksInProcessing(mensagem.getProcessadorEscravo());
 
         this.slaveCounter++;
         if (this.slaveCounter != this.escravos.size()) {
@@ -152,18 +155,18 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
 
         // TODO: Separate updateAndShouldSchedule function
         final var result = this.slaveControls.values().stream()
-                .map(M_OSEP::updateAndShouldSchedule)
-                .toList();
+                                             .map(M_OSEP::updateAndShouldSchedule)
+                                             .toList();
 
         final var shouldSchedule = result.stream()
-                .anyMatch(Boolean::booleanValue);
+                                         .anyMatch(Boolean::booleanValue);
 
         if (!this.tarefas.isEmpty() && shouldSchedule) {
             this.mestre.executeScheduling();
         }
     }
 
-    private static boolean updateAndShouldSchedule(final SlaveControl sc) {
+    private static boolean updateAndShouldSchedule (final SlaveControl sc) {
         if (sc.isPreempted()) {
             sc.setAsBlocked();
             return false;
@@ -183,7 +186,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public void adicionarTarefa(final Tarefa tarefa) {
+    public void adicionarTarefa (final Tarefa tarefa) {
         super.adicionarTarefa(tarefa);
         final var maq = (CS_Processamento) tarefa.getLocalProcessamento();
 
@@ -197,7 +200,8 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
         int j;
         int indexControle = -1;
         for (j = 0; j < this.preemptionEntries.size(); j++) {
-            if (this.preemptionEntries.get(j).preemptedTaskId() == tarefa.getIdentificador() && this.preemptionEntries.get(j).preemptedTaskUser().equals(tarefa.getProprietario())) {
+            if (this.preemptionEntries.get(j).preemptedTaskId() == tarefa.getIdentificador() &&
+                this.preemptionEntries.get(j).preemptedTaskUser().equals(tarefa.getProprietario())) {
                 indexControle = j;
                 break;
             }
@@ -207,7 +211,8 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
             final var stu =
                     this.preemptionEntries.get(indexControle).scheduledTaskUser();
 
-            if (this.tasksInWaiting.get(i).getProprietario().equals(stu) && this.tasksInWaiting.get(i).getIdentificador() == this.preemptionEntries.get(j).scheduledTaskId()) {
+            if (this.tasksInWaiting.get(i).getProprietario().equals(stu) &&
+                this.tasksInWaiting.get(i).getIdentificador() == this.preemptionEntries.get(j).scheduledTaskId()) {
                 this.userControls.get(stu).increaseUsedProcessingPower(maq.getPoderComputacional());
                 this.mestre.sendTask(this.tasksInWaiting.get(i));
                 this.tasksInWaiting.remove(i);
@@ -218,40 +223,35 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
 
     }
 
-    @Override
-    public CS_Processamento escalonarRecurso() {
-        final var selec = this.escravos.stream()
-                .filter(this::isMachineAvailable)
-                .min(Comparator.comparingDouble(
-                        s -> this.fitForSelectedTask(s, this.selectedTask)))
-                .orElse(null);
-
-        if (selec != null) {
-            this.slaveControls.get(selec).setAsBlocked();
-            return selec;
-        }
-
-        return this.preemptedMachine();
+    private boolean isMachineAvailable (final CS_Processamento slave) {
+        final var sc = this.slaveControls.get(slave);
+        return !sc.hasTasksInProcessing() && sc.isFree();
     }
 
-    private CS_Processamento preemptedMachine() {
+    private double fitForSelectedTask (
+            final CS_Processamento s, final Tarefa task
+    ) {
+        return Math.abs(s.getPoderComputacional() - task.getTamProcessamento());
+    }
+
+    private CS_Processamento preemptedMachine () {
         final var bestUser = this.userControls.values().stream()
-                .filter(uc2 -> uc2.isOwnerOf(this.selectedTask))
-                .filter(UserProcessingControl::hasExcessProcessingPower)
-                .max(Comparator.comparingDouble(UserProcessingControl::excessProcessingPower));
+                                              .filter(uc2 -> uc2.isOwnerOf(this.selectedTask))
+                                              .filter(UserProcessingControl::hasExcessProcessingPower)
+                                              .max(Comparator.comparingDouble(
+                                                      UserProcessingControl::excessProcessingPower));
 
         if (bestUser.isEmpty()) {
             return null;
         }
 
         final var machine = this.escravos.stream()
-                .filter(this::isMachineOccupied)
-                .filter(m -> bestUser.get().isOwnerOf(this.taskToPreemptIn(m)))
-                .min(Comparator.comparingDouble(CS_Processamento::getPoderComputacional))
-                .orElse(null);
+                                         .filter(this::isMachineOccupied)
+                                         .filter(m -> bestUser.get().isOwnerOf(this.taskToPreemptIn(m)))
+                                         .min(Comparator.comparingDouble(CS_Processamento::getPoderComputacional))
+                                         .orElse(null);
 
-        if (machine == null)
-            return null;
+        if (machine == null) {return null;}
 
         //Fazer a preempção
         //Verifica se vale apena fazer preempção
@@ -274,7 +274,8 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
         //Caso o usuário em espera apresente menor penalidade e os donos
         // das tarefas em execução e em espera não sejam a mesma pessoa ,
         // e , ainda, o escravo esteja executando apenas uma tarefa
-        if (penalidaUserEscravoPosterior <= penalidaUserEsperaPosterior || (penalidaUserEscravoPosterior > 0 && penalidaUserEsperaPosterior < 0)) {
+        if (penalidaUserEscravoPosterior <= penalidaUserEsperaPosterior ||
+            (penalidaUserEscravoPosterior > 0 && penalidaUserEsperaPosterior < 0)) {
             this.slaveControls.get(machine).setAsPreempted();
             this.mestre.sendMessage(
                     tar,
@@ -287,22 +288,28 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
         return null;
     }
 
-    private boolean isMachineOccupied(final CS_Processamento machine) {
+    private boolean isMachineOccupied (final CS_Processamento machine) {
         final var sc = this.slaveControls.get(machine);
         return sc.hasTasksInProcessing() && sc.isOccupied();
     }
 
-    private Tarefa taskToPreemptIn(final CS_Processamento machine) {
+    private Tarefa taskToPreemptIn (final CS_Processamento machine) {
         return this.slaveControls.get(machine).firstTaskInProcessing();
     }
 
-    private boolean isMachineAvailable(final CS_Processamento slave) {
-        final var sc = this.slaveControls.get(slave);
-        return !sc.hasTasksInProcessing() && sc.isFree();
-    }
+    @Override
+    public CS_Processamento escalonarRecurso () {
+        final var selec = this.escravos.stream()
+                                       .filter(this::isMachineAvailable)
+                                       .min(Comparator.comparingDouble(
+                                               s -> this.fitForSelectedTask(s, this.selectedTask)))
+                                       .orElse(null);
 
-    private double fitForSelectedTask(
-            final CS_Processamento s, final Tarefa task) {
-        return Math.abs(s.getPoderComputacional() - task.getTamProcessamento());
+        if (selec != null) {
+            this.slaveControls.get(selec).setAsBlocked();
+            return selec;
+        }
+
+        return this.preemptedMachine();
     }
 }

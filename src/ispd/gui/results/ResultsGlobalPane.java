@@ -1,13 +1,11 @@
 package ispd.gui.results;
 
-import ispd.arquivo.SalvarResultadosHTML;
-import ispd.arquivo.xml.TraceXML;
-import ispd.gui.auxiliar.HtmlPane;
-import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.gui.auxiliar.SimulationResultChartMaker;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.metricas.Metricas;
-import ispd.motor.metricas.MetricasGlobais;
+import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -19,12 +17,13 @@ import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import java.awt.Dimension;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
+import ispd.arquivo.SalvarResultadosHTML;
+import ispd.arquivo.xml.TraceXML;
+import ispd.gui.auxiliar.HtmlPane;
+import ispd.gui.auxiliar.SimulationResultChartMaker;
+import ispd.motor.filas.Tarefa;
+import ispd.motor.metricas.Metricas;
+import ispd.motor.metricas.MetricasGlobais;
 
 /**
  * A {@link ResultsGlobalPane} is a class used to display the general results
@@ -33,28 +32,31 @@ import java.util.List;
 /* package-private */ class ResultsGlobalPane extends JScrollPane {
 
     private final SimulationResultChartMaker charts;
-    private final List<Tarefa> tasks;
-    private final SalvarResultadosHTML html;
+    private final List<Tarefa>               tasks;
+    private final SalvarResultadosHTML       html;
 
     /**
      * Constructor which creates a pane that contains information about the
      * general simulation results.
      *
-     * @param metrics the simulation metrics
+     * @param metrics
+     *         the simulation metrics
      */
-    public ResultsGlobalPane(final Metricas metrics,
-                             final SimulationResultChartMaker charts,
-                             final List<Tarefa> tasks) {
-        this.html = new SalvarResultadosHTML();
+    public ResultsGlobalPane (
+            final Metricas metrics,
+            final SimulationResultChartMaker charts,
+            final List<Tarefa> tasks
+    ) {
+        this.html   = new SalvarResultadosHTML();
         this.charts = charts;
-        this.tasks = tasks;
+        this.tasks  = tasks;
 
         this.html.setMetricasTarefas(metrics);
         this.html.setMetricasGlobais(metrics.getMetricasGlobais());
         this.html.setTabela(metrics.makeResourceTable());
 
-        final var prePane = new JPanel();
-        final var toolbar = new JToolBar();
+        final var prePane  = new JPanel();
+        final var toolbar  = new JToolBar();
         final var textArea = new JTextArea();
 
         this.setPreferredSize(ResultsDialog.CHART_PREFERRED_SIZE);
@@ -81,44 +83,12 @@ import java.util.List;
     /* Utility Global Pane Methods */
 
     /**
-     * It creates the global results text, this text contains the general simulation
-     * results and is shown in the global pane.
-     *
-     * @param globalMetrics the simulation global metrics
-     *
-     * @return the global results text
-     */
-    private String makeGlobalResultsText(final MetricasGlobais globalMetrics) {
-        final var sb = new StringBuilder();
-
-        sb.append("\t\tSimulation Results\n\n");
-        sb.append(String.format("\tTotal Simulated Time = %g\n", globalMetrics.getTempoSimulacao()));
-        sb.append(String.format("\tSatisfaction = %g %%\n", globalMetrics.getSatisfacaoMedia()));
-        sb.append(String.format("\tIdleness of processing resources = %g %%\n", globalMetrics.getOciosidadeComputacao()));
-        sb.append(String.format("\tIdleness of communication resources = %g %%\n", globalMetrics.getOciosidadeComunicacao()));
-        sb.append(String.format("\tEfficiency = %g %%\n", globalMetrics.getEficiencia()));
-
-        final var efficiency = globalMetrics.getEficiencia();
-
-        if (efficiency > 70.0d)
-            sb.append("\tEfficiency GOOD\n");
-        else if (efficiency > 40.0)
-            sb.append("\tEfficiency MEDIUM\n");
-        else
-            sb.append("\tEfficiency BAD\n");
-
-        return sb.toString();
-    }
-
-    /* Button Creation Methods */
-
-    /**
      * It creates and initializes the button that is used to save the simulation
      * results in an HTML file.
      *
      * @return a button used to save the simulation results in an HTML file
      */
-    private JButton makeSaveHtmlButton() {
+    private JButton makeSaveHtmlButton () {
         final var button = new JButton();
 
         //noinspection ConstantConditions
@@ -132,13 +102,15 @@ import java.util.List;
         return button;
     }
 
+    /* Button Creation Methods */
+
     /**
      * It creates and initializes the traces button that is used to save the
      * simulation traces in a file.
      *
      * @return a button used to save the simulation traces in a file
      */
-    private JButton makeSaveTracesButton() {
+    private JButton makeSaveTracesButton () {
         final var button = new JButton();
 
         button.setText("Save traces");
@@ -151,6 +123,37 @@ import java.util.List;
         return button;
     }
 
+    /**
+     * It creates the global results text, this text contains the general simulation
+     * results and is shown in the global pane.
+     *
+     * @param globalMetrics
+     *         the simulation global metrics
+     *
+     * @return the global results text
+     */
+    private String makeGlobalResultsText (final MetricasGlobais globalMetrics) {
+        final var sb = new StringBuilder();
+
+        sb.append("\t\tSimulation Results\n\n");
+        sb.append(String.format("\tTotal Simulated Time = %g\n", globalMetrics.getTempoSimulacao()));
+        sb.append(String.format("\tSatisfaction = %g %%\n", globalMetrics.getSatisfacaoMedia()));
+        sb.append(
+                String.format("\tIdleness of processing resources = %g %%\n", globalMetrics.getOciosidadeComputacao()));
+        sb.append(String.format("\tIdleness of communication resources = %g %%\n",
+                                globalMetrics.getOciosidadeComunicacao()
+        ));
+        sb.append(String.format("\tEfficiency = %g %%\n", globalMetrics.getEficiencia()));
+
+        final var efficiency = globalMetrics.getEficiencia();
+
+        if (efficiency > 70.0d) {sb.append("\tEfficiency GOOD\n");} else if (efficiency > 40.0) {
+            sb.append("\tEfficiency MEDIUM\n");
+        } else {sb.append("\tEfficiency BAD\n");}
+
+        return sb.toString();
+    }
+
     /* Button Click Handling Methods */
 
     /**
@@ -161,9 +164,9 @@ import java.util.List;
      * @return an instance of {@link ActionListener} to handle the click event
      *         on the {@code Save HTML} button.
      */
-    private ActionListener makeSaveHtmlAction() {
+    private ActionListener makeSaveHtmlAction () {
         return (e) -> {
-            final var fileChooser = new JFileChooser();
+            final var fileChooser  = new JFileChooser();
             final var stateChooser = fileChooser.showSaveDialog(this);
 
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -186,7 +189,8 @@ import java.util.List;
                     HtmlPane.openDefaultBrowser(url);
                 }
                 case JFileChooser.ERROR_OPTION -> throw new IllegalStateException("An unexpected error has occurred." +
-                        "Please contact the project administrators.");
+                                                                                  "Please contact the project " +
+                                                                                  "administrators.");
             }
         };
     }
@@ -199,24 +203,26 @@ import java.util.List;
      * @return an instance of {@link ActionListener} to handle the click event
      *         on the {@code Save Traces} button.
      */
-    private ActionListener makeSaveTracesAction() {
+    private ActionListener makeSaveTracesAction () {
         return (e) -> {
-            final var extension = ".wmsx";
-            final var fileChooser = new JFileChooser();
+            final var extension    = ".wmsx";
+            final var fileChooser  = new JFileChooser();
             final var stateChooser = fileChooser.showSaveDialog(this);
 
             switch (stateChooser) {
                 case JFileChooser.APPROVE_OPTION -> {
                     var selectedFile = fileChooser.getSelectedFile();
 
-                    if (!selectedFile.getName().endsWith(extension))
+                    if (!selectedFile.getName().endsWith(extension)) {
                         selectedFile = new File(selectedFile + extension);
+                    }
 
                     new TraceXML(selectedFile.getAbsolutePath())
                             .geraTraceSim(this.tasks);
                 }
                 case JFileChooser.ERROR_OPTION -> throw new IllegalStateException("An unexpected error has occurred." +
-                        " Please contact the project administrators.");
+                                                                                  " Please contact the project " +
+                                                                                  "administrators.");
             }
         };
     }

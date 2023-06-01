@@ -31,7 +31,10 @@
 
 package ispd.gui;
 
-import ispd.gui.auxiliar.HtmlPane;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.io.IOException;
+import java.net.URL;
 
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -42,21 +45,20 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.io.IOException;
-import java.net.URL;
+
+import ispd.gui.auxiliar.HtmlPane;
 
 public class HelpWindow extends JFrame implements TreeSelectionListener {
-    private static final boolean DEBUG = false;
-    private static final Dimension CONVENIENT_SIZE =
-            new Dimension(700, 400);
-    private static final int DIVIDER_LOCATION = 200;
-    private final JEditorPane htmlPane;
-    private final JTree tree;
-    private URL helpURL;
 
-    HelpWindow() {
+    private static final boolean     DEBUG            = false;
+    private static final Dimension   CONVENIENT_SIZE  =
+            new Dimension(700, 400);
+    private static final int         DIVIDER_LOCATION = 200;
+    private final        JEditorPane htmlPane;
+    private final        JTree       tree;
+    private              URL         helpURL;
+
+    HelpWindow () {
         this.setTitle("Help");
         this.setMinimumSize(HelpWindow.CONVENIENT_SIZE);
         final var image =
@@ -101,7 +103,7 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
         this.add(splitPane);
     }
 
-    private static void createNodes(final DefaultMutableTreeNode top) {
+    private static void createNodes (final DefaultMutableTreeNode top) {
         final var category = new DefaultMutableTreeNode("Interface");
         top.add(category);
 
@@ -109,7 +111,7 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
                 "Icons", "html/icones.html")));
     }
 
-    private void initHelp() {
+    private void initHelp () {
         final var s = "html/HelpStart.html";
         this.helpURL = this.getClass().getResource(s);
         if (this.helpURL == null) {
@@ -120,7 +122,7 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
         this.displayURL(this.helpURL);
     }
 
-    private void displayURL(final URL url) {
+    private void displayURL (final URL url) {
         try {
             if (url != null) {
                 this.htmlPane.setPage(url);
@@ -139,11 +141,11 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
     /**
      * Required by TreeSelectionListener interface.
      */
-    public void valueChanged(final TreeSelectionEvent e) {
+    public void valueChanged (final TreeSelectionEvent e) {
         final DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                 this.tree.getLastSelectedPathComponent();
 
-        if (node == null) return;
+        if (node == null) {return;}
 
         final Object nodeInfo = node.getUserObject();
         if (node.isLeaf()) {
@@ -161,23 +163,24 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
     }
 
     private static class BookInfo {
-        private final String bookName;
-        private final URL bookURL;
 
-        private BookInfo(final String book, final String filename) {
+        private final String bookName;
+        private final URL    bookURL;
+
+        private BookInfo (final String book, final String filename) {
             this.bookName = book;
-            this.bookURL = this.getClass().getResource(filename);
+            this.bookURL  = this.getClass().getResource(filename);
             if (this.bookURL == null) {
                 System.err.println("Couldn't find the file: " + filename);
             }
         }
 
         @Override
-        public String toString() {
+        public String toString () {
             return this.bookName;
         }
 
-        URL getBookURL() {
+        URL getBookURL () {
             return this.bookURL;
         }
     }

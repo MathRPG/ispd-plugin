@@ -1,12 +1,12 @@
 package ispd.motor.workload.impl.task;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import ispd.motor.filas.RedeDeFilas;
+import ispd.motor.filas.Tarefa;
+import ispd.motor.filas.servidores.CS_Processamento;
 
 /**
  * <p>Abstract class with the purpose to create a task from some data source.
@@ -18,6 +18,7 @@ import java.util.stream.IntStream;
  * @see TraceTaskBuilder
  */
 public abstract class TaskBuilder {
+
     /**
      * Size of the file returned to the master, in Mbits.
      */
@@ -40,29 +41,34 @@ public abstract class TaskBuilder {
      *     processed.</li>
      * </ul>
      *
-     * @param qn        {@link RedeDeFilas} with the masters that will host
-     *                  the tasks.
-     * @param taskCount amount of tasks to be created. <b>Must be positive</b>.
+     * @param qn
+     *         {@link RedeDeFilas} with the masters that will host
+     *         the tasks.
+     * @param taskCount
+     *         amount of tasks to be created. <b>Must be positive</b>.
+     *
      * @return collection of created {@link Tarefa}s.
      */
-    public List<Tarefa> makeTasksDistributedAmongMasters(final RedeDeFilas qn, final int taskCount) {
+    public List<Tarefa> makeTasksDistributedAmongMasters (final RedeDeFilas qn, final int taskCount) {
         final var masters = qn.getMestres();
 
         return IntStream.range(0, taskCount)
-                .map(i -> i % masters.size())
-                .mapToObj(masters::get)
-                .map(this::makeTaskFor)
-                .collect(Collectors.toList());
+                        .map(i -> i % masters.size())
+                        .mapToObj(masters::get)
+                        .map(this::makeTaskFor)
+                        .collect(Collectors.toList());
     }
 
     /**
      * Create a {@link Tarefa} originating at the given
      * {@link CS_Processamento} instance.
      *
-     * @param master {@link CS_Processamento} that will host the task.
+     * @param master
+     *         {@link CS_Processamento} that will host the task.
+     *
      * @return a generated {@link Tarefa}.
      */
-    public Tarefa makeTaskFor(final CS_Processamento master) {
+    public Tarefa makeTaskFor (final CS_Processamento master) {
         return new Tarefa(
                 this.makeTaskId(),
                 this.makeTaskUser(master),
@@ -80,38 +86,40 @@ public abstract class TaskBuilder {
      *
      * @return an integral value representing a task id.
      */
-    protected abstract int makeTaskId();
+    protected abstract int makeTaskId ();
 
     /**
      * Select a suitable user for a new task. Such generation may involve the
      * given {@link CS_Processamento}, or not.
      *
-     * @param master {@link CS_Processamento} that may host information about
-     *               which user the task will be linked with.
+     * @param master
+     *         {@link CS_Processamento} that may host information about
+     *         which user the task will be linked with.
+     *
      * @return a user id for the new task.
      */
-    protected abstract String makeTaskUser(CS_Processamento master);
+    protected abstract String makeTaskUser (CS_Processamento master);
 
     /**
      * @return the application which a new task will be associated with; by
-     * default, {@code "application1"}.
+     *         default, {@code "application1"}.
      */
-    protected String makeTaskApplication() {
+    protected String makeTaskApplication () {
         return "application1";
     }
 
     /**
      * @return the task communication size (in MBits), usually random.
      */
-    protected abstract double makeTaskCommunicationSize();
+    protected abstract double makeTaskCommunicationSize ();
 
     /**
      * @return the task computation size (in MFlops), usually random.
      */
-    protected abstract double makeTaskComputationSize();
+    protected abstract double makeTaskComputationSize ();
 
     /**
      * @return the task creation time (in seconds), usually random.
      */
-    protected abstract double makeTaskCreationTime();
+    protected abstract double makeTaskCreationTime ();
 }

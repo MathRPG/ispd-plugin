@@ -1,7 +1,8 @@
 package ispd.motor.statistics;
 
 public class NoTarefasFila {
-    private int idTarefa;
+
+    private int    idTarefa;
     private Double tamanhoTarefa;
     private Double tempoChegadaFila;
     private Double tempoChegadaServidor;
@@ -11,78 +12,78 @@ public class NoTarefasFila {
     private Double tempoTotalServidor;
 
 
-    public NoTarefasFila(int id, Double tam, Double tempo) {
+    public NoTarefasFila (int id, Double tam, Double tempo) {
         setIdTarefa(id);
-        this.tamanhoTarefa = tam;
-        this.tempoChegadaFila = tempo;
+        this.tamanhoTarefa        = tam;
+        this.tempoChegadaFila     = tempo;
         this.tempoChegadaServidor = 0.0;
-        this.tempoSaidaSistema = 0.0;
-        this.tempoTotalSistema = 0.0;
-        this.tempoTotalFila = 0.0;
-        this.tempoTotalServidor = 0.0;
+        this.tempoSaidaSistema    = 0.0;
+        this.tempoTotalSistema    = 0.0;
+        this.tempoTotalFila       = 0.0;
+        this.tempoTotalServidor   = 0.0;
     }
 
-    public int getIdTarefa() {
+    public int getIdTarefa () {
         return idTarefa;
     }
 
-    public void setIdTarefa(int id) {
+    public void setIdTarefa (int id) {
         idTarefa = (id >= 0) ? id : 0;
     }
 
-    public Double getTamanhoTarefa() {
+    public Double getTamanhoTarefa () {
         return tamanhoTarefa;
     }
 
-    public void setTamanhoTarefa(Double tam) {
+    public void setTamanhoTarefa (Double tam) {
         tamanhoTarefa = (tam >= 0) ? tam : 0;
     }
 
-    public Double getTempoChegadaFila() {
+    public Double getTempoChegadaFila () {
         return tempoChegadaFila;
     }
 
-    public void setTempoChegadaFila(Double tempo) {
+    public void setTempoChegadaFila (Double tempo) {
         tempoChegadaFila = tempo;
     }
 
-    public Double getTempoChegadaServidor() {
+    public Double getTempoChegadaServidor () {
         return tempoChegadaServidor;
     }
 
-    public void setTempoChegadaServidor(Double tempo) {
+    public void setTempoChegadaServidor (Double tempo) {
         tempoChegadaServidor = tempo;
     }
 
-    public Double getTempoSaidaSistema() {
+    public Double getTempoSaidaSistema () {
         return tempoSaidaSistema;
     }
 
-    public void setTempoSaidaSistema(Double tempo) {
+    public void setTempoSaidaSistema (Double tempo) {
         tempoSaidaSistema = tempo;
     }
 
-    public void setTempoTotalSistema() {
+    public void setTempoTotalSistema () {
         tempoTotalSistema = tempoSaidaSistema - tempoChegadaFila;
     }
 
-    public Double getTempoTotalSistema() {
+    public Double getTempoTotalSistema () {
         return tempoTotalSistema;
     }
 
-    public void setTempoTotalFila() {
+    public void setTempoTotalFila () {
         tempoTotalFila = tempoChegadaServidor - tempoChegadaFila;
     }
 
-    public Double getTempoTotalFila() {
+    public Double getTempoTotalFila () {
         return tempoTotalFila;
     }
 
-    public void setTempoTotalServidor() {
+    public void setTempoTotalServidor () {
         tempoTotalServidor = tempoSaidaSistema - tempoChegadaServidor;
     }
 
-    public Double getTempoTotalServidor() {
+    public Double getTempoTotalServidor () {
         return tempoTotalServidor;
     }
 

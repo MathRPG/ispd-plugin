@@ -1,5 +1,13 @@
 package ispd.policy.scheduling.grid.impl;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import ispd.motor.Mensagens;
 import ispd.motor.filas.Mensagem;
 import ispd.motor.filas.Tarefa;
@@ -10,16 +18,9 @@ import ispd.policy.scheduling.grid.impl.util.PreemptionEntry;
 import ispd.policy.scheduling.grid.impl.util.SlaveControl;
 import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 public abstract class AbstractHOSEP <T extends UserProcessingControl> extends AbstractOSEP<T> {
-    private final Collection<Tarefa> tasksToSchedule = new HashSet<>();
+
+    private final Collection<Tarefa>          tasksToSchedule   = new HashSet<>();
     private final Collection<PreemptionEntry> preemptionEntries =
             new HashSet<>();
 
@@ -42,7 +43,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      * </ul>
      */
     @Override
-    public void escalonar() {
+    public void escalonar () {
         for (final var uc : this.sortedUserControls()) {
             if (this.canScheduleTaskFor(uc)) {
                 return;
@@ -57,24 +58,20 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      * result in an {@link UnsupportedOperationException} being thrown.
      *
      * @return not applicable in this context, an exception is thrown instead.
-     * @throws UnsupportedOperationException whenever called.
+     *
+     * @throws UnsupportedOperationException
+     *         whenever called.
      */
     @Override
-    public CS_Processamento escalonarRecurso() {
+    public CS_Processamento escalonarRecurso () {
         throw new UnsupportedOperationException("""
-                Do not call method .escalonarRecurso() on HOSEP-like algorithms.""");
+                                                Do not call method .escalonarRecurso() on HOSEP-like algorithms.""");
     }
 
-    private List<T> sortedUserControls() {
+    private List<T> sortedUserControls () {
         return this.userControls.values().stream()
-                .sorted(this.getUserComparator())
-                .toList();
-    }
-
-    protected Comparator<T> getUserComparator() {
-        return Comparator
-                .<T>comparingDouble(UserProcessingControl::percentageOfProcessingPowerUsed)
-                .thenComparingDouble(UserProcessingControl::getOwnedMachinesProcessingPower);
+                                .sorted(this.getUserComparator())
+                                .toList();
     }
 
     /**
@@ -84,19 +81,27 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      * {@code true} if such procedure succeeds; otherwise, won't do anything
      * and will return {@code false}.<br>
      *
-     * @param uc {@link UserProcessingControl} for the user whose tasks may need
-     *           scheduling
+     * @param uc
+     *         {@link UserProcessingControl} for the user whose tasks may need
+     *         scheduling
+     *
      * @return {@code true} if a task and resource were selected
-     * successfully, and the task was sent to be executed in the resource
-     * successfully; {@code false} otherwise
+     *         successfully, and the task was sent to be executed in the resource
+     *         successfully; {@code false} otherwise
      */
-    private boolean canScheduleTaskFor(final T uc) {
+    private boolean canScheduleTaskFor (final T uc) {
         try {
             this.tryFindTaskAndResourceFor(uc);
             return true;
         } catch (final NoSuchElementException | IllegalStateException ex) {
             return false;
         }
+    }
+
+    protected Comparator<T> getUserComparator () {
+        return Comparator
+                .<T>comparingDouble(UserProcessingControl::percentageOfProcessingPowerUsed)
+                .thenComparingDouble(UserProcessingControl::getOwnedMachinesProcessingPower);
     }
 
     /**
@@ -110,17 +115,21 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      * the exception thrown in the process. Namely,
      * {@link IllegalStateException}.<br>
      *
-     * @param uc {@link UserProcessingControl} representing the user whose
-     *           tasks may
-     *           need scheduling
-     * @throws NoSuchElementException if it cannot select either an
-     *                                appropriate task or a suitable resource
-     *                                for a selected task, for the
-     *                                given {@link UserProcessingControl}
-     * @throws IllegalStateException  if hosting the selected task in the
-     *                                selected resource fails
+     * @param uc
+     *         {@link UserProcessingControl} representing the user whose
+     *         tasks may
+     *         need scheduling
+     *
+     * @throws NoSuchElementException
+     *         if it cannot select either an
+     *         appropriate task or a suitable resource
+     *         for a selected task, for the
+     *         given {@link UserProcessingControl}
+     * @throws IllegalStateException
+     *         if hosting the selected task in the
+     *         selected resource fails
      */
-    private void tryFindTaskAndResourceFor(final T uc) {
+    private void tryFindTaskAndResourceFor (final T uc) {
         final var task = this
                 .findTaskSuitableFor(uc)
                 .orElseThrow();
@@ -130,6 +139,23 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
                 .orElseThrow();
 
         this.tryHostTaskFromUserInMachine(task, uc, machine);
+    }
+
+    private Optional<Tarefa> findTaskSuitableFor (final T uc) {
+        if (!uc.isEligibleForTask()) {
+            return Optional.empty();
+        }
+
+        return this.tasksOwnedBy(uc)
+                   .min(Comparator.comparingDouble(Tarefa::getTamProcessamento));
+    }
+
+    private Optional<CS_Processamento> findMachineBestSuitedFor (
+            final Tarefa task, final T taskOwner
+    ) {
+        return this
+                .findAvailableMachineBestSuitedFor(task, taskOwner)
+                .or(() -> this.findOccupiedMachineBestSuitedFor(taskOwner));
     }
 
     /**
@@ -142,33 +168,67 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      * Once it is determined that the machine is suitable for receiving a new
      * task, the hosting process is <i>guaranteed to succeed</i>.<br>
      *
-     * @param task      {@link Tarefa task} to host in the given
-     *                  {@link CS_Processamento machine}
-     * @param taskOwner {@link UserProcessingControl} representing the owner
-     *                  of the
-     *                  given {@link Tarefa task}
-     * @param machine   {@link CS_Processamento processing center} that may
-     *                  host the task; it must be in a valid state to do so
-     * @throws IllegalStateException if the given {@link CS_Processamento
-     *                               machine} is not in a suitable state for
-     *                               hosting a new task
+     * @param task
+     *         {@link Tarefa task} to host in the given
+     *         {@link CS_Processamento machine}
+     * @param taskOwner
+     *         {@link UserProcessingControl} representing the owner
+     *         of the
+     *         given {@link Tarefa task}
+     * @param machine
+     *         {@link CS_Processamento processing center} that may
+     *         host the task; it must be in a valid state to do so
+     *
+     * @throws IllegalStateException
+     *         if the given {@link CS_Processamento
+     *         machine} is not in a suitable state for
+     *         hosting a new task
      * @see #canMachineHostNewTask(CS_Processamento) Machine Status Validation
      */
-    private void tryHostTaskFromUserInMachine(
+    private void tryHostTaskFromUserInMachine (
             final Tarefa task, final T taskOwner,
-            final CS_Processamento machine) {
+            final CS_Processamento machine
+    ) {
         if (!this.canMachineHostNewTask(machine)) {
             throw new IllegalStateException("""
-                    Scheduled machine %s can not host tasks"""
-                    .formatted(machine));
+                                            Scheduled machine %s can not host tasks"""
+                                                    .formatted(machine));
         }
 
         this.hostTaskFromUserInMachine(task, taskOwner, machine);
     }
 
-    private void hostTaskFromUserInMachine(
+    private Stream<Tarefa> tasksOwnedBy (final T uc) {
+        return this.tarefas.stream().filter(uc::isOwnerOf);
+    }
+
+    private Optional<CS_Processamento> findAvailableMachineBestSuitedFor (
+            final Tarefa task, final T taskOwner
+    ) {
+        return this.availableMachinesFor(taskOwner)
+                   .max(this.compareAvailableMachinesFor(task));
+    }
+
+    private Optional<CS_Processamento> findOccupiedMachineBestSuitedFor (final T taskOwner) {
+        // If no available machine is found, preemption may be used to force
+        // the task into one. However, if the task owner has excess
+        // processing power, preemption will NOT be used to accommodate them
+        if (taskOwner.hasExcessProcessingPower() ||
+            !this.theBestUser().hasExcessProcessingPower()) {
+            return Optional.empty();
+        }
+
+        return this.findMachineToPreemptFor(taskOwner);
+    }
+
+    private boolean canMachineHostNewTask (final CS_Processamento machine) {
+        return this.slaveControls.get(machine).canHostNewTask();
+    }
+
+    private void hostTaskFromUserInMachine (
             final Tarefa task, final T taskOwner,
-            final CS_Processamento machine) {
+            final CS_Processamento machine
+    ) {
         this.sendTaskToResource(task, machine);
         this.tarefas.remove(task);
 
@@ -181,23 +241,52 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         this.slaveControls.get(machine).setAsBlocked();
     }
 
-    private void hostTaskNormally(
+    protected Stream<CS_Processamento> availableMachinesFor (final T taskOwner) {
+        return this.escravos.stream().filter(this::isMachineAvailable);
+    }
+
+    protected Comparator<CS_Processamento> compareAvailableMachinesFor (final Tarefa task) {
+        return Comparator.comparingDouble(CS_Processamento::getPoderComputacional);
+    }
+
+    protected T theBestUser () {
+        return this.userControls.values().stream()
+                                .max(this.getUserComparator())
+                                .orElseThrow();
+    }
+
+    protected Optional<CS_Processamento> findMachineToPreemptFor (final T taskOwner) {
+        return this.findUserToPreemptFor(taskOwner).flatMap(
+                userToPreempt -> this.findMachineToTransferBetween(userToPreempt, taskOwner));
+    }
+
+    private void sendTaskToResource (
+            final Tarefa task, final CentroServico resource
+    ) {
+        task.setLocalProcessamento(resource);
+        task.setCaminho(this.escalonarRota(resource));
+    }
+
+    private boolean isMachineAvailable (final CS_Processamento machine) {
+        return this.slaveControls.get(machine).isFree();
+    }
+
+    private void hostTaskNormally (
             final Tarefa task, final T uc,
-            final CS_Processamento machine) {
+            final CS_Processamento machine
+    ) {
         this.sendTaskFromUserToMachine(task, uc, machine);
         uc.decreaseTaskDemand();
     }
 
-    private void sendTaskFromUserToMachine(
-            final Tarefa task, final T taskOwner,
-            final CS_Processamento machine) {
-        this.mestre.sendTask(task);
-        taskOwner.startTaskFrom(machine);
+    private boolean isMachineOccupied (final CS_Processamento machine) {
+        return this.slaveControls.get(machine).isOccupied();
     }
 
-    private void hostTaskWithPreemption(
+    private void hostTaskWithPreemption (
             final Tarefa taskToSchedule, final T taskOwner,
-            final CS_Processamento machine) {
+            final CS_Processamento machine
+    ) {
         final var taskToPreempt = this.taskToPreemptIn(machine);
 
         this.preemptionEntries.add(
@@ -215,114 +304,50 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         taskOwner.decreaseTaskDemand();
     }
 
-    private void sendTaskToResource(
-            final Tarefa task, final CentroServico resource) {
-        task.setLocalProcessamento(resource);
-        task.setCaminho(this.escalonarRota(resource));
-    }
+    protected abstract Optional<T> findUserToPreemptFor (T taskOwner);
 
-    private boolean canMachineHostNewTask(final CS_Processamento machine) {
-        return this.slaveControls.get(machine).canHostNewTask();
-    }
-
-    private Optional<Tarefa> findTaskSuitableFor(final T uc) {
-        if (!uc.isEligibleForTask()) {
-            return Optional.empty();
-        }
-
-        return this.tasksOwnedBy(uc)
-                .min(Comparator.comparingDouble(Tarefa::getTamProcessamento));
-    }
-
-    private Stream<Tarefa> tasksOwnedBy(final T uc) {
-        return this.tarefas.stream().filter(uc::isOwnerOf);
-    }
-
-    private Optional<CS_Processamento> findMachineBestSuitedFor(
-            final Tarefa task, final T taskOwner) {
-        return this
-                .findAvailableMachineBestSuitedFor(task, taskOwner)
-                .or(() -> this.findOccupiedMachineBestSuitedFor(taskOwner));
-    }
-
-    private Optional<CS_Processamento> findAvailableMachineBestSuitedFor(
-            final Tarefa task, final T taskOwner) {
-        return this.availableMachinesFor(taskOwner)
-                .max(this.compareAvailableMachinesFor(task));
-    }
-
-    protected Comparator<CS_Processamento> compareAvailableMachinesFor(final Tarefa task) {
-        return Comparator.comparingDouble(CS_Processamento::getPoderComputacional);
-    }
-
-    protected Stream<CS_Processamento> availableMachinesFor(final T taskOwner) {
-        return this.escravos.stream().filter(this::isMachineAvailable);
-    }
-
-    private boolean isMachineAvailable(final CS_Processamento machine) {
-        return this.slaveControls.get(machine).isFree();
-    }
-
-    private Optional<CS_Processamento> findOccupiedMachineBestSuitedFor(final T taskOwner) {
-        // If no available machine is found, preemption may be used to force
-        // the task into one. However, if the task owner has excess
-        // processing power, preemption will NOT be used to accommodate them
-        if (taskOwner.hasExcessProcessingPower() ||
-            !this.theBestUser().hasExcessProcessingPower()) {
-            return Optional.empty();
-        }
-
-        return this.findMachineToPreemptFor(taskOwner);
-    }
-
-    protected Optional<CS_Processamento> findMachineToPreemptFor(final T taskOwner) {
-        return this.findUserToPreemptFor(taskOwner).flatMap(
-                userToPreempt -> this.findMachineToTransferBetween(userToPreempt, taskOwner));
-    }
-
-    protected abstract Optional<T> findUserToPreemptFor(T taskOwner);
-
-    protected Optional<CS_Processamento> findMachineToTransferBetween(
-            final T userToPreempt, final T taskOwner) {
+    protected Optional<CS_Processamento> findMachineToTransferBetween (
+            final T userToPreempt, final T taskOwner
+    ) {
         return this.machinesTransferableBetween(userToPreempt, taskOwner)
-                .min(this.compareOccupiedMachines())
-                .filter(machine -> this.shouldTransferMachine(
-                        machine, userToPreempt, taskOwner));
+                   .min(this.compareOccupiedMachines())
+                   .filter(machine -> this.shouldTransferMachine(
+                           machine, userToPreempt, taskOwner));
     }
 
-    protected boolean shouldTransferMachine(
-            final CS_Processamento machine,
-            final T machineOwner, final T nextOwner) {
-        return machineOwner.canConcedeProcessingPower(machine);
+    private void sendTaskFromUserToMachine (
+            final Tarefa task, final T taskOwner,
+            final CS_Processamento machine
+    ) {
+        this.mestre.sendTask(task);
+        taskOwner.startTaskFrom(machine);
     }
 
-    protected Stream<CS_Processamento> machinesTransferableBetween(
-            final T userToPreempt, final T taskOwner) {
-        return this.machinesOccupiedBy(userToPreempt);
-    }
-
-    private Stream<CS_Processamento> machinesOccupiedBy(final T userToPreempt) {
-        return this.escravos.stream()
-                .filter(this::isMachineOccupied)
-                .filter(machine -> userToPreempt.isOwnerOf(this.taskToPreemptIn(machine)));
-    }
-
-    protected Tarefa taskToPreemptIn(final CS_Processamento machine) {
+    protected Tarefa taskToPreemptIn (final CS_Processamento machine) {
         return this.slaveControls.get(machine).firstTaskInProcessing();
     }
 
-    private boolean isMachineOccupied(final CS_Processamento machine) {
-        return this.slaveControls.get(machine).isOccupied();
+    protected Stream<CS_Processamento> machinesTransferableBetween (
+            final T userToPreempt, final T taskOwner
+    ) {
+        return this.machinesOccupiedBy(userToPreempt);
     }
 
-    protected Comparator<CS_Processamento> compareOccupiedMachines() {
+    protected Comparator<CS_Processamento> compareOccupiedMachines () {
         return Comparator.comparingDouble(CS_Processamento::getPoderComputacional);
     }
 
-    protected T theBestUser() {
-        return this.userControls.values().stream()
-                .max(this.getUserComparator())
-                .orElseThrow();
+    protected boolean shouldTransferMachine (
+            final CS_Processamento machine,
+            final T machineOwner, final T nextOwner
+    ) {
+        return machineOwner.canConcedeProcessingPower(machine);
+    }
+
+    private Stream<CS_Processamento> machinesOccupiedBy (final T userToPreempt) {
+        return this.escravos.stream()
+                            .filter(this::isMachineOccupied)
+                            .filter(machine -> userToPreempt.isOwnerOf(this.taskToPreemptIn(machine)));
     }
 
     /**
@@ -332,20 +357,22 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      * result in an {@link UnsupportedOperationException} being thrown.
      *
      * @return not applicable in this context, an exception is thrown instead.
-     * @throws UnsupportedOperationException whenever called.
+     *
+     * @throws UnsupportedOperationException
+     *         whenever called.
      */
     @Override
-    public Tarefa escalonarTarefa() {
+    public Tarefa escalonarTarefa () {
         throw new UnsupportedOperationException("""
-                Do not call method .escalonarTarefa() on HOSEP-like algorithms.""");
+                                                Do not call method .escalonarTarefa() on HOSEP-like algorithms.""");
     }
 
     @Override
-    public void addTarefaConcluida(final Tarefa tarefa) {
+    public void addTarefaConcluida (final Tarefa tarefa) {
         super.addTarefaConcluida(tarefa);
 
         final var maq = tarefa.getCSLProcessamento();
-        final var sc = this.slaveControls.get(maq);
+        final var sc  = this.slaveControls.get(maq);
 
         if (sc.isOccupied()) {
             this.userControls
@@ -358,29 +385,30 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         }
     }
 
-    private void processPreemptedTask(final Tarefa task) {
+    private void processPreemptedTask (final Tarefa task) {
         final var pe = this.findEntryForPreemptedTask(task);
 
         this.tasksToSchedule.stream()
-                .filter(pe::willScheduleTask)
-                .findFirst()
-                .ifPresent(t -> this
-                        .insertTaskIntoPreemptedTaskSlot(t, task));
+                            .filter(pe::willScheduleTask)
+                            .findFirst()
+                            .ifPresent(t -> this
+                                    .insertTaskIntoPreemptedTaskSlot(t, task));
     }
 
-    private PreemptionEntry findEntryForPreemptedTask(final Tarefa t) {
+    private PreemptionEntry findEntryForPreemptedTask (final Tarefa t) {
         return this.preemptionEntries.stream()
-                .filter(pe -> pe.willPreemptTask(t))
-                .findFirst()
-                .orElseThrow();
+                                     .filter(pe -> pe.willPreemptTask(t))
+                                     .findFirst()
+                                     .orElseThrow();
     }
 
-    private void insertTaskIntoPreemptedTaskSlot(
-            final Tarefa scheduled, final Tarefa preempted) {
+    private void insertTaskIntoPreemptedTaskSlot (
+            final Tarefa scheduled, final Tarefa preempted
+    ) {
         this.tasksToSchedule.remove(scheduled);
 
         final var mach = preempted.getCSLProcessamento();
-        final var pe = this.findEntryForPreemptedTask(preempted);
+        final var pe   = this.findEntryForPreemptedTask(preempted);
 
         final var user = this.userControls.get(pe.scheduledTaskUser());
         this.sendTaskFromUserToMachine(scheduled, user, mach);
@@ -393,7 +421,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
     }
 
     @Override
-    public void resultadoAtualizar(final Mensagem mensagem) {
+    public void resultadoAtualizar (final Mensagem mensagem) {
         final var sc = this.slaveControls
                 .get((CS_Processamento) mensagem.getOrigem());
 
@@ -402,7 +430,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
     }
 
     @Override
-    public void adicionarTarefa(final Tarefa tarefa) {
+    public void adicionarTarefa (final Tarefa tarefa) {
         super.adicionarTarefa(tarefa);
 
         this.userControls
@@ -414,7 +442,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
                 .ifPresent(this::processPreemptedTask);
     }
 
-    private static boolean hasProcessingCenter(final Tarefa t) {
+    private static boolean hasProcessingCenter (final Tarefa t) {
         return t.getLocalProcessamento() != null;
     }
 }

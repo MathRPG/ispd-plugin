@@ -4,41 +4,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Estatistica {
-    private double tempoInicial;
-    private double tempoFinal;
-    private double tempoTotal;
-    private double satisfacao;
-    private double ociosidade;
-    private double eficiencia;
-    private int numServidores;
-    private int numCS;
-    private int numTarefasTotal;
-    private int numUsuarios;
-    private List<MetricaCS> metCS;
-    private List<TarefasFila> filas;
-    private List<String> listaNomeId;
 
-    public Estatistica(double tempoInicial) {
-        tempoInicial = tempoInicial;
-        tempoFinal = 0.0;
-        tempoTotal = 0.0;
-        satisfacao = 0.0;
-        ociosidade = 0.0;
-        eficiencia = 0.0;
+    private double            tempoInicial;
+    private double            tempoFinal;
+    private double            tempoTotal;
+    private double            satisfacao;
+    private double            ociosidade;
+    private double            eficiencia;
+    private int               numServidores;
+    private int               numCS;
+    private int               numTarefasTotal;
+    private int               numUsuarios;
+    private List<MetricaCS>   metCS;
+    private List<TarefasFila> filas;
+    private List<String>      listaNomeId;
+
+    public Estatistica (double tempoInicial) {
+        tempoInicial  = tempoInicial;
+        tempoFinal    = 0.0;
+        tempoTotal    = 0.0;
+        satisfacao    = 0.0;
+        ociosidade    = 0.0;
+        eficiencia    = 0.0;
         numServidores = 0;
-        numUsuarios = 1;
-        numCS = 0;
-        metCS = new ArrayList<MetricaCS>();
-        filas = new ArrayList<TarefasFila>();
+        numUsuarios   = 1;
+        numCS         = 0;
+        metCS         = new ArrayList<MetricaCS>();
+        filas         = new ArrayList<TarefasFila>();
     }
 
-    public void addMetricaCS(int cs) {
+    public void addMetricaCS (int cs) {
         MetricaCS CS = new MetricaCS(cs);
         metCS.add(CS);
         numCS++;
     }
 
-    public void imprimeRede() {
+    public void imprimeRede () {
         for (MetricaCS temp : metCS) {
             temp.imprimeServ();
         }
@@ -47,13 +48,13 @@ public class Estatistica {
         }
     }
 
-    public void imprimeTarefa() {
+    public void imprimeTarefa () {
         for (TarefasFila temp : filas) {
             temp.imprimeTar();
         }
     }
 
-    public MetricaCS descobreServidorCS(int cs) {
+    public MetricaCS descobreServidorCS (int cs) {
         MetricaCS retorno = null;
         for (MetricaCS temp : metCS) {
             if (temp.getCS() == cs) {
@@ -63,7 +64,7 @@ public class Estatistica {
         return retorno;
     }
 
-    public void addMedidasServidor(int cs, int id, int tipoServ) {
+    public void addMedidasServidor (int cs, int id, int tipoServ) {
         for (MetricaCS temp : metCS) {
             if (temp.getCS() == cs) {
                 temp.addMedidasServidor(id, tipoServ);
@@ -72,7 +73,7 @@ public class Estatistica {
         }
     }
 
-    public void addNoMedidasServidor(int cs, int id, int estado, Double tempo) {
+    public void addNoMedidasServidor (int cs, int id, int estado, Double tempo) {
         for (MetricaCS temp : metCS) {
             if (temp.getCS() == cs) {
                 temp.addNoMedidasServidor(id, estado, tempo);
@@ -81,13 +82,14 @@ public class Estatistica {
         }
     }
 
-    public void addTarefasFila(int tipo) {
+    public void addTarefasFila (int tipo) {
         TarefasFila fila = new TarefasFila(tipo);
         filas.add(fila);
     }
 
-    public void addNoTarefasFila(int tipo, int tarefa, Double tam,
-								 Double tempo) {
+    public void addNoTarefasFila (
+            int tipo, int tarefa, Double tam, Double tempo
+    ) {
         for (TarefasFila temp : filas) {
             if (temp.getTipoMetrica() == tipo) {
                 temp.addNoTarefasFila(tarefa, tam, tempo);
@@ -96,7 +98,7 @@ public class Estatistica {
         }
     }
 
-    public void setTempoChegadaServidor(int tipo, int idTarefa, Double tempo) {
+    public void setTempoChegadaServidor (int tipo, int idTarefa, Double tempo) {
         for (TarefasFila no : filas) {
             if (no.getTipoMetrica() == tipo) {
                 no.setTempoChegadaServidor(idTarefa, tempo);
@@ -104,7 +106,7 @@ public class Estatistica {
         }
     }
 
-    public void setTempoSaidaSistema(int tipo, int idTarefa, Double tempo) {
+    public void setTempoSaidaSistema (int tipo, int idTarefa, Double tempo) {
         for (TarefasFila no : filas) {
             if (no.getTipoMetrica() == tipo) {
                 no.setTempoSaidaSistema(idTarefa, tempo);
@@ -112,8 +114,8 @@ public class Estatistica {
         }
     }
 
-    public void fimSimulacao() {
-        Double aux = 0.0;
+    public void fimSimulacao () {
+        Double aux   = 0.0;
         String texto = "\t\tSimulation Results\n\n";
         setTempoTotal();
         texto += String.format("Total Simulated Time = %g \n", getTempoTotal());
@@ -122,13 +124,11 @@ public class Estatistica {
         for (MetricaCS temp : metCS) {
             aux = temp.finalizaServProc();
             if (aux > 0.0) {
-                texto += this.listaNomeId.get(temp.getCS()) + String.format(
-						" spent %g second processing.\n", aux);
+                texto += this.listaNomeId.get(temp.getCS()) + String.format(" spent %g second processing.\n", aux);
             }
             aux = temp.finalizaServCom();
             if (aux > 0.0) {
-                texto += this.listaNomeId.get(temp.getCS()) + String.format(
-						" spent %g second processing.\n", aux);
+                texto += this.listaNomeId.get(temp.getCS()) + String.format(" spent %g second processing.\n", aux);
             }
         }
         setOciosidade();
@@ -145,61 +145,52 @@ public class Estatistica {
         for (TarefasFila no : filas) {
             if (no.getTipoMetrica() == 0) {
                 texto += "\n Communication \n";
-                texto += String.format("    Queue average time: %g seconds" +
-									   ".\n", no.getTempoMedioFila());
-                texto += String.format("    Communication average time: %g " +
-									   "seconds.\n",
-						no.getTempoMedioServidor());
-                texto += String.format("    System average time: %g seconds" +
-									   ".\n", no.getTempoMedioSistema());
+                texto += String.format("    Queue average time: %g seconds" + ".\n", no.getTempoMedioFila());
+                texto +=
+                        String.format("    Communication average time: %g " + "seconds.\n", no.getTempoMedioServidor());
+                texto += String.format("    System average time: %g seconds" + ".\n", no.getTempoMedioSistema());
             } else {
                 texto += "\n Processing \n";
-                texto += String.format("    Queue average time: %g seconds" +
-									   ".\n", no.getTempoMedioFila());
-                texto += String.format("    Processing average time: %g " +
-									   "seconds.\n",
-						no.getTempoMedioServidor());
-                texto += String.format("    System average time: %g seconds" +
-									   ".\n", no.getTempoMedioSistema());
+                texto += String.format("    Queue average time: %g seconds" + ".\n", no.getTempoMedioFila());
+                texto += String.format("    Processing average time: %g " + "seconds.\n", no.getTempoMedioServidor());
+                texto += String.format("    System average time: %g seconds" + ".\n", no.getTempoMedioSistema());
             }
         }
-        CaixaTextoEstatistica janela = new CaixaTextoEstatistica("Metrics",
-				texto);
+        CaixaTextoEstatistica janela = new CaixaTextoEstatistica("Metrics", texto);
         janela.setVisible(true);
     }
 
-    public void setTempoTotal() {
+    public void setTempoTotal () {
         tempoTotal = tempoFinal - tempoInicial;
     }
 
-    public double getTempoTotal() {
+    public double getTempoTotal () {
         return tempoTotal;
     }
 
-    public void setSatisfacao() {
+    public void setSatisfacao () {
         satisfacao = 100.0;
     }
 
-    public double getSatisfacao() {
+    public double getSatisfacao () {
         return satisfacao;
     }
 
-    public void setOciosidade() {
-        double aux = 0.0;
-        double tempoLivre = 0.0;
-        double razao = 0.0;
+    public void setOciosidade () {
+        double aux            = 0.0;
+        double tempoLivre     = 0.0;
+        double razao          = 0.0;
         double ociosidadeProc = 0.0;
-        double ociosidadeCom = 0.0;
+        double ociosidadeCom  = 0.0;
         for (MetricaCS temp : metCS) {
             aux = temp.finalizaServProc();
             if (aux > 0.0) {
-                tempoLivre = (getTempoTotal() - aux);
-                ociosidadeProc =
-						ociosidadeProc + (tempoLivre / getTempoTotal());
+                tempoLivre     = (getTempoTotal() - aux);
+                ociosidadeProc = ociosidadeProc + (tempoLivre / getTempoTotal());
             }
             aux = temp.finalizaServCom();
             if (aux > 0.0) {
-                tempoLivre = (getTempoTotal() - aux);
+                tempoLivre    = (getTempoTotal() - aux);
                 ociosidadeCom = ociosidadeCom + (tempoLivre / getTempoTotal());
             }
         }
@@ -207,32 +198,32 @@ public class Estatistica {
         ociosidade = 100 - ociosidade;
     }
 
-    public double getOciosidade() {
+    public double getOciosidade () {
         return ociosidade;
     }
 
-    public double getEficiencia() {
+    public double getEficiencia () {
         return eficiencia;
     }
 
-    public double getTempoInicial() {
+    public double getTempoInicial () {
         return tempoInicial;
     }
 
-    public void setTempoInicial(double tempoIni) {
+    public void setTempoInicial (double tempoIni) {
         tempoInicial = (tempoIni >= 0.0) ? tempoIni : 0.0;
     }
 
-    public double getTempoFinal() {
+    public double getTempoFinal () {
         return tempoFinal;
     }
 
-    public void setTempoFinal(double tempoFin) {
+    public void setTempoFinal (double tempoFin) {
         tempoFinal = (tempoFin >= 0.0) ? tempoFin : 0.0;
     }
 
-    public void setEficiencia(double valor, double tempo) {
-        double mediaTotal = 0.0;
+    public void setEficiencia (double valor, double tempo) {
+        double mediaTotal  = 0.0;
         double capRecebida = 0.0;
         capRecebida = valor;
         for (TarefasFila no : filas) {
@@ -249,7 +240,7 @@ public class Estatistica {
         //System.out.printf("MEDIA DAS TAREFAS NORMALIZADAS %g\n",mediaTotal);
     }
 
-    public void setNomeId(List<String> nomes) {
+    public void setNomeId (List<String> nomes) {
         this.listaNomeId = nomes;
     }
 

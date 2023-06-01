@@ -8,6 +8,7 @@ import jdk.jfr.Unsigned;
  * file contents are interpreted.
  */
 public class TraceTaskInfo {
+
     private final String[] fields;
 
     /**
@@ -32,45 +33,46 @@ public class TraceTaskInfo {
      * </ol>
      * Any further fields are also ignored.
      *
-     * @param s {@link String} to be split and interpreted as fields
-     *          containing task attributes.
+     * @param s
+     *         {@link String} to be split and interpreted as fields
+     *         containing task attributes.
      */
-    public TraceTaskInfo(final String s) {
+    public TraceTaskInfo (final String s) {
         this.fields = s.split("\"");
     }
 
     /**
      * @return the ID (an integral value) parsed from the task info.
      */
-    public int id() {
+    public int id () {
         return TaskFields.ID.getAsInt(this.fields);
     }
 
     /**
      * @return the user ID (name) parsed from the task info.
      */
-    public String user() {
+    public String user () {
         return TaskFields.USER.get(this.fields);
     }
 
     /**
      * @return the computation size (in MFlops) parsed from the task info.
      */
-    public double computationSize() {
+    public double computationSize () {
         return TaskFields.COMPUTATION.getAsDouble(this.fields);
     }
 
     /**
      * @return the communication size (in MBits) parsed from the task info.
      */
-    public double communicationSize() {
+    public double communicationSize () {
         return TaskFields.COMMUNICATION.getAsDouble(this.fields);
     }
 
     /**
      * @return the creation time (in seconds) parsed from the task info.
      */
-    public double creationTime() {
+    public double creationTime () {
         return TaskFields.CREATION_TIME.getAsDouble(this.fields);
     }
 
@@ -80,13 +82,13 @@ public class TraceTaskInfo {
      * "status" field either contains as a substring {@code "0"} or {@code "5"}.
      *
      * @return {@code true} if this task should be cancelled (according to
-     * the task information in the file), and {@code false} otherwise.
+     *         the task information in the file), and {@code false} otherwise.
      */
-    public boolean shouldBeCanceled() {
+    public boolean shouldBeCanceled () {
         return this.status().contains("0") || this.status().contains("5");
     }
 
-    private String status() {
+    private String status () {
         return TaskFields.STATUS.get(this.fields);
     }
 
@@ -97,30 +99,25 @@ public class TraceTaskInfo {
      * numeric values.
      */
     private enum TaskFields {
-        ID(1),
-        CREATION_TIME(3),
-        STATUS(5),
-        COMPUTATION(7),
-        COMMUNICATION(9),
-        USER(11),
+        ID(1), CREATION_TIME(3), STATUS(5), COMPUTATION(7), COMMUNICATION(9), USER(11),
         ;
 
         @Unsigned
         private final int index;
 
-        TaskFields(final int index) {
+        TaskFields (final int index) {
             this.index = index;
         }
 
-        private int getAsInt(final String[] fields) {
+        private int getAsInt (final String[] fields) {
             return Integer.parseInt(this.get(fields));
         }
 
-        private String get(final String[] fields) {
+        private String get (final String[] fields) {
             return fields[this.index];
         }
 
-        private double getAsDouble(final String[] fields) {
+        private double getAsDouble (final String[] fields) {
             return Double.parseDouble(this.get(fields));
         }
     }

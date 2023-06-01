@@ -1,45 +1,8 @@
-/* ==========================================================
- * iSPD : iconic Simulator of Parallel and Distributed System
- * ==========================================================
- *
- * (C) Copyright 2010-2014, by Grupo de pesquisas em Sistemas Paralelos e Distribuídos da Unesp (GSPD).
- *
- * Project Info:  http://gspd.dcce.ibilce.unesp.br/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
- * Other names may be trademarks of their respective owners.]
- *
- * ---------------
- * InterpretadorGridSim.java
- * ---------------
- * (C) Copyright 2014, by Grupo de pesquisas em Sistemas Paralelos e Distribuídos da Unesp (GSPD).
- *
- * Original Author:  Gabriel Covello Furlanetto;
- * Contributor(s):   Denison Menezes;
- *
- * Changes
- * -------
- * 
- * 09-Set-2014 : Version 2.0;
- *
- */
 package ispd.arquivo.interpretador.gridsim;
 
-import ispd.arquivo.interpretador.gridsim.JavaParser.ResourceChar;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -54,41 +17,36 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
-/**
- *
- * @author covello
- */
+import ispd.arquivo.interpretador.gridsim.JavaParser.ResourceChar;
+
 public class InterpretadorGridSim {
 
-    private String fname;
+    private String                                         fname;
     private List<HashMap<String, JavaParser.ResourceChar>> ListaMetodo;
-    private List <String> NomeMetodo = new ArrayList<String>();
-    private List <String> Nome = new ArrayList<String>();
-    private List <Integer> Quantidade = new ArrayList<Integer>();
-    
-    
-    private void setFileName(File f) {
-        fname = f.getName();
-    }
+    private List<String>                                   NomeMetodo = new ArrayList<String>();
+    private List<String>                                   Nome       = new ArrayList<String>();
+    private List<Integer>                                  Quantidade = new ArrayList<Integer>();
 
-    public String getFileName() {
+    public String getFileName () {
         return fname;
     }
 
-    public void interpreta(File file1) {
+    private void setFileName (File f) {
+        fname = f.getName();
+    }
+
+    public void interpreta (File file1) {
         try {
             setFileName(file1);
             InputStream fisfile = new FileInputStream(file1);
-            JavaParser parser = new JavaParser(fisfile);
+            JavaParser  parser  = new JavaParser(fisfile);
             parser.CompilationUnit();
             parser.escreverLista();
             ListaMetodo = parser.getListaMetodo();
-            NomeMetodo =  parser.getNomeMetodo();
-            Nome = parser.getNome();
-            Quantidade = parser.getQuantidade();
+            NomeMetodo  = parser.getNomeMetodo();
+            Nome        = parser.getNome();
+            Quantidade  = parser.getQuantidade();
         } catch (ParseException ex) {
             System.err.println("Erro ao fechar arquivo1: " + ex.getMessage());
             Logger.getLogger(InterpretadorGridSim.class.getName()).log(Level.SEVERE, null, ex);
@@ -101,48 +59,51 @@ public class InterpretadorGridSim {
         }
     }
 
-    @SuppressWarnings("empty-statement")
-    public Document getDescricao() {
-        LinkedList<String> user = new LinkedList<String>();
-        LinkedList<String> mestre = new LinkedList<String>();
-        HashMap<JavaParser.ResourceChar, String> idGlobal = new HashMap<JavaParser.ResourceChar, String>();
-        Document descricao = ispd.arquivo.xml.ManipuladorXML.newDocument();
-        Element system = descricao.createElement("system");
-        Element load = descricao.createElement("load");
+    public Document getDescricao () {
+        LinkedList<String>                       user      = new LinkedList<String>();
+        LinkedList<String>                       mestre    = new LinkedList<String>();
+        HashMap<JavaParser.ResourceChar, String> idGlobal  = new HashMap<JavaParser.ResourceChar, String>();
+        Document                                 descricao = ispd.arquivo.xml.ManipuladorXML.newDocument();
+        Element                                  system    = descricao.createElement("system");
+        Element                                  load      = descricao.createElement("load");
         system.setAttribute("version", "1");
         descricao.appendChild(system);
-        int icon = 0;
-        Integer cont_machine = 0, cont_link = 0, cont_global = 0, ident_global = 0, linha = 50, coluna = 50;
-        Double num_linhas, num_col, lin = 0.0, col = 0.0;
+        int     icon                     = 0;
+        Integer cont_machine             = 0, cont_link = 0, cont_global = 0, ident_global = 0, linha = 50, coluna = 50;
+        Double  num_linhas, num_col, lin = 0.0, col = 0.0;
         for (int i = 0; i < Nome.size(); i++) {
-            for(int j = 0; j < NomeMetodo.size(); j++){
-                if(NomeMetodo.get(j).equals(Nome.get(i))){
-                    for(int k = 1; k < Quantidade.get(i); k++){
+            for (int j = 0; j < NomeMetodo.size(); j++) {
+                if (NomeMetodo.get(j).equals(Nome.get(i))) {
+                    for (int k = 1; k < Quantidade.get(i); k++) {
                         //obter o conteúdo do método
                         HashMap<String, JavaParser.ResourceChar> temp = ListaMetodo.get(j);
                         //criar uma cópia
-                        HashMap<String, JavaParser.ResourceChar> tempAux = new HashMap<String, JavaParser.ResourceChar>();
-                        JavaParser criar = new JavaParser();
+                        HashMap<String, JavaParser.ResourceChar> tempAux =
+                                new HashMap<String, JavaParser.ResourceChar>();
+                        JavaParser                               criar   = new JavaParser();
                         for (Map.Entry<String, JavaParser.ResourceChar> entry : temp.entrySet()) {
-                            String string = entry.getKey();
+                            String                  string       = entry.getKey();
                             JavaParser.ResourceChar resourceChar = entry.getValue();
-                            if(resourceChar.getType().equals("GridResource"))
-                            {
-                                List<JavaParser.ResourceChar> mach_list = new ArrayList<ResourceChar>(); 
-                                JavaParser.ResourceChar aux = criar.Criar(resourceChar, resourceChar.getName()+k);
-                                aux.setLink(criar.Criar(resourceChar.getLink(), resourceChar.getLink().getName_Link()+ cont_global));
+                            if (resourceChar.getType().equals("GridResource")) {
+                                List<JavaParser.ResourceChar> mach_list = new ArrayList<ResourceChar>();
+                                JavaParser.ResourceChar       aux       =
+                                        criar.Criar(resourceChar, resourceChar.getName() + k);
+                                aux.setLink(criar.Criar(resourceChar.getLink(),
+                                                        resourceChar.getLink().getName_Link() + cont_global
+                                ));
                                 cont_global++;
                                 int l = 100;
                                 for (ResourceChar mach : resourceChar.getResConfig().getMLIST().getMach_List()) {
-                                    ResourceChar maq = criar.Criar(mach, resourceChar.getId()+k);
+                                    ResourceChar maq = criar.Criar(mach, resourceChar.getId() + k);
                                     mach_list.add(maq);
-                                    tempAux.put(aux.getName()+k + l, maq);
+                                    tempAux.put(aux.getName() + k + l, maq);
                                     l++;
                                 }
-                                aux.setResConfig(criar.Criar(resourceChar.getResConfig(), resourceChar.getName()+k));
-                                aux.getResConfig().setMlist(criar.Criar(resourceChar.getResConfig().getMLIST(), "mlist"+k));
+                                aux.setResConfig(criar.Criar(resourceChar.getResConfig(), resourceChar.getName() + k));
+                                aux.getResConfig()
+                                   .setMlist(criar.Criar(resourceChar.getResConfig().getMLIST(), "mlist" + k));
                                 aux.getResConfig().getMLIST().setMach_List(mach_list);
-                                tempAux.put(aux.getName()+k, aux);
+                                tempAux.put(aux.getName() + k, aux);
                             }
                         }
                         //adicionar cópia na lista
@@ -154,7 +115,7 @@ public class InterpretadorGridSim {
         for (int i = 0; i < ListaMetodo.size(); i++) {
             //For para percorrer lista
             for (Map.Entry<String, JavaParser.ResourceChar> object : ListaMetodo.get(i).entrySet()) {
-                String key = object.getKey();
+                String                  key = object.getKey();
                 JavaParser.ResourceChar res = object.getValue();
                 if (res.getType().equals("ResourceUser")) {
                     Element owner = descricao.createElement("owner");
@@ -165,7 +126,7 @@ public class InterpretadorGridSim {
                     icon++;
                     idGlobal.put(res, ident_global.toString());
                     //if(i >= NomeMetodo.size())
-                        //System.out.println("Adicionando id  " + ident_global + " para " + res);
+                    //System.out.println("Adicionando id  " + ident_global + " para " + res);
                     ident_global++;
                 } else if (res.getType().equals("GridResource")) {
                     icon++;
@@ -176,7 +137,7 @@ public class InterpretadorGridSim {
             }
         }
         num_linhas = Math.floor(Math.sqrt(icon));
-        num_col = num_linhas + 1;
+        num_col    = num_linhas + 1;
         if (user.isEmpty()) {
             Element owner = descricao.createElement("owner");
             owner.setAttribute("id", "user1");
@@ -187,11 +148,11 @@ public class InterpretadorGridSim {
             mestre.add("---");
         }
         for (int i = 0; i < ListaMetodo.size(); i++) {
-            Iterator iUser = user.iterator();
+            Iterator iUser   = user.iterator();
             Iterator iMestre = mestre.iterator();
             //For para percorrer lista
             for (Map.Entry<String, JavaParser.ResourceChar> object : ListaMetodo.get(i).entrySet()) {
-                String key = object.getKey();
+                String                  key = object.getKey();
                 JavaParser.ResourceChar res = object.getValue();
                 if (res.getType().equals("gridlet")) {
                     Element node = descricao.createElement("node");
@@ -236,13 +197,13 @@ public class InterpretadorGridSim {
 
                     if (lin < num_linhas) {
                         linha = linha + 100;
-                        lin = lin + 1.0;
+                        lin   = lin + 1.0;
                     } else {
                         if (col < num_col) {
                             coluna = coluna + 100;
-                            lin = 0.0;
-                            linha = 50;
-                            col = col + 1.0;
+                            lin    = 0.0;
+                            linha  = 50;
+                            col    = col + 1.0;
                         }
                     }
                     machine.appendChild(pos);
@@ -271,13 +232,13 @@ public class InterpretadorGridSim {
                     system.appendChild(internet);
                     if (lin < num_linhas) {
                         linha = linha + 100;
-                        lin = lin + 1.0;
+                        lin   = lin + 1.0;
                     } else {
                         if (col < num_col) {
                             coluna = coluna + 100;
-                            lin = 0.0;
-                            linha = 50;
-                            col = col + 1.0;
+                            lin    = 0.0;
+                            linha  = 50;
+                            col    = col + 1.0;
                         }
                     }
                 }
@@ -340,13 +301,13 @@ public class InterpretadorGridSim {
                     pos.setAttribute("y", coluna.toString());
                     if (lin < num_linhas) {
                         linha = linha + 100;
-                        lin = lin + 1.0;
+                        lin   = lin + 1.0;
                     } else {
                         if (col < num_col) {
                             coluna = coluna + 100;
-                            lin = 0.0;
-                            linha = 50;
-                            col = col + 1.0;
+                            lin    = 0.0;
+                            linha  = 50;
+                            col    = col + 1.0;
                         }
                     }
                     machine.appendChild(pos);
@@ -363,7 +324,7 @@ public class InterpretadorGridSim {
             Iterator iUser = user.iterator();
             //For para percorrer lista
             for (Map.Entry<String, JavaParser.ResourceChar> object : ListaMetodo.get(i).entrySet()) {
-                String key = object.getKey();
+                String                  key = object.getKey();
                 JavaParser.ResourceChar res = object.getValue();
                 if (res.getType().equals("SimpleLink")) {
                     if (res.getOrigination() != null && res.getRouter() != null) {
@@ -405,7 +366,8 @@ public class InterpretadorGridSim {
                 }
                 if (res.getType().equals("attachHost") && res.getCoreAttach().equals("ALL")) {
                     for (JavaParser.ResourceChar elem : idGlobal.keySet()) {
-                        if (elem.getType().equals("GridResource") && elem.getLink() != null && res.getOrigination() != null) {
+                        if (elem.getType().equals("GridResource") && elem.getLink() != null &&
+                            res.getOrigination() != null) {
                             if (res.getOrigination() != null) {
                                 //adiciona link de ida
                                 Element link = descricao.createElement("link");
@@ -444,7 +406,8 @@ public class InterpretadorGridSim {
                             }
                         }
                     }
-                } else if (res.getType().equals("attachHost") && res.getCoreAttach() instanceof JavaParser.ResourceChar) {
+                } else if (res.getType().equals("attachHost") &&
+                           res.getCoreAttach() instanceof JavaParser.ResourceChar) {
                     Element link = descricao.createElement("link");
                     link.setAttribute("id", "link_temp" + cont_global);
                     cont_global++;
@@ -481,8 +444,8 @@ public class InterpretadorGridSim {
                     link.appendChild(id);
                     system.appendChild(link);
                 } else if (res.getType().equals("attachHost")) {
-                    Element ident = descricao.createElement("icon_id");
-                    String mestreGlobal = ident_global.toString();
+                    Element ident        = descricao.createElement("icon_id");
+                    String  mestreGlobal = ident_global.toString();
                     ident.setAttribute("global", ident_global.toString());
                     ident.setAttribute("local", cont_machine.toString());
                     ident_global++;
@@ -547,13 +510,13 @@ public class InterpretadorGridSim {
                     pos.setAttribute("y", coluna.toString());
                     if (lin < num_linhas) {
                         linha = linha + 100;
-                        lin = lin + 1.0;
+                        lin   = lin + 1.0;
                     } else {
                         if (col < num_col) {
                             coluna = coluna + 100;
-                            lin = 0.0;
-                            linha = 50;
-                            col = col + 1.0;
+                            lin    = 0.0;
+                            linha  = 50;
+                            col    = col + 1.0;
                         }
                     }
                     machine.appendChild(pos);
@@ -568,27 +531,19 @@ public class InterpretadorGridSim {
         return descricao;
     }
 
-    public int getW() {
-        return 1500;
-    }
-
-    public int getH() {
-        return 1500;
-    }
-    
-    private String getDouble(String valor) {
+    private String getDouble (String valor) {
         Random random = new Random();
-        if(valor.equals("random")){
+        if (valor.equals("random")) {
             String Low, high;
             //Low = JOptionPane.showInputDialog("Digite o limite inferior do número randômico a ser gerado");
             //high = JOptionPane.showInputDialog("Digite o limite superior do número randômico a ser gerado");
-            Low = "500000";
+            Low  = "500000";
             high = "1000000";
             double med, hi, low;
-            hi = Double.parseDouble(high);
+            hi  = Double.parseDouble(high);
             low = Double.parseDouble(Low);
             med = 750000;
-            double prob = 1;
+            double prob      = 1;
             double a;
             double b;
             double tsu;
@@ -603,21 +558,28 @@ public class InterpretadorGridSim {
                 b = hi;
             }
 
-            //generate a value of a random variable from distribution uniform(a,b) 
+            //generate a value of a random variable from distribution uniform(a,b)
             tsu = (random.nextDouble() * (b - a)) + a;
             return String.valueOf(Math.abs(tsu));
-        }
-        else{
+        } else {
             return valor;
         }
     }
-    
-    private String getInt(String valor) {
+
+    private String getInt (String valor) {
         Random random = new Random();
-        if(valor.equals("random")){
+        if (valor.equals("random")) {
             return String.valueOf(Math.abs(random.nextInt()));
-        }else{
+        } else {
             return valor;
         }
+    }
+
+    public int getW () {
+        return 1500;
+    }
+
+    public int getH () {
+        return 1500;
     }
 }

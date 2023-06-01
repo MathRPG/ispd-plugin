@@ -1,5 +1,10 @@
 package ispd.policy.allocation.vm.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import ispd.annotations.Policy;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
@@ -7,35 +12,31 @@ import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
 import ispd.motor.filas.servidores.implementacao.CS_VMM;
 import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
 import ispd.policy.allocation.vm.VmAllocationPolicy;
-import ispd.policy.allocation.vm.impl.util.util.ComparaRequisitos;
-import ispd.policy.allocation.vm.impl.util.util.ComparaVolume;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import ispd.policy.allocation.vm.impl.util.ComparaRequisitos;
+import ispd.policy.allocation.vm.impl.util.ComparaVolume;
 
 @Policy
 public class Volume extends VmAllocationPolicy {
-    private final Comparator<CS_VirtualMac> comparaReq =
+
+    private final Comparator<CS_VirtualMac> comparaReq    =
             new ComparaRequisitos();
-    private final ComparaVolume comparaRec = new ComparaVolume();
-    private boolean fit = false;
-    private int maqIndex = 0;
-    private List<CS_VirtualMac> VMsOrdenadas = null;
-    private List<CS_Processamento> MaqsOrdenadas = null;
+    private final ComparaVolume             comparaRec    = new ComparaVolume();
+    private       boolean                   fit           = false;
+    private       int                       maqIndex      = 0;
+    private       List<CS_VirtualMac>       VMsOrdenadas  = null;
+    private       List<CS_Processamento>    MaqsOrdenadas = null;
 
 
-    public Volume() {
+    public Volume () {
         this.maquinasVirtuais = new ArrayList<>();
-        this.escravos = new ArrayList<>();
-        this.VMsRejeitadas = new ArrayList<>();
+        this.escravos         = new ArrayList<>();
+        this.VMsRejeitadas    = new ArrayList<>();
     }
 
     @Override
-    public void iniciar() {
-        this.fit = true;
-        this.maqIndex = 0;
+    public void iniciar () {
+        this.fit          = true;
+        this.maqIndex     = 0;
         this.VMsOrdenadas = new ArrayList<>(this.maquinasVirtuais);
         this.VMsOrdenadas.sort(this.comparaReq); //ordena vms
         Collections.reverse(this.VMsOrdenadas);//deixa a ordenação decrescente
@@ -49,27 +50,23 @@ public class Volume extends VmAllocationPolicy {
     }
 
     @Override
-    public CS_VirtualMac escalonarVM() {
+    public CS_VirtualMac escalonarVM () {
         return this.VMsOrdenadas.remove(0);
     }
 
-    @Override
-    public CS_Processamento escalonarRecurso() {
-        if (this.fit) {
-            return this.escravos.get(0);
-        } else {
-            return this.escravos.get(this.maqIndex);
-        }
+    private void atualizarVolume () {
+        this.MaqsOrdenadas.sort((Comparator) this.comparaRec);
+        Collections.reverse(this.infoMaquinas);
     }
 
     @Override
-    public List<CentroServico> escalonarRota(final CentroServico destino) {
+    public List<CentroServico> escalonarRota (final CentroServico destino) {
         final int index = this.escravos.indexOf(destino);
         return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
     }
 
     @Override
-    public void escalonar() {
+    public void escalonar () {
         while (!(this.maquinasVirtuais.isEmpty())) {
             System.out.println("------------------------------------------");
             int num_escravos = this.escravos.size();
@@ -95,8 +92,8 @@ public class Volume extends VmAllocationPolicy {
                         break;
                     } else {
                         System.out.println("Checagem de recursos:");
-                        final CS_MaquinaCloud maq = (CS_MaquinaCloud) auxMaq;
-                        final double memoriaMaq = maq.getMemoriaDisponivel();
+                        final CS_MaquinaCloud maq        = (CS_MaquinaCloud) auxMaq;
+                        final double          memoriaMaq = maq.getMemoriaDisponivel();
                         System.out.println("memoriaMaq: " + memoriaMaq);
                         final double memoriaNecessaria =
                                 auxVM.getMemoriaDisponivel();
@@ -148,9 +145,13 @@ public class Volume extends VmAllocationPolicy {
 
     }
 
-    private void atualizarVolume() {
-        this.MaqsOrdenadas.sort((Comparator) this.comparaRec);
-        Collections.reverse(this.infoMaquinas);
+    @Override
+    public CS_Processamento escalonarRecurso () {
+        if (this.fit) {
+            return this.escravos.get(0);
+        } else {
+            return this.escravos.get(this.maqIndex);
+        }
     }
 }
 

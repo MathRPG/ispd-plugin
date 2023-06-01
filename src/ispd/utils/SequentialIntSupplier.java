@@ -8,10 +8,11 @@ import java.util.function.IntSupplier;
  * The first generated integer after construction is {@code 0}.
  */
 public class SequentialIntSupplier implements IntSupplier {
+
     private int nextInt = 0;
 
     @Override
-    public int getAsInt() {
+    public int getAsInt () {
         final var retVal = this.nextInt;
         this.nextInt++;
         return retVal;

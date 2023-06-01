@@ -1,43 +1,7 @@
-/* ==========================================================
- * iSPD : iconic Simulator of Parallel and Distributed System
- * ==========================================================
- *
- * (C) Copyright 2010-2014, by Grupo de pesquisas em Sistemas Paralelos e Distribuídos da Unesp (GSPD).
- *
- * Project Info:  http://gspd.dcce.ibilce.unesp.br/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
- * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
- * Other names may be trademarks of their respective owners.]
- *
- * ---------------
- * CS_Switch.java
- * ---------------
- * (C) Copyright 2014, by Grupo de pesquisas em Sistemas Paralelos e Distribuídos da Unesp (GSPD).
- *
- * Original Author:  Denison Menezes (for GSPD);
- * Contributor(s):   -;
- *
- * Changes
- * -------
- * 
- * 09-Set-2014 : Version 2.0;
- *
- */
 package ispd.motor.filas.servidores.implementacao;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ispd.motor.FutureEvent;
 import ispd.motor.Simulation;
@@ -45,24 +9,19 @@ import ispd.motor.filas.Mensagem;
 import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Comunicacao;
 import ispd.motor.filas.servidores.CentroServico;
-import java.util.ArrayList;
-import java.util.List;
 
-/**
- *
- * @author denison
- */
+
 public class CS_Switch extends CS_Comunicacao implements Vertice {
 
     private List<CentroServico> conexoesEntrada;
     private List<CentroServico> conexoesSaida;
-    private List<Tarefa> filaPacotes;
-    private List<Mensagem> filaMensagens;
-    private boolean linkDisponivel;
-    private boolean linkDisponivelMensagem;
-    private double tempoTransmitirMensagem;
+    private List<Tarefa>        filaPacotes;
+    private List<Mensagem>      filaMensagens;
+    private boolean             linkDisponivel;
+    private boolean             linkDisponivelMensagem;
+    private double              tempoTransmitirMensagem;
 
-    public CS_Switch(String id, double LarguraBanda, double Ocupacao, double Latencia) {
+    public CS_Switch (String id, double LarguraBanda, double Ocupacao, double Latencia) {
         super(id, LarguraBanda, Ocupacao, Latencia);
         this.conexoesEntrada = new ArrayList<CentroServico>();
         this.conexoesSaida = new ArrayList<CentroServico>();
@@ -73,16 +32,16 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
         this.linkDisponivelMensagem = true;
     }
 
-    public void addConexoesEntrada(CentroServico conexao) {
+    public void addConexoesEntrada (CentroServico conexao) {
         this.conexoesEntrada.add(conexao);
     }
 
-    public void addConexoesSaida(CentroServico conexao) {
+    public void addConexoesSaida (CentroServico conexao) {
         this.conexoesSaida.add(conexao);
     }
 
     @Override
-    public void chegadaDeCliente(Simulation simulacao, Tarefa cliente) {
+    public void chegadaDeCliente (Simulation simulacao, Tarefa cliente) {
         cliente.iniciarEsperaComunicacao(simulacao.getTime(this));
         if (linkDisponivel) {
             //indica que recurso está ocupado
@@ -92,7 +51,8 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
                     simulacao.getTime(this),
                     FutureEvent.ATENDIMENTO,
                     this,
-                    cliente);
+                    cliente
+            );
             simulacao.addFutureEvent(novoEvt);
         } else {
             filaPacotes.add(cliente);
@@ -100,20 +60,21 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
     }
 
     @Override
-    public void atendimento(Simulation simulacao, Tarefa cliente) {
+    public void atendimento (Simulation simulacao, Tarefa cliente) {
         cliente.finalizarEsperaComunicacao(simulacao.getTime(this));
         cliente.iniciarAtendimentoComunicacao(simulacao.getTime(this));
         //Gera evento para atender proximo cliente da lista
         FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this) + tempoTransmitir(cliente.getTamComunicacao()),
                 FutureEvent.SAIDA,
-                this, cliente);
+                this, cliente
+        );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
     }
 
     @Override
-    public void saidaDeCliente(Simulation simulacao, Tarefa cliente) {
+    public void saidaDeCliente (Simulation simulacao, Tarefa cliente) {
         //Incrementa o número de Mbits transmitido por este link
         this.getMetrica().incMbitsTransmitidos(cliente.getTamComunicacao());
         //Incrementa o tempo de transmissão
@@ -125,7 +86,8 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
         FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this),
                 FutureEvent.CHEGADA,
-                cliente.getCaminho().remove(0), cliente);
+                cliente.getCaminho().remove(0), cliente
+        );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
         if (filaPacotes.isEmpty()) {
@@ -137,14 +99,15 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
             evtFut = new FutureEvent(
                     simulacao.getTime(this),
                     FutureEvent.ATENDIMENTO,
-                    this, proxCliente);
+                    this, proxCliente
+            );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         }
     }
 
     @Override
-    public void requisicao(Simulation simulacao, Mensagem cliente, int tipo) {
+    public void requisicao (Simulation simulacao, Mensagem cliente, int tipo) {
         if (tipo == FutureEvent.SAIDA_MENSAGEM) {
             tempoTransmitirMensagem += tempoTransmitir(cliente.getTamComunicacao());
             //Incrementa o número de Mbits transmitido por este link
@@ -156,7 +119,8 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
             FutureEvent evtFut = new FutureEvent(
                     simulacao.getTime(this) + tempoTrans,
                     FutureEvent.MENSAGEM,
-                    cliente.getCaminho().remove(0), cliente);
+                    cliente.getCaminho().remove(0), cliente
+            );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
             if (!filaMensagens.isEmpty()) {
@@ -164,47 +128,49 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
                 evtFut = new FutureEvent(
                         simulacao.getTime(this) + tempoTrans,
                         FutureEvent.SAIDA_MENSAGEM,
-                        this, filaMensagens.remove(0));
+                        this, filaMensagens.remove(0)
+                );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
-            }else{
+            } else {
                 linkDisponivelMensagem = true;
             }
-        } else if(linkDisponivelMensagem){
+        } else if (linkDisponivelMensagem) {
             linkDisponivelMensagem = false;
-                //Gera evento para chegada da mensagem no proximo servidor
-                FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this),
-                        FutureEvent.SAIDA_MENSAGEM,
-                        this, cliente);
-                //Event adicionado a lista de evntos futuros
-                simulacao.addFutureEvent(evtFut);
-        }else{
+            //Gera evento para chegada da mensagem no proximo servidor
+            FutureEvent evtFut = new FutureEvent(
+                    simulacao.getTime(this),
+                    FutureEvent.SAIDA_MENSAGEM,
+                    this, cliente
+            );
+            //Event adicionado a lista de evntos futuros
+            simulacao.addFutureEvent(evtFut);
+        } else {
             filaMensagens.add(cliente);
         }
     }
 
     @Override
-    public List<CentroServico> getConexoesSaida() {
+    public List<CentroServico> getConexoesSaida () {
         return this.conexoesSaida;
     }
 
     @Override
-    public void addConexoesEntrada(CS_Link conexao) {
-        this.conexoesSaida.add(conexao);
-    }
-
-    @Override
-    public void addConexoesSaida(CS_Link conexao) {
-        this.conexoesSaida.add(conexao);
-    }
-    
-    @Override
-    public Integer getCargaTarefas() {
+    public Integer getCargaTarefas () {
         if (linkDisponivel && linkDisponivelMensagem) {
             return 0;
         } else {
             return (filaMensagens.size() + filaPacotes.size()) + 1;
         }
+    }
+
+    @Override
+    public void addConexoesEntrada (CS_Link conexao) {
+        this.conexoesSaida.add(conexao);
+    }
+
+    @Override
+    public void addConexoesSaida (CS_Link conexao) {
+        this.conexoesSaida.add(conexao);
     }
 }

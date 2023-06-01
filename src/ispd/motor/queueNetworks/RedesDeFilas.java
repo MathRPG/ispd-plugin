@@ -1,25 +1,26 @@
 package ispd.motor.queueNetworks;
 
-import ispd.motor.statistics.Estatistica;
-import ispd.motor.statistics.MetricaCS;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import ispd.motor.statistics.Estatistica;
+import ispd.motor.statistics.MetricaCS;
+
 public class RedesDeFilas {
-    private int numCS;
-    private List<Integer> escalonadores;
+
+    private int                       numCS;
+    private List<Integer>             escalonadores;
     private HashSet<CentrosDeServico> centroDeServicos;
-    private int matrizRF[][];
-    private int tam_mat;
-    private int vetorElementosRF[];
-    private int posicaoAtualInsercao = 0;
-    private Estatistica estatRedeDeFilas;
-    private MetricaCS atualCS;
+    private int                       matrizRF[][];
+    private int                       tam_mat;
+    private int                       vetorElementosRF[];
+    private int                       posicaoAtualInsercao = 0;
+    private Estatistica               estatRedeDeFilas;
+    private MetricaCS                 atualCS;
 
     //+------------------------------------------Inicio dos metodos da
-	// classe------------------------------------------+
+    // classe------------------------------------------+
 /* OBSERVACAO: os metodos dessa classe sao analogos aos metodos da classe
 CentroDeServico, soh que eles
 funcionam em outra instancia (nivel). Aqui, funcionam para a rede de filas
@@ -36,8 +37,8 @@ si, ajudar no entendimento do codigos daqui.
 */
 //+-------------------------------------------------Metodo
 // construtor----------------------------------------------+
-    public RedesDeFilas() {
-        numCS = 0;
+    public RedesDeFilas () {
+        numCS         = 0;
         escalonadores = new ArrayList<Integer>();
 
         centroDeServicos = new HashSet<CentrosDeServico>();
@@ -65,44 +66,50 @@ si, ajudar no entendimento do codigos daqui.
 	*/
 
     //Para servidores do tipo maquina ou cluster 'heterogeneos'
-    public int adicionaCentroServico(int tp, int nMaxServ, int nMaxFilas,
-									 int nEscravos, int vetEscravos[]) {
+    public int adicionaCentroServico (
+            int tp, int nMaxServ, int nMaxFilas,
+            int nEscravos, int vetEscravos[]
+    ) {
         switch (tp) //Se for maquina
         {
             case 0: {
                 CentrosDeServico CS = new CentrosDeServico(numCS, tp,
-						nMaxServ, nMaxFilas, nEscravos, vetEscravos);
+                                                           nMaxServ, nMaxFilas, nEscravos, vetEscravos
+                );
                 centroDeServicos.add(CS);
                 estatRedeDeFilas.addMetricaCS(numCS);
 
                 System.out.printf("|\tCS (tipo0) ID: %2d adicionado          " +
-								  "          |\n", numCS);
+                                  "          |\n", numCS);
                 break;
             }
 
             case 1: {
                 System.out.printf("\n nMaxServ = %d\n", nMaxServ);
                 CentrosDeServico CS = new CentrosDeServico(numCS, tp,
-						nMaxServ, nMaxFilas, 1, nEscravos, vetEscravos); //O
-				// "1" na chamada e apenas uma flag. Poderia ser um valor
-				// qualquer
+                                                           nMaxServ, nMaxFilas, 1, nEscravos, vetEscravos
+                ); //O
+                // "1" na chamada e apenas uma flag. Poderia ser um valor
+                // qualquer
                 centroDeServicos.add(CS);
                 estatRedeDeFilas.addMetricaCS(numCS);
                 System.out.printf("|\tCS ID (tip 1): %2d adicionado          " +
-								  "          |\n", numCS);
+                                  "          |\n", numCS);
                 break;
             }
 
         }
-        System.out.printf("|\tCS ID: %2d adicionado                    |\n",
-				numCS);
+        System.out.printf(
+                "|\tCS ID: %2d adicionado                    |\n",
+                numCS
+        );
         numCS++;
         return (numCS - 1);
     }
 
     //Para servidores do tipo rede (ponto-a-ponto ou internet) ou cluster
-	// 'homogeneo'
-    public int adicionaCentroServico(int tp, int nMaxServ, int nMaxFilas) {
+    // 'homogeneo'
+    public int adicionaCentroServico (int tp, int nMaxServ, int nMaxFilas) {
         switch (tp) //Se for maquina
         {  /* case 0:   {   CentrosDeServico CS = new CentrosDeServico(
         numCS, tp, nMaxServ, nMaxFilas );
@@ -113,39 +120,46 @@ si, ajudar no entendimento do codigos daqui.
 			*/
             case 1: {
                 CentrosDeServico CS = new CentrosDeServico(numCS, tp,
-						nMaxServ, nMaxFilas, 1);
+                                                           nMaxServ, nMaxFilas, 1
+                );
                 centroDeServicos.add(CS);
                 estatRedeDeFilas.addMetricaCS(numCS);
                 System.out.printf("|\tCS ID (tp 1): %2d adicionado           " +
-								  "         |\n", numCS);
+                                  "         |\n", numCS);
                 break;
             }
 
             case 2: {
                 CentrosDeServico CS = new CentrosDeServico(numCS, tp,
-						nMaxServ, nMaxFilas);
+                                                           nMaxServ, nMaxFilas
+                );
                 centroDeServicos.add(CS);
                 estatRedeDeFilas.addMetricaCS(numCS);
                 break;
             }
             case 3: {
                 CentrosDeServico CS = new CentrosDeServico(numCS, tp,
-						nMaxServ, nMaxFilas);
+                                                           nMaxServ, nMaxFilas
+                );
                 centroDeServicos.add(CS);
                 estatRedeDeFilas.addMetricaCS(numCS);
                 break;
             }
         }
-        System.out.printf("|\tCS ID: %2d adicionado                    |\n",
-				numCS);
+        System.out.printf(
+                "|\tCS ID: %2d adicionado                    |\n",
+                numCS
+        );
         numCS++;
         return (numCS - 1);
     }
 
     //+-------------Metodo que adiciona um servidor de processamento unico.
-	// (Para CSs do tipo "maquina")----------------------------+
-    public void adicionaServidorProcto(int idCS, int tpServ, boolean msOuEsc,
-									   Double tServProcto) {
+    // (Para CSs do tipo "maquina")----------------------------+
+    public void adicionaServidorProcto (
+            int idCS, int tpServ, boolean msOuEsc,
+            Double tServProcto
+    ) {
         if (msOuEsc) {
             escalonadores.add(idCS);
         }
@@ -155,20 +169,24 @@ si, ajudar no entendimento do codigos daqui.
                 atualCS = estatRedeDeFilas.descobreServidorCS(idCS);
 
                 csTemp.adicionaServidorProcto(tpServ, msOuEsc, tServProcto,
-						atualCS);
+                                              atualCS
+                );
             }
         }
     }
 
-    public void adicionaServidorCom(int idCS, int tpServ, Double tServRede,
-									double ltnc, double txOcup) {
+    public void adicionaServidorCom (
+            int idCS, int tpServ, Double tServRede,
+            double ltnc, double txOcup
+    ) {
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == idCS) {
                 //MARCO
                 atualCS = estatRedeDeFilas.descobreServidorCS(idCS);
 
                 csTemp.adicionaServidorCom(tpServ, tServRede, ltnc, txOcup,
-						atualCS);
+                                           atualCS
+                );
             }
         }
     }
@@ -184,21 +202,24 @@ si, ajudar no entendimento do codigos daqui.
 	}
 */
 
-    public void adicionaServidoresClr(int idCS, int tpServ,
-									  Double tServProcto, Double tServRede,
-									  double ltnc, double txOcup) {
+    public void adicionaServidoresClr (
+            int idCS, int tpServ,
+            Double tServProcto, Double tServRede,
+            double ltnc, double txOcup
+    ) {
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == idCS) {   //MARCO
                 atualCS = estatRedeDeFilas.descobreServidorCS(idCS);
                 System.out.printf("CS PASSADO %d", idCS);
 
                 csTemp.adicionaServidoresClr(tpServ, tServProcto, tServRede,
-						ltnc, txOcup, atualCS);
+                                             ltnc, txOcup, atualCS
+                );
             }
         }
     }
 
-    public void adicionaFila(int idCS) {
+    public void adicionaFila (int idCS) {
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == idCS) {
                 csTemp.adicionaFila();
@@ -206,9 +227,9 @@ si, ajudar no entendimento do codigos daqui.
         }
     }
 
-    public Double adicionaTarefaFila(NoFila tarefa) {
+    public Double adicionaTarefaFila (NoFila tarefa) {
         Double retornoFuncao = 0.0;  //Eh o tempo que o sistema levou para
-		// adicionar uma tarefa na fila.
+        // adicionar uma tarefa na fila.
         //ver metodo adicionaTarefa da classe Filas.java!
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -220,7 +241,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public boolean verificaSeServEMestre(NoFila tarefa) {
+    public boolean verificaSeServEMestre (NoFila tarefa) {
         boolean retornoFuncao = false;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -233,13 +254,12 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public boolean verificaMestreLivre(NoFila tarefa) {
+    public boolean verificaMestreLivre (NoFila tarefa) {
         boolean retornoFuncao = false;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
-                if (csTemp.getEhEscalonador() == true)
-                    retornoFuncao = csTemp.verificaMestreLivre();
+                if (csTemp.getEhEscalonador() == true) {retornoFuncao = csTemp.verificaMestreLivre();}
 
             }
         }
@@ -247,13 +267,15 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public boolean verificaFilaComunVazia(NoFila tarefa) {
+    public boolean verificaFilaComunVazia (NoFila tarefa) {
         boolean retornoFuncao = false;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
-                System.out.printf("verificaFilaComunVazia para o CS: %d\n",
-						csTemp.getIdCS());
+                System.out.printf(
+                        "verificaFilaComunVazia para o CS: %d\n",
+                        csTemp.getIdCS()
+                );
                 System.out.printf("tipo CS: %d\n", csTemp.getTipo());
                 retornoFuncao = csTemp.verificaFilaComunVazia(csTemp.getTipo());
 
@@ -263,13 +285,15 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public boolean verificaFilaComunCSAnteriorVazia(int idCSAnterior) {
+    public boolean verificaFilaComunCSAnteriorVazia (int idCSAnterior) {
         boolean retornoFuncao = false;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == idCSAnterior) {
-                System.out.printf("verificaFilaComunVazia para o CS: %d\n",
-						csTemp.getIdCS());
+                System.out.printf(
+                        "verificaFilaComunVazia para o CS: %d\n",
+                        csTemp.getIdCS()
+                );
                 System.out.printf("tipo CS: %d\n", csTemp.getTipo());
                 retornoFuncao = csTemp.verificaFilaComunVazia(csTemp.getTipo());
 
@@ -279,13 +303,13 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public boolean verificaFilaMestreVazia(NoFila tarefa) {
+    public boolean verificaFilaMestreVazia (NoFila tarefa) {
         boolean retornoFuncao = false;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
                 retornoFuncao =
-						csTemp.verificaFilaMestreVazia(csTemp.getTipo());
+                        csTemp.verificaFilaMestreVazia(csTemp.getTipo());
 
             }
         }
@@ -293,7 +317,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public boolean verificaSeServidorEstaLivre(NoFila tarefa) {
+    public boolean verificaSeServidorEstaLivre (NoFila tarefa) {
         boolean retornoFuncao = false;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -305,7 +329,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public boolean verificaSeServidorComunAntigoEstaLivre(int idCSAnterior) {
+    public boolean verificaSeServidorComunAntigoEstaLivre (int idCSAnterior) {
         boolean retornoFuncao = false;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -314,7 +338,7 @@ si, ajudar no entendimento do codigos daqui.
                     retornoFuncao = csTemp.verificaSeServidorEstaLivre(0);
                 } else if (csTemp.getTipo() == 1) {
                     retornoFuncao =
-							csTemp.verificaSeServidorEstaLivre(csTemp.getNumMaxServidores());
+                            csTemp.verificaSeServidorEstaLivre(csTemp.getNumMaxServidores());
                 }
             }
         }
@@ -322,7 +346,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public boolean csAtualEhEscalonador(int iCS) {
+    public boolean csAtualEhEscalonador (int iCS) {
         boolean retornoFuncao = false;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -334,45 +358,49 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double escalonaTarefa(NoFila tarefa) {
-        Double retornoFuncao = 0.0;
-        int idCSDestinoTarefa = 0;
-        int vetorPrecedentesInvertido[] = new int[tam_mat];
-        int vetorCaminho[] = new int[tam_mat]; //Dijsktra retorna os
-		// precedentes, mas eu ainda tenho que
+    public Double escalonaTarefa (NoFila tarefa) {
+        Double retornoFuncao               = 0.0;
+        int    idCSDestinoTarefa           = 0;
+        int    vetorPrecedentesInvertido[] = new int[tam_mat];
+        int    vetorCaminho[]              = new int[tam_mat]; //Dijsktra retorna os
+        // precedentes, mas eu ainda tenho que
         //'minerar' ('desenverter') os prededentes para saber o caminho.
-        boolean eMestreTipo0 = false;
-        boolean eTipo1 = false;
-        int idEscravoDestinoTarefa = -1;
+        boolean eMestreTipo0           = false;
+        boolean eTipo1                 = false;
+        int     idEscravoDestinoTarefa = -1;
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
                 if (csTemp.getTipo() == 0)  //Se CS for do tipo maquina, faz
-					// escalonamento externo
+                // escalonamento externo
                 {
                     System.out.printf("Escalonamento externo\n");
                     idCSDestinoTarefa = csTemp.determinaProximoEscravoRR();
                     tarefa.setIdCSDestino(idCSDestinoTarefa);
                     tarefa.setIdServidorDestino(0);  //Se foi feito
-					// escalonamento externo, entao a tarefa
+                    // escalonamento externo, entao a tarefa
                     //vai pra um servidor de processamento (escravo) do tipo
-					// maquina e neste caso o id do Servidor e igual a 0
+                    // maquina e neste caso o id do Servidor e igual a 0
                     vetorPrecedentesInvertido =
-							Dijkstra(tarefa.getIdCSAtual(),
-									tarefa.getIdCSDestino());
-                    vetorCaminho = determinaCaminho(tarefa.getIdCSAtual(),
-							tarefa.getIdCSDestino(),
-							vetorPrecedentesInvertido);
+                            Dijkstra(
+                                    tarefa.getIdCSAtual(),
+                                    tarefa.getIdCSDestino()
+                            );
+                    vetorCaminho              = determinaCaminho(
+                            tarefa.getIdCSAtual(),
+                            tarefa.getIdCSDestino(),
+                            vetorPrecedentesInvertido
+                    );
                     tarefa.setDistanciaProximoMestre(vetorCaminho.length - 1);
                     tarefa.setVetorCaminhoTarefa(vetorCaminho);
                     tarefa.setTtl(vetorCaminho.length - 1);
 
                 } else if (csTemp.getTipo() == 1)  //Se CS for do tipo
-					// cluster, faz escalonamento interno
+                // cluster, faz escalonamento interno
                 {
                     System.out.printf("Escalonamento intra-cluster\n");
                     idEscravoDestinoTarefa = csTemp.verificaSeHaEscravoLivre();
                     //System.out.printf("idEscravoDestinoTarefa = %d\n",
-					// idEscravoDestinoTarefa);
+                    // idEscravoDestinoTarefa);
 					/*Se idEscravoDestinoTarefa for igual a -1, entao nao ha
 					escravo livre no momento
 					e a tarefa continua na fila do cluster. Como o id de um
@@ -393,8 +421,8 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public int[] Dijkstra(int or, int dest) {
-        int origem = or;
+    public int[] Dijkstra (int or, int dest) {
+        int origem  = or;
         int destino = dest;
         int recente;
         int rotulo;
@@ -402,41 +430,39 @@ si, ajudar no entendimento do codigos daqui.
         int j;
         int y;
 
-        boolean fim[] = new boolean[tam_mat];
-        int distancia[] = new int[tam_mat];
-        int soTemporarios[] = new int[tam_mat];
-        int precedentes[] = new int[tam_mat];
+        boolean fim[]           = new boolean[tam_mat];
+        int     distancia[]     = new int[tam_mat];
+        int     soTemporarios[] = new int[tam_mat];
+        int     precedentes[]   = new int[tam_mat];
 
         for (i = 0; i < tam_mat; i++) {
             distancia[i] = Integer.MAX_VALUE;
             ;
-            fim[i] = false;
+            fim[i]         = false;
             precedentes[i] = -1;
         }
         distancia[origem] = 0;
-        fim[origem] = true;
-        recente = origem;
+        fim[origem]       = true;
+        recente           = origem;
 
         while (fim[destino] == false) {
             for (j = 0; j < tam_mat; j++) {
                 if (matrizRF[recente][j] != 0 && matrizRF[recente][j] != Integer.MAX_VALUE && (fim[j] == false)) {
                     rotulo = distancia[recente] + matrizRF[recente][j];
                     if (rotulo < distancia[j]) {
-                        distancia[j] = rotulo;
+                        distancia[j]   = rotulo;
                         precedentes[j] = recente;
                     }
                 }
             }
 
-            for (i = 0; i < tam_mat; i++)
-                if (fim[i] == true)
-                    soTemporarios[i] = Integer.MAX_VALUE;
-                else
-                    soTemporarios[i] = distancia[i];
+            for (i = 0; i < tam_mat; i++) {
+                if (fim[i] == true) {soTemporarios[i] = Integer.MAX_VALUE;} else {soTemporarios[i] = distancia[i];}
+            }
 
             y = indiceMenorRotulo(soTemporarios, tam_mat);
 
-            fim[y] = true;
+            fim[y]  = true;
             recente = y;
         }
 
@@ -444,9 +470,9 @@ si, ajudar no entendimento do codigos daqui.
 
     }
 
-    public int[] determinaCaminho(int csOrigem, int csDestino, int vetPrecedentes[]) {
-        int i = csDestino;  //Comeca a minerar de tras para frente, ou seja, do destino para a origem
-        int j = 0;
+    public int[] determinaCaminho (int csOrigem, int csDestino, int vetPrecedentes[]) {
+        int i                = csDestino;  //Comeca a minerar de tras para frente, ou seja, do destino para a origem
+        int j                = 0;
         int caminhoInverso[] = new int[tam_mat];
         int numHops;
 
@@ -467,7 +493,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public int indiceMenorRotulo(int dist[], int tam_mat) {
+    public int indiceMenorRotulo (int dist[], int tam_mat) {
         int retorno = -12;
         int i;
         int menor;
@@ -475,30 +501,32 @@ si, ajudar no entendimento do codigos daqui.
         menor = Integer.MAX_VALUE;
         for (i = 0; i < tam_mat; i++) {
             if ((dist[i] != Integer.MAX_VALUE) && dist[i] < menor) {
-                menor = dist[i];
+                menor   = dist[i];
                 retorno = i;
             }
         }
         return retorno;
     }
 
-    public Double entradaTarefaMestre(NoFila tarefa) {
+    public Double entradaTarefaMestre (NoFila tarefa) {
         Double retornoFuncao = 0.0;
 
 
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
                 csTemp.pollFila(tarefa);
-                retornoFuncao = csTemp.atribuiTarefaMestre(tarefa,
-						csTemp.getIdCS(),
-						estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS()));
+                retornoFuncao = csTemp.atribuiTarefaMestre(
+                        tarefa,
+                        csTemp.getIdCS(),
+                        estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS())
+                );
             }
         }
 
         return retornoFuncao;
     }
 
-    public int buscaIdTarefaAlocadaMestre(NoFila tarefa) {
+    public int buscaIdTarefaAlocadaMestre (NoFila tarefa) {
         int retornoFuncao = -1;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -511,7 +539,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public int buscaIdTarefaAlocadaServidor(NoFila tarefa) {
+    public int buscaIdTarefaAlocadaServidor (NoFila tarefa) {
         int retornoFuncao = -1;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -524,7 +552,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double calculaDeltaAtualizacaoLEF(NoFila tarefa) {
+    public Double calculaDeltaAtualizacaoLEF (NoFila tarefa) {
         Double retornoFuncao = 0.0;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -537,51 +565,51 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double saidaTarefaMestre(NoFila tarefa)  //Saida do mestre eh
-	// sempre em direcao a um servidor de comunicacao,
+    public Double saidaTarefaMestre (NoFila tarefa)  //Saida do mestre eh
+    // sempre em direcao a um servidor de comunicacao,
     {
         Double retornoFuncao = 0.0;      //servidor de comunicacao, nunca
-		// para servidor de processamento
+        // para servidor de processamento
         CentrosDeServico csTempAux = null;
-        int indiceProximoHop;
+        int              indiceProximoHop;
 
         tarefa.decrementaTtl();
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
                 retornoFuncao = csTemp.saidaTarefaMestre(tarefa);
-                csTempAux = csTemp;
+                csTempAux     = csTemp;
             }
         }
 
         if (csTempAux.getTipo() == 0) {
             indiceProximoHop =
-					tarefa.getDistanciaProximoMestre() - tarefa.getTtl();
+                    tarefa.getDistanciaProximoMestre() - tarefa.getTtl();
             tarefa.setIdCSAtual(tarefa.getElementoVetorCaminhoTarefa(indiceProximoHop));
             tarefa.setIdServidorAtual(0); //Se o mestre esta em CS tipo 0, o
-			// proximo destino eh um
+            // proximo destino eh um
         }                                  //CS diferente (de comunicacao,
-		// mas cujo servidor e sempre id 0)
+        // mas cujo servidor e sempre id 0)
 
         else if (csTempAux.getTipo() == 1) //Se a tarefa estive em um
-			// cluster, a saida do mestre se dara para uma fila do proprio
-			// cluster
+        // cluster, a saida do mestre se dara para uma fila do proprio
+        // cluster
         {   //No caso do cluster (CS tipo 1), nao preciso nem incrementar
-			// proximoHop e nem "setar"
+            // proximoHop e nem "setar"
             // o IdCSAtual da tarefa, pois a tarefa sai do mestre, mas nao do
-			// CS. ver comentarios
+            // CS. ver comentarios
             // na funcao saidaTarefaServComunHopFinal( NoFila tarefa ) para
-			// entender mais.
+            // entender mais.
 
             tarefa.setIdServidorAtual(csTempAux.getNumMaxServidores());
             //poe o idServidorAtual da tarefa como o id do Servidor de
-			// comunicacao do cluster
+            // comunicacao do cluster
             //(sempre igual a csTemp.getNumMaxServidores() )
         }
 
         return retornoFuncao;
     }
 
-    public NoFila peekFilaMestre(int iCS) {
+    public NoFila peekFilaMestre (int iCS) {
         for (CentrosDeServico csTemp : centroDeServicos) {
             System.out.printf("Entrou no peekFilaMestre\n");
             System.out.printf("iCS = %d\n", iCS);
@@ -593,12 +621,12 @@ si, ajudar no entendimento do codigos daqui.
         return null;
     }
 
-    public NoFila peekFilaComun(int iCS) {
+    public NoFila peekFilaComun (int iCS) {
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == iCS) {
                 System.out.printf("Entrou no peekFilaComum\n");
                 System.out.printf("O CS %d eh do tipo %d\n", csTemp.getIdCS()
-						, csTemp.getTipo());
+                        , csTemp.getTipo());
                 return csTemp.peekFilaComun();
             }
         }
@@ -606,33 +634,35 @@ si, ajudar no entendimento do codigos daqui.
         return null;
     }
 
-    public Double entradaTarefaServComun(NoFila tarefa) {
+    public Double entradaTarefaServComun (NoFila tarefa) {
         Double retornoFuncao = 0.0;
-        int iCs;
-        int indiceProximoHop;
+        int    iCs;
+        int    indiceProximoHop;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
-                if (csTemp.getTipo() == 2 || csTemp.getTipo() == 3 || csTemp.getTipo() == 0)
+                if (csTemp.getTipo() == 2 || csTemp.getTipo() == 3 || csTemp.getTipo() == 0) {
                     csTemp.pollFila(tarefa);  //Em um cluster, a fila de
-					// comunicacao tem id 1;
-                else if (csTemp.getTipo() == 1)
-                    csTemp.pollFila(tarefa);
+                }
+                // comunicacao tem id 1;
+                else if (csTemp.getTipo() == 1) {csTemp.pollFila(tarefa);}
             }
         }
 
         if (tarefa.getTtl() > 1) {
             for (CentrosDeServico csTemp : centroDeServicos) {
                 indiceProximoHop =
-						tarefa.getDistanciaProximoMestre() - tarefa.getTtl();
+                        tarefa.getDistanciaProximoMestre() - tarefa.getTtl();
                 if (csTemp.getIdCS() == tarefa.getElementoVetorCaminhoTarefa(indiceProximoHop)) {
                     if (csTemp.getTipo() == 2 || csTemp.getTipo() == 3) { //
-						// csTemp.pollFila( 0 ); //Em CSs tipo 2 ou 3, a fila
-						// de comunicacao tem id 0
+                        // csTemp.pollFila( 0 ); //Em CSs tipo 2 ou 3, a fila
+                        // de comunicacao tem id 0
                         tarefa.setIdCSAtual(tarefa.getElementoVetorCaminhoTarefa(indiceProximoHop));
                         tarefa.setIdServidorAtual(0);
-                        retornoFuncao = csTemp.atribuiTarefaServComun(tarefa,
-								estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS()));
+                        retornoFuncao = csTemp.atribuiTarefaServComun(
+                                tarefa,
+                                estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS())
+                        );
                     }
                 }
             }
@@ -640,11 +670,13 @@ si, ajudar no entendimento do codigos daqui.
             for (CentrosDeServico csTemp : centroDeServicos) {
                 if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
                     tarefa.setIdServidorAtual(csTemp.getNumMaxServidores());
-					//Em um CS do tipo 1 (cluster)
+                    //Em um CS do tipo 1 (cluster)
                     //o id do servidor de comunicacao eh sempre o numero
-					// maximo de servidores
-                    retornoFuncao = csTemp.atribuiTarefaServComun(tarefa,
-							estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS()));
+                    // maximo de servidores
+                    retornoFuncao = csTemp.atribuiTarefaServComun(
+                            tarefa,
+                            estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS())
+                    );
                 }
             }
         }
@@ -652,8 +684,10 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double entradaTarefaServProc(NoFila tarefa,
-										Double instanteOcupacaoServidor) {
+    public Double entradaTarefaServProc (
+            NoFila tarefa,
+            Double instanteOcupacaoServidor
+    ) {
         Double retornoFuncao = 0.0;
 
         if (tarefa.getTtl() <= 1) {
@@ -663,17 +697,21 @@ si, ajudar no entendimento do codigos daqui.
                         case 0:
                             tarefa.setIdServidorAtual(0);
                             retornoFuncao =
-									csTemp.atribuiTarefaServProc(tarefa,
-											instanteOcupacaoServidor,
-											estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS()));
+                                    csTemp.atribuiTarefaServProc(
+                                            tarefa,
+                                            instanteOcupacaoServidor,
+                                            estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS())
+                                    );
                             break;
 
                         case 1:
                             tarefa.setIdServidorAtual(tarefa.getIdServidorAtual());
                             retornoFuncao =
-									csTemp.atribuiTarefaServProc(tarefa,
-											instanteOcupacaoServidor,
-											estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS()));
+                                    csTemp.atribuiTarefaServProc(
+                                            tarefa,
+                                            instanteOcupacaoServidor,
+                                            estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS())
+                                    );
                             break;
                     }
                 }
@@ -682,7 +720,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double entradaTarefaServProc(NoFila tarefa) {
+    public Double entradaTarefaServProc (NoFila tarefa) {
         Double retornoFuncao = 0.0;
 
         if (tarefa.getTtl() <= 1) {
@@ -692,15 +730,19 @@ si, ajudar no entendimento do codigos daqui.
                         case 0:
                             tarefa.setIdServidorAtual(0);
                             retornoFuncao =
-									csTemp.atribuiTarefaServProc(tarefa,
-											estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS()));
+                                    csTemp.atribuiTarefaServProc(
+                                            tarefa,
+                                            estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS())
+                                    );
 
                             break;
                         case 1:
                             tarefa.setIdServidorAtual(tarefa.getIdServidorAtual());
                             retornoFuncao =
-									csTemp.atribuiTarefaServProc(tarefa,
-											estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS()));
+                                    csTemp.atribuiTarefaServProc(
+                                            tarefa,
+                                            estatRedeDeFilas.descobreServidorCS(csTemp.getIdCS())
+                                    );
                             break;
                     }
                 }
@@ -709,7 +751,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double envioTarefa(NoFila tarefa) {
+    public Double envioTarefa (NoFila tarefa) {
         Double retornoFuncao = 0.0;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -721,7 +763,7 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double processamentoTarefa(NoFila tarefa) {
+    public Double processamentoTarefa (NoFila tarefa) {
         Double retornoFuncao = 0.0;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -735,25 +777,25 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double saidaTarefaServComunHopIntermediario(NoFila tarefa) {
-        Double retornoFuncao = 0.0;
-        CentrosDeServico csTempAux = null;
+    public Double saidaTarefaServComunHopIntermediario (NoFila tarefa) {
+        Double           retornoFuncao = 0.0;
+        CentrosDeServico csTempAux     = null;
         // O for abaixo "desliga" a tarefa do servidor e o servidor da tarefa
         tarefa.decrementaTtl();
 
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
                 retornoFuncao = csTemp.saidaTarefaServidor(tarefa);
-                csTempAux = csTemp;
+                csTempAux     = csTemp;
             }
         }
 
         //O if abaixo "prepara" a tarefa para entrar em seu proximo hop (no
-		// caso, um intermediario).
+        // caso, um intermediario).
         //Essa preparacao e  feita "setando-se" os novos valores nas devidas
-		// variaveis
+        // variaveis
         int indiceProximoHop =
-				tarefa.getDistanciaProximoMestre() - tarefa.getTtl();
+                tarefa.getDistanciaProximoMestre() - tarefa.getTtl();
         if (tarefa.getTtl() >= 1) {
             if (csTempAux.getTipo() == 2 || csTempAux.getTipo() == 3) {
                 tarefa.setIdCSAtual(tarefa.getElementoVetorCaminhoTarefa(indiceProximoHop));
@@ -764,10 +806,10 @@ si, ajudar no entendimento do codigos daqui.
         return retornoFuncao;
     }
 
-    public Double saidaTarefaServComunHopFinal(NoFila tarefa) {
-        Double retornoFuncao = 0.0;
-        CentrosDeServico csTempAux = null;
-        CentrosDeServico csTempProx = null;
+    public Double saidaTarefaServComunHopFinal (NoFila tarefa) {
+        Double           retornoFuncao = 0.0;
+        CentrosDeServico csTempAux     = null;
+        CentrosDeServico csTempProx    = null;
         tarefa.decrementaTtl();
         // O for abaixo "desliga" a tarefa do servidor e o servidor da tarefa
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -777,17 +819,17 @@ si, ajudar no entendimento do codigos daqui.
         }
 
         //O if abaixo "prepara" a tarefa para entrar em seu proximo hop (no
-		// caso, o final).
+        // caso, o final).
         //Essa preparacao e  feita "setando-se" os novos valores nas devidas
-		// variaveis
+        // variaveis
         if (tarefa.getTtl() <= 1) {
             for (CentrosDeServico csTemp : centroDeServicos) {
                 if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {   //System
-					// .out.printf("tarefa.getIdCSAtual() = %d\n", tarefa
-					// .getIdCSAtual() );
+                    // .out.printf("tarefa.getIdCSAtual() = %d\n", tarefa
+                    // .getIdCSAtual() );
                     csTempAux = csTemp;
                     //System.out.printf("csTempAux = %d\n", csTempAux.getIdCS
-					// () );
+                    // () );
                 }
             }
             /*
@@ -808,21 +850,23 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
 			ocorrer, e desfeita pelo if abaixo.
 			*/
             int indiceProximoHop =
-					tarefa.getDistanciaProximoMestre() - tarefa.getTtl();
+                    tarefa.getDistanciaProximoMestre() - tarefa.getTtl();
             for (CentrosDeServico csTemp : centroDeServicos) {
-                if (csTemp.getIdCS() == tarefa.getElementoVetorCaminhoTarefa(indiceProximoHop)) {   //System.out.printf("tarefa.getElementoVetorCaminhoTarefa( indiceProximoHop ) = %d\n", tarefa.getElementoVetorCaminhoTarefa( indiceProximoHop ) );
+                if (csTemp.getIdCS() == tarefa.getElementoVetorCaminhoTarefa(
+                        indiceProximoHop)) {   //System.out.printf("tarefa.getElementoVetorCaminhoTarefa(
+                    // indiceProximoHop ) = %d\n", tarefa.getElementoVetorCaminhoTarefa( indiceProximoHop ) );
                     csTempProx = csTemp;
                     //System.out.printf("csTempProx = %d\n", csTempProx
-					// .getIdCS() );
+                    // .getIdCS() );
                 }
             }
             if (csTempAux.getTipo() == 2 || csTempAux.getTipo() == 3) {  //Se
-				// o penultimo hop for CS tipo 2 ou 3, e necessario desfazer a
-				// defasagem
+                // o penultimo hop for CS tipo 2 ou 3, e necessario desfazer a
+                // defasagem
                 tarefa.setIdCSAtual(tarefa.getElementoVetorCaminhoTarefa(indiceProximoHop));
             } else if (csTempAux.getTipo() == 1)  //Se o CS final for tipo 1,
-				// a tarefa nao saiu do CS e nao e necessario desfazer a
-				// defasagem
+            // a tarefa nao saiu do CS e nao e necessario desfazer a
+            // defasagem
             {
             }
             if (csTempProx.getTipo() == 0 && csTempProx.getEhEscalonador() == true) {
@@ -849,8 +893,7 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
             for (CentrosDeServico csTemp : centroDeServicos) {
                 if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
                     if (csTemp.getTipo() == 0) //Se for maquina
-                        tarefa.setIdServidorAtual(0);
-                    else if (csTemp.getTipo() == 1) {
+                    {tarefa.setIdServidorAtual(0);} else if (csTemp.getTipo() == 1) {
                         tarefa.setIdServidorAtual(tarefa.getIdServidorDestino());
                         tarefa.setIdServidorDestino(-1);
                     }
@@ -862,7 +905,7 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
         return retornoFuncao;
     }
 
-    public Double saidaTarefaServidor(NoFila tarefa) {
+    public Double saidaTarefaServidor (NoFila tarefa) {
         Double retornoFuncao = 0.0;
 
         tarefa.decrementaTtl();
@@ -876,7 +919,7 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
         return retornoFuncao;
     }
 
-    public Double getTamanhoProcTarefaAtual(NoFila tarefa) {
+    public Double getTamanhoProcTarefaAtual (NoFila tarefa) {
         Double retornoFuncao = 0.0;
 
         for (CentrosDeServico csTemp : centroDeServicos) {
@@ -888,16 +931,17 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
         return retornoFuncao;
     }
 
-    public int localizaCSanterior(NoFila tarefa) {
+    public int localizaCSanterior (NoFila tarefa) {
         int retornoFuncao = 0;
         int indiceIdCSAtual;
         System.out.printf("localizaCSanterior\n");
         if (tarefa.getVetorCaminhoTarefa() != null) {
-            System.out.printf("tarefa.getIdCSAtual() = %d\n",
-					tarefa.getIdCSAtual());
+            System.out.printf(
+                    "tarefa.getIdCSAtual() = %d\n",
+                    tarefa.getIdCSAtual()
+            );
             for (indiceIdCSAtual = 0; indiceIdCSAtual < tarefa.getTamanhoVetorCaminhoTarefa(); indiceIdCSAtual++) {
-                if (tarefa.getElementoVetorCaminhoTarefa(indiceIdCSAtual) == tarefa.getIdCSAtual())
-                    break;
+                if (tarefa.getElementoVetorCaminhoTarefa(indiceIdCSAtual) == tarefa.getIdCSAtual()) {break;}
 
             }
             if (indiceIdCSAtual > 0) {
@@ -910,7 +954,7 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
         return tarefa.getIdCSAtual();
     }
 
-    public Double getTServicoProcto(NoFila tarefa) {
+    public Double getTServicoProcto (NoFila tarefa) {
         Double retornoFuncao = 0.0;
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == tarefa.getIdCSAtual()) {
@@ -920,18 +964,18 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
         return retornoFuncao;
     }
 
-    public void instanciaMatrizVetor(int tam_matriz) {
+    public void instanciaMatrizVetor (int tam_matriz) {
         this.tam_mat = tam_matriz;
-        matrizRF = new int[tam_mat][tam_mat];
+        matrizRF     = new int[tam_mat][tam_mat];
     }
 
-    public void inteligaCSs(int origem, int destino) {
+    public void inteligaCSs (int origem, int destino) {
         matrizRF[origem][destino] = 1;
     }
 
-    public void confereRF() {
+    public void confereRF () {
         int i, j, k;
-        int idOrigem = -1;
+        int idOrigem  = -1;
         int idDestino = -1;
 
         System.out.println("Impressao dos parametros de cada CS...");
@@ -962,22 +1006,32 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
                         }
                         System.out.printf("\n");
                     }
-                    System.out.printf("Numero Max Servidores: %d\n",
-							csTemp.getNumMaxServidores());
+                    System.out.printf(
+                            "Numero Max Servidores: %d\n",
+                            csTemp.getNumMaxServidores()
+                    );
                     System.out.printf("Numero de Servidores ja adicionados: " +
-									  "%d\n", csTemp.getNumAtualServidores());
+                                      "%d\n", csTemp.getNumAtualServidores());
                     if (csTemp.getTipo() == 1) //Se for cluster
                     {
-                        System.out.printf("tServico Total %f\n",
-								csTemp.getTServicoProctoTotal());
+                        System.out.printf(
+                                "tServico Total %f\n",
+                                csTemp.getTServicoProctoTotal()
+                        );
                     }
                     csTemp.confereCS();
-                    System.out.printf("Numero Servidores Livres: %d\n",
-							csTemp.getNumServidoresLivres());
-                    System.out.printf("Numero Max Filas: %d\n",
-							csTemp.getNumMaxFilas());
-                    System.out.printf("Numero de Filas ja adicionadas: %d\n",
-							csTemp.getNumAtualFilas());
+                    System.out.printf(
+                            "Numero Servidores Livres: %d\n",
+                            csTemp.getNumServidoresLivres()
+                    );
+                    System.out.printf(
+                            "Numero Max Filas: %d\n",
+                            csTemp.getNumMaxFilas()
+                    );
+                    System.out.printf(
+                            "Numero de Filas ja adicionadas: %d\n",
+                            csTemp.getNumAtualFilas()
+                    );
                     System.out.printf("\n");
                 }
             }
@@ -1005,13 +1059,14 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
                         }
                     }
                     System.out.printf("O CS%d tem ligacao com o CS%d\n",
-							idOrigem, idDestino);
+                                      idOrigem, idDestino
+                    );
                 }
             }
         }
     }
 
-    public void setNumEscravos(int nEscravos, int idCs) {
+    public void setNumEscravos (int nEscravos, int idCs) {
         for (CentrosDeServico temp : centroDeServicos) {
             if (temp.getIdCS() == idCs) {
                 temp.setNumEscravos(nEscravos);
@@ -1020,7 +1075,7 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
         }
     }
 
-    public void setVetorEscravos(int vetEscravos[], int idCs) {
+    public void setVetorEscravos (int vetEscravos[], int idCs) {
         for (CentrosDeServico temp : centroDeServicos) {
             if (temp.getIdCS() == idCs) {
                 temp.setVetorEscravos(vetEscravos);
@@ -1029,27 +1084,26 @@ a saida da tarefa de um mestre pode, tambm, ocorrer de duas formas:
         }
     }
 
-    public int getNumCs() {
+    public int getNumCs () {
         return numCS;
     }
 
-    public List<Integer> getListaEscalonadores() {
+    public List<Integer> getListaEscalonadores () {
         return escalonadores;
     }
 
-    public Estatistica getEstatistica() {
+    public Estatistica getEstatistica () {
         return estatRedeDeFilas;
     }
 
-    public int getTipoCS(int idCS) {
+    public int getTipoCS (int idCS) {
         for (CentrosDeServico csTemp : centroDeServicos) {
-            if (csTemp.getIdCS() == idCS)
-                return csTemp.getTipo();
+            if (csTemp.getIdCS() == idCS) {return csTemp.getTipo();}
         }
         return -1;
     }
 
-    public double valorServ(int cs, int id) {
+    public double valorServ (int cs, int id) {
         double retorno = 0.0;
         for (CentrosDeServico csTemp : centroDeServicos) {
             if (csTemp.getIdCS() == cs) {

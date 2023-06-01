@@ -1,9 +1,5 @@
 package ispd.policy.loaders;
 
-import ispd.arquivo.xml.ConfiguracaoISPD;
-import ispd.policy.Policy;
-import ispd.policy.PolicyLoader;
-
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,13 +7,18 @@ import java.net.URLClassLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import ispd.arquivo.xml.ConfiguracaoISPD;
+import ispd.policy.Policy;
+import ispd.policy.PolicyLoader;
+
 /* package=private */
 abstract class GenericPolicyLoader <T extends Policy<?>>
         implements PolicyLoader<T> {
+
     private static final URLClassLoader classLoader =
             GenericPolicyLoader.makeClassLoader();
 
-    private static URLClassLoader makeClassLoader() {
+    private static URLClassLoader makeClassLoader () {
         try {
             return URLClassLoader.newInstance(
                     new URL[] { ConfiguracaoISPD.DIRETORIO_ISPD.toURI().toURL(), },
@@ -25,13 +26,13 @@ abstract class GenericPolicyLoader <T extends Policy<?>>
             );
         } catch (final MalformedURLException ex) {
             Logger.getLogger(GenericPolicyLoader.class.getName())
-                    .log(Level.SEVERE, "Could not create the loader!", ex);
+                  .log(Level.SEVERE, "Could not create the loader!", ex);
             throw new ExceptionInInitializerError(ex);
         }
     }
 
     @Override
-    public T loadPolicy(final String policyName) {
+    public T loadPolicy (final String policyName) {
         final var clsName = this.getClassPath() + policyName;
         try {
             final var cls = GenericPolicyLoader.classLoader.loadClass(clsName);
@@ -49,5 +50,5 @@ abstract class GenericPolicyLoader <T extends Policy<?>>
         }
     }
 
-    protected abstract String getClassPath();
+    protected abstract String getClassPath ();
 }

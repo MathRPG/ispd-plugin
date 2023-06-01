@@ -1,6 +1,7 @@
 package ispd.gui.iconico;
 
 public abstract class Edge implements Icon {
+
     /**
      * It represents the source vertex. Mathematically speaking,
      * this edge is <em>incident from</em> this vertex.
@@ -21,37 +22,43 @@ public abstract class Edge implements Icon {
     private boolean selected;
 
     /**
-     * Constructor of {@link Edge} which specifies the source,
-     * destination and whether the edge is selected. Mathematically
-     * speaking, the source vertex is which this edge is
-     * <em>incident from</em> and the destination vertex is
-     * whcih this edge is <em>incident to</em>.
-     *
-     * @param source      the source vertex
-     * @param destination the destination vertex
-     * @param selected    whether the edge is selected
-     */
-    public Edge(final Vertex source,
-                final Vertex destination,
-                final boolean selected) {
-        this.source = source;
-        this.destination = destination;
-        this.selected = selected;
-    }
-
-    /**
      * Constructor of {@link Edge} which specifies the source
      * and destination vertices. Mathematically speaking, the
      * source vertex is which this edge is <em>incident
      * from</em> and the destination vertex is which this
      * edge is <em>incident to</em>.
      *
-     * @param source      the source vertex
-     * @param destination the destination vertex
+     * @param source
+     *         the source vertex
+     * @param destination
+     *         the destination vertex
      */
-    public Edge(final Vertex source,
-                final Vertex destination) {
+    public Edge (
+            final Vertex source, final Vertex destination
+    ) {
         this(source, destination, false);
+    }
+
+    /**
+     * Constructor of {@link Edge} which specifies the source,
+     * destination and whether the edge is selected. Mathematically
+     * speaking, the source vertex is which this edge is
+     * <em>incident from</em> and the destination vertex is
+     * whcih this edge is <em>incident to</em>.
+     *
+     * @param source
+     *         the source vertex
+     * @param destination
+     *         the destination vertex
+     * @param selected
+     *         whether the edge is selected
+     */
+    public Edge (
+            final Vertex source, final Vertex destination, final boolean selected
+    ) {
+        this.source      = source;
+        this.destination = destination;
+        this.selected    = selected;
     }
 
     /**
@@ -59,7 +66,7 @@ public abstract class Edge implements Icon {
      *
      * @return the source vertex
      */
-    public Vertex getSource() {
+    public Vertex getSource () {
         return this.source;
     }
 
@@ -68,19 +75,22 @@ public abstract class Edge implements Icon {
      *
      * @return the destination vertex
      */
-    public Vertex getDestination() {
+    public Vertex getDestination () {
         return this.destination;
     }
 
     /**
      * It sets the source and destination vertices.
      *
-     * @param source      the source vertex
-     * @param destination the destination vertex
+     * @param source
+     *         the source vertex
+     * @param destination
+     *         the destination vertex
      */
-    public void setPosition(final Vertex source,
-                            final Vertex destination) {
-        this.source = source;
+    public void setPosition (
+            final Vertex source, final Vertex destination
+    ) {
+        this.source      = source;
         this.destination = destination;
     }
 
@@ -92,18 +102,19 @@ public abstract class Edge implements Icon {
      *         otherwise, returns {@code false}.
      */
     @Override
-    public boolean isSelected() {
+    public boolean isSelected () {
         return this.selected;
     }
 
     /**
      * It sets the edge as selected or not.
      *
-     * @param selected if {@code true}, set this edge as selected;
-     *                 otherwise, set this edge as not selected.
+     * @param selected
+     *         if {@code true}, set this edge as selected;
+     *         otherwise, set this edge as not selected.
      */
     @Override
-    public void setSelected(final boolean selected) {
+    public void setSelected (final boolean selected) {
         this.selected = selected;
     }
 
@@ -113,7 +124,7 @@ public abstract class Edge implements Icon {
      * @return the central edge position in x-axis in cartesian coordinates.
      */
     @Override
-    public Integer getX() {
+    public Integer getX () {
         return Edge.midPoint(this.source.getX(), this.destination.getX());
     }
 
@@ -123,7 +134,7 @@ public abstract class Edge implements Icon {
      * @return the central edge position in y-axis in cartesian coordinates.
      */
     @Override
-    public Integer getY() {
+    public Integer getY () {
         return Edge.midPoint(this.source.getY(), this.destination.getY());
     }
 
@@ -131,11 +142,14 @@ public abstract class Edge implements Icon {
      * It calculates the midpoint between the specified
      * points.
      *
-     * @param p1 the first point
-     * @param p2 the second point
+     * @param p1
+     *         the first point
+     * @param p2
+     *         the second point
+     *
      * @return the midpoint between the specified points
      */
-    private static int midPoint(final int p1, final int p2) {
+    private static int midPoint (final int p1, final int p2) {
         return p1 + (p2 - p1) / 2;
     }
 }

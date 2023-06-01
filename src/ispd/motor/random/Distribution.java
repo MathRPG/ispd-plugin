@@ -9,17 +9,18 @@ import java.util.Random;
  */
 public class Distribution extends Random {
 
-    public Distribution(final long seed) {
+    public Distribution (final long seed) {
         super(seed);
     }
 
-    public double nextExponential(final double beta) {
+    public double nextExponential (final double beta) {
         return -1 * beta * Math.log(this.nextDouble());
     }
 
     // http://www.cs.huji.ac.il/labs/parallel/workload/m_lublin99/m_lublin99.c
-    public double twoStageUniform(final double low, final double med,
-                                  final double hi, final double prob) {
+    public double twoStageUniform (
+            final double low, final double med, final double hi, final double prob
+    ) {
         if (this.nextDouble() <= prob) {
             return this.getUniform(low, med);
         } else {
@@ -27,7 +28,7 @@ public class Distribution extends Random {
         }
     }
 
-    private double getUniform(final double lb, final double hb) {
+    private double getUniform (final double lb, final double hb) {
         return (this.nextDouble() * (hb - lb)) + lb;
     }
 }

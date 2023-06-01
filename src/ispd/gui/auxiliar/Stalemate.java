@@ -8,7 +8,6 @@
  */
 package ispd.gui.auxiliar;
 
-import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -31,13 +30,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.random.RandomGenerator;
 
+import javax.swing.JPanel;
+
 public class Stalemate extends JPanel
         implements MouseMotionListener, MouseListener, Runnable {
-    private static final int ENEMY_DEFAULT_POSITION = -50;
-    private static final int OPTION_WIDTH = 60;
-    private static final int OPTION_HEIGHT = 20;
-    private static final int START_MONEY = 500;
-    private static final byte[] GRASS = { -119, 80, 78, 71, 13, 10, 26, 10, 0
+
+    private static final int                 ENEMY_DEFAULT_POSITION = -50;
+    private static final int                 OPTION_WIDTH           = 60;
+    private static final int                 OPTION_HEIGHT          = 20;
+    private static final int                 START_MONEY            = 500;
+    private static final byte[]              GRASS                  = {
+            -119, 80, 78, 71, 13, 10, 26, 10, 0
             , 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 20, 0, 0, 0, 20, 8, 6, 0, 0,
             0, -115, -119, 29, 13, 0, 0, 0, 4, 115, 66, 73, 84, 8, 8, 8, 8,
             124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0, 0, 12, -21, 0
@@ -130,8 +133,10 @@ public class Stalemate extends JPanel
             114, -71, 76, -87, 84, 98, 111, 111, -113, 94, -81, 71, -75, 90,
             -27, -24, -24, 8, -37, -74, 73, -110, -28, 86, 107, -91, 18, -101
             , -101, -101, -4, 15, 106, -56, 51, 107, 98, 34, -27, 53, 0, 0, 0
-            , 0, 73, 69, 78, 68, -82, 66, 96, -126, };
-    private static final byte[] STONE = { -119, 80, 78, 71, 13, 10, 26, 10, 0
+            , 0, 73, 69, 78, 68, -82, 66, 96, -126,
+            };
+    private static final byte[]              STONE                  = {
+            -119, 80, 78, 71, 13, 10, 26, 10, 0
             , 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 20, 0, 0, 0, 20, 8, 6, 0, 0,
             0, -115, -119, 29, 13, 0, 0, 0, 4, 115, 66, 73, 84, 8, 8, 8, 8,
             124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0, 0, 12, -21, 0
@@ -224,8 +229,10 @@ public class Stalemate extends JPanel
             118, -66, 34, 99, 112, 126, 126, -50, -26, -90, -117, -86, 125,
             -119, -14, 122, 45, 112, 112, -16, 101, -87, -1, 3, -90, 108, 68,
             38, -127, -110, -70, 123, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96
-            , -126, };
-    private static final byte[] WOOD = { -119, 80, 78, 71, 13, 10, 26, 10,
+            , -126,
+            };
+    private static final byte[]              WOOD                   = {
+            -119, 80, 78, 71, 13, 10, 26, 10,
             0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 20, 0, 0, 0, 20, 8, 6, 0, 0
             , 0, -115, -119, 29, 13, 0, 0, 0, 4, 115, 66, 73, 84, 8, 8, 8, 8,
             124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0, 0, 12, -21, 0
@@ -257,48 +264,49 @@ public class Stalemate extends JPanel
             82, -6, 104, -71, 58, -40, 0, 79, -89, -45, 80, 97, 59, 55, 2,
             -106, 82, -120, -120, -18, -39, 51, 51, -46, -19, 118, -5, -104,
             -16, -10, -90, -72, 119, 27, -42, -68, 31, -18, -40, 78, -57, -6,
-            -83, 123, 82, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126, };
-    private static final int SIZE = 300;
-    private static final int MENU = 60;
-    private static final Image[] FIELD = {
+            -83, 123, 82, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126,
+            };
+    private static final int                 SIZE                   = 300;
+    private static final int                 MENU                   = 60;
+    private static final Image[]             FIELD                  = {
             Toolkit.getDefaultToolkit().createImage(Stalemate.GRASS),
             Toolkit.getDefaultToolkit().createImage(Stalemate.STONE),
             Toolkit.getDefaultToolkit().createImage(Stalemate.WOOD),
-    };
-    private final Collection<Element> items = new ArrayList<>(0);
-    private final Collection<Element> map = new ArrayList<>(0);
-    private final Dimension preferredSize = new Dimension(
+            };
+    private final        Collection<Element> items                  = new ArrayList<>(0);
+    private final        Collection<Element> map                    = new ArrayList<>(0);
+    private final        Dimension           preferredSize          = new Dimension(
             Stalemate.SIZE, Stalemate.SIZE);
-    private final Font font = new Font("Tahoma", Font.BOLD, 12);
-    private final List<Element> options = this.makeOptions();
-    private final Stroke stroke = new BasicStroke(3);
-    private final RandomGenerator random = new Random();
-    private final List<Element> enemies = this.makeEnemies();
-    private int cursorX = 0;
-    private int cursorY = 0;
-    private int money = Stalemate.START_MONEY;
-    private int life = 100;
-    private int level = 1;
-    private int levelT = 0;
-    private int currentMap = 1;
-    private boolean isWaiting = true;
-    private boolean isRunning = true;
-    private int enemyTypes = 0;
-    private Element selectedElement = null;
+    private final        Font                font                   = new Font("Tahoma", Font.BOLD, 12);
+    private final        List<Element>       options                = this.makeOptions();
+    private final        Stroke              stroke                 = new BasicStroke(3);
+    private final        RandomGenerator     random                 = new Random();
+    private final        List<Element>       enemies                = this.makeEnemies();
+    private              int                 cursorX                = 0;
+    private              int                 cursorY                = 0;
+    private              int                 money                  = Stalemate.START_MONEY;
+    private              int                 life                   = 100;
+    private              int                 level                  = 1;
+    private              int                 levelT                 = 0;
+    private              int                 currentMap             = 1;
+    private              boolean             isWaiting              = true;
+    private              boolean             isRunning              = true;
+    private              int                 enemyTypes             = 0;
+    private              Element             selectedElement        = null;
 
-    public Stalemate() {
+    public Stalemate () {
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
         this.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
         this.startGame();
     }
 
-    private void startGame() {
+    private void startGame () {
         new Thread(this).start();
         new Thread(this::animationLogic).start();
     }
 
-    private void animationLogic() {
+    private void animationLogic () {
         try {
             while (this.life > 0) {
                 Thread.sleep(150);
@@ -306,17 +314,17 @@ public class Stalemate extends JPanel
             }
         } catch (final InterruptedException ex) {
             Logger.getLogger(Stalemate.class.getName())
-                    .log(Level.SEVERE, null, ex);
+                  .log(Level.SEVERE, null, ex);
         }
     }
 
-    private void updateAllItems() {
+    private void updateAllItems () {
         for (final var e : this.items) {
             e.updateDrawing();
         }
     }
 
-    private List<Element> makeEnemies() {
+    private List<Element> makeEnemies () {
         final var enemies = new ArrayList<Element>(0);
         for (int i = 0; i < 10; i++) {
             enemies.add(new Element(
@@ -328,17 +336,19 @@ public class Stalemate extends JPanel
         return enemies;
     }
 
-    private List<Element> makeOptions() {
+    private List<Element> makeOptions () {
         final var options = new ArrayList<Element>(0);
-        for (int i = 0, x = 5; i < Element.OPTIONS;
-             i++, x += Stalemate.OPTION_WIDTH) {
+        for (
+                int i = 0, x = 5; i < Element.OPTIONS;
+                i++, x += Stalemate.OPTION_WIDTH
+        ) {
             options.add(new Element(x, Stalemate.OPTION_HEIGHT, i));
         }
         return options;
     }
 
     @Override
-    protected void paintComponent(final Graphics g) {
+    protected void paintComponent (final Graphics g) {
         ((Graphics2D) g).setStroke(this.stroke);
         g.setFont(this.font);
         //Desenha tela do menu
@@ -363,7 +373,8 @@ public class Stalemate extends JPanel
         }
         g.setColor(Color.BLACK);
         g.drawString(" $ " + this.money + "     Nivel " + this.levelT, 10,
-                12);
+                     12
+        );
         for (final Element item : this.options) {
             item.draw(g);
             g.drawString("$:" + item.value, item.x + 20, item.y + 10);
@@ -384,16 +395,19 @@ public class Stalemate extends JPanel
         if (this.isWaiting) {
             g.setColor(Color.LIGHT_GRAY);
             g.fillRect(Stalemate.SIZE / 2 - 50, Stalemate.SIZE - 100,
-                    100, 50);
+                       100, 50
+            );
             g.setColor(Color.BLACK);
             g.drawRect(Stalemate.SIZE / 2 - 50, Stalemate.SIZE - 100,
-                    100, 50);
+                       100, 50
+            );
             g.drawString("Iniciar", Stalemate.SIZE / 2 - 20,
-                    Stalemate.SIZE - 70);
+                         Stalemate.SIZE - 70
+            );
         }
         if (this.selectedElement != null
-                && this.cursorY > Stalemate.MENU
-                && this.money >= this.selectedElement.value) {
+            && this.cursorY > Stalemate.MENU
+            && this.money >= this.selectedElement.value) {
             this.selectedElement.drawCursor(
                     this.cursorX - this.selectedElement.width / 2,
                     this.cursorY - this.selectedElement.height / 2,
@@ -405,26 +419,27 @@ public class Stalemate extends JPanel
         } else {
             g.setColor(Color.RED);
             g.drawString(" Fim de jogo! ",
-                    Stalemate.SIZE / 2 - 20, Stalemate.SIZE - 70);
+                         Stalemate.SIZE / 2 - 20, Stalemate.SIZE - 70
+            );
         }
     }
 
     @Override
-    public Dimension getPreferredSize() {
+    public Dimension getPreferredSize () {
         return this.preferredSize;
     }
 
     @Override
-    public Dimension getMaximumSize() {
+    public Dimension getMaximumSize () {
         return this.preferredSize;
     }
 
     @Override
-    public Dimension getMinimumSize() {
+    public Dimension getMinimumSize () {
         return this.preferredSize;
     }
 
-    private void drawMap(final Graphics g) {
+    private void drawMap (final Graphics g) {
         g.setColor(Color.GREEN);
         //Desenha grama
         for (int y = Stalemate.MENU; y < Stalemate.SIZE; y += 20) {
@@ -448,7 +463,8 @@ public class Stalemate extends JPanel
                 }
                 for (int y = 160; y < Stalemate.SIZE; y += 20) {
                     g.drawImage(Stalemate.FIELD[1],
-                            Stalemate.SIZE / 2 - 10, y, null);
+                                Stalemate.SIZE / 2 - 10, y, null
+                    );
                 }
                 break;
             case 3:
@@ -459,9 +475,11 @@ public class Stalemate extends JPanel
                 }
                 for (int y = 160; y < Stalemate.SIZE; y += 20) {
                     g.drawImage(Stalemate.FIELD[1],
-                            Stalemate.SIZE / 2 - 10, y, null);
+                                Stalemate.SIZE / 2 - 10, y, null
+                    );
                     g.drawImage(Stalemate.FIELD[1],
-                            Stalemate.SIZE / 2 + 10, y, null);
+                                Stalemate.SIZE / 2 + 10, y, null
+                    );
                 }
                 for (int x = Stalemate.SIZE / 2 + 30; x < Stalemate.SIZE; x += 20) {
                     g.drawImage(Stalemate.FIELD[1], x, Stalemate.SIZE - 40
@@ -495,7 +513,7 @@ public class Stalemate extends JPanel
     }
 
     @Override
-    public void mouseClicked(final MouseEvent me) {
+    public void mouseClicked (final MouseEvent me) {
         if (me.getY() < Stalemate.MENU) {
             for (final Element item : this.options) {
                 item.isSelected = false;
@@ -503,7 +521,7 @@ public class Stalemate extends JPanel
             this.selectedElement = null;
             for (final Element item : this.options) {
                 if (item.contains(me.getX(), me.getY())) {
-                    item.isSelected = true;
+                    item.isSelected      = true;
                     this.selectedElement = item;
                 }
             }
@@ -517,69 +535,72 @@ public class Stalemate extends JPanel
                 }
                 if (!colisao) {
                     final Element el =
-                            new Element(me.getX() - this.selectedElement.width / 2,
+                            new Element(
+                                    me.getX() - this.selectedElement.width / 2,
                                     me.getY() - this.selectedElement.height / 2,
-                                    this.selectedElement.type);
+                                    this.selectedElement.type
+                            );
                     el.value = el.getPower();
                     this.items.add(el);
                     this.money -= this.selectedElement.value;
                     this.selectedElement.isSelected = false;
-                    this.selectedElement = null;
+                    this.selectedElement            = null;
                 }
             }
         }
     }
 
     @Override
-    public void mousePressed(final MouseEvent me) {
+    public void mousePressed (final MouseEvent me) {
         if (me.getButton() == MouseEvent.BUTTON2) {
             this.money += 100;
         }
         if (me.getButton() == MouseEvent.BUTTON1 && this.isWaiting) {
             if (me.getX() > Stalemate.SIZE / 2 - 50
-                    && me.getX() < Stalemate.SIZE / 2 + 50
-                    && me.getY() > Stalemate.SIZE - 100
-                    && me.getY() < Stalemate.SIZE - 50) {
+                && me.getX() < Stalemate.SIZE / 2 + 50
+                && me.getY() > Stalemate.SIZE - 100
+                && me.getY() < Stalemate.SIZE - 50) {
                 this.isWaiting = false;
             }
         }
     }
 
     @Override
-    public void mouseReleased(final MouseEvent me) {
+    public void mouseReleased (final MouseEvent me) {
     }
 
     @Override
-    public void mouseEntered(final MouseEvent me) {
+    public void mouseEntered (final MouseEvent me) {
         this.isRunning = true;
     }
 
     @Override
-    public void mouseExited(final MouseEvent me) {
+    public void mouseExited (final MouseEvent me) {
         this.isRunning = false;
     }
 
     @Override
-    public void mouseDragged(final MouseEvent me) {
+    public void mouseDragged (final MouseEvent me) {
     }
 
     @Override
-    public void mouseMoved(final MouseEvent me) {
+    public void mouseMoved (final MouseEvent me) {
         this.cursorX = me.getX();
         this.cursorY = me.getY();
     }
 
     @Override
-    public void run() {
+    public void run () {
         try {
             this.runGame();
         } catch (final InterruptedException ex) {
             Logger.getLogger(Stalemate.class.getName()).log(Level.SEVERE,
-                    null, ex);
+                                                            null, ex
+            );
         }
     }
 
-    private void runGame() throws InterruptedException {
+    private void runGame () throws InterruptedException {
         int levelChange = 100;
         while (this.life > 0) {
             Thread.sleep(200);
@@ -587,7 +608,7 @@ public class Stalemate extends JPanel
         }
     }
 
-    private int runOneLevel(int levelChange) throws InterruptedException {
+    private int runOneLevel (int levelChange) throws InterruptedException {
         while (this.isRunning && this.life > 0) {
             Thread.sleep(40);
             //Teste para mudança de nível
@@ -600,7 +621,7 @@ public class Stalemate extends JPanel
         return levelChange;
     }
 
-    private int changeLevelIfNeeded(int levelChange) throws InterruptedException {
+    private int changeLevelIfNeeded (int levelChange) throws InterruptedException {
         if (levelChange >= 100 && this.level < Element.TOTAL_ENEMIES) {
             levelChange = 0;
             this.startNew();
@@ -608,7 +629,7 @@ public class Stalemate extends JPanel
         return levelChange;
     }
 
-    private int processEnemyMovement(int levelChange) {
+    private int processEnemyMovement (int levelChange) {
         boolean novoDisparo = true;
         for (final Element item : this.enemies) {
             if (item.isSelected) {
@@ -636,12 +657,12 @@ public class Stalemate extends JPanel
         return levelChange;
     }
 
-    private void processCannonShots() {
+    private void processCannonShots () {
         for (final var item : this.items) {
             final var e = this.enemies.stream()
-                    .filter(item::isTargetInRange)
-                    .findFirst()
-                    .orElse(null);
+                                      .filter(item::isTargetInRange)
+                                      .findFirst()
+                                      .orElse(null);
 
             if (e == null) {
                 item.shotX = this.getShotX(item);
@@ -659,13 +680,13 @@ public class Stalemate extends JPanel
         }
     }
 
-    private void changeEnemyTrajectories() {
+    private void changeEnemyTrajectories () {
         for (final var item : this.map) {
             item.change(this.enemies);
         }
     }
 
-    private void startNew() throws InterruptedException {
+    private void startNew () throws InterruptedException {
         this.isWaiting = true;
         this.levelT++;
         this.currentMap = (this.currentMap + 1) % 4;
@@ -697,20 +718,22 @@ public class Stalemate extends JPanel
                         new Element(Stalemate.SIZE / 2, 80, 20, 100, 0, 1));
                 this.map.add(
                         new Element(10, Stalemate.SIZE - 20,
-                                Stalemate.SIZE - 20, 20, 1, 0));
+                                    Stalemate.SIZE - 20, 20, 1, 0
+                        ));
             }
             case 4 -> {
                 this.map.add(new Element(10, 80, 30, 100, 0, 1));
                 this.map.add(new Element(10, Stalemate.SIZE - 30, 50, 30
                         , 1, 0));
                 this.map.add(new Element(200, Stalemate.SIZE - 30, 50,
-                        30, 0, -1));
+                                         30, 0, -1
+                ));
                 this.map.add(new Element(190, 80, 50, 30, 1, 0));
             }
         }
     }
 
-    private void restartEnemies() {
+    private void restartEnemies () {
         int dec = 0;
         for (final Element item : this.enemies) {
             if (this.currentMap <= 3) {
@@ -730,21 +753,22 @@ public class Stalemate extends JPanel
         }
     }
 
-    private int getShotX(final Element item) {
+    private int getShotX (final Element item) {
         return item.x + item.width / 2;
     }
 
-    private int getShotY(final Element item) {
+    private int getShotY (final Element item) {
         return item.y + item.height / 2;
     }
 
     private class Element extends Rectangle {
-        static final int VIOLET_CANNON = 0;
-        static final int RED_CANNON = 1;
-        static final int GREEN_CANNON = 2;
-        static final int GRAY_CANNON = 3;
-        static final int ICE_CANNON = 4;
-        private static final Object[][] VALUES = {
+
+        static final         int        VIOLET_CANNON = 0;
+        static final         int        RED_CANNON    = 1;
+        static final         int        GREEN_CANNON  = 2;
+        static final         int        GRAY_CANNON   = 3;
+        static final         int        ICE_CANNON    = 4;
+        private static final Object[][] VALUES        = {
                 { 25, 28, Color.MAGENTA, 100, 20, 2 },
                 { 33, 33, Color.RED, 125, 15, 4 },
                 { 33, 33, Color.GREEN, 200, 50, 2 },
@@ -755,9 +779,10 @@ public class Stalemate extends JPanel
                 { 8, 8, Color.PINK, 200, 10 },
                 { 20, 20, Color.YELLOW, 2000, 4 }
         };
-        private static final int OPTIONS = 5;
-        private static final int TOTAL_ENEMIES = 4;
-        private static final byte[] BLUE_0 = { -119, 80, 78, 71, 13, 10, 26,
+        private static final int        OPTIONS       = 5;
+        private static final int        TOTAL_ENEMIES = 4;
+        private static final byte[]     BLUE_0        = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 25, 0, 0, 0, 28, 8,
                 6, 0, 0, 0, -108, 36, 20, -48, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -778,8 +803,10 @@ public class Stalemate extends JPanel
                 -32, -11, 96, 123, 113, 15, -111, 116, -72, 51, -39, 84, -43,
                 4, 61, -104, -120, -122, -67, -24, -123, -121, -94, 117, -9,
                 58, 13, 111, 24, -59, -5, 113, 93, 25, 27, 43, -30, 97, -100,
-                64, 39, 72, 52, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126 };
-        private static final byte[] BLUE_1 = { -119, 80, 78, 71, 13, 10, 26,
+                64, 39, 72, 52, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126
+        };
+        private static final byte[]     BLUE_1        = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 25, 0, 0, 0, 28, 8,
                 6, 0, 0, 0, -108, 36, 20, -48, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -802,8 +829,10 @@ public class Stalemate extends JPanel
                 -30, -86, -54, -87, -85, -84, 78, -38, -60, 108, -28, 16, 0,
                 -54, -117, -106, 44, -88, 55, -18, 62, 118, -13, 39, -36, -46
                 , 103, -69, -2, -87, 23, 2, -67, 79, -31, 30, -67, 32, 126, 0
-                , 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126 };
-        private static final byte[] BLUE_2 = { -119, 80, 78, 71, 13, 10, 26,
+                , 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126
+        };
+        private static final byte[]     BLUE_2        = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 25, 0, 0, 0, 28, 8,
                 6, 0, 0, 0, -108, 36, 20, -48, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -824,8 +853,10 @@ public class Stalemate extends JPanel
                 -38, 84, 86, 38, -83, 98, -100, 28, 42, 34, -87, 53, 90, -78,
                 -96, 108, -36, 19, -69, -15, 9, 61, 45, -19, 58, 83, 95, 11,
                 31, 51, 105, 42, 126, 107, -14, 0, 0, 0, 0, 73, 69, 78, 68,
-                -82, 66, 96, -126 };
-        private static final byte[] RED_0 = { -119, 80, 78, 71, 13, 10, 26, 10
+                -82, 66, 96, -126
+        };
+        private static final byte[]     RED_0         = {
+                -119, 80, 78, 71, 13, 10, 26, 10
                 , 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 33, 0, 0, 0, 33, 8, 6
                 , 0, 0, 0, 87, -28, -62, 111, 0, 0, 0, 4, 115, 66, 73, 84, 8,
                 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0,
@@ -852,8 +883,10 @@ public class Stalemate extends JPanel
                 , 34, -40, -46, 101, -120, 6, 94, 23, 16, 5, 64, -49, -77, 40
                 , 32, -55, 71, -29, -72, 127, -55, 125, -94, -56, -122, -1,
                 23, -78, -15, 0, 89, -87, 89, 32, 112, 104, 89, -45, 0, 0, 0,
-                0, 73, 69, 78, 68, -82, 66, 96, -126 };
-        private static final byte[] RED_1 = { -119, 80, 78, 71, 13, 10, 26, 10
+                0, 73, 69, 78, 68, -82, 66, 96, -126
+        };
+        private static final byte[]     RED_1         = {
+                -119, 80, 78, 71, 13, 10, 26, 10
                 , 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 33, 0, 0, 0, 33, 8, 6
                 , 0, 0, 0, 87, -28, -62, 111, 0, 0, 0, 4, 115, 66, 73, 84, 8,
                 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0,
@@ -879,8 +912,10 @@ public class Stalemate extends JPanel
                 126, -46, 16, -126, -63, 113, -125, 8, -128, 122, -65, 22, 5,
                 36, 57, 26, -41, -13, 75, -10, 19, -42, 27, -6, 88, -68, 0,
                 69, 86, 89, 30, -39, -114, 40, 78, 0, 0, 0, 0, 73, 69, 78, 68
-                , -82, 66, 96, -126 };
-        private static final byte[] GREEN_0 = { -119, 80, 78, 71, 13, 10, 26,
+                , -82, 66, 96, -126
+        };
+        private static final byte[]     GREEN_0       = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 33, 0, 0, 0, 33, 8,
                 6, 0, 0, 0, 87, -28, -62, 111, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -904,8 +939,10 @@ public class Stalemate extends JPanel
                 -21, 69, 39, 55, 83, 113, 60, -103, -36, 13, -32, 102, -16,
                 -31, -61, -12, 0, -128, 110, -74, 19, -72, 47, -43, 5, -116,
                 118, 98, 88, 126, -9, -70, 118, -106, 72, -78, -62, -113, 0,
-                0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126 };
-        private static final byte[] GREEN_1 = { -119, 80, 78, 71, 13, 10, 26,
+                0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126
+        };
+        private static final byte[]     GREEN_1       = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 33, 0, 0, 0, 33, 8,
                 6, 0, 0, 0, 87, -28, -62, 111, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -931,8 +968,10 @@ public class Stalemate extends JPanel
                 113, 17, -39, 92, 12, -96, 36, 104, 115, 49, 53, 0, 8, 37, -7
                 , 4, -22, -115, 117, 65, 108, 78, -30, -78, 124, 0, -37, 81,
                 114, 94, 49, 105, 108, 112, 0, 0, 0, 0, 73, 69, 78, 68, -82,
-                66, 96, -126 };
-        private static final byte[] GREEN_2 = { -119, 80, 78, 71, 13, 10, 26,
+                66, 96, -126
+        };
+        private static final byte[]     GREEN_2       = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 33, 0, 0, 0, 33, 8,
                 6, 0, 0, 0, 87, -28, -62, 111, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -956,8 +995,10 @@ public class Stalemate extends JPanel
                 -18, -35, -21, 67, 0, 48, -104, 49, 20, -89, -62, 98, 49,
                 -128, 25, -31, -73, 15, -45, 3, 32, 51, -22, 9, -52, 59, -44,
                 5, -19, 58, -15, -73, 124, 1, -120, 79, 91, 100, 51, -68, 114
-                , 65, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126 };
-        private static final byte[] GRAY_0 = { -119, 80, 78, 71, 13, 10, 26,
+                , 65, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126
+        };
+        private static final byte[]     GRAY_0        = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 33, 0, 0, 0, 33, 8,
                 6, 0, 0, 0, 87, -28, -62, 111, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -995,8 +1036,10 @@ public class Stalemate extends JPanel
                 60, -7, -67, 71, 44, -51, -40, 37, 68, -21, 55, 2, -31, -109,
                 31, 0, -56, 50, 124, 7, 60, 1, -3, 120, -5, 17, 123, -124, 95
                 , 102, -54, -57, -21, -58, -110, 94, 109, 0, 0, 0, 0, 73, 69,
-                78, 68, -82, 66, 96, -126 };
-        private static final byte[] GRAY_1 = { -119, 80, 78, 71, 13, 10, 26,
+                78, 68, -82, 66, 96, -126
+        };
+        private static final byte[]     GRAY_1        = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 33, 0, 0, 0, 33, 8,
                 6, 0, 0, 0, 87, -28, -62, 111, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -1036,8 +1079,10 @@ public class Stalemate extends JPanel
                 119, 103, -73, -108, -115, 127, 3, -108, -9, -119, 102, 9, 63
                 , -95, 8, -96, -107, -113, -89, -42, 51, 125, 1, -12, 83, 73,
                 96, 76, -110, 92, -110, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66,
-                96, -126 };
-        private static final byte[] VIOLET_0 = { -119, 80, 78, 71, 13, 10, 26,
+                96, -126
+        };
+        private static final byte[]     VIOLET_0      = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 25, 0, 0, 0, 28, 8,
                 6, 0, 0, 0, -108, 36, 20, -48, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -1061,8 +1106,10 @@ public class Stalemate extends JPanel
                 -120, -100, -65, 21, -99, -16, 29, 70, -10, 98, 44, 27, 123,
                 33, -101, -80, 99, 50, -65, 50, -82, 119, -17, -12, -116,
                 -107, 15, -45, 30, 82, -22, 101, -5, 59, 120, 0, 0, 0, 0, 73,
-                69, 78, 68, -82, 66, 96, -126 };
-        private static final byte[] VIOLET_1 = { -119, 80, 78, 71, 13, 10, 26,
+                69, 78, 68, -82, 66, 96, -126
+        };
+        private static final byte[]     VIOLET_1      = {
+                -119, 80, 78, 71, 13, 10, 26,
                 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 25, 0, 0, 0, 28, 8,
                 6, 0, 0, 0, -108, 36, 20, -48, 0, 0, 0, 4, 115, 66, 73, 84, 8
                 , 8, 8, 8, 124, 8, 100, -120, 0, 0, 0, 9, 112, 72, 89, 115, 0
@@ -1085,8 +1132,9 @@ public class Stalemate extends JPanel
                 -22, 62, -103, 64, -42, -36, 47, 99, 26, 0, 0, 110, 122, -9,
                 -22, -48, -89, -111, 61, -115, 101, 45, -54, 98, -57, 100,
                 125, 101, 94, -85, 127, 38, 21, 107, 79, 77, -7, 124, 40, -83
-                , 34, 110, -15, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126 };
-        private static final Image[] DRAWINGS = {
+                , 34, 110, -15, 0, 0, 0, 0, 73, 69, 78, 68, -82, 66, 96, -126
+        };
+        private static final Image[]    DRAWINGS      = {
                 Toolkit.getDefaultToolkit().createImage(Element.BLUE_0),
                 Toolkit.getDefaultToolkit().createImage(Element.BLUE_1),
                 Toolkit.getDefaultToolkit().createImage(Element.BLUE_2),
@@ -1101,37 +1149,37 @@ public class Stalemate extends JPanel
                 Toolkit.getDefaultToolkit().createImage(Element.VIOLET_1)
         };
 
-        protected int type = 0;
+        protected int type  = 0;
         protected int value = 0;
         boolean isSelected = false;
-        int shotX;
-        int shotY;
-        private int drawing = 0;
+        int     shotX;
+        int     shotY;
+        private int     drawing      = 0;
         private boolean shouldInvert = false;
-        private int direction = 1;
+        private int     direction    = 1;
 
-        Element(final int x, final int y, final int type) {
+        Element (final int x, final int y, final int type) {
             super(x, y,
-                    (Integer) Element.VALUES[type][0],
-                    (Integer) Element.VALUES[type][1]
+                  (Integer) Element.VALUES[type][0],
+                  (Integer) Element.VALUES[type][1]
             );
             this.setType(type);
-            this.shotX = x + this.width / 2;
-            this.shotY = y + this.height / 2;
+            this.shotX      = x + this.width / 2;
+            this.shotY      = y + this.height / 2;
             this.isSelected = false;
-            this.drawing = Element.newDrawingFromType(type);
+            this.drawing    = Element.newDrawingFromType(type);
         }
 
-        private void setType(final int type) {
-            this.type = type;
-            this.width = (Integer) Element.VALUES[type][0];
+        private void setType (final int type) {
+            this.type   = type;
+            this.width  = (Integer) Element.VALUES[type][0];
             this.height = (Integer) Element.VALUES[type][1];
-            this.shotX = 1;
-            this.shotY = 0;
-            this.value = this.getVida();
+            this.shotX  = 1;
+            this.shotY  = 0;
+            this.value  = this.getVida();
         }
 
-        private static int newDrawingFromType(final int type) {
+        private static int newDrawingFromType (final int type) {
             return switch (type) {
                 case Element.RED_CANNON -> 3;
                 case Element.GREEN_CANNON -> 5;
@@ -1141,22 +1189,24 @@ public class Stalemate extends JPanel
             };
         }
 
-        private int getVida() {
+        private int getVida () {
             return (Integer) Element.VALUES[this.type][3];
         }
 
-        private Element(
+        private Element (
                 final int x, final int y,
                 final int w, final int h,
-                final int shotX, final int shotY) {
+                final int shotX, final int shotY
+        ) {
             super(x, y, w, h);
             this.shotX = shotX;
             this.shotY = shotY;
         }
 
-        private void drawCursor(
+        private void drawCursor (
                 final int locX, final int locY,
-                final Graphics g) {
+                final Graphics g
+        ) {
             if (locX < Stalemate.SIZE && locY < Stalemate.SIZE) {
                 g.setColor(this.getColor());
                 g.drawRect(
@@ -1169,19 +1219,19 @@ public class Stalemate extends JPanel
             }
         }
 
-        private Color getColor() {
+        private Color getColor () {
             return (Color) Element.VALUES[this.type][2];
         }
 
-        private int getRange() {
+        private int getRange () {
             return (Integer) Element.VALUES[this.type][4];
         }
 
-        private Image getImage() {
+        private Image getImage () {
             return Element.DRAWINGS[this.drawing];
         }
 
-        private void draw(final Graphics g) {
+        private void draw (final Graphics g) {
             if (this.x >= Stalemate.SIZE || this.y >= Stalemate.SIZE) {
                 return;
             }
@@ -1229,31 +1279,33 @@ public class Stalemate extends JPanel
             );
         }
 
-        private boolean isTargetInRange(final Rectangle target) {
+        private boolean isTargetInRange (final Rectangle target) {
             return this.isTargetInCardinalRange(this.x, target.x, this.width)
-                    && this.isTargetInCardinalRange(this.y, target.y,
-                    this.height);
+                   && this.isTargetInCardinalRange(this.y, target.y,
+                                                   this.height
+            );
         }
 
-        private boolean isTargetInCardinalRange(
-                final int z, final int targetZ, final int size) {
+        private boolean isTargetInCardinalRange (
+                final int z, final int targetZ, final int size
+        ) {
             final int range = targetZ + size / 2;
             return (z - this.getRange()) < range && (z + size + this.getRange() * 2) > range;
         }
 
-        private int getValor() {
+        private int getValor () {
             return (Integer) Element.VALUES[this.type][3];
         }
 
-        private int getPower() {
+        private int getPower () {
             return (Integer) Element.VALUES[this.type][5];
         }
 
-        private int getSpeed() {
+        private int getSpeed () {
             return (Integer) Element.VALUES[this.type][4];
         }
 
-        private void change(final Iterable<? extends Element> enemies) {
+        private void change (final Iterable<? extends Element> enemies) {
             for (final var target : enemies) {
                 if (this.contains(target)) {
                     target.shotX = this.shotX;
@@ -1262,16 +1314,16 @@ public class Stalemate extends JPanel
             }
         }
 
-        private void stop() {
+        private void stop () {
             this.isSelected = false;
-            this.value = 1;
-            this.shotX = 0;
-            this.shotY = 0;
-            this.x = Stalemate.ENEMY_DEFAULT_POSITION;
-            this.y = Stalemate.ENEMY_DEFAULT_POSITION;
+            this.value      = 1;
+            this.shotX      = 0;
+            this.shotY      = 0;
+            this.x          = Stalemate.ENEMY_DEFAULT_POSITION;
+            this.y          = Stalemate.ENEMY_DEFAULT_POSITION;
         }
 
-        private void updateDrawing() {
+        private void updateDrawing () {
             switch (this.type) {
                 case Element.ICE_CANNON -> this.updateGenericCannon(3, 0);
                 case Element.RED_CANNON -> this.updateRedCannon();
@@ -1281,18 +1333,19 @@ public class Stalemate extends JPanel
             }
         }
 
-        private void updateGenericCannon(
+        private void updateGenericCannon (
                 final int targetX,
-                final int newDrawing) {
+                final int newDrawing
+        ) {
             if (this.drawing + 1 == targetX) {
-                this.drawing = newDrawing;
+                this.drawing      = newDrawing;
                 this.shouldInvert = !this.shouldInvert;
             } else {
                 this.drawing++;
             }
         }
 
-        private void updateRedCannon() {
+        private void updateRedCannon () {
             if (this.drawing + 1 == 5) {
                 this.drawing = 3;
             } else {
@@ -1301,7 +1354,7 @@ public class Stalemate extends JPanel
             }
         }
 
-        private void updateGreenCannon() {
+        private void updateGreenCannon () {
             if (this.direction == -1 && this.drawing - 1 == 4) {
                 this.direction = 1;
             }

@@ -1,13 +1,13 @@
 package ispd.gui.iconico.grade;
 
-import ispd.gui.iconico.Vertex;
-
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Polygon;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import ispd.gui.iconico.Vertex;
 
 public class Link extends EdgeGridItem {
 
@@ -41,62 +41,25 @@ public class Link extends EdgeGridItem {
      * destination vertices and the local and global
      * identifiers.
      *
-     * @param source      the source vertex
-     * @param destination the destination vertex
-     * @param localId     the local identifier
-     * @param globalId    the global identifier
+     * @param source
+     *         the source vertex
+     * @param destination
+     *         the destination vertex
+     * @param localId
+     *         the local identifier
+     * @param globalId
+     *         the global identifier
      */
-    public Link(final Vertex source,
-                final Vertex destination,
-                final int localId,
-                final int globalId) {
+    public Link (
+            final Vertex source,
+            final Vertex destination,
+            final int localId,
+            final int globalId
+    ) {
         super(localId, globalId, "link", source,
-                destination, true);
-        this.arrowPolygon = new Polygon();
-    }
-
-    /**
-     * Returns the link attributes.
-     *
-     * @param translator the translator containing
-     *                   the translation messages
-     * @return the link attributes
-     */
-    @Override
-    public String makeDescription(
-            final ResourceBundle translator) {
-        return ("%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s %d<br>%s " +
-                "%d<br>%s: %s<br>%s: %s<br>%s: %s").formatted(
-                translator.getString("Local ID:"), this.id.getLocalId(),
-                translator.getString("Global ID:"), this.id.getGlobalId(),
-                translator.getString("Label"), this.id.getName(),
-                translator.getString("X1-coordinate:"), this.getSource().getX(),
-                translator.getString("Y1-coordinate:"), this.getSource().getY(),
-                translator.getString("X2-coordinate:"),
-                this.getDestination().getY(),
-                translator.getString("Y2-coordinate:"),
-                this.getDestination().getX(),
-                translator.getString("Bandwidth"), this.bandwidth,
-                translator.getString("Latency"), this.latency,
-                translator.getString("Load Factor"), this.loadFactor
+              destination, true
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Link makeCopy(final int mousePosX,
-                         final int mousePosY,
-                         final int globalId,
-                         final int localId) {
-        final var link = new Link(null, null,
-                globalId, localId);
-        link.bandwidth = this.bandwidth;
-        link.latency = this.latency;
-        link.loadFactor = this.loadFactor;
-        link.checkConfiguration();
-        return link;
+        this.arrowPolygon = new Polygon();
     }
 
     /**
@@ -104,17 +67,17 @@ public class Link extends EdgeGridItem {
      * and ending at the destination vertex.
      */
     @Override
-    public void draw(final Graphics g) {
-        final double arrowWidth = 11.0f;
-        final double theta = 0.423f;
-        final int[] xPoints = new int[3];
-        final int[] yPoints = new int[3];
-        final double[] vecLine = new double[2];
-        final double[] vecLeft = new double[2];
-        final double fLength;
-        final double th;
-        final double ta;
-        final double baseX, baseY;
+    public void draw (final Graphics g) {
+        final double   arrowWidth = 11.0f;
+        final double   theta      = 0.423f;
+        final int[]    xPoints    = new int[3];
+        final int[]    yPoints    = new int[3];
+        final double[] vecLine    = new double[2];
+        final double[] vecLeft    = new double[2];
+        final double   fLength;
+        final double   th;
+        final double   ta;
+        final double   baseX, baseY;
 
         xPoints[0] = this.getX();
         yPoints[0] = this.getY();
@@ -129,8 +92,8 @@ public class Link extends EdgeGridItem {
 
         // setup length parameters
         fLength = Math.sqrt(vecLine[0] * vecLine[0] + vecLine[1] * vecLine[1]);
-        th = arrowWidth / (2.0f * fLength);
-        ta = arrowWidth / (2.0f * (Math.tan(theta) / 2.0f) * fLength);
+        th      = arrowWidth / (2.0f * fLength);
+        ta      = arrowWidth / (2.0f * (Math.tan(theta) / 2.0f) * fLength);
 
         // find the base of the arrow
         baseX = ((double) xPoints[0] - ta * vecLine[0]);
@@ -156,100 +119,27 @@ public class Link extends EdgeGridItem {
         }
 
         g.drawLine(this.getSource().getX(), this.getSource().getY(),
-                this.getDestination().getX(), this.getDestination().getY());
+                   this.getDestination().getX(), this.getDestination().getY()
+        );
         g.fillPolygon(this.arrowPolygon);
-    }
-
-    /**
-     * It throws {@link UnsupportedOperationException}.
-     */
-    @Override
-    public Set<GridItem> getInboundConnections() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * It throws {@link UnsupportedOperationException}.
-     */
-    @Override
-    public Set<GridItem> getOutboundConnections() {
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * It checks if the current link configuration is well
-     * configured; if so, then {@link #configured} is set
-     * to {@code true}; otherwise, is set to {@code false}.
-     */
-    private void checkConfiguration() {
-        this.configured = this.bandwidth > 0
-                && this.latency > 0;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public boolean contains(final int x, final int y) {
+    public boolean contains (final int x, final int y) {
         return this.arrowPolygon.contains(x, y);
     }
 
-    /* Getters & Setters */
-
     /**
-     * Returns the bandwidth.
+     * Returns {@code null}.
      *
-     * @return the bandwidth
+     * @return {@code null}
      */
-    public double getBandwidth() {
-        return this.bandwidth;
-    }
-
-    /**
-     * It sets the bandwidth.
-     *
-     * @param bandwidth the bandwidth to be set
-     */
-    public void setBandwidth(final double bandwidth) {
-        this.bandwidth = bandwidth;
-        this.checkConfiguration();
-    }
-
-    /**
-     * Returns the load factor.
-     *
-     * @return the load factor
-     */
-    public double getLoadFactor() {
-        return this.loadFactor;
-    }
-
-    /**
-     * It sets the load factor.
-     *
-     * @param loadFactor the load factor to be set
-     */
-    public void setLoadFactor(final double loadFactor) {
-        this.loadFactor = loadFactor;
-    }
-
-    /**
-     * Returns the latency.
-     *
-     * @return the latency
-     */
-    public double getLatency() {
-        return this.latency;
-    }
-
-    /**
-     * It sets the latency
-     *
-     * @param latency the latency to be set
-     */
-    public void setLatency(final double latency) {
-        this.latency = latency;
-        checkConfiguration();
+    @Override
+    public Image getImage () {
+        return null;
     }
 
     /**
@@ -258,7 +148,7 @@ public class Link extends EdgeGridItem {
      * @return the x-coordinate in cartesian coordinates
      */
     @Override
-    public Integer getX() {
+    public Integer getX () {
         return Link.biasedMidPoint(
                 this.getSource().getX(),
                 this.getDestination().getX()
@@ -271,23 +161,11 @@ public class Link extends EdgeGridItem {
      * @return the y-coordinate in cartesian coordinates
      */
     @Override
-    public Integer getY() {
+    public Integer getY () {
         return Link.biasedMidPoint(
                 this.getSource().getY(),
                 this.getDestination().getY()
         );
-    }
-
-    /* getImage */
-
-    /**
-     * Returns {@code null}.
-     *
-     * @return {@code null}
-     */
-    @Override
-    public Image getImage() {
-        return null;
     }
 
     /**
@@ -296,12 +174,158 @@ public class Link extends EdgeGridItem {
      *     (p1 + 7 * p2) / 8
      * </pre>
      *
-     * @param p1 the first point
-     * @param p2 the second point
+     * @param p1
+     *         the first point
+     * @param p2
+     *         the second point
+     *
      * @return a weighted mean between these points
      */
-    private static int biasedMidPoint(final int p1,
-                                      final int p2) {
+    private static int biasedMidPoint (
+            final int p1,
+            final int p2
+    ) {
         return (p1 + 7 * p2) / 8;
+    }
+
+    /**
+     * It throws {@link UnsupportedOperationException}.
+     */
+    @Override
+    public Set<GridItem> getInboundConnections () {
+        throw new UnsupportedOperationException();
+    }
+
+    /* Getters & Setters */
+
+    /**
+     * It throws {@link UnsupportedOperationException}.
+     */
+    @Override
+    public Set<GridItem> getOutboundConnections () {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Returns the link attributes.
+     *
+     * @param translator
+     *         the translator containing
+     *         the translation messages
+     *
+     * @return the link attributes
+     */
+    @Override
+    public String makeDescription (
+            final ResourceBundle translator
+    ) {
+        return (
+                "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s %d<br>%s " +
+                "%d<br>%s: %s<br>%s: %s<br>%s: %s"
+        ).formatted(
+                translator.getString("Local ID:"), this.id.getLocalId(),
+                translator.getString("Global ID:"), this.id.getGlobalId(),
+                translator.getString("Label"), this.id.getName(),
+                translator.getString("X1-coordinate:"), this.getSource().getX(),
+                translator.getString("Y1-coordinate:"), this.getSource().getY(),
+                translator.getString("X2-coordinate:"),
+                this.getDestination().getY(),
+                translator.getString("Y2-coordinate:"),
+                this.getDestination().getX(),
+                translator.getString("Bandwidth"), this.bandwidth,
+                translator.getString("Latency"), this.latency,
+                translator.getString("Load Factor"), this.loadFactor
+        );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Link makeCopy (
+            final int mousePosX,
+            final int mousePosY,
+            final int globalId,
+            final int localId
+    ) {
+        final var link = new Link(null, null,
+                                  globalId, localId
+        );
+        link.bandwidth  = this.bandwidth;
+        link.latency    = this.latency;
+        link.loadFactor = this.loadFactor;
+        link.checkConfiguration();
+        return link;
+    }
+
+    /**
+     * It checks if the current link configuration is well
+     * configured; if so, then {@link #configured} is set
+     * to {@code true}; otherwise, is set to {@code false}.
+     */
+    private void checkConfiguration () {
+        this.configured = this.bandwidth > 0
+                          && this.latency > 0;
+    }
+
+    /**
+     * Returns the bandwidth.
+     *
+     * @return the bandwidth
+     */
+    public double getBandwidth () {
+        return this.bandwidth;
+    }
+
+    /**
+     * It sets the bandwidth.
+     *
+     * @param bandwidth
+     *         the bandwidth to be set
+     */
+    public void setBandwidth (final double bandwidth) {
+        this.bandwidth = bandwidth;
+        this.checkConfiguration();
+    }
+
+    /**
+     * Returns the load factor.
+     *
+     * @return the load factor
+     */
+    public double getLoadFactor () {
+        return this.loadFactor;
+    }
+
+    /**
+     * It sets the load factor.
+     *
+     * @param loadFactor
+     *         the load factor to be set
+     */
+    public void setLoadFactor (final double loadFactor) {
+        this.loadFactor = loadFactor;
+    }
+
+    /* getImage */
+
+    /**
+     * Returns the latency.
+     *
+     * @return the latency
+     */
+    public double getLatency () {
+        return this.latency;
+    }
+
+    /**
+     * It sets the latency
+     *
+     * @param latency
+     *         the latency to be set
+     */
+    public void setLatency (final double latency) {
+        this.latency = latency;
+        checkConfiguration();
     }
 }

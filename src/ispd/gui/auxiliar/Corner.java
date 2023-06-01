@@ -31,15 +31,17 @@
 
 package ispd.gui.auxiliar;
 
-import javax.swing.JComponent;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import javax.swing.JComponent;
+
 public class Corner extends JComponent {
+
     private static final Color DEFAULT_COLOR = new Color(240, 240, 240);
 
     @Override
-    protected void paintComponent(final Graphics g) {
+    protected void paintComponent (final Graphics g) {
         g.setColor(Corner.DEFAULT_COLOR);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
     }

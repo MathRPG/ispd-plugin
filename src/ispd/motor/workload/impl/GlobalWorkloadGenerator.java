@@ -1,5 +1,7 @@
 package ispd.motor.workload.impl;
 
+import java.util.List;
+
 import ispd.motor.filas.RedeDeFilas;
 import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Processamento;
@@ -7,8 +9,6 @@ import ispd.motor.random.Distribution;
 import ispd.motor.random.TwoStageUniform;
 import ispd.motor.workload.WorkloadGeneratorType;
 import ispd.utils.SequentialIntSupplier;
-
-import java.util.List;
 
 /**
  * Generates a workload with randomly-decided sizes from a collection of
@@ -27,6 +27,7 @@ import java.util.List;
  * @see Distribution#nextExponential(double)
  */
 public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
+
     private final int taskCreationTime;
 
     /**
@@ -36,29 +37,41 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      * communication size of the task are used in a two-stage uniform
      * distribution.
      *
-     * @param taskCount        number of tasks to generate
-     * @param compMin          computation distribution minimum
-     * @param compMax          computation distribution maximum
-     * @param compAvg          computation distribution interval split
-     * @param compProb         computation distribution first interval
-     *                         probability
-     * @param commMin          communication distribution minimum
-     * @param commMax          communication distribution maximum
-     * @param commAvg          communication distribution interval split
-     * @param commProb         communication distribution first interval
-     *                         probability
-     * @param taskCreationTime task creation time ({@code beta} for an
-     *                         exponential distribution)
+     * @param taskCount
+     *         number of tasks to generate
+     * @param compMin
+     *         computation distribution minimum
+     * @param compMax
+     *         computation distribution maximum
+     * @param compAvg
+     *         computation distribution interval split
+     * @param compProb
+     *         computation distribution first interval
+     *         probability
+     * @param commMin
+     *         communication distribution minimum
+     * @param commMax
+     *         communication distribution maximum
+     * @param commAvg
+     *         communication distribution interval split
+     * @param commProb
+     *         communication distribution first interval
+     *         probability
+     * @param taskCreationTime
+     *         task creation time ({@code beta} for an
+     *         exponential distribution)
+     *
      * @see TwoStageUniform
      * @see Distribution#nextExponential(double)
      */
-    public GlobalWorkloadGenerator(
+    public GlobalWorkloadGenerator (
             final int taskCount,
             final double compMin, final double compMax,
             final double compAvg, final double compProb,
             final double commMin, final double commMax,
             final double commAvg, final double commProb,
-            final int taskCreationTime) {
+            final int taskCreationTime
+    ) {
         this(
                 taskCount, taskCreationTime,
                 new TwoStageUniform(compMin, compAvg, compMax, compProb),
@@ -71,20 +84,26 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      * given {@link TwoStageUniform}s to generate task computation and
      * communication sizes, respectively.
      *
-     * @param taskCount        number of tasks to generate
-     * @param taskCreationTime task creation time ({@code beta} for an
-     *                         exponential distribution)
-     * @param computation      {@link TwoStageUniform} that will generate
-     *                         task computation size
-     * @param communication    {@link TwoStageUniform} that will generate
-     *                         task computation size
+     * @param taskCount
+     *         number of tasks to generate
+     * @param taskCreationTime
+     *         task creation time ({@code beta} for an
+     *         exponential distribution)
+     * @param computation
+     *         {@link TwoStageUniform} that will generate
+     *         task computation size
+     * @param communication
+     *         {@link TwoStageUniform} that will generate
+     *         task computation size
+     *
      * @see TwoStageUniform
      * @see Distribution#nextExponential(double)
      */
-    public GlobalWorkloadGenerator(
+    public GlobalWorkloadGenerator (
             final int taskCount, final int taskCreationTime,
             final TwoStageUniform computation,
-            final TwoStageUniform communication) {
+            final TwoStageUniform communication
+    ) {
         super(
                 taskCount, computation, communication,
                 new SequentialIntSupplier(),
@@ -100,7 +119,7 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      * @see ispd.motor.workload.impl.task.TaskBuilder#makeTasksDistributedAmongMasters(RedeDeFilas, int)
      */
     @Override
-    public List<Tarefa> makeTaskList(final RedeDeFilas qn) {
+    public List<Tarefa> makeTaskList (final RedeDeFilas qn) {
         return this.makeTasksDistributedAmongMasters(qn, this.taskCount);
     }
 
@@ -108,7 +127,7 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      * @return {@link WorkloadGeneratorType#RANDOM}.
      */
     @Override
-    public WorkloadGeneratorType getType() {
+    public WorkloadGeneratorType getType () {
         return WorkloadGeneratorType.RANDOM;
     }
 
@@ -124,20 +143,22 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      *     <li>The {@link #taskCreationTime}</li>
      *     <li>The {@link #taskCount}</li>
      * </ul>
+     *
      * @see TwoStageUniform
      */
     @Override
-    public String formatForIconicModel() {
+    public String formatForIconicModel () {
         return String.format("%d %d %d %f\n%d %d %d %f\n%d %d %d",
-                (int) this.computation.minimum(),
-                (int) this.computation.intervalSplit(),
-                (int) this.computation.maximum(),
-                this.computation.firstIntervalProbability(),
-                (int) this.communication.minimum(),
-                (int) this.communication.maximum(),
-                (int) this.communication.intervalSplit(),
-                this.communication.firstIntervalProbability(),
-                0, this.taskCreationTime, this.taskCount);
+                             (int) this.computation.minimum(),
+                             (int) this.computation.intervalSplit(),
+                             (int) this.computation.maximum(),
+                             this.computation.firstIntervalProbability(),
+                             (int) this.communication.minimum(),
+                             (int) this.communication.maximum(),
+                             (int) this.communication.intervalSplit(),
+                             this.communication.firstIntervalProbability(),
+                             0, this.taskCreationTime, this.taskCount
+        );
     }
 
     /**
@@ -146,14 +167,14 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      * generating computation and communication sizes.
      */
     @Override
-    public String toString() {
+    public String toString () {
         return """
-                GlobalWorkloadGenerator{
-                    taskCount=%d,
-                    taskCreationTime=%d,
-                    computation=%s,
-                    communication=%s,
-                }""".formatted(
+               GlobalWorkloadGenerator{
+                   taskCount=%d,
+                   taskCreationTime=%d,
+                   computation=%s,
+                   communication=%s,
+               }""".formatted(
                 this.taskCount,
                 this.taskCreationTime,
                 this.computation.toString(),
@@ -164,7 +185,7 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
     /**
      * @return task creation time configured for this instance.
      */
-    public Integer getTaskCreationTime() {
+    public Integer getTaskCreationTime () {
         return this.taskCreationTime;
     }
 
@@ -172,14 +193,17 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      * The task user decided by this workload generator is simply the owner
      * of the {@link CS_Processamento} that will host the task.
      *
-     * @param master {@link CS_Processamento} that hosts information about
-     *               which user the task will be linked with.
+     * @param master
+     *         {@link CS_Processamento} that hosts information about
+     *         which user the task will be linked with.
+     *
      * @return user id of the owner of the given master, to be used to
-     * generate a new task.
+     *         generate a new task.
+     *
      * @see CS_Processamento#getProprietario()
      */
     @Override
-    protected String makeTaskUser(final CS_Processamento master) {
+    protected String makeTaskUser (final CS_Processamento master) {
         return master.getProprietario();
     }
 
@@ -191,7 +215,7 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      * @return task creation time (in seconds), to be used to make a new task.
      */
     @Override
-    protected double makeTaskCreationTime() {
+    protected double makeTaskCreationTime () {
         return this.random.nextExponential(this.taskCreationTime);
     }
 }

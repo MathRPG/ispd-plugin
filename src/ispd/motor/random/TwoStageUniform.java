@@ -11,17 +11,16 @@ import jdk.jfr.Percentage;
  * @see Distribution#twoStageUniform(double, double, double, double)
  */
 public record TwoStageUniform(
-        double minimum,
-        double intervalSplit,
-        double maximum,
-        @Percentage double firstIntervalProbability) {
+        double minimum, double intervalSplit, double maximum, @Percentage double firstIntervalProbability
+) {
+
     @Percentage
     private static final double EVEN_PROBABILITY = 0.5;
 
     /**
      * Construct an instance with all values set to 0.
      */
-    public TwoStageUniform() {
+    public TwoStageUniform () {
         this(0, 0, 0, 0);
     }
 
@@ -31,16 +30,13 @@ public record TwoStageUniform(
      * {@link #firstIntervalProbability probability} set to represent a
      * <b>uniform distribution</b>.
      *
-     * @param minimum distribution minimum
-     * @param maximum distribution maximum
+     * @param minimum
+     *         distribution minimum
+     * @param maximum
+     *         distribution maximum
      */
-    public TwoStageUniform(final double minimum, final double maximum) {
-        this(
-                minimum,
-                (minimum + maximum) / 2,
-                maximum,
-                TwoStageUniform.EVEN_PROBABILITY
-        );
+    public TwoStageUniform (final double minimum, final double maximum) {
+        this(minimum, (minimum + maximum) / 2, maximum, TwoStageUniform.EVEN_PROBABILITY);
     }
 
     /**
@@ -49,14 +45,16 @@ public record TwoStageUniform(
      * } set to the default to permit and even probability between the two
      * intervals.
      *
-     * @param minimum       distribution minimum
-     * @param intervalSplit distribution split point
-     * @param maximum       distribution maximum
+     * @param minimum
+     *         distribution minimum
+     * @param intervalSplit
+     *         distribution split point
+     * @param maximum
+     *         distribution maximum
      */
-    public TwoStageUniform(
-            final double minimum,
-            final double intervalSplit,
-            final double maximum) {
+    public TwoStageUniform (
+            final double minimum, final double intervalSplit, final double maximum
+    ) {
         this(minimum, intervalSplit, maximum, TwoStageUniform.EVEN_PROBABILITY);
     }
 
@@ -69,18 +67,11 @@ public record TwoStageUniform(
      *
      * @return normalized instance
      */
-    public TwoStageUniform rangeNormalized() {
-        return new TwoStageUniform(
-                TwoStageUniform.normalizeValue(
-                        this.intervalSplit(),
-                        this.minimum()
-                ),
-                this.intervalSplit(),
-                TwoStageUniform.normalizeValue(
-                        this.intervalSplit(),
-                        this.minimum()
-                ),
-                this.firstIntervalProbability()
+    public TwoStageUniform rangeNormalized () {
+        return new TwoStageUniform(TwoStageUniform.normalizeValue(this.intervalSplit(), this.minimum()),
+                                   this.intervalSplit(),
+                                   TwoStageUniform.normalizeValue(this.intervalSplit(), this.minimum()),
+                                   this.firstIntervalProbability()
         );
     }
 
@@ -88,15 +79,18 @@ public record TwoStageUniform(
      * Normalize a value to respect the given boundary and to be within the
      * range [0, 1].
      *
-     * @param value    value to be normalized
-     * @param boundary boundary for normalization
+     * @param value
+     *         value to be normalized
+     * @param boundary
+     *         boundary for normalization
+     *
      * @return normalized value, within [0, 1]; if value is {@code 0}, {@code
-     * 0} is returned.
+     *         0} is returned.
      */
-    private static double normalizeValue(
-            final double value, final double boundary) {
-        if (value == 0.0)
-            return 0.0;
+    private static double normalizeValue (
+            final double value, final double boundary
+    ) {
+        if (value == 0.0) {return 0.0;}
         final var d = Math.abs(value - boundary) / value;
         return Math.min(1.0, d);
     }
@@ -105,18 +99,15 @@ public record TwoStageUniform(
      * Generate a two-stage uniform with parameters from the fields of the
      * instance, using the given {@link Distribution}.
      *
-     * @param random {@link Distribution} to generate a random value.
+     * @param random
+     *         {@link Distribution} to generate a random value.
+     *
      * @return value in the interval from [{@link #minimum()},
-     * {@link #maximum()}, with probability following a two-stage uniform
-     * distribution.
+     *         {@link #maximum()}, with probability following a two-stage uniform
+     *         distribution.
      */
-    public double generateValue(final Distribution random) {
-        return random.twoStageUniform(
-                this.minimum,
-                this.intervalSplit,
-                this.maximum,
-                this.firstIntervalProbability
-        );
+    public double generateValue (final Distribution random) {
+        return random.twoStageUniform(this.minimum, this.intervalSplit, this.maximum, this.firstIntervalProbability);
     }
 
     /**
@@ -124,15 +115,12 @@ public record TwoStageUniform(
      * human-readable manner.
      *
      * @return {@link String} representing how this instance is initialized,
-     * in a human-readable format.
+     *         in a human-readable format.
      */
     @Override
-    public String toString() {
-        return "TwoStageUniform{min=%f, med=%f, max=%f, prob=%f}".formatted(
-                this.minimum,
-                this.intervalSplit,
-                this.maximum,
-                this.firstIntervalProbability
+    public String toString () {
+        return "TwoStageUniform{min=%f, med=%f, max=%f, prob=%f}".formatted(this.minimum, this.intervalSplit,
+                                                                            this.maximum, this.firstIntervalProbability
         );
     }
 }
