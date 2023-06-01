@@ -26,7 +26,9 @@ public enum RulerUnit {
         public int getIncrement () {
             return this.getUnit();
         }
-    }, INCHES("in") {
+    },
+
+    INCHES("in") {
         /**
          * Returns the unit in inches unit.
          * @return the unit in inches unit
@@ -42,7 +44,7 @@ public enum RulerUnit {
          */
         @Override
         public int getIncrement () {
-            return this.getUnit() >> 1;
+            return RulerUnit.INCH >> 1;
         }
     };
 
@@ -63,7 +65,7 @@ public enum RulerUnit {
      * @param symbol
      *         the symbol
      */
-    /* package-private */ RulerUnit (final String symbol) {
+    RulerUnit (final String symbol) {
         this.symbol = symbol;
     }
 
@@ -100,7 +102,7 @@ public enum RulerUnit {
      * @return the next unit described after this one
      */
     public RulerUnit nextUnit () {
-        final var values = RulerUnit.values();
+        final var values = values();
         return values[(this.ordinal() + 1) % values.length];
     }
 

@@ -44,14 +44,12 @@ public class Ruler extends JComponent {
     /**
      * It represents the font used to mark the labels on the ruler.
      */
-    private static final Font RULER_FONT =
-            new Font("SansSerif", Font.PLAIN, 10);
+    private static final Font RULER_FONT = new Font("SansSerif", Font.PLAIN, 10);
 
     /**
      * It represents the background color.
      */
-    private static final Color RULER_BACKGROUND_COLOR =
-            new Color(240, 240, 240);
+    private static final Color RULER_BACKGROUND_COLOR = new Color(240, 240, 240);
 
     /**
      * It represents the tick length. The term <em>tick</em> is coined
@@ -92,10 +90,7 @@ public class Ruler extends JComponent {
      * @param unit
      *         the unit
      */
-    /* package-private */ Ruler (
-            final RulerOrientation orientation,
-            final RulerUnit unit
-    ) {
+    public Ruler (final RulerOrientation orientation, final RulerUnit unit) {
         this.orientation = orientation;
         this.unit        = unit;
     }
@@ -122,12 +117,10 @@ public class Ruler extends JComponent {
         final int end;
         if (isHorizontal) {
             start = (drawHere.x / increment) * increment;
-            end   = (((drawHere.x + drawHere.width) / increment) + 1)
-                    * increment;
+            end   = (((drawHere.x + drawHere.width) / increment) + 1) * increment;
         } else {
             start = (drawHere.y / increment) * increment;
-            end   = (((drawHere.y + drawHere.height) / increment) + 1)
-                    * increment;
+            end   = (((drawHere.y + drawHere.height) / increment) + 1) * increment;
         }
 
         // Make a special case of 0 to display the number
@@ -136,14 +129,10 @@ public class Ruler extends JComponent {
             final var text = "0 " + this.unit.getSymbol();
 
             if (isHorizontal) {
-                g.drawLine(0, Ruler.SIZE - 1,
-                           0, Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1
-                );
+                g.drawLine(0, Ruler.SIZE - 1, 0, Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1);
                 g.drawString(text, 2, 21);
             } else {
-                g.drawLine(Ruler.SIZE - 1, 0,
-                           Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1, 0
-                );
+                g.drawLine(Ruler.SIZE - 1, 0, Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1, 0);
                 g.drawString(text, 9, 10);
             }
             start = increment;
@@ -164,10 +153,14 @@ public class Ruler extends JComponent {
 
             if (isHorizontal) {
                 g.drawLine(i, Ruler.SIZE - 1, i, Ruler.SIZE - tickLength - 1);
-                if (text != null) {g.drawString(text, i - 3, 21);}
+                if (text != null) {
+                    g.drawString(text, i - 3, 21);
+                }
             } else {
                 g.drawLine(Ruler.SIZE - 1, i, Ruler.SIZE - tickLength - 1, i);
-                if (text != null) {g.drawString(text, 9, i + 3);}
+                if (text != null) {
+                    g.drawString(text, 9, i + 3);
+                }
             }
         }
     }
@@ -182,7 +175,7 @@ public class Ruler extends JComponent {
      * @param newUnit
      *         the unit to be updated to
      */
-    /* package-private */ void updateUnitTo (final RulerUnit newUnit) {
+    public void updateUnitTo (final RulerUnit newUnit) {
         this.unit = newUnit;
         this.repaint();
     }
@@ -193,7 +186,7 @@ public class Ruler extends JComponent {
      * @param preferredHeight
      *         the preferred height
      */
-    /* package-private */ void setPreferredHeight (final int preferredHeight) {
+    protected void setPreferredHeight (final int preferredHeight) {
         this.setPreferredSize(new Dimension(Ruler.SIZE, preferredHeight));
     }
 
@@ -203,7 +196,7 @@ public class Ruler extends JComponent {
      * @param preferredWidth
      *         the preferred width
      */
-    /* package-private */ void setPreferredWidth (final int preferredWidth) {
+    protected void setPreferredWidth (final int preferredWidth) {
         this.setPreferredSize(new Dimension(preferredWidth, Ruler.SIZE));
     }
 }

@@ -21,13 +21,10 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 
-public abstract class DrawingArea extends JPanel
-        implements MouseListener, MouseMotionListener {
+public abstract class DrawingArea extends JPanel implements MouseListener, MouseMotionListener {
 
-    private static final Color       RECTANGLE_FILL_COLOR =
-            new Color(0.0f, 0.0f, 1.0f, 0.2f);
-    private static final RulerUnit   DEFAULT_UNIT         =
-            RulerUnit.CENTIMETERS;
+    private static final Color       RECTANGLE_FILL_COLOR = new Color(0.0f, 0.0f, 1.0f, 0.2f);
+    private static final RulerUnit   DEFAULT_UNIT         = RulerUnit.CENTIMETERS;
     protected final      Set<Icon>   selectedIcons        = new HashSet<>(0);
     protected final      Set<Vertex> vertices             = new HashSet<>(0);
     protected final      Set<Edge>   edges                = new HashSet<>(0);
@@ -61,10 +58,7 @@ public abstract class DrawingArea extends JPanel
     private              String      errorTitle           = null;
 
     protected DrawingArea (
-            final boolean isPopupOn,
-            final boolean isGridOn,
-            final boolean isRectOn,
-            final boolean isPositionFixed
+            final boolean isPopupOn, final boolean isGridOn, final boolean isRectOn, final boolean isPositionFixed
     ) {
         this.isPopupOn       = isPopupOn;
         this.isGridOn        = isGridOn;
@@ -83,10 +77,7 @@ public abstract class DrawingArea extends JPanel
         return corner;
     }
 
-    private static int clampPosition (
-            final int position, final int range,
-            final int increment
-    ) {
+    private static int clampPosition (final int position, final int range, final int increment) {
         if (position <= 0) {
             return increment;
         } else if (position >= range) {
@@ -103,16 +94,14 @@ public abstract class DrawingArea extends JPanel
     private void initRuler () {
         this.updateUnitTo(DrawingArea.DEFAULT_UNIT);
 
-        this.columnRuler = new Ruler(
-                RulerOrientation.HORIZONTAL, this.unit);
+        this.columnRuler = new Ruler(RulerOrientation.HORIZONTAL, this.unit);
         this.columnRuler.setPreferredWidth(this.getWidth());
-        this.rowRuler = new Ruler(
-                RulerOrientation.VERTICAL, this.unit);
+        this.rowRuler = new Ruler(RulerOrientation.VERTICAL, this.unit);
         this.rowRuler.setPreferredHeight(this.getHeight());
 
         final var unitButton = new JButton(this.unit.getSymbol());
         unitButton.addActionListener(this::onUnitButtonClicked);
-        this.cornerUnitButton = DrawingArea.panelWith(unitButton);
+        this.cornerUnitButton = panelWith(unitButton);
     }
 
     private void initGeneralPopup () {
@@ -128,8 +117,7 @@ public abstract class DrawingArea extends JPanel
         this.edgePopup   = new JPopupMenu();
 
         final JMenuItem jMenuVertice0 = new JMenuItem();
-        jMenuVertice0.addActionListener(evt -> {
-        });
+        jMenuVertice0.addActionListener(evt -> {});
         this.vertexPopup.add(jMenuVertice0);
         jMenuVertice0.setVisible(false);
 
@@ -168,10 +156,7 @@ public abstract class DrawingArea extends JPanel
         }
 
         for (final var v : this.vertices) {
-            v.setPosition(
-                    this.getPosFixaX(v.getX()),
-                    this.getPosFixaY(v.getY())
-            );
+            v.setPosition(this.getPosFixaX(v.getX()), this.getPosFixaY(v.getY()));
         }
     }
 
@@ -226,59 +211,48 @@ public abstract class DrawingArea extends JPanel
     }
 
     @Override
-    public void mouseClicked (final MouseEvent me) {
+    public void mouseClicked (final MouseEvent mouseEvent) {
         if (this.isDrawingEdge) {
             if (this.edgeOrigin != null) {
-                final Icon destinoAresta = this.getSelectedIcon(
-                        me.getX(),
-                        me.getY()
-                );
+                final Icon destinoAresta = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
                 if (destinoAresta instanceof Vertex && !this.edgeOrigin.equals(destinoAresta)) {
-                    this.adicionarAresta(
-                            this.edgeOrigin,
-                            (Vertex) destinoAresta
-                    );
+                    this.adicionarAresta(this.edgeOrigin, (Vertex) destinoAresta);
                     this.edgeOrigin = null;
                 } else {
-                    JOptionPane.showMessageDialog(null, this.errorMessage,
-                                                  this.errorTitle, JOptionPane.WARNING_MESSAGE
-                    );
+                    JOptionPane.showMessageDialog(
+                            null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
                 }
             } else {
-                final Icon icon = this.getSelectedIcon(me.getX(), me.getY());
+                final Icon icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
                 if (icon instanceof Vertex) {
                     this.edgeOrigin = (Vertex) icon;
                 } else {
-                    JOptionPane.showMessageDialog(null, this.errorMessage,
-                                                  this.errorTitle, JOptionPane.WARNING_MESSAGE
-                    );
+                    JOptionPane.showMessageDialog(
+                            null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
                 }
             }
         } else if (!this.selectedIcons.isEmpty()) {
-            final Icon icon = this.getSelectedIcon(me.getX(), me.getY());
+            final Icon icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
             if (icon != null) {
-                if (me.getButton() == MouseEvent.BUTTON3) {
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                     if (this.isPopupOn) {
-                        this.showPopupIcon(me, icon);
+                        this.showPopupIcon(mouseEvent, icon);
                     }
-                } else if (me.getClickCount() == 2) {
-                    this.showActionIcon(me, icon);
-                } else if (me.getClickCount() == 1) {
-                    this.showSelectionIcon(me, icon);
+                } else if (mouseEvent.getClickCount() == 2) {
+                    this.showActionIcon(mouseEvent, icon);
+                } else if (mouseEvent.getClickCount() == 1) {
+                    this.showSelectionIcon(mouseEvent, icon);
                 }
             }
         } else if (this.addVertex) {
             if (this.isPositionFixed) {
-                this.adicionarVertice(
-                        this.getPosFixaX(me.getX()),
-                        this.getPosFixaY(me.getY())
-                );
+                this.adicionarVertice(this.getPosFixaX(mouseEvent.getX()), this.getPosFixaY(mouseEvent.getY()));
             } else {
-                this.adicionarVertice(me.getX(), me.getY());
+                this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
             }
         } else if (this.isPopupOn) {
-            if (me.getButton() == MouseEvent.BUTTON3) {
-                this.generalPopup.show(me.getComponent(), me.getX(), me.getY());
+            if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                this.generalPopup.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
             }
         }
     }
@@ -391,10 +365,8 @@ public abstract class DrawingArea extends JPanel
     }
 
     private boolean isInSelectionRectangle (final Icon icon) {
-        return DrawingArea.isInRange(
-                icon.getX(), this.rectangleX, this.rectangleWidth)
-               && DrawingArea.isInRange(
-                icon.getY(), this.rectangleY, this.rectangleHeight);
+        return isInRange(icon.getX(), this.rectangleX, this.rectangleWidth)
+               && isInRange(icon.getY(), this.rectangleY, this.rectangleHeight);
     }
 
     /**
@@ -462,7 +434,7 @@ public abstract class DrawingArea extends JPanel
             }
         }
 
-        return DrawingArea.clampPosition(newPosition, range, increment);
+        return clampPosition(newPosition, range, increment);
     }
 
     @Override
@@ -488,16 +460,12 @@ public abstract class DrawingArea extends JPanel
         this.selectedIcons.stream()
                           .filter(Vertex.class::isInstance)
                           .map(Vertex.class::cast)
-                          .forEach(v -> v.setPosition(
-                                  x + v.getBaseX(),
-                                  y + v.getBaseY()
-                          ));
+                          .forEach(v -> v.setPosition(x + v.getBaseX(), y + v.getBaseY()));
     }
 
     private void updateRectangleAndSelectIcons (final int x, final int y) {
         this.rectangleWidth  = x - this.rectangleX;
         this.rectangleHeight = y - this.rectangleY;
-
 
         final int retX;
         final int retLag;
@@ -520,23 +488,15 @@ public abstract class DrawingArea extends JPanel
         }
 
         Stream.concat(this.vertices.stream(), this.edges.stream())
-              .filter(icon -> DrawingArea.isIconWithinRect(
-                      icon, retX, retY, retLag, retAlt))
+              .filter(icon -> isIconWithinRect(icon, retX, retY, retLag, retAlt))
               .forEach(icon -> icon.setSelected(true));
     }
 
-    private static boolean isIconWithinRect (
-            final Icon icon,
-            final int x, final int y,
-            final int w, final int h
-    ) {
-        return DrawingArea.isInRange(icon.getX(), x, w)
-               && DrawingArea.isInRange(icon.getY(), y, h);
+    private static boolean isIconWithinRect (final Icon icon, final int x, final int y, final int w, final int h) {
+        return isInRange(icon.getX(), x, w) && isInRange(icon.getY(), y, h);
     }
 
-    private static boolean isInRange (
-            final int pos, final int start, final int size
-    ) {
+    private static boolean isInRange (final int pos, final int start, final int size) {
         return start <= pos && pos <= start + size;
     }
 
@@ -563,9 +523,7 @@ public abstract class DrawingArea extends JPanel
         //Desenha a linha da conexão de rede antes dela se estabelcer.
         if (this.edgeOrigin != null) {
             g.setColor(new Color(0, 0, 0));
-            g.drawLine(this.edgeOrigin.getX(), this.edgeOrigin.getY(),
-                       this.mousePosX, this.mousePosY
-            );
+            g.drawLine(this.edgeOrigin.getX(), this.edgeOrigin.getY(), this.mousePosX, this.mousePosY);
         }
         this.drawRect(g);
         // Desenhamos todos os icones
@@ -578,10 +536,7 @@ public abstract class DrawingArea extends JPanel
     }
 
     private void drawBackground (final Graphics g) {
-        ((Graphics2D) g).setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
-        );
+        ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
     }
@@ -662,12 +617,7 @@ public abstract class DrawingArea extends JPanel
         this.errorTitle   = title;
     }
 
-    protected void setPopupButtonText (
-            final String icon,
-            final String vertex,
-            final String edge,
-            final String panel
-    ) {
+    protected void setPopupButtonText (final String icon, final String vertex, final String edge, final String panel) {
         if (icon != null) {
             this.jMenuIcon1A.setText(icon);
             this.jMenuIcon1A.setVisible(true);

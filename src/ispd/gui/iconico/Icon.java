@@ -74,5 +74,4 @@ public interface Icon {
      * @return this icon image
      */
     Image getImage ();
-
 }

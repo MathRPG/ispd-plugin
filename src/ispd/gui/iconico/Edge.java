@@ -22,25 +22,7 @@ public abstract class Edge implements Icon {
     private boolean selected;
 
     /**
-     * Constructor of {@link Edge} which specifies the source
-     * and destination vertices. Mathematically speaking, the
-     * source vertex is which this edge is <em>incident
-     * from</em> and the destination vertex is which this
-     * edge is <em>incident to</em>.
-     *
-     * @param source
-     *         the source vertex
-     * @param destination
-     *         the destination vertex
-     */
-    public Edge (
-            final Vertex source, final Vertex destination
-    ) {
-        this(source, destination, false);
-    }
-
-    /**
-     * Constructor of {@link Edge} which specifies the source,
+     * Constructor of  which specifies the source,
      * destination and whether the edge is selected. Mathematically
      * speaking, the source vertex is which this edge is
      * <em>incident from</em> and the destination vertex is
@@ -53,9 +35,7 @@ public abstract class Edge implements Icon {
      * @param selected
      *         whether the edge is selected
      */
-    public Edge (
-            final Vertex source, final Vertex destination, final boolean selected
-    ) {
+    protected Edge (final Vertex source, final Vertex destination, final boolean selected) {
         this.source      = source;
         this.destination = destination;
         this.selected    = selected;
@@ -87,9 +67,7 @@ public abstract class Edge implements Icon {
      * @param destination
      *         the destination vertex
      */
-    public void setPosition (
-            final Vertex source, final Vertex destination
-    ) {
+    public void setPosition (final Vertex source, final Vertex destination) {
         this.source      = source;
         this.destination = destination;
     }
@@ -125,7 +103,7 @@ public abstract class Edge implements Icon {
      */
     @Override
     public Integer getX () {
-        return Edge.midPoint(this.source.getX(), this.destination.getX());
+        return midPoint(this.source.getX(), this.destination.getX());
     }
 
     /**
@@ -135,7 +113,7 @@ public abstract class Edge implements Icon {
      */
     @Override
     public Integer getY () {
-        return Edge.midPoint(this.source.getY(), this.destination.getY());
+        return midPoint(this.source.getY(), this.destination.getY());
     }
 
     /**
