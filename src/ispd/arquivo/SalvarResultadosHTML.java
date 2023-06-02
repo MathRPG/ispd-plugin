@@ -57,7 +57,7 @@ public class SalvarResultadosHTML {
                                  <tbody>
                                  %s
                                  </tbody>
-                             </table>""".formatted(SalvarResultadosHTML.convertTableItemsToHtml(table));
+                             </table>""".formatted(convertTableItemsToHtml(table));
     }
 
     private static String convertTableItemsToHtml (final Object[][] table) {
@@ -94,7 +94,7 @@ public class SalvarResultadosHTML {
                 metrics.getOciosidadeComputacao(),
                 metrics.getOciosidadeComunicacao(),
                 metrics.getEficiencia(),
-                SalvarResultadosHTML.makeEfficiencyDescriptionFromMetrics(metrics),
+                makeEfficiencyDescriptionFromMetrics(metrics),
                 metrics.getCustoTotalProc(),
                 metrics.getCustoTotalMem(),
                 metrics.getCustoTotalDisco()
@@ -103,11 +103,11 @@ public class SalvarResultadosHTML {
 
     private static String makeEfficiencyDescriptionFromMetrics (final MetricasGlobais metrics) {
         if (metrics.getEficiencia() > SalvarResultadosHTML.EFFICIENCY_GOOD) {
-            return SalvarResultadosHTML.getEfficiencyDescription("GOOD", "00ff00");
+            return getEfficiencyDescription("GOOD", "00ff00");
         } else if (metrics.getEficiencia() > SalvarResultadosHTML.EFFICIENCY_BAD) {
-            return SalvarResultadosHTML.getEfficiencyDescription("MEDIA", "");
+            return getEfficiencyDescription("MEDIA", "");
         } else {
-            return SalvarResultadosHTML.getEfficiencyDescription("BAD", "ff0000");
+            return getEfficiencyDescription("BAD", "ff0000");
         }
     }
 
@@ -207,7 +207,7 @@ public class SalvarResultadosHTML {
      */
     public void gerarHTML (final File dir) throws IOException {
 
-        SalvarResultadosHTML.createDirIfNonexistent(dir);
+        createDirIfNonexistent(dir);
 
         try (
                 final var pw = new PrintWriter(new FileWriter(new File(dir, "result.html"), StandardCharsets.UTF_8))
@@ -219,7 +219,7 @@ public class SalvarResultadosHTML {
             this.writeChartToFile(dir, i);
         }
 
-        SalvarResultadosHTML.exportMissingImages(dir);
+        exportMissingImages(dir);
     }
 
     private static String makeImageTag (final int cont) {

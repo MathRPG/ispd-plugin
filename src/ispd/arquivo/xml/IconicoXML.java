@@ -3,8 +3,6 @@ package ispd.arquivo.xml;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -17,8 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import ispd.arquivo.xml.models.builders.CloudQueueNetworkBuilder;
@@ -48,8 +44,8 @@ public class IconicoXML {
     private static final Element[]       NO_CHILDREN        = {};
     private static final Object[][]      NO_ATTRS           = {};
     private static final int             DEFAULT_MODEL_TYPE = -1;
-    private final        WrappedDocument doc                = new WrappedDocument(ManipuladorXML.newDocument());
-    private final        Element         system             = this.doc.createElement("system");
+    private final        WrappedDocument document           = new WrappedDocument(ManipuladorXML.newDocument());
+    private final        Element         system             = this.document.createElement("system");
     private              Element         load               = null;
 
     public IconicoXML () {
@@ -57,11 +53,8 @@ public class IconicoXML {
     }
 
     public IconicoXML (final int modelType) {
-        this.system.setAttribute(
-                "version",
-                IconicoXML.getVersionForModelType(modelType)
-        );
-        this.doc.appendChild(this.system);
+        this.system.setAttribute("version", getVersionForModelType(modelType));
+        this.document.appendChild(this.system);
     }
 
     /**
@@ -74,8 +67,7 @@ public class IconicoXML {
             case PickModelTypeDialog.IAAS -> "2.2";
             case PickModelTypeDialog.PAAS -> "2.3";
             case IconicoXML.DEFAULT_MODEL_TYPE -> "1.2";
-            default -> throw new IllegalArgumentException(
-                    "Invalid model type " + modelType);
+            default -> throw new IllegalArgumentException("Invalid model type " + modelType);
         };
     }
 
@@ -130,13 +122,11 @@ public class IconicoXML {
         }
 
         if (document.hasNoLoads()) {
-            throw new IllegalArgumentException(
-                    "One or more workloads have not been configured.");
+            throw new IllegalArgumentException("One or more workloads have not been configured.");
         }
 
         if (document.hasNoMasters()) {
-            throw new IllegalArgumentException(
-                    "One or more parameters have not been configured.");
+            throw new IllegalArgumentException("One or more parameters have not been configured.");
         }
     }
 
@@ -183,11 +173,7 @@ public class IconicoXML {
      * @see GlobalWorkloadGenerator
      */
     public static WorkloadGenerator newGerarCarga (final Document doc) {
-        final var model = LoadBuilder.build(new WrappedDocument(doc));
-        if (model.isEmpty()) {
-            return null;
-        }
-        return model.get();
+        return LoadBuilder.build(new WrappedDocument(doc)).orElse(null);
     }
 
     /**
@@ -200,12 +186,9 @@ public class IconicoXML {
      * @see IconicModelBuilder
      */
     public static void newGrade (
-            final Document doc,
-            final Collection<? super Vertex> vertices,
-            final Collection<? super Edge> edges
+            final Document doc, final Collection<? super Vertex> vertices, final Collection<? super Edge> edges
     ) {
-        final var model = new IconicModelBuilder(
-                new WrappedDocument(doc)).build();
+        final var model = new IconicModelBuilder(new WrappedDocument(doc)).build();
         vertices.addAll(model.vertices());
         edges.addAll(model.edges());
     }
@@ -251,42 +234,6 @@ public class IconicoXML {
     }
 
     /**
-     * Parse xml file multiple times, producing copies of the resulting
-     * {@link Document}
-     *
-     * @param file
-     *         file to be parsed
-     * @param number
-     *         number of copies to be produced
-     *
-     * @return array of length {@code number} of identical {@link Document}s
-     *
-     * @throws SAXException
-     *         if the file is ill-formed
-     */
-    public static Document[] clone (final File file, final int number)
-            throws ParserConfigurationException, IOException, SAXException {
-
-        final var builder = IconicoXML.getCloningBuilder();
-
-        final var docs = new Document[number];
-
-        for (int i = 0; i < number; i++) {
-            builder.setEntityResolver(new CloningEntityResolver());
-            docs[i] = builder.parse(file);
-        }
-
-        return docs;
-    }
-
-    private static DocumentBuilder getCloningBuilder () throws ParserConfigurationException {
-        final var factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        factory.setValidating(true);
-        return factory.newDocumentBuilder();
-    }
-
-    /**
      * Add users' ids and power limit info to the current model being built.
      *
      * @param users
@@ -298,14 +245,10 @@ public class IconicoXML {
      *         if a user id given in the collection is
      *         missing from the map of power limits
      */
-    public void addUsers (
-            final Collection<String> users,
-            final Map<String, Double> limits
-    ) {
+    public void addUsers (final Collection<String> users, final Map<String, Double> limits) {
         users.stream()
-             .map(user -> this.anElement("owner",
-                                         "id", user,
-                                         "powerlimit", limits.get(user)
+             .map(user -> this.anElement(
+                     "owner", "id", user, "powerlimit", limits.get(user)
              ))
              .forEach(this.system::appendChild);
     }
@@ -317,11 +260,7 @@ public class IconicoXML {
      *
      * @return element with two attributes k1, k2 of value v1, v2
      */
-    private Element anElement (
-            final String name,
-            final String k1, final Object v1,
-            final String k2, final Object v2
-    ) {
+    private Element anElement (final String name, final String k1, final Object v1, final String k2, final Object v2) {
         return this.anElement(name, new Object[][] {
                 { k1, v1 },
                 { k2, v2 },
@@ -334,9 +273,7 @@ public class IconicoXML {
      *
      * @return children-less element.
      */
-    private Element anElement (
-            final String name, final Object[][] attrs
-    ) {
+    private Element anElement (final String name, final Object[][] attrs) {
         return this.anElement(name, attrs, IconicoXML.NO_CHILDREN);
     }
 
@@ -354,12 +291,8 @@ public class IconicoXML {
      *
      * @return Element with the given name, attributes and children
      */
-    private Element anElement (
-            final String name,
-            final Object[][] attrs,
-            final Node[] children
-    ) {
-        final var e = this.doc.createElement(name);
+    private Element anElement (final String name, final Object[][] attrs, final Node[] children) {
+        final var e = this.document.createElement(name);
 
         for (final var attr : attrs) {
             final var key   = attr[0];
@@ -367,8 +300,7 @@ public class IconicoXML {
             e.setAttribute((String) key, value.toString());
         }
 
-        Arrays.stream(children)
-              .forEach(e::appendChild);
+        Arrays.stream(children).forEach(e::appendChild);
 
         return e;
     }
@@ -378,10 +310,8 @@ public class IconicoXML {
      * built.
      */
     public void addInternet (
-            final int x, final int y,
-            final int idLocal, final int idGlobal, final String name,
-            final double bandwidth, final double internetLoad,
-            final double latency
+            final int x, final int y, final int idLocal, final int idGlobal, final String name, final double bandwidth,
+            final double internetLoad, final double latency
     ) {
         this.system.appendChild(this.anElement(
                 "internet", new Object[][] {
@@ -402,16 +332,10 @@ public class IconicoXML {
      * <b>Note:</b> its computational, storage and memory costs are set to 0.
      */
     public void addCluster (
-            final Integer x, final Integer y,
-            final Integer localId, final Integer globalId, final String name,
-            final Integer slaveCount,
-            final Double power, final Integer coreCount,
-            final Double memory, final Double disk,
-            final Double bandwidth, final Double latency,
-            final String scheduler,
-            final String owner,
-            final Boolean isMaster,
-            final Double energy
+            final Integer x, final Integer y, final Integer localId, final Integer globalId, final String name,
+            final Integer slaveCount, final Double power, final Integer coreCount, final Double memory,
+            final Double disk, final Double bandwidth, final Double latency, final String scheduler, final String owner,
+            final Boolean isMaster, final Double energy
     ) {
         this.system.appendChild(this.anElement(
                 "cluster", new Object[][] {
@@ -427,10 +351,7 @@ public class IconicoXML {
                         }, new Node[] {
                         this.aPositionElement(x, y),
                         this.anIconIdElement(globalId, localId),
-                        this.newCharacteristic(
-                                power, coreCount, memory, disk,
-                                0.0, 0.0, 0.0
-                        ),
+                        this.newCharacteristic(power, coreCount, memory, disk, 0.0, 0.0, 0.0),
                         }
         ));
     }
@@ -441,15 +362,10 @@ public class IconicoXML {
      * <B>Note:</B> no 'energy' attribute is added to the element.
      */
     public void addClusterIaaS (
-            final Integer x, final Integer y,
-            final Integer localId, final Integer globalId, final String name,
-            final Integer slaveCount,
-            final Double power, final Integer coreCount,
-            final Double memory, final Double disk,
-            final Double bandwidth, final Double latency,
-            final String scheduler, final String vmAlloc,
-            final Double processingCost, final Double memoryCost,
-            final Double diskCost,
+            final Integer x, final Integer y, final Integer localId, final Integer globalId, final String name,
+            final Integer slaveCount, final Double power, final Integer coreCount, final Double memory,
+            final Double disk, final Double bandwidth, final Double latency, final String scheduler,
+            final String vmAlloc, final Double processingCost, final Double memoryCost, final Double diskCost,
             final String owner, final Boolean isMaster
     ) {
         this.system.appendChild(this.anElement(
@@ -466,10 +382,7 @@ public class IconicoXML {
                         }, new Node[] {
                         this.aPositionElement(x, y),
                         this.anIconIdElement(globalId, localId),
-                        this.newCharacteristic(
-                                power, coreCount, memory, disk,
-                                processingCost, memoryCost, diskCost
-                        )
+                        this.newCharacteristic(power, coreCount, memory, disk, processingCost, memoryCost, diskCost)
                 }
         ));
     }
@@ -487,27 +400,19 @@ public class IconicoXML {
      * processing center, such as computational power and cost, storage, etc.
      */
     private Node newCharacteristic (
-            final Double power, final Integer coreCount,
-            final Double memory, final Double disk,
-            final Double processingCost,
-            final Double memoryCost,
-            final Double diskCost
+            final Double power, final Integer coreCount, final Double memory, final Double disk,
+            final Double processingCost, final Double memoryCost, final Double diskCost
     ) {
-        return this.anElement(
-                "characteristic", IconicoXML.NO_ATTRS, new Element[] {
-                        this.anElement("process",
-                                       "power", power,
-                                       "number", coreCount
-                        ),
-                        this.anElement("memory", "size", memory),
-                        this.anElement("hard_disk", "size", disk),
-                        this.anElement("cost", new Object[][] {
-                                { "cost_proc", processingCost },
-                                { "cost_mem", memoryCost },
-                                { "cost_disk", diskCost },
-                                }),
-                        }
-        );
+        return this.anElement("characteristic", IconicoXML.NO_ATTRS, new Element[] {
+                this.anElement("process", "power", power, "number", coreCount),
+                this.anElement("memory", "size", memory),
+                this.anElement("hard_disk", "size", disk),
+                this.anElement("cost", new Object[][] {
+                        { "cost_proc", processingCost },
+                        { "cost_mem", memoryCost },
+                        { "cost_disk", diskCost },
+                        }),
+                });
     }
 
     /**
@@ -515,18 +420,14 @@ public class IconicoXML {
      * built.
      */
     public void addMachine (
-            final Integer x, final Integer y,
-            final Integer localId, final Integer globalId, final String name,
-            final Double power, final Double occupancy,
-            final String scheduler, final String owner,
-            final Integer coreCount, final Double memory, final Double disk,
-            final boolean isMaster, final Collection<Integer> slaves,
-            final Double energy
+            final Integer x, final Integer y, final Integer localId, final Integer globalId, final String name,
+            final Double power, final Double occupancy, final String scheduler, final String owner,
+            final Integer coreCount, final Double memory, final Double disk, final boolean isMaster,
+            final Collection<Integer> slaves, final Double energy
     ) {
-        this.addMachineInner(x, y, localId, globalId, name,
-                             power, occupancy, scheduler, owner, coreCount, memory, disk,
-                             null, null, null, isMaster, slaves,
-                             new Object[][] { { "energy", energy } }, IconicoXML.NO_ATTRS
+        this.addMachineInner(
+                x, y, localId, globalId, name, power, occupancy, scheduler, owner, coreCount, memory, disk, null, null,
+                null, isMaster, slaves, new Object[][] { { "energy", energy } }, IconicoXML.NO_ATTRS
         );
     }
 
@@ -537,29 +438,20 @@ public class IconicoXML {
      * {@link #newCharacteristic(Double, Integer, Double, Double, Double, Double, Double)} for further info.
      */
     private Node newCharacteristic (
-            final Double power, final Integer coreCount,
-            final Double memory, final Double disk
+            final Double power, final Integer coreCount, final Double memory, final Double disk
     ) {
-        return this.anElement(
-                "characteristic", IconicoXML.NO_ATTRS, new Element[] {
-                        this.anElement("process",
-                                       "power", power,
-                                       "number", coreCount
-                        ),
-                        this.anElement("memory", "size", memory),
-                        this.anElement("hard_disk", "size", disk),
-                        });
+        return this.anElement("characteristic", IconicoXML.NO_ATTRS, new Element[] {
+                this.anElement("process", "power", power, "number", coreCount),
+                this.anElement("memory", "size", memory),
+                this.anElement("hard_disk", "size", disk),
+                });
     }
 
     /**
      * Create a simple element with just a name and one attribute
      */
-    private Element anElement (
-            final String name, final String key, final Object value
-    ) {
-        return this.anElement(name, new Object[][] {
-                { key, value },
-                });
+    private Element anElement (final String name, final String key, final Object value) {
+        return this.anElement(name, new Object[][] { { key, value }, });
     }
 
     /**
@@ -571,17 +463,14 @@ public class IconicoXML {
      * {@link #addMachine(Integer, Integer, Integer, Integer, String, Double, Double, String, String, Integer, Double, Double, boolean, Collection, Double)}.
      */
     public void addMachine (
-            final Integer x, final Integer y,
-            final Integer localId, final Integer globalId, final String name,
-            final Double power, final Double occupancy,
-            final String scheduler, final String owner,
-            final Integer coreCount, final Double memory, final Double disk,
-            final boolean isMaster, final Collection<Integer> slaves
+            final Integer x, final Integer y, final Integer localId, final Integer globalId, final String name,
+            final Double power, final Double occupancy, final String scheduler, final String owner,
+            final Integer coreCount, final Double memory, final Double disk, final boolean isMaster,
+            final Collection<Integer> slaves
     ) {
-        this.addMachineInner(x, y, localId, globalId, name,
-                             power, occupancy, scheduler, owner, coreCount, memory, disk,
-                             0.0, 0.0, 0.0, isMaster, slaves,
-                             IconicoXML.NO_ATTRS, IconicoXML.NO_ATTRS
+        this.addMachineInner(
+                x, y, localId, globalId, name, power, occupancy, scheduler, owner, coreCount, memory, disk, 0.0, 0.0,
+                0.0, isMaster, slaves, IconicoXML.NO_ATTRS, IconicoXML.NO_ATTRS
         );
     }
 
@@ -595,20 +484,16 @@ public class IconicoXML {
      * {@link #addMachine(Integer, Integer, Integer, Integer, String, Double, Double, String, String, Integer, Double, Double, boolean, Collection, Double)}.
      */
     public void addMachineIaaS (
-            final Integer x, final Integer y,
-            final Integer localId, final Integer globalId, final String name,
-            final Double power, final Double occupancy,
-            final String vmAlloc, final String scheduler, final String owner,
-            final Integer coreCount, final Double memory, final Double disk,
-            final Double costPerProcessing,
-            final Double costPerMemory,
-            final Double costPerDisk,
+            final Integer x, final Integer y, final Integer localId, final Integer globalId, final String name,
+            final Double power, final Double occupancy, final String vmAlloc, final String scheduler,
+            final String owner, final Integer coreCount, final Double memory, final Double disk,
+            final Double costPerProcessing, final Double costPerMemory, final Double costPerDisk,
             final boolean isMaster, final Collection<Integer> slaves
     ) {
-        this.addMachineInner(x, y, localId, globalId, name,
-                             power, occupancy, scheduler, owner, coreCount, memory, disk,
-                             costPerProcessing, costPerMemory, costPerDisk, isMaster, slaves,
-                             IconicoXML.NO_ATTRS, new Object[][] { { "vm_alloc", vmAlloc }, }
+        this.addMachineInner(
+                x, y, localId, globalId, name, power, occupancy, scheduler, owner, coreCount, memory, disk,
+                costPerProcessing, costPerMemory, costPerDisk, isMaster, slaves, IconicoXML.NO_ATTRS,
+                new Object[][] { { "vm_alloc", vmAlloc }, }
         );
     }
 
@@ -634,16 +519,11 @@ public class IconicoXML {
      *         'master' element, if the element is a master
      */
     private void addMachineInner (
-            final Integer x, final Integer y,
-            final Integer localId, final Integer globalId, final String name,
-            final Double power, final Double occupancy,
-            final String scheduler, final String owner,
-            final Integer coreCount, final Double memory, final Double disk,
-            final Double costPerProcessing,
-            final Double costPerMemory,
-            final Double costPerDisk,
-            final boolean isMaster, final Collection<Integer> slaves,
-            final Object[][] extraAttrs, final Object[][] extraMasterAttrs
+            final Integer x, final Integer y, final Integer localId, final Integer globalId, final String name,
+            final Double power, final Double occupancy, final String scheduler, final String owner,
+            final Integer coreCount, final Double memory, final Double disk, final Double costPerProcessing,
+            final Double costPerMemory, final Double costPerDisk, final boolean isMaster,
+            final Collection<Integer> slaves, final Object[][] extraAttrs, final Object[][] extraMasterAttrs
     ) {
         // Note: Arrays.asList returns a fixed-size list, which throws on .add()
         final var attrList = Arrays.stream(new Object[][] {
@@ -659,27 +539,20 @@ public class IconicoXML {
 
         if (costPerProcessing != null) {
             characteristic = this.newCharacteristic(
-                    power, coreCount, memory, disk,
-                    costPerProcessing, costPerMemory, costPerDisk
+                    power, coreCount, memory, disk, costPerProcessing, costPerMemory, costPerDisk
             );
         } else {
-            characteristic = this.newCharacteristic(
-                    power, coreCount, memory, disk
-            );
+            characteristic = this.newCharacteristic(power, coreCount, memory, disk);
         }
 
-        final var machine = this.anElement(
-                "machine", attrList.toArray(Object[][]::new), new Node[] {
-                        this.aPositionElement(x, y),
-                        this.anIconIdElement(globalId, localId),
-                        characteristic,
-                        }
-        );
+        final var machine = this.anElement("machine", attrList.toArray(Object[][]::new), new Node[] {
+                this.aPositionElement(x, y),
+                this.anIconIdElement(globalId, localId),
+                characteristic,
+                });
 
         if (isMaster) {
-            machine.appendChild(this.aMasterElement(
-                    scheduler, slaves, extraMasterAttrs
-            ));
+            machine.appendChild(this.aMasterElement(scheduler, slaves, extraMasterAttrs));
         }
 
         this.system.appendChild(machine);
@@ -693,9 +566,7 @@ public class IconicoXML {
      *         potential extra attributes to add to the element
      */
     private Element aMasterElement (
-            final String scheduler,
-            final Collection<Integer> slaves,
-            final Object[][] extraAttrs
+            final String scheduler, final Collection<Integer> slaves, final Object[][] extraAttrs
     ) {
         // Note: Arrays.asList returns a fixed-size list, which throws on .add()
         final var attrList = Arrays.stream(new Object[][] {
@@ -724,11 +595,8 @@ public class IconicoXML {
      * built.
      */
     public void addLink (
-            final int x0, final int y0,
-            final int x1, final int y1,
-            final int localId, final int globalId,
-            final String name, final double bandwidth,
-            final double linkLoad, final double latency,
+            final int x0, final int y0, final int x1, final int y1, final int localId, final int globalId,
+            final String name, final double bandwidth, final double linkLoad, final double latency,
             final int origination, final int destination
     ) {
         this.system.appendChild(this.anElement(
@@ -738,10 +606,7 @@ public class IconicoXML {
                         { "load", linkLoad },
                         { "latency", latency },
                         }, new Element[] {
-                        this.anElement("connect",
-                                       "origination", origination,
-                                       "destination", destination
-                        ),
+                        this.anElement("connect", "origination", origination, "destination", destination),
                         this.aPositionElement(x0, y0),
                         this.aPositionElement(x1, y1),
                         this.anIconIdElement(globalId, localId),
@@ -761,9 +626,8 @@ public class IconicoXML {
      * model being built.
      */
     public void addVirtualMachines (
-            final String id, final String owner, final String vmm,
-            final int power, final double memory, final double disk,
-            final String os
+            final String id, final String owner, final String vmm, final int power, final double memory,
+            final double disk, final String os
     ) {
         this.system.appendChild(this.anElement(
                 "virtualMac", new Object[][] {
@@ -787,10 +651,8 @@ public class IconicoXML {
      *         {@link #addLoadNo(String, String, String, Integer, Double, Double, Double, Double)}
      */
     public void setLoadRandom (
-            final int taskCount, final int arrivalTime,
-            final double compMax, final double compAvg,
-            final double compMin, final double compProb,
-            final double commMax, final double commAvg,
+            final int taskCount, final int arrivalTime, final double compMax, final double compAvg,
+            final double compMin, final double compProb, final double commMax, final double commAvg,
             final double commMin, final double commProb
     ) {
         this.addElementToLoad(this.anElement(
@@ -823,7 +685,7 @@ public class IconicoXML {
 
     private void createLoadIfNull () {
         if (this.load == null) {
-            this.load = this.doc.createElement("load");
+            this.load = this.document.createElement("load");
             this.system.appendChild(this.load);
         }
     }
@@ -837,12 +699,8 @@ public class IconicoXML {
      *         {@link #setLoadRandom(int, int, double, double, double, double, double, double, double, double)}.
      */
     public void addLoadNo (
-            final String application,
-            final String owner,
-            final String masterId,
-            final Integer taskCount,
-            final Double maxComp, final Double minComp,
-            final Double maxComm, final Double minComm
+            final String application, final String owner, final String masterId, final Integer taskCount,
+            final Double maxComp, final Double minComp, final Double maxComm, final Double minComm
     ) {
         this.addElementToLoad(this.anElement(
                 "node", new Object[][] {
@@ -873,9 +731,7 @@ public class IconicoXML {
      *         {@link #setLoadRandom(int, int, double, double, double, double, double, double, double, double)} or
      *         {@link #addLoadNo(String, String, String, Integer, Double, Double, Double, Double)}
      */
-    public void setLoadTrace (
-            final String file, final int tasks, final String format
-    ) {
+    public void setLoadTrace (final String file, final int tasks, final String format) {
         this.addElementToLoad(this.anElement(
                 "trace", new Object[][] {
                         { "file_path", file },
@@ -889,18 +745,6 @@ public class IconicoXML {
      * Get {@link Document} with iconic model generated.
      */
     public Document getDescricao () {
-        return this.doc.document;
-    }
-
-    private static class CloningEntityResolver implements EntityResolver {
-
-        private final InputSource substitute = new InputSource(
-                IconicoXML.class.getResourceAsStream("iSPD.dtd"));
-
-        public InputSource resolveEntity (
-                final String publicId, final String systemId
-        ) {
-            return this.substitute;
-        }
+        return this.document.document;
     }
 }
