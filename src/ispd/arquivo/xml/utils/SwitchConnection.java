@@ -13,7 +13,8 @@ import ispd.motor.filas.servidores.implementacao.CS_VMM;
  * @see ispd.arquivo.xml.models.builders.QueueNetworkBuilder
  * @see ispd.arquivo.xml.models.builders.CloudQueueNetworkBuilder
  */
-public class SwitchConnection {
+public enum SwitchConnection {
+    ;
 
     /**
      * Connect switch to master
@@ -21,7 +22,7 @@ public class SwitchConnection {
     public static void toMaster (final CS_Switch theSwitch, final CS_Mestre master) {
         master.addConexoesEntrada(theSwitch);
         master.addConexoesSaida(theSwitch);
-        SwitchConnection.connectSwitchToServiceCenter(theSwitch, master);
+        connectSwitchToServiceCenter(theSwitch, master);
     }
 
     private static void connectSwitchToServiceCenter (final CS_Switch theSwitch, final CentroServico serviceCenter) {
@@ -35,7 +36,7 @@ public class SwitchConnection {
     public static void toMachine (final CS_Switch theSwitch, final CS_Maquina machine) {
         machine.addConexoesSaida(theSwitch);
         machine.addConexoesEntrada(theSwitch);
-        SwitchConnection.connectSwitchToServiceCenter(theSwitch, machine);
+        connectSwitchToServiceCenter(theSwitch, machine);
     }
 
     /**
