@@ -2,13 +2,16 @@
   <code_scheme name="Project" version="173">
     <option name="ENABLE_SECOND_REFORMAT" value="true" />
     <JavaCodeStyleSettings>
+      <option name="GENERATE_FINAL_LOCALS" value="true" />
+      <option name="GENERATE_FINAL_PARAMETERS" value="true" />
+      <option name="REPLACE_INSTANCEOF_AND_CAST" value="true" />
       <option name="SPACE_BEFORE_OPENING_ANGLE_BRACKET_IN_TYPE_PARAMETER" value="true" />
       <option name="ANNOTATION_PARAMETER_WRAP" value="1" />
       <option name="ALIGN_MULTILINE_ANNOTATION_PARAMETERS" value="true" />
       <option name="NEW_LINE_AFTER_LPAREN_IN_ANNOTATION" value="true" />
       <option name="RPAREN_ON_NEW_LINE_IN_ANNOTATION" value="true" />
       <option name="ALIGN_MULTILINE_TEXT_BLOCKS" value="true" />
-      <option name="USE_FQ_CLASS_NAMES" value="true" />
+      <option name="CLASS_NAMES_IN_JAVADOC" value="3" />
       <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
       <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
       <option name="PACKAGES_TO_USE_IMPORT_ON_DEMAND">

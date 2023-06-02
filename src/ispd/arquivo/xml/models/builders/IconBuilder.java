@@ -16,14 +16,14 @@ import ispd.gui.iconico.grade.Machine;
  * @see WrappedElement
  * @see GridItem
  */
-/* package-private */ class IconBuilder {
+public enum IconBuilder {
+    ;
 
     /**
      * @return link icon from given element, with given origination and
      *         destination
      */
-    /* package-private */
-    static Link aLink (final WrappedElement e, final Vertex origination, final Vertex destination) {
+    public static Link aLink (final WrappedElement e, final Vertex origination, final Vertex destination) {
         final var link = new Link(origination, destination, e.iconId().local(), e.globalIconId());
 
         link.setSelected(false);
@@ -39,15 +39,14 @@ import ispd.gui.iconico.grade.Machine;
     /**
      * @return cluster icon from given element
      */
-    /* package-private */
-    static Cluster aCluster (final WrappedElement e) {
+    public static Cluster aCluster (final WrappedElement e) {
         final var info = IconInfo.fromElement(e);
 
         final var cluster = new Cluster(info.x(), info.y(), info.localId(), info.globalId(), e.power());
 
         cluster.getId().setName(e.id());
         cluster.setComputationalPower(e.power());
-        IconBuilder.setProcessingCenterCharacteristics(cluster, e);
+        setProcessingCenterCharacteristics(cluster, e);
         cluster.setSlaveCount(e.nodes());
         cluster.setBandwidth(e.bandwidth());
         cluster.setLatency(e.latency());
@@ -66,7 +65,7 @@ import ispd.gui.iconico.grade.Machine;
 
         final var characteristic = e.characteristics();
 
-        if (item instanceof Cluster cluster) {
+        if (item instanceof final Cluster cluster) {
             cluster.setComputationalPower(characteristic.processor().power());
             cluster.setCoreCount(characteristic.processor().number());
             cluster.setRam(characteristic.memory().size());
@@ -82,7 +81,7 @@ import ispd.gui.iconico.grade.Machine;
             cluster.setCostPerMemory(co.costMemory());
             cluster.setCostPerDisk(co.costDisk());
 
-        } else if (item instanceof Machine machine) {
+        } else if (item instanceof final Machine machine) {
             machine.setComputationalPower(characteristic.processor().power());
             machine.setCoreCount(characteristic.processor().number());
             machine.setRam(characteristic.memory().size());
@@ -103,8 +102,7 @@ import ispd.gui.iconico.grade.Machine;
     /**
      * @return internet icon from given element
      */
-    /* package-private */
-    static Internet anInternet (final WrappedElement e) {
+    public static Internet anInternet (final WrappedElement e) {
         final var info = IconInfo.fromElement(e);
 
         final Internet net = new Internet(info.x(), info.y(), info.localId(), info.globalId());
@@ -120,15 +118,14 @@ import ispd.gui.iconico.grade.Machine;
     /**
      * @return machine icon from given element
      */
-    /* package-private */
-    static Machine aMachine (final WrappedElement m) {
+    public static Machine aMachine (final WrappedElement m) {
         final var info = IconInfo.fromElement(m);
 
         final var machine = new Machine(info.x(), info.y(), info.localId(), info.globalId(), m.energy());
 
         machine.getId().setName(m.id());
         machine.setComputationalPower(m.power());
-        IconBuilder.setProcessingCenterCharacteristics(machine, m);
+        setProcessingCenterCharacteristics(machine, m);
         machine.setLoadFactor(m.load());
         machine.setOwner(m.owner());
         return machine;

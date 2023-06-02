@@ -72,32 +72,6 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
     }
 
     /**
-     * Build and process the cloud machine represented by the {@link WrappedElement} {@code e}. Since the machine may
-     * or may not be a master, it can be added to either the collection of {@link #virtualMachineMasters} or
-     * {@link #cloudMachines}.
-     *
-     * @param e
-     *         {@link WrappedElement} representing a {@link CS_Processamento}.
-     *
-     * @return The interpreted {@link CS_Processamento} from the given {@link WrappedElement}. May either be a
-     *         {@link CS_VMM} or a {@link CS_MaquinaCloud}.
-     */
-    @Override
-    protected CS_Processamento makeAndAddMachine (final WrappedElement e) {
-        final CS_Processamento machine;
-
-        if (e.hasMasterAttribute()) {
-            machine = ServiceCenterBuilder.aVirtualMachineMaster(e);
-            this.virtualMachineMasters.add(machine);
-        } else {
-            machine = ServiceCenterBuilder.aCloudMachine(e);
-            this.cloudMachines.add((CS_MaquinaCloud) machine);
-        }
-
-        return machine;
-    }
-
-    /**
      * Process the represented cluster in {@link WrappedElement} very
      * similarly to the superclass, but adapted to take into account cloud
      * machines and virtual machines.
@@ -158,6 +132,32 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
     }
 
     /**
+     * Build and process the cloud machine represented by the {@link WrappedElement} {@code e}. Since the machine may
+     * or may not be a master, it can be added to either the collection of {@link #virtualMachineMasters} or
+     * {@link #cloudMachines}.
+     *
+     * @param e
+     *         {@link WrappedElement} representing a {@link CS_Processamento}.
+     *
+     * @return The interpreted {@link CS_Processamento} from the given {@link WrappedElement}. May either be a
+     *         {@link CS_VMM} or a {@link CS_MaquinaCloud}.
+     */
+    @Override
+    protected CS_Processamento makeAndAddMachine (final WrappedElement e) {
+        final CS_Processamento machine;
+
+        if (e.hasMasterAttribute()) {
+            machine = ServiceCenterBuilder.aVirtualMachineMaster(e);
+            this.virtualMachineMasters.add(machine);
+        } else {
+            machine = ServiceCenterBuilder.aCloudMachine(e);
+            this.cloudMachines.add((CS_MaquinaCloud) machine);
+        }
+
+        return machine;
+    }
+
+    /**
      * Differences from the overridden method:
      * <ul>
      *     <li>Always interprets {@code master} as an instance of
@@ -172,9 +172,7 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
      *         <b>slave</b> {@link CentroServico}.
      */
     @Override
-    protected void addSlavesToProcessingCenter (
-            final CS_Processamento master, final CentroServico slave
-    ) {
+    protected void addSlavesToProcessingCenter (final CS_Processamento master, final CentroServico slave) {
         final var theMaster = (CS_VMM) master;
         if (slave instanceof CS_Processamento proc) {
             theMaster.addEscravo(proc);

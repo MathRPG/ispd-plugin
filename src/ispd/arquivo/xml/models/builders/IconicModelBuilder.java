@@ -84,7 +84,7 @@ public class IconicModelBuilder {
 
         final var link = IconBuilder.aLink(e, origination, destination);
 
-        IconicModelBuilder.connectLinkAndVertices(link, (GridItem) origination, (GridItem) destination);
+        connectLinkAndVertices(link, (GridItem) origination, (GridItem) destination);
 
         return link;
     }

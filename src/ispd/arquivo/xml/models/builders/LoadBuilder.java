@@ -18,7 +18,8 @@ import ispd.utils.SequentialIntSupplier;
  * Converts XML docs with simulation workload configuration into
  * {@link WorkloadGenerator} objects, usable in the simulation motor.
  */
-public class LoadBuilder {
+public enum LoadBuilder {
+    ;
 
     /**
      * Attempts to find and convert workload configuration info from the given
@@ -35,7 +36,7 @@ public class LoadBuilder {
      * @see ispd.arquivo.xml.IconicoXML
      * @see WorkloadGenerator
      */
-    public static Optional<? extends WorkloadGenerator> build (final WrappedDocument doc) {
+    public static Optional<WorkloadGenerator> build (final WrappedDocument doc) {
         final var load = doc.loads().findFirst();
 
         if (load.isEmpty()) {
@@ -52,7 +53,7 @@ public class LoadBuilder {
             return randomLoad;
         }
 
-        final var nodeLoad = LoadBuilder.nodeLoadsFromElement(c);
+        final var nodeLoad = nodeLoadsFromElement(c);
 
         if (nodeLoad.isPresent()) {
             return nodeLoad;
@@ -63,7 +64,7 @@ public class LoadBuilder {
                 .map(LoadBuilder::traceLoadFromElement);
     }
 
-    private static GlobalWorkloadGenerator randomLoadFromElement (final WrappedElement e) {
+    private static WorkloadGenerator randomLoadFromElement (final WrappedElement e) {
         final var computation = e
                 .makeTwoStageFromInnerSizes(WrappedElement::isComputingType, WrappedElement::toTwoStageUniform);
 
@@ -73,11 +74,11 @@ public class LoadBuilder {
         return new GlobalWorkloadGenerator(e.tasks(), e.arrivalTime(), computation, communication);
     }
 
-    private static Optional<CollectionWorkloadGenerator> nodeLoadsFromElement (final WrappedElement e) {
+    private static Optional<WorkloadGenerator> nodeLoadsFromElement (final WrappedElement e) {
         final var idSupplier = new SequentialIntSupplier();
 
         final var nodeLoads = e.nodeLoads()
-                               .map(el -> LoadBuilder.nodeLoadFromElement(el, idSupplier))
+                               .map(el -> nodeLoadFromElement(el, idSupplier))
                                .map(WorkloadGenerator.class::cast)
                                .toList();
 
@@ -88,7 +89,7 @@ public class LoadBuilder {
         return Optional.of(new CollectionWorkloadGenerator(WorkloadGeneratorType.PER_NODE, nodeLoads));
     }
 
-    private static TraceFileWorkloadGenerator traceLoadFromElement (final WrappedElement e) {
+    private static WorkloadGenerator traceLoadFromElement (final WrappedElement e) {
         final var file = new File(e.filePath());
 
         if (file.exists()) {
@@ -98,14 +99,14 @@ public class LoadBuilder {
         return null;
     }
 
-    private static PerNodeWorkloadGenerator nodeLoadFromElement (final WrappedElement e, final IntSupplier idSupplier) {
+    private static WorkloadGenerator nodeLoadFromElement (final WrappedElement e, final IntSupplier idSupplier) {
         final var computation = e
                 .makeTwoStageFromInnerSizes(WrappedElement::isComputingType, WrappedElement::toUniformDistribution);
 
         final var communication = e
                 .makeTwoStageFromInnerSizes(WrappedElement::isCommunicationType, WrappedElement::toUniformDistribution);
 
-        return new PerNodeWorkloadGenerator(
-                e.application(), e.owner(), e.masterId(), e.tasks(), computation, communication, idSupplier);
+        return new PerNodeWorkloadGenerator(e.application(), e.owner(), e.masterId(), e.tasks(), computation,
+                                            communication, idSupplier);
     }
 }
