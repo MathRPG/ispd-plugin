@@ -7,8 +7,10 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.w3c.dom.Document;
 
+import java.awt.Color;
 import java.io.File;
 import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
@@ -50,7 +52,7 @@ public class TerminalApplication implements Application {
      *         Arguments from the command line.
      */
     public TerminalApplication (final String[] args) {
-        this.options = ispd.application.terminal.TerminalApplication.getAllOptions();
+        this.options = getAllOptions();
         final var cmd = this.commandLinePreparation(this.options, args);
 
         this.mode          = this.setMode(cmd);
@@ -62,7 +64,7 @@ public class TerminalApplication implements Application {
         this.parallel      = this.setParallelSimulation(cmd);
         this.serverAddress = this.setServerAddress(cmd);
 
-        this.simulationProgress = new ispd.application.terminal.TerminalApplication.SilentSimulationProgress();
+        this.simulationProgress = new SilentSimulationProgress();
 
         if ((this.mode == Modes.CLIENT || this.mode == Modes.SIMULATE) && this.inputFile.isEmpty()) {
             System.out.println("It needs a model to simulate.");
@@ -143,8 +145,7 @@ public class TerminalApplication implements Application {
      * @return A value from the command line or the default port.
      */
     private int setPort (final CommandLine cmd) {
-        return cmd.hasOption("P") ? this.setValueFromOption(cmd, "P")
-                                  : ispd.application.terminal.TerminalApplication.DEFAULT_PORT;
+        return cmd.hasOption("P") ? this.setValueFromOption(cmd, "P") : TerminalApplication.DEFAULT_PORT;
     }
 
     /**
@@ -239,11 +240,11 @@ public class TerminalApplication implements Application {
     private Inet4Address setServerAddress (final CommandLine cmd) {
         try {
             if (!cmd.hasOption("a")) {
-                return (Inet4Address) java.net.InetAddress.getByName("127.0.0.1");
+                return (Inet4Address) InetAddress.getByName("127.0.0.1");
             }
-            return (Inet4Address) java.net.InetAddress.getByName(cmd.getOptionValue("a"));
+            return (Inet4Address) InetAddress.getByName(cmd.getOptionValue("a"));
         } catch (final UnknownHostException e) {
-            System.out.println("Error at getting the server address from " + "command line. (" + e.getMessage() + ")");
+            System.out.printf("Error at getting the server address from command line. (%s)%n", e.getMessage());
             System.exit(1);
             throw new AssertionError("should not be reached");
         }
@@ -263,7 +264,7 @@ public class TerminalApplication implements Application {
         try {
             return Integer.parseInt(cmd.getOptionValue(op));
         } catch (final NumberFormatException e) {
-            System.out.println("\"" + cmd.getOptionValue(op) + "\" is not a valid number");
+            System.out.printf("\"%s\" is not a valid number%n", cmd.getOptionValue(op));
             System.exit(1);
             throw new AssertionError("should not be reached");
         }
@@ -292,7 +293,7 @@ public class TerminalApplication implements Application {
                     if (file.getName().endsWith(".imsx") && file.exists()) {
                         this.runNSimulations();
                     } else {
-                        System.out.println("iSPD can not open the file: " + file.getName());
+                        System.out.printf("iSPD can not open the file: %s%n", file.getName());
                     }
                 }
             }
@@ -314,14 +315,14 @@ public class TerminalApplication implements Application {
         final var      metrics       = new Metricas(IconicoXML.newListUsers(model));
         double         totalDuration = 0.0;
         for (int i = 1; i <= this.nExecutions; i++) {
-            System.out.println("* Simulation " + i);
+            System.out.printf("* Simulation %d%n", i);
 
             final double preSimInstant    = System.currentTimeMillis();
             final var    simMetric        = this.runASimulation(model);
             final double postSimInstant   = System.currentTimeMillis();
             final double totalSimDuration = (postSimInstant - preSimInstant) / 1000.0;
 
-            System.out.println("Simulation Execution Time = " + totalSimDuration + "seconds");
+            System.out.printf("Simulation Execution Time = %f seconds%n", totalSimDuration);
 
             totalDuration += totalSimDuration;
             metrics.addMetrica(simMetric);
@@ -460,7 +461,6 @@ public class TerminalApplication implements Application {
                 final var simServer    = new Server(this.serverPort);
                 final var newModel     = simServer.getMetricsFromClient();
                 final var modelMetrics = this.runASimulation(newModel);
-
                 simServer.returnMetricsToClient(modelMetrics);
             } catch (final UnknownHostException e) {
                 throw new RuntimeException(e);
@@ -501,7 +501,7 @@ public class TerminalApplication implements Application {
         }
 
         @Override
-        public void print (final String text, final java.awt.Color cor) {
+        public void print (final String text, final Color cor) {
         }
     }
 }
