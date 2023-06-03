@@ -18,15 +18,17 @@ public class ClusterTableIaaS extends AbstractTableModel {
     private static final int               COLUMN_COUNT         = 2;
     private static final String[]          EMPTY_COMBO_BOX_LIST = {};
     private final        JComboBox<Object> schedulers           =
-            ClusterTableIaaS.makeComboBox(CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
-                                          "Select the task scheduling policy"
+            makeComboBox(
+                    CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+                    "Select the task scheduling policy"
             );
     private final        JComboBox<Object> users                =
-            ClusterTableIaaS.makeComboBox(ClusterTableIaaS.EMPTY_COMBO_BOX_LIST, "Select the resource owner");
-    private final        JComboBox<Object> vmmPolicies          = ClusterTableIaaS.makeComboBox(
-            VmAllocationPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
-            "Select the virtual machine allocation policy"
-    );
+            makeComboBox(ClusterTableIaaS.EMPTY_COMBO_BOX_LIST, "Select the resource owner");
+    private final        JComboBox<Object> vmmPolicies          =
+            makeComboBox(
+                    VmAllocationPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+                    "Select the virtual machine allocation policy"
+            );
     private              Cluster           cluster              = null;
     private              ResourceBundle    words;
 
@@ -34,9 +36,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
         this.words = words;
     }
 
-    private static JComboBox<Object> makeComboBox (
-            final String[] comboBoxArg, final String toolTipText
-    ) {
+    private static JComboBox<Object> makeComboBox (final String[] comboBoxArg, final String toolTipText) {
         final var comboBox = new JComboBox<Object>(comboBoxArg);
         comboBox.setToolTipText(toolTipText);
         return comboBox;
@@ -68,14 +68,18 @@ public class ClusterTableIaaS extends AbstractTableModel {
         switch (columnIndex) {
             case ClusterTableIaaS.TYPE:
                 final var name = this.nameForRow(rowIndex);
-                if (name != null) {return name;}
+                if (name != null) {
+                    return name;
+                }
             case ClusterTableIaaS.VALUE:
                 if (this.cluster == null) {
                     return this.comboBoxForRow(rowIndex);
                 }
 
                 final var obj = this.objectAtRow(rowIndex);
-                if (obj != null) {return obj;}
+                if (obj != null) {
+                    return obj;
+                }
             default:
                 throw new IndexOutOfBoundsException("columnIndex out of bounds");
         }

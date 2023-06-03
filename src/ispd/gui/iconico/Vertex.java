@@ -59,9 +59,7 @@ public abstract class Vertex implements Icon {
      * @param selected
      *         whether the icon is selected
      */
-    protected Vertex (
-            final Integer x, final Integer y, final boolean selected
-    ) {
+    protected Vertex (final Integer x, final Integer y, final boolean selected) {
         this.x        = x;
         this.y        = y;
         this.selected = selected;
@@ -72,7 +70,7 @@ public abstract class Vertex implements Icon {
      *
      * @return the base x-coordinate
      */
-    /* package-private */ int getBaseX () {
+    public int getBaseX () {
         return this.baseX;
     }
 
@@ -81,7 +79,7 @@ public abstract class Vertex implements Icon {
      *
      * @return the base y-coordinate
      */
-    /* package-private */ int getBaseY () {
+    public int getBaseY () {
         return this.baseY;
     }
 
@@ -94,9 +92,7 @@ public abstract class Vertex implements Icon {
      * @param y
      *         the base y-coordinate
      */
-    /* package-private */ void setBase (
-            final Integer x, final Integer y
-    ) {
+    public void setBase (final Integer x, final Integer y) {
         this.baseX = x;
         this.baseY = y;
     }
@@ -109,9 +105,7 @@ public abstract class Vertex implements Icon {
      * @param y
      *         the y-coordinate
      */
-    public void setPosition (
-            final Integer x, final Integer y
-    ) {
+    public void setPosition (final Integer x, final Integer y) {
         this.x = x;
         this.y = y;
     }

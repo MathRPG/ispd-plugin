@@ -42,31 +42,26 @@ import ispd.motor.workload.impl.TraceFileWorkloadGenerator;
 
 public class DesenhoGrade extends DrawingArea {
 
-    public static final int MACHINE  = 1;
-    public static final int NETWORK  = 2;
-    public static final int CLUSTER  = 3;
-    public static final int INTERNET = 4;
-    /* package-private */ static final Image machineIcon  =
-            DesenhoGrade.getImage("imagens/botao_no.gif");
-    /* package-private */ static final Image clusterIcon  =
-            DesenhoGrade.getImage("imagens/botao_cluster.gif");
-    /* package-private */ static final Image internetIcon =
-            DesenhoGrade.getImage("imagens/botao_internet.gif");
-    /* package-private */ static final Image greenIcon    =
-            DesenhoGrade.getImage("imagens/verde.png");
-    /* package-private */ static final Image redIcon      =
-            DesenhoGrade.getImage("imagens/vermelho.png");
+    public static final  int                     MACHINE                        = 1;
+    public static final  int                     NETWORK                        = 2;
+    public static final  int                     CLUSTER                        = 3;
+    public static final  int                     INTERNET                       = 4;
+    public static final  Image                   MACHINE_ICON                   = getImage("imagens/botao_no.gif");
+    public static final  Image                   CLUSTER_ICON                   = getImage("imagens/botao_cluster.gif");
+    public static final  Image                   INTERNET_ICON                  =
+            getImage("imagens/botao_internet.gif");
+    public static final  Image                   GREEN_ICON                     = getImage("imagens/verde.png");
+    public static final  Image                   RED_ICON                       = getImage("imagens/vermelho.png");
     private static final Color                   WHITE                          = new Color(255, 255, 255);
     private static final Color                   ALMOST_WHITE                   = new Color(220, 220, 220);
     private static final int                     SOME_OFFSET                    = 50;
     private static final double                  FULL_CAPACITY                  = 100.0;
-    //Objetos do cursor
     private final        Cursor                  crossHairCursor                = new Cursor(Cursor.CROSSHAIR_CURSOR);
     private final        Cursor                  normalCursor                   = new Cursor(Cursor.DEFAULT_CURSOR);
-    // (GRID, IAAS ou PAAS)
     private              ResourceBundle          translator                     =
             ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
     private              int                     modelType                      = PickModelTypeDialog.GRID;
+    // (GRID, IAAS ou PAAS)
     private              HashSet<String>         users;
     private              HashMap<String, Double> profiles;
     private              WorkloadGenerator       loadConfiguration              = null;
@@ -94,7 +89,7 @@ public class DesenhoGrade extends DrawingArea {
     }
 
     private static Image getImage (final String name) {
-        return new ImageIcon(DesenhoGrade.getResource(name)).getImage();
+        return new ImageIcon(getResource(name)).getImage();
     }
 
     private static URL getResource (final String name) {
@@ -192,11 +187,8 @@ public class DesenhoGrade extends DrawingArea {
             return;
         }
 
-        final var copy =
-                ((GridItem) this.copiedIcon).makeCopy(this.getPosicaoMouseX(),
-                                                      this.getPosicaoMouseY(), this.iconCount,
-                                                      this.vertexCount
-                );
+        final var copy = ((GridItem) this.copiedIcon)
+                .makeCopy(this.getPosicaoMouseX(), this.getPosicaoMouseY(), this.iconCount, this.vertexCount);
         this.vertices.add((Vertex) copy);
         copy.getId();
         this.iconCount++;
@@ -212,10 +204,8 @@ public class DesenhoGrade extends DrawingArea {
         //Não copia conexão de rede
         if (this.selectedIcons.isEmpty()) {
             final String text = "WARNING";
-            JOptionPane.showMessageDialog(null, this.translate(
-                                                  "No icon selected."),
-                                          this.translate(text),
-                                          JOptionPane.WARNING_MESSAGE
+            JOptionPane.showMessageDialog(
+                    null, this.translate("No icon selected."), this.translate(text), JOptionPane.WARNING_MESSAGE
             );
         } else if (this.selectedIcons.size() == 1) {
             final Icon item = this.selectedIcons.iterator().next();
@@ -237,9 +227,7 @@ public class DesenhoGrade extends DrawingArea {
             final Link link = (Link) this.selectedIcons.iterator().next();
             this.selectedIcons.remove(link);
             link.setSelected(false);
-            final Link temp = link.makeCopy(0, 0, this.iconCount,
-                                            this.edgeCount
-            );
+            final Link temp = link.makeCopy(0, 0, this.iconCount, this.edgeCount);
             this.edgeCount++;
             this.iconCount++;
             temp.setPosition(link.getDestination(), link.getSource());
@@ -247,9 +235,7 @@ public class DesenhoGrade extends DrawingArea {
             ((GridItem) temp.getDestination()).getOutboundConnections().add(temp);
             this.selectedIcons.add(temp);
             this.edges.add(temp);
-            this.mainWindow.appendNotificacao(this.translate("Network " +
-                                                             "connection " +
-                                                             "added."));
+            this.mainWindow.appendNotificacao(this.translate("Network connection added."));
             this.mainWindow.modificar();
             this.setLabelAtributos(temp);
         }
@@ -258,12 +244,8 @@ public class DesenhoGrade extends DrawingArea {
     @Override
     public void botaoIconeActionPerformed (final ActionEvent evt) {
         if (this.selectedIcons.isEmpty()) {
-            JOptionPane.showMessageDialog(null, this.translate("No icon " +
-                                                               "selected" +
-                                                               "."),
-                                          this.translate("WARNING"),
-                                          JOptionPane.WARNING_MESSAGE
-            );
+            JOptionPane.showMessageDialog(
+                    null, this.translate("No icon selected."), this.translate("WARNING"), JOptionPane.WARNING_MESSAGE);
         } else {
             final int opcao = JOptionPane.showConfirmDialog(
                     null,
@@ -275,27 +257,22 @@ public class DesenhoGrade extends DrawingArea {
             if (opcao == JOptionPane.YES_OPTION) {
                 for (final Icon iconeRemover : this.selectedIcons) {
                     if (iconeRemover instanceof Edge) {
-                        final GridItem or =
-                                (GridItem) ((Edge) iconeRemover).getSource();
+                        final GridItem or = (GridItem) ((Edge) iconeRemover).getSource();
                         or.getOutboundConnections().remove((GridItem) iconeRemover);
-                        final GridItem de =
-                                (GridItem) ((Edge) iconeRemover).getDestination();
+                        final GridItem de = (GridItem) ((Edge) iconeRemover).getDestination();
                         de.getInboundConnections().remove((GridItem) iconeRemover);
                         ((GridItem) iconeRemover).getId();
                         this.edges.remove((Edge) iconeRemover);
                         this.mainWindow.modificar();
                     } else {
-                        final int cont = 0;
                         //Remover dados das conexoes q entram
-                        Set<GridItem> listanos =
-                                ((GridItem) iconeRemover).getInboundConnections();
+                        Set<GridItem> listanos = ((GridItem) iconeRemover).getInboundConnections();
                         for (final GridItem I : listanos) {
                             this.edges.remove((Edge) I);
                             I.getId();
                         }
                         //Remover dados das conexoes q saem
-                        listanos =
-                                ((GridItem) iconeRemover).getOutboundConnections();
+                        listanos = ((GridItem) iconeRemover).getOutboundConnections();
                         for (final GridItem I : listanos) {
                             this.edges.remove((Edge) I);
                             I.getId();
@@ -312,9 +289,7 @@ public class DesenhoGrade extends DrawingArea {
 
     @Override
     public void adicionarAresta (final Vertex Origem, final Vertex Destino) {
-        final Link link = new Link(Origem, Destino, this.edgeCount,
-                                   this.iconCount
-        );
+        final Link link = new Link(Origem, Destino, this.edgeCount, this.iconCount);
         ((GridItem) Origem).getOutboundConnections().add(link);
         ((GridItem) Destino).getInboundConnections().add(link);
         this.edgeCount++;
@@ -325,10 +300,7 @@ public class DesenhoGrade extends DrawingArea {
         }
         this.selectedIcons.clear();
         this.selectedIcons.add(link);
-        this.mainWindow.appendNotificacao(this.translate("Network " +
-                                                         "connection" +
-                                                         " " +
-                                                         "added."));
+        this.mainWindow.appendNotificacao(this.translate("Network connection added."));
         this.mainWindow.modificar();
         this.setLabelAtributos(link);
     }
@@ -337,8 +309,7 @@ public class DesenhoGrade extends DrawingArea {
     public void showActionIcon (final MouseEvent me, final Icon icon) {
         this.mainWindow.modificar();
         if (icon instanceof Machine || icon instanceof Cluster) {
-            this.mainWindow.getjPanelConfiguracao().setIcone((GridItem) icon
-                    , this.users, this.modelType);
+            this.mainWindow.getjPanelConfiguracao().setIcone((GridItem) icon, this.users, this.modelType);
             JOptionPane.showMessageDialog(
                     this.mainWindow,
                     this.mainWindow.getjPanelConfiguracao(),
@@ -367,26 +338,19 @@ public class DesenhoGrade extends DrawingArea {
         GridItem vertice = null;
         switch (this.vertexType) {
             case DesenhoGrade.MACHINE -> {
-                vertice = new Machine(x, y, this.vertexCount, this.iconCount,
-                                      0.0
-                );
+                vertice = new Machine(x, y, this.vertexCount, this.iconCount, 0.0);
                 vertice.getId();
-                this.mainWindow.appendNotificacao(this.translate(
-                        "Machine icon added."));
+                this.mainWindow.appendNotificacao(this.translate("Machine icon added."));
             }
             case DesenhoGrade.CLUSTER -> {
-                vertice = new Cluster(x, y,
-                                      this.vertexCount, this.iconCount, 0.0
-                );
+                vertice = new Cluster(x, y, this.vertexCount, this.iconCount, 0.0);
                 vertice.getId();
-                this.mainWindow.appendNotificacao(this.translate(
-                        "Cluster icon added."));
+                this.mainWindow.appendNotificacao(this.translate("Cluster icon added."));
             }
             case DesenhoGrade.INTERNET -> {
                 vertice = new Internet(x, y, this.vertexCount, this.iconCount);
                 vertice.getId();
-                this.mainWindow.appendNotificacao(this.translate(
-                        "Internet icon added."));
+                this.mainWindow.appendNotificacao(this.translate("Internet icon added."));
             }
         }
         if (vertice != null) {
@@ -403,14 +367,12 @@ public class DesenhoGrade extends DrawingArea {
         final StringBuilder text = new StringBuilder("<html>");
         text.append(icon.makeDescription(this.translator));
         if (this.shouldPrintDirectConnections && icon instanceof Vertex) {
-            text.append("<br>").append(this.translate("Output " +
-                                                      "Connection:"));
+            text.append("<br>").append(this.translate("Output Connection:"));
             for (final GridItem i : icon.getOutboundConnections()) {
                 final GridItem saida = (GridItem) ((Edge) i).getDestination();
                 text.append("<br>").append(saida.getId().getName());
             }
-            text.append("<br>").append(this.translate("Input " +
-                                                      "Connection:"));
+            text.append("<br>").append(this.translate("Input Connection:"));
             for (final GridItem i : icon.getInboundConnections()) {
                 final GridItem entrada = (GridItem) ((Edge) i).getSource();
                 text.append("<br>").append(entrada.getId().getName());
@@ -418,42 +380,34 @@ public class DesenhoGrade extends DrawingArea {
         }
         if (this.shouldPrintDirectConnections && icon instanceof Edge) {
             for (final GridItem i : icon.getInboundConnections()) {
-                text.append("<br>").append(this.translate("Source " +
-                                                          "Node:")).append(" "
-                ).append(i.getInboundConnections());
+                text.append("<br>").append(this.translate("Source Node:")).append(" ")
+                    .append(i.getInboundConnections());
             }
             for (final GridItem i : icon.getInboundConnections()) {
-                text.append("<br>").append(this.translate("Destination" +
-                                                          " " +
-                                                          "Node:")).append(" ").append(i.getOutboundConnections());
+                text.append("<br>").append(this.translate("Destination Node:")).append(" ")
+                    .append(i.getOutboundConnections());
             }
         }
         if (this.shouldPrintIndirectConnections && icon instanceof final Machine I) {
             final Set<GridItem> listaEntrada = I.connectedInboundNodes();
             final Set<GridItem> listaSaida   = I.connectedOutboundNodes();
-            text.append("<br>").append(this.translate("Output Nodes " +
-                                                      "Indirectly " +
-                                                      "Connected:"));
+            text.append("<br>").append(this.translate("Output Nodes Indirectly Connected:"));
             for (final GridItem i : listaSaida) {
                 text.append("<br>").append(i.getId().getGlobalId());
             }
-            text.append("<br>").append(this.translate("Input Nodes " +
-                                                      "Indirectly " +
-                                                      "Connected:"));
+            text.append("<br>").append(this.translate("Input Nodes Indirectly Connected:"));
             for (final GridItem i : listaEntrada) {
                 text.append("<br>").append(i.getId().getGlobalId());
             }
         }
         if (this.shouldPrintSchedulableNodes && icon instanceof final Machine I) {
-            text.append("<br>").append(this.translate("Schedulable " +
-                                                      "Nodes:"));
+            text.append("<br>").append(this.translate("Schedulable Nodes:"));
             for (final GridItem i : I.connectedSchedulableNodes()) {
                 text.append("<br>").append(i.getId().getGlobalId());
             }
             if (I.isMaster()) {
                 final List<GridItem> escravos = ((Machine) icon).getSlaves();
-                text.append("<br>").append(this.translate("Slave " +
-                                                          "Nodes:"));
+                text.append("<br>").append(this.translate("Slave Nodes:"));
                 for (final GridItem i : escravos) {
                     text.append("<br>").append(i.getId().getName());
                 }
@@ -464,18 +418,15 @@ public class DesenhoGrade extends DrawingArea {
     }
 
     public String makeDescriptiveModel () {
-
         final StringBuilder saida = new StringBuilder();
         for (final Icon icon : this.vertices) {
             if (icon instanceof final Machine I) {
-                saida.append(String.format("MAQ %s %f %f ",
-                                           I.getId().getName(), I.getComputationalPower(),
-                                           I.getLoadFactor()
+                saida.append(String.format(
+                        "MAQ %s %f %f ", I.getId().getName(), I.getComputationalPower(), I.getLoadFactor()
                 ));
                 if (((Machine) icon).isMaster()) {
                     saida.append(String.format("MESTRE %s LMAQ".formatted(I.getSchedulingAlgorithm())));
-                    final List<GridItem> lista =
-                            ((Machine) icon).getSlaves();
+                    final List<GridItem> lista = ((Machine) icon).getSlaves();
                     for (final GridItem slv : lista) {
                         if (this.vertices.contains((Vertex) slv)) {
                             saida.append(" ").append(slv.getId().getName());
@@ -489,10 +440,9 @@ public class DesenhoGrade extends DrawingArea {
         }
         for (final Icon icon : this.vertices) {
             if (icon instanceof final Cluster I) {
-                saida.append(String.format("CLUSTER %s %d %f %f %f %s\n",
-                                           I.getId().getName(), I.getSlaveCount(),
-                                           I.getComputationalPower(), I.getBandwidth(),
-                                           I.getLatency(), I.getSchedulingAlgorithm()
+                saida.append(String.format(
+                        "CLUSTER %s %d %f %f %f %s\n", I.getId().getName(), I.getSlaveCount(),
+                        I.getComputationalPower(), I.getBandwidth(), I.getLatency(), I.getSchedulingAlgorithm()
                 ));
             }
         }
@@ -506,9 +456,12 @@ public class DesenhoGrade extends DrawingArea {
         }
         for (final Edge icon : this.edges) {
             final Link I = (Link) icon;
-            saida.append(String.format("REDE %s %f %f %f CONECTA",
-                                       I.getId().getName(), I.getBandwidth(), I.getLatency(),
-                                       I.getLoadFactor()
+            saida.append(String.format(
+                    "REDE %s %f %f %f CONECTA",
+                    I.getId().getName(),
+                    I.getBandwidth(),
+                    I.getLatency(),
+                    I.getLoadFactor()
             ));
             saida.append(" ").append(((GridItem) icon.getSource()).getId().getName());
             saida.append(" ").append(((GridItem) icon.getDestination()).getId().getName());
@@ -537,64 +490,67 @@ public class DesenhoGrade extends DrawingArea {
 
         for (final Vertex vertice : this.vertices) {
             if (vertice instanceof final Machine I) {
-                final var slaves =
-                        new ArrayList<Integer>(I.getSlaves().size());
+                final var slaves = new ArrayList<Integer>(I.getSlaves().size());
                 for (final GridItem slv : I.getSlaves()) {
                     if (this.vertices.contains((Vertex) slv)) {
                         slaves.add(slv.getId().getGlobalId());
                     }
                 }
                 if (this.modelType == PickModelTypeDialog.GRID) {
-                    xml.addMachine(I.getX(), I.getY(),
-                                   I.getId().getLocalId(), I.getId().getGlobalId(),
-                                   I.getId().getName(),
-                                   I.getComputationalPower(), I.getLoadFactor(),
-                                   I.getSchedulingAlgorithm(), I.getOwner(),
-                                   I.getCoreCount(), I.getRam(),
-                                   I.getHardDisk(),
-                                   I.isMaster(),
-                                   slaves,
-                                   I.getEnergyConsumption()
+                    xml.addMachine(
+                            I.getX(), I.getY(),
+                            I.getId().getLocalId(), I.getId().getGlobalId(),
+                            I.getId().getName(),
+                            I.getComputationalPower(), I.getLoadFactor(),
+                            I.getSchedulingAlgorithm(), I.getOwner(),
+                            I.getCoreCount(), I.getRam(),
+                            I.getHardDisk(),
+                            I.isMaster(),
+                            slaves,
+                            I.getEnergyConsumption()
                     );
                 } else if (this.modelType == PickModelTypeDialog.IAAS) {
-                    xml.addMachineIaaS(I.getX(), I.getY(),
-                                       I.getId().getLocalId(), I.getId().getGlobalId(),
-                                       I.getId().getName(),
-                                       I.getComputationalPower(), I.getLoadFactor(),
-                                       I.getVmmAllocationPolicy(), I.getSchedulingAlgorithm(),
-                                       I.getOwner(), I.getCoreCount(),
-                                       I.getRam(),
-                                       I.getHardDisk(), I.getCostPerProcessing(),
-                                       I.getCostPerMemory(), I.getCostPerDisk(),
-                                       I.isMaster(), slaves
+                    xml.addMachineIaaS(
+                            I.getX(), I.getY(),
+                            I.getId().getLocalId(), I.getId().getGlobalId(),
+                            I.getId().getName(),
+                            I.getComputationalPower(), I.getLoadFactor(),
+                            I.getVmmAllocationPolicy(), I.getSchedulingAlgorithm(),
+                            I.getOwner(), I.getCoreCount(),
+                            I.getRam(),
+                            I.getHardDisk(), I.getCostPerProcessing(),
+                            I.getCostPerMemory(), I.getCostPerDisk(),
+                            I.isMaster(), slaves
                     );
                 }
             } else if (vertice instanceof Cluster) {
                 if (this.modelType == PickModelTypeDialog.GRID) {
                     final Cluster I = (Cluster) vertice;
-                    xml.addCluster(I.getX(), I.getY(),
-                                   I.getId().getLocalId(), I.getId().getGlobalId(),
-                                   I.getId().getName(),
-                                   I.getSlaveCount(), I.getComputationalPower(),
-                                   I.getCoreCount(),
-                                   I.getRam(), I.getHardDisk(),
-                                   I.getBandwidth(), I.getLatency(),
-                                   I.getSchedulingAlgorithm(), I.getOwner(),
-                                   I.isMaster(),
-                                   I.getEnergyConsumption()
+                    xml.addCluster(
+                            I.getX(), I.getY(),
+                            I.getId().getLocalId(), I.getId().getGlobalId(),
+                            I.getId().getName(),
+                            I.getSlaveCount(), I.getComputationalPower(),
+                            I.getCoreCount(),
+                            I.getRam(), I.getHardDisk(),
+                            I.getBandwidth(), I.getLatency(),
+                            I.getSchedulingAlgorithm(), I.getOwner(),
+                            I.isMaster(),
+                            I.getEnergyConsumption()
                     );
                 } else if (this.modelType == PickModelTypeDialog.IAAS) {
                     final Cluster I = (Cluster) vertice;
-                    xml.addClusterIaaS(I.getX(), I.getY(),
-                                       I.getId().getLocalId(), I.getId().getGlobalId(),
-                                       I.getId().getName(), I.getSlaveCount(),
-                                       I.getComputationalPower(), I.getCoreCount(),
-                                       I.getRam(), I.getHardDisk(),
-                                       I.getBandwidth(), I.getLatency(),
-                                       I.getSchedulingAlgorithm(), I.getVmmAllocationPolicy(),
-                                       I.getCostPerProcessing(),
-                                       I.getCostPerMemory(), I.getCostPerDisk(),
-                                       I.getOwner(), I.isMaster()
+                    xml.addClusterIaaS(
+                            I.getX(), I.getY(),
+                            I.getId().getLocalId(), I.getId().getGlobalId(),
+                            I.getId().getName(), I.getSlaveCount(),
+                            I.getComputationalPower(), I.getCoreCount(),
+                            I.getRam(), I.getHardDisk(),
+                            I.getBandwidth(), I.getLatency(),
+                            I.getSchedulingAlgorithm(), I.getVmmAllocationPolicy(),
+                            I.getCostPerProcessing(),
+                            I.getCostPerMemory(), I.getCostPerDisk(),
+                            I.getOwner(), I.isMaster()
                     );
                 }
             } else if (vertice instanceof final Internet I) {
@@ -608,22 +564,24 @@ public class DesenhoGrade extends DrawingArea {
         }
         for (final Edge link : this.edges) {
             final Link l = (Link) link;
-            xml.addLink(l.getSource().getX(), l.getSource().getY(),
-                        l.getDestination().getX(), l.getDestination().getY(),
-                        l.getId().getLocalId(), l.getId().getGlobalId(),
-                        l.getId().getName(),
-                        l.getBandwidth(), l.getLoadFactor(), l.getLatency(),
-                        ((GridItem) l.getSource()).getId().getGlobalId(),
-                        ((GridItem) l.getDestination()).getId().getGlobalId()
+            xml.addLink(
+                    l.getSource().getX(), l.getSource().getY(),
+                    l.getDestination().getX(), l.getDestination().getY(),
+                    l.getId().getLocalId(), l.getId().getGlobalId(),
+                    l.getId().getName(),
+                    l.getBandwidth(), l.getLoadFactor(), l.getLatency(),
+                    ((GridItem) l.getSource()).getId().getGlobalId(),
+                    ((GridItem) l.getDestination()).getId().getGlobalId()
             );
         }
         //trecho de escrita das máquinas virtuais
         if (this.virtualMachines != null) {
             for (final VirtualMachine vm : this.virtualMachines) {
-                xml.addVirtualMachines(vm.getName(), vm.getOwner(),
-                                       vm.getVMM(), vm.getCoreCount(),
-                                       vm.getAllocatedMemory(), vm.getAllocatedDisk(),
-                                       vm.getOperatingSystem()
+                xml.addVirtualMachines(
+                        vm.getName(), vm.getOwner(),
+                        vm.getVMM(), vm.getCoreCount(),
+                        vm.getAllocatedMemory(), vm.getAllocatedDisk(),
+                        vm.getOperatingSystem()
                 );
             }
         }
@@ -631,20 +589,21 @@ public class DesenhoGrade extends DrawingArea {
         //configurar carga
         if (this.loadConfiguration != null) {
             if (this.loadConfiguration instanceof final GlobalWorkloadGenerator cr) {
-                xml.setLoadRandom(cr.getTaskCount(), cr.getTaskCreationTime(),
-                                  cr.getComputationMaximum(), cr.getComputationAverage(),
-                                  cr.getComputationMinimum(), cr.getComputationProbability(),
-                                  cr.getCommunicationMaximum(), cr.getCommunicationAverage(),
-                                  cr.getCommunicationMinimum(), cr.getCommunicationProbability()
+                xml.setLoadRandom(
+                        cr.getTaskCount(), cr.getTaskCreationTime(),
+                        cr.getComputationMaximum(), cr.getComputationAverage(),
+                        cr.getComputationMinimum(), cr.getComputationProbability(),
+                        cr.getCommunicationMaximum(), cr.getCommunicationAverage(),
+                        cr.getCommunicationMinimum(), cr.getCommunicationProbability()
                 );
             } else if (this.loadConfiguration.getType() == WorkloadGeneratorType.PER_NODE) {
-                for (final WorkloadGenerator node :
-                        ((CollectionWorkloadGenerator) this.loadConfiguration).getList()) {
+                for (final WorkloadGenerator node : ((CollectionWorkloadGenerator) this.loadConfiguration).getList()) {
                     final PerNodeWorkloadGenerator no = (PerNodeWorkloadGenerator) node;
-                    xml.addLoadNo(no.getApplication(), no.getOwner(),
-                                  no.getSchedulerId(), no.getTaskCount(),
-                                  no.getComputationMaximum(), no.getComputationMinimum(),
-                                  no.getCommunicationMaximum(), no.getCommunicationMinimum()
+                    xml.addLoadNo(
+                            no.getApplication(), no.getOwner(),
+                            no.getSchedulerId(), no.getTaskCount(),
+                            no.getComputationMaximum(), no.getComputationMinimum(),
+                            no.getCommunicationMaximum(), no.getCommunicationMinimum()
                     );
                 }
             } else if (this.loadConfiguration.getType() == WorkloadGeneratorType.TRACE) {
@@ -725,28 +684,17 @@ public class DesenhoGrade extends DrawingArea {
 
         final var g = (Graphics2D) image.getGraphics();
 
-        g.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON
-        );
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(DesenhoGrade.WHITE);
-        g.fillRect(0, 0, greatestX + DesenhoGrade.SOME_OFFSET,
-                   greatestY + DesenhoGrade.SOME_OFFSET
-        );
+        g.fillRect(0, 0, greatestX + DesenhoGrade.SOME_OFFSET, greatestY + DesenhoGrade.SOME_OFFSET);
 
         g.setColor(DesenhoGrade.ALMOST_WHITE);
         final var increment = this.getUnit().getIncrement();
         if (this.isGridOn()) {
-            for (
-                    int w = 0; w <= greatestX + DesenhoGrade.SOME_OFFSET;
-                    w += increment
-            ) {
+            for (int w = 0; w <= greatestX + DesenhoGrade.SOME_OFFSET; w += increment) {
                 g.drawLine(w, 0, w, greatestY + DesenhoGrade.SOME_OFFSET);
             }
-            for (
-                    int h = 0; h <= greatestY + DesenhoGrade.SOME_OFFSET;
-                    h += increment
-            ) {
+            for (int h = 0; h <= greatestY + DesenhoGrade.SOME_OFFSET; h += increment) {
                 g.drawLine(0, h, greatestX + DesenhoGrade.SOME_OFFSET, h);
             }
         }
@@ -837,10 +785,10 @@ public class DesenhoGrade extends DrawingArea {
     public List<String> getNosEscalonadores () {
         final List<String> machines = new ArrayList<>(0);
         for (final var icon : this.vertices) {
-            if (icon instanceof Machine m && m.isMaster()) {
+            if (icon instanceof final Machine m && m.isMaster()) {
                 machines.add(m.getId().getName());
             }
-            if (icon instanceof Cluster c && c.isMaster()) {
+            if (icon instanceof final Cluster c && c.isMaster()) {
                 machines.add(c.getId().getName());
             }
         }

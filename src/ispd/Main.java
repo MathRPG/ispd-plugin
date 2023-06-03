@@ -5,12 +5,13 @@ import java.util.Locale;
 import ispd.application.GuiApplication;
 import ispd.application.terminal.TerminalApplication;
 
-public class Main {
+public enum Main {
+    ;
 
     private static final Locale EN_US_LOCALE = new Locale("en", "US");
 
     public static void main (final String[] args) {
-        Main.setDefaultLocale();
+        setDefaultLocale();
 
         final var app = (args.length == 0)
                         ? new GuiApplication()

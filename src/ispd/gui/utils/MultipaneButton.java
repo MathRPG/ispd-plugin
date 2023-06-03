@@ -20,10 +20,7 @@ public class MultipaneButton extends JButton {
      *         the component to be switched when clicked on the
      *         button.
      */
-    public MultipaneButton (
-            final String name,
-            final Component component
-    ) {
+    public MultipaneButton (final String name, final Component component) {
         super(name);
         this.component = component;
     }

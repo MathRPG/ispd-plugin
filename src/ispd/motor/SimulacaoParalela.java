@@ -36,9 +36,7 @@ public class SimulacaoParalela extends Simulation {
      * @throws IllegalArgumentException
      */
     public SimulacaoParalela (
-            final ProgressoSimulacao window,
-            final RedeDeFilas queueNetwork,
-            final List<Tarefa> jobs,
+            final ProgressoSimulacao window, final RedeDeFilas queueNetwork, final List<Tarefa> jobs,
             final int numThreads
     ) {
         super(window, queueNetwork, jobs);
@@ -54,11 +52,9 @@ public class SimulacaoParalela extends Simulation {
         for (final CentroServico rec : queueNetwork.getMestres()) {
             this.threadFilaEventos.put(rec, new PriorityBlockingQueue<>());
             if (((CS_Mestre) rec).getEscalonador().getTempoAtualizar() != null) {
-                this.threadTrabalhador.put(
-                        rec, new ThreadTrabalhadorDinamico(rec, this));
+                this.threadTrabalhador.put(rec, new ThreadTrabalhadorDinamico(rec, this));
             } else {
-                this.threadTrabalhador.put(
-                        rec, new ThreadTrabalhador(rec, this));
+                this.threadTrabalhador.put(rec, new ThreadTrabalhador(rec, this));
             }
         }
 
@@ -77,8 +73,7 @@ public class SimulacaoParalela extends Simulation {
             window.println("The model has no Networks.", Color.orange);
         }
         if (jobs == null || jobs.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "One or more  workloads have not been configured.");
+            throw new IllegalArgumentException("One or more  workloads have not been configured.");
         }
     }
 
@@ -98,7 +93,7 @@ public class SimulacaoParalela extends Simulation {
         this.threadPool = Executors.newFixedThreadPool(this.numThreads);
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        //Realizar a simulação
+        // Realizar a simulação
         boolean fim = false;
         while (!fim) {
             fim = true;
@@ -130,11 +125,7 @@ public class SimulacaoParalela extends Simulation {
     }
 
     @Override
-    public boolean removeFutureEvent (
-            final int eventType,
-            final CentroServico eventServer,
-            final Client eventClient
-    ) {
+    public boolean removeFutureEvent (final int eventType, final CentroServico eventServer, final Client eventClient) {
         //remover evento de saida do cliente do servidor
         for (final var ev : this.threadFilaEventos.get(eventServer)) {
             if (ev.getType() == eventType
@@ -157,10 +148,7 @@ public class SimulacaoParalela extends Simulation {
             this.threadPool.execute(new determinarCaminho(mst));
         }
         if (this.getQueueNetwork().getMaquinas() == null || this.getQueueNetwork().getMaquinas().isEmpty()) {
-            this.getWindow().println(
-                    "The model has no processing slaves.",
-                    Color.orange
-            );
+            this.getWindow().println("The model has no processing slaves.", Color.orange);
         } else {
             for (final CS_Maquina maq : this.getQueueNetwork().getMaquinas()) {
                 //Encontra menor caminho entre o escravo e seu mestre
@@ -209,10 +197,7 @@ public class SimulacaoParalela extends Simulation {
         private       double        relogioLocal = 0.0;
         private       boolean       executando   = false;
 
-        private ThreadTrabalhador (
-                final CentroServico rec,
-                final Simulation sim
-        ) {
+        private ThreadTrabalhador (final CentroServico rec, final Simulation sim) {
             this.recurso   = rec;
             this.simulacao = sim;
         }
@@ -239,12 +224,11 @@ public class SimulacaoParalela extends Simulation {
 
         @Override
         public void run () {
-            //bloqueia este trabalhador
+            // bloqueia este trabalhador
             synchronized (this) {
                 while (!SimulacaoParalela.this.threadFilaEventos.get(this.recurso).isEmpty()) {
-                    //Verificando ocorencia de erro
-                    final FutureEvent eventoAtual =
-                            SimulacaoParalela.this.threadFilaEventos.get(this.recurso).poll();
+                    // Verificando ocorencia de erro
+                    final FutureEvent eventoAtual = SimulacaoParalela.this.threadFilaEventos.get(this.recurso).poll();
                     if (eventoAtual.getCreationTime() > this.relogioLocal) {
                         this.relogioLocal = eventoAtual.getCreationTime();
                     }
@@ -263,8 +247,8 @@ public class SimulacaoParalela extends Simulation {
                             eventoAtual.getServidor().requisicao(this.simulacao, null, FutureEvent.ESCALONAR);
                             break;
                         default:
-                            eventoAtual.getServidor().requisicao(this.simulacao, (Mensagem) eventoAtual.getClient(),
-                                                                 eventoAtual.getType()
+                            eventoAtual.getServidor().requisicao(
+                                    this.simulacao, (Mensagem) eventoAtual.getClient(), eventoAtual.getType()
                             );
                             break;
                     }
@@ -278,9 +262,7 @@ public class SimulacaoParalela extends Simulation {
 
         private Object[] item;
 
-        private ThreadTrabalhadorDinamico (
-                final CentroServico rec, final Simulation sim
-        ) {
+        private ThreadTrabalhadorDinamico (final CentroServico rec, final Simulation sim) {
             super(rec, sim);
             if (rec instanceof CS_Mestre mestre) {
                 if (mestre.getEscalonador().getTempoAtualizar() != null) {
@@ -294,7 +276,7 @@ public class SimulacaoParalela extends Simulation {
 
         @Override
         public void run () {
-            //bloqueia este trabalhador
+            // bloqueia este trabalhador
             synchronized (this) {
                 while (!SimulacaoParalela.this.threadFilaEventos.get(this.getRecurso()).isEmpty()) {
                     if ((Double) this.item[2] <
@@ -329,10 +311,9 @@ public class SimulacaoParalela extends Simulation {
                             eventoAtual.getServidor().requisicao(this.getSimulacao(), null, FutureEvent.ESCALONAR);
                             break;
                         default:
-                            eventoAtual.getServidor()
-                                       .requisicao(this.getSimulacao(), (Mensagem) eventoAtual.getClient(),
-                                                   eventoAtual.getType()
-                                       );
+                            eventoAtual.getServidor().requisicao(
+                                    this.getSimulacao(), (Mensagem) eventoAtual.getClient(), eventoAtual.getType()
+                            );
                             break;
                     }
                 }
@@ -357,11 +338,9 @@ public class SimulacaoParalela extends Simulation {
                 for (final Tarefa tarefa : SimulacaoParalela.this.getJobs()) {
                     if (tarefa.getOrigem() == this.mestre) {
                         //criar evento...
-                        final FutureEvent evt =
-                                new FutureEvent(tarefa.getTimeCriacao(),
-                                                FutureEvent.CHEGADA,
-                                                tarefa.getOrigem(), tarefa
-                                );
+                        final FutureEvent evt = new FutureEvent(
+                                tarefa.getTimeCriacao(), FutureEvent.CHEGADA, tarefa.getOrigem(), tarefa
+                        );
                         SimulacaoParalela.this.threadFilaEventos.get(this.mestre).add(evt);
                     }
                 }

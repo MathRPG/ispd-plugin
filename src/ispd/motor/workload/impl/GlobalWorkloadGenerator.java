@@ -66,10 +66,8 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      */
     public GlobalWorkloadGenerator (
             final int taskCount,
-            final double compMin, final double compMax,
-            final double compAvg, final double compProb,
-            final double commMin, final double commMax,
-            final double commAvg, final double commProb,
+            final double compMin, final double compMax, final double compAvg, final double compProb,
+            final double commMin, final double commMax, final double commAvg, final double commProb,
             final int taskCreationTime
     ) {
         this(
@@ -101,13 +99,11 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      */
     public GlobalWorkloadGenerator (
             final int taskCount, final int taskCreationTime,
-            final TwoStageUniform computation,
-            final TwoStageUniform communication
+            final TwoStageUniform computation, final TwoStageUniform communication
     ) {
         super(
                 taskCount, computation, communication,
-                new SequentialIntSupplier(),
-                new Distribution(System.currentTimeMillis())
+                new SequentialIntSupplier(), new Distribution(System.currentTimeMillis())
         );
         this.taskCreationTime = taskCreationTime;
     }
@@ -148,7 +144,7 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
      */
     @Override
     public String formatForIconicModel () {
-        return String.format("%d %d %d %f\n%d %d %d %f\n%d %d %d",
+        return String.format("%d %d %d %f%n%d %d %d %f%n%d %d %d",
                              (int) this.computation.minimum(),
                              (int) this.computation.intervalSplit(),
                              (int) this.computation.maximum(),

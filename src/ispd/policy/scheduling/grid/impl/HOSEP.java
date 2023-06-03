@@ -16,17 +16,15 @@ public class HOSEP extends AbstractHOSEP<UserProcessingControl> {
 
     @Override
     protected boolean shouldTransferMachine (
-            final CS_Processamento machine,
-            final UserProcessingControl machineOwner, final UserProcessingControl nextOwner
+            final CS_Processamento machine, final UserProcessingControl machineOwner,
+            final UserProcessingControl nextOwner
     ) {
         if (super.shouldTransferMachine(machine, machineOwner, nextOwner)) {
             return true;
         }
 
-        final double machineOwnerPenalty =
-                machineOwner.penaltyWithProcessing(-machine.getPoderComputacional());
-        final double nextOwnerPenalty =
-                nextOwner.penaltyWithProcessing(machine.getPoderComputacional());
+        final double machineOwnerPenalty = machineOwner.penaltyWithProcessing(-machine.getPoderComputacional());
+        final double nextOwnerPenalty    = nextOwner.penaltyWithProcessing(machine.getPoderComputacional());
 
         return machineOwnerPenalty >= nextOwnerPenalty;
     }

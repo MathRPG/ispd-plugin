@@ -11,7 +11,7 @@ import ispd.motor.metricas.Metricas;
  * the information about all the processing and communication performed of each
  * simulated component.
  */
-/* package-private */ class ResultsResourcePane extends JScrollPane {
+public class ResultsResourcePane extends JScrollPane {
 
     /**
      * Constructor which creates a pane in which the performed results in total

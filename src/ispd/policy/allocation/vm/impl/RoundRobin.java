@@ -19,9 +19,9 @@ public class RoundRobin extends VmAllocationPolicy {
     private ListIterator<CS_Processamento> physicalMachine = null;
 
     public RoundRobin () {
-        this.maquinasVirtuais = new ArrayList<>(0);
+        this.maquinasVirtuais = new ArrayList<>();
         this.escravos         = new LinkedList<>();
-        this.VMsRejeitadas    = new ArrayList<>(0);
+        this.VMsRejeitadas    = new ArrayList<>();
     }
 
     @Override
@@ -29,7 +29,7 @@ public class RoundRobin extends VmAllocationPolicy {
         System.out.println("---------------------------------------");
         System.out.println("Alocador RR iniciado");
 
-        this.test(); // FIXME: Remove this
+        this.test();
 
         this.physicalMachine = this.escravos.listIterator(0);
 
@@ -64,47 +64,46 @@ public class RoundRobin extends VmAllocationPolicy {
             if (resource instanceof CS_VMM) {
                 this.redirectVm(vm, resource);
                 return;
-            } else {
-
-                System.out.println("Checagem de recursos:");
-                final var    maq    = (CS_MaquinaCloud) resource;
-                final double memory = maq.getMemoriaDisponivel();
-                System.out.println("memoriaMaq: " + memory);
-                final double neededMemory = vm.getMemoriaDisponivel();
-                System.out.println("memorianecessaria: " + neededMemory);
-                final double disk = maq.getDiscoDisponivel();
-                System.out.println("discoMaq: " + disk);
-                final double neededDisk = vm.getDiscoDisponivel();
-                System.out.println("disconecessario: " + neededDisk);
-                final int processors = maq.getProcessadoresDisponiveis();
-                System.out.println("ProcMaq: " + processors);
-                final int procVM = vm.getProcessadoresDisponiveis();
-                System.out.println("ProcVM: " + procVM);
-
-                if ((neededMemory > memory || neededDisk > disk || procVM > processors)) {
-                    machines--;
-                    continue;
-                }
-
-                System.out.println("Realizando o controle de recurso:");
-                final double newMemory = memory - neededMemory;
-                maq.setMemoriaDisponivel(newMemory);
-                System.out.printf("memoria atual da maq: %s%n", newMemory);
-                final double newDisk = disk - neededDisk;
-                maq.setDiscoDisponivel(newDisk);
-                System.out.printf("disco atual maq: %s%n", newDisk);
-                final int newProcessors = processors - procVM;
-                maq.setProcessadoresDisponiveis(newProcessors);
-                System.out.printf("proc atual: %d%n", newProcessors);
-                vm.setMaquinaHospedeira((CS_MaquinaCloud) resource);
-                vm.setCaminho(this.escalonarRota(resource));
-                System.out.printf(
-                        "%s enviada para %s%n", vm.getId(), resource.getId());
-                this.mestre.sendVm(vm);
-                System.out.println("---------------------------------------");
-
-                return;
             }
+
+            System.out.println("Checagem de recursos:");
+            final var    maq    = (CS_MaquinaCloud) resource;
+            final double memory = maq.getMemoriaDisponivel();
+            System.out.println("memoriaMaq: " + memory);
+            final double neededMemory = vm.getMemoriaDisponivel();
+            System.out.println("memorianecessaria: " + neededMemory);
+            final double disk = maq.getDiscoDisponivel();
+            System.out.println("discoMaq: " + disk);
+            final double neededDisk = vm.getDiscoDisponivel();
+            System.out.println("disconecessario: " + neededDisk);
+            final int processors = maq.getProcessadoresDisponiveis();
+            System.out.println("ProcMaq: " + processors);
+            final int procVM = vm.getProcessadoresDisponiveis();
+            System.out.println("ProcVM: " + procVM);
+
+            if ((neededMemory > memory || neededDisk > disk || procVM > processors)) {
+                machines--;
+                continue;
+            }
+
+            System.out.println("Realizando o controle de recurso:");
+            final double newMemory = memory - neededMemory;
+            maq.setMemoriaDisponivel(newMemory);
+            System.out.printf("memoria atual da maq: %s%n", newMemory);
+            final double newDisk = disk - neededDisk;
+            maq.setDiscoDisponivel(newDisk);
+            System.out.printf("disco atual maq: %s%n", newDisk);
+            final int newProcessors = processors - procVM;
+            maq.setProcessadoresDisponiveis(newProcessors);
+            System.out.printf("proc atual: %d%n", newProcessors);
+            vm.setMaquinaHospedeira((CS_MaquinaCloud) resource);
+            vm.setCaminho(this.escalonarRota(resource));
+            System.out.printf(
+                    "%s enviada para %s%n", vm.getId(), resource.getId());
+            this.mestre.sendVm(vm);
+            System.out.println("---------------------------------------");
+
+            return;
         }
     }
 

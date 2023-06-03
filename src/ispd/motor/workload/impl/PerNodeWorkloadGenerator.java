@@ -63,8 +63,7 @@ public class PerNodeWorkloadGenerator extends RandomicWorkloadGenerator {
     public PerNodeWorkloadGenerator (
             final String application, final String owner,
             final String schedulerId, final int taskCount,
-            final TwoStageUniform computation,
-            final TwoStageUniform communication,
+            final TwoStageUniform computation,            final TwoStageUniform communication,
             final IntSupplier idSupplier
     ) {
         super(
@@ -89,9 +88,7 @@ public class PerNodeWorkloadGenerator extends RandomicWorkloadGenerator {
      *
      * @return an instance created from the given {@link List} of attributes.
      */
-    public static PerNodeWorkloadGenerator fromTableRow (
-            final List row, final IntSupplier idSupplier
-    ) {
+    public static PerNodeWorkloadGenerator fromTableRow (            final List row, final IntSupplier idSupplier    ) {
         class ListWrapper {
 
             private final List list;
@@ -302,7 +299,7 @@ public class PerNodeWorkloadGenerator extends RandomicWorkloadGenerator {
      */
     @Override
     protected double makeTaskCreationTime () {
-        return this.random.nextExponential(5) + this.calculateExtraDelay();
+        return this.random.nextExponential(5.0) + this.calculateExtraDelay();
     }
 
     /**

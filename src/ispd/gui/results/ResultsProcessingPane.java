@@ -11,7 +11,7 @@ import ispd.gui.utils.MultipaneButton;
  * containing the bar and pie chart of the performed processing obtained from
  * the performed simulation.
  */
-/* package-private */ class ResultsProcessingPane extends Multipane {
+public class ResultsProcessingPane extends Multipane {
 
     /**
      * Constructor which creates a pane that contains results of processing

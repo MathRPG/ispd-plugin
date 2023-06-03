@@ -12,17 +12,14 @@ import javax.swing.table.TableModel;
 
 public class VariedRowTable extends JTable {
 
-    private final HashMap<Integer, CellEditor> editors = new HashMap<>(0);
-
-    VariedRowTable () {
-    }
+    private final HashMap<Integer, CellEditor> editors = new HashMap<>();
 
     @Override
     public void setModel (final TableModel dataModel) {
         super.setModel(dataModel);
         for (int i = 0; i < this.getModel().getRowCount(); i++) {
             final var item = this.getModel().getValueAt(i, 1);
-            if (item instanceof JComponent component) {
+            if (item instanceof final JComponent component) {
                 this.editors.put(i, new CellEditor(component));
             }
         }
@@ -46,9 +43,7 @@ public class VariedRowTable extends JTable {
         return super.getCellEditor(row, column);
     }
 
-    private TableCellEditor getDefaultEditor (
-            final Class<?> columnClass, final int row
-    ) {
+    private TableCellEditor getDefaultEditor (final Class<?> columnClass, final int row) {
         if (columnClass == JComboBox.class || columnClass == JButton.class) {
             return this.editors.get(row);
         } else {
@@ -56,9 +51,7 @@ public class VariedRowTable extends JTable {
         }
     }
 
-    private TableCellRenderer getDefaultRenderer (
-            final Class<?> columnClass, final int row
-    ) {
+    private TableCellRenderer getDefaultRenderer (final Class<?> columnClass, final int row) {
         if (columnClass == JComboBox.class || columnClass == JButton.class) {
             return this.editors.get(row);
         } else {

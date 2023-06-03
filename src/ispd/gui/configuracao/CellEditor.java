@@ -12,7 +12,7 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 
     private final JComponent item;
 
-    CellEditor (final JComponent item) {
+    public CellEditor (final JComponent item) {
         this.item = item;
     }
 
@@ -25,8 +25,8 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 
     @Override
     public Component getTableCellRendererComponent (
-            final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row,
-            final int column
+            final JTable table, final Object value, final boolean isSelected, final boolean hasFocus,
+            final int row, final int column
     ) {
         return this.item;
     }

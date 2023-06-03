@@ -21,13 +21,9 @@ public class VmAllocationPolicyManager extends FilePolicyManager {
             "FirstFitDecreasing",
             "Volume"
     );
-    private static final String       VM_DIR_PATH     =
-            String.join(File.separator, "policies", "allocation", "vm");
+    private static final String       VM_DIR_PATH     = String.join(File.separator, "policies", "allocation", "vm");
     private static final File         VM_DIRECTORY    =
-            new File(
-                    ConfiguracaoISPD.DIRETORIO_ISPD,
-                    VmAllocationPolicyManager.VM_DIR_PATH
-            );
+            new File(ConfiguracaoISPD.DIRETORIO_ISPD, VmAllocationPolicyManager.VM_DIR_PATH);
 
     @Override
     public File directory () {
@@ -35,13 +31,13 @@ public class VmAllocationPolicyManager extends FilePolicyManager {
     }
 
     @Override
-    protected String className () {
-        return "VmAllocationPolicyManager.class";
+    protected String packageName () {
+        return "alocacaoVM";
     }
 
     @Override
-    protected String packageName () {
-        return "alocacaoVM";
+    protected String className () {
+        return "VmAllocationPolicyManager.class";
     }
 
     @Override

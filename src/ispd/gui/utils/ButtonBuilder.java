@@ -27,25 +27,19 @@ public class ButtonBuilder {
         this.button.addActionListener(onClick);
     }
 
-    public static JButton basicButton (
-            final String text, final ActionListener onClick
-    ) {
-        return ButtonBuilder.aButton(text, onClick).build();
+    public static JButton basicButton (final String text, final ActionListener onClick) {
+        return aButton(text, onClick).build();
     }
 
     public JButton build () {
         return this.button;
     }
 
-    public static ButtonBuilder aButton (
-            final String text, final ActionListener onClick
-    ) {
+    public static ButtonBuilder aButton (final String text, final ActionListener onClick) {
         return new ButtonBuilder(text, onClick);
     }
 
-    public static ButtonBuilder aButton (
-            final Icon icon, final ActionListener onClick
-    ) {
+    public static ButtonBuilder aButton (final Icon icon, final ActionListener onClick) {
         return new ButtonBuilder(icon, onClick);
     }
 
@@ -65,7 +59,6 @@ public class ButtonBuilder {
     }
 
     public ButtonBuilder withSize (final Dimension theSize) {
-
         this.button.setMaximumSize(theSize);
         this.button.setMinimumSize(theSize);
         this.button.setPreferredSize(theSize);

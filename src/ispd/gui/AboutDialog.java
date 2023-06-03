@@ -18,7 +18,7 @@ import javax.swing.WindowConstants;
 
 import ispd.gui.auxiliar.HtmlPane;
 
-class AboutDialog extends JDialog {
+public class AboutDialog extends JDialog {
 
     //language=HTML
     private static final String ABOUT_TEXT = """

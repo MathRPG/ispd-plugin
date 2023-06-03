@@ -25,13 +25,12 @@ public class ConfiguracaoISPD {
     public static final  byte           DEFAULT                = 0;
     public static final  byte           OPTIMISTIC             = 1;
     public static final  byte           GRAPHICAL              = 2;
-    public static final  File           DIRETORIO_ISPD         = ConfiguracaoISPD.loadIspdDirectory();
+    public static final  File           DIRETORIO_ISPD         = loadIspdDirectory();
     private static final String         FILENAME               = "configuration.xml";
-    private final        File           configurationFile      = new File(
-            ConfiguracaoISPD.DIRETORIO_ISPD,
-            ConfiguracaoISPD.FILENAME
-    );
-    private              SimulationType simulationType         = SimulationType.Default;
+    private final        File           configurationFile      =
+            new File(ConfiguracaoISPD.DIRETORIO_ISPD, ConfiguracaoISPD.FILENAME);
+    private              SimulationMode simulationMode         =
+            SimulationMode.DEFAULT;
     private              Integer        threadCount            = 1;
     private              Integer        simulationCount        = 1;
     private              Boolean        shouldChartProc        = true;
@@ -47,18 +46,12 @@ public class ConfiguracaoISPD {
      */
     public ConfiguracaoISPD () {
         try {
-            final var doc = new WrappedDocument(ManipuladorXML.read(
-                    this.configurationFile,
-                    "configurationFile.dtd"
-            ));
+            final var doc = new WrappedDocument(ManipuladorXML.read(this.configurationFile, "configurationFile.dtd"));
 
             this.readConfigFromDoc(doc);
-        } catch (final IOException |
-                       ParserConfigurationException |
-                       SAXException ignored) {
+        } catch (final IOException | ParserConfigurationException | SAXException ignored) {
             Logger.getLogger(ConfiguracaoISPD.class.getName())
-                  .warning("Error while reading configuration file '%s'"
-                                   .formatted(this.configurationFile));
+                  .warning("Error while reading configuration file '%s'".formatted(this.configurationFile));
         }
     }
 
@@ -78,7 +71,7 @@ public class ConfiguracaoISPD {
     private void readGeneralConfig (final WrappedElement e) {
         final var mode = e.simulationMode();
 
-        this.simulationType = Arrays.stream(SimulationType.values())
+        this.simulationMode = Arrays.stream(SimulationMode.values())
                                     .filter(t -> t.hasName(mode))
                                     .findFirst()
                                     .orElseThrow(() -> new IllegalSimulationModeException(mode));
@@ -109,7 +102,7 @@ public class ConfiguracaoISPD {
     }
 
     private static File loadIspdDirectory () {
-        final var dir = ConfiguracaoISPD.getDirectory();
+        final var dir = getDirectory();
 
         if (dir.getName().endsWith(".jar")) {
             return dir.getParentFile();
@@ -138,14 +131,14 @@ public class ConfiguracaoISPD {
      * {@literal 2}: <b>Graphical</b>
      */
     public int getSimulationMode () {
-        return this.simulationType.asInt;
+        return this.simulationMode.asInt;
     }
 
     /**
      * Update the simulation type that will be executed.
      */
     public void setSimulationMode (final byte simulationMode) {
-        this.simulationType = Arrays.stream(SimulationType.values())
+        this.simulationMode = Arrays.stream(SimulationMode.values())
                                     .filter(t -> t.asInt == simulationMode)
                                     .findFirst()
                                     .orElseThrow();
@@ -163,24 +156,14 @@ public class ConfiguracaoISPD {
 
         doc.appendChild(ispd);
 
-        ManipuladorXML.write(
-                doc,
-                this.configurationFile,
-                "configurationFile.dtd",
-                false
-        );
+        ManipuladorXML.write(doc, this.configurationFile, "configurationFile.dtd", false);
     }
 
     private Element saveGeneralConfig (final Document doc) {
         final var ispd = doc.createElement("ispd");
-
-        ispd.setAttribute(
-                "simulation_mode", this.simulationType.xmlName);
-        ispd.setAttribute(
-                "number_simulations", this.simulationCount.toString());
-        ispd.setAttribute(
-                "number_threads", this.threadCount.toString());
-
+        ispd.setAttribute("simulation_mode", this.simulationMode.xmlName);
+        ispd.setAttribute("number_simulations", this.simulationCount.toString());
+        ispd.setAttribute("number_threads", this.threadCount.toString());
         return ispd;
     }
 
@@ -198,8 +181,7 @@ public class ConfiguracaoISPD {
         final var files = doc.createElement("model_open");
 
         if (this.lastModelOpen != null) {
-            files.setAttribute(
-                    "last_file", this.lastModelOpen.getAbsolutePath());
+            files.setAttribute("last_file", this.lastModelOpen.getAbsolutePath());
         }
 
         return files;
@@ -320,24 +302,6 @@ public class ConfiguracaoISPD {
         }
 
         this.lastModelOpen = lastDir;
-    }
-
-    private enum SimulationType {
-        Default((byte) 0, "default"),
-        Optimistic((byte) 1, "optimistic"),
-        Graphical((byte) 2, "graphical");
-
-        private final String xmlName;
-        private final byte   asInt;
-
-        SimulationType (final byte i, final String xmlName) {
-            this.asInt   = i;
-            this.xmlName = xmlName;
-        }
-
-        private boolean hasName (final String modeName) {
-            return this.xmlName.equals(modeName);
-        }
     }
 
     private static class IllegalSimulationModeException extends IllegalArgumentException {

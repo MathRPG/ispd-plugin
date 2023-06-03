@@ -29,7 +29,7 @@ public abstract class FilePolicyManager implements PolicyManager {
     private final        List<String>      addedPolicies    = new ArrayList<>();
     private final        List<String>      removedPolicies  = new ArrayList<>();
 
-    public FilePolicyManager () {
+    protected FilePolicyManager () {
         this.initialize();
     }
 
@@ -40,7 +40,7 @@ public abstract class FilePolicyManager implements PolicyManager {
         }
 
         try {
-            FilePolicyManager.createDirectory(this.directory());
+            createDirectory(this.directory());
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
@@ -49,7 +49,7 @@ public abstract class FilePolicyManager implements PolicyManager {
             try {
                 new JarExtractor(this.packageName()).extractDirsFromJar();
             } catch (final IOException e) {
-                FilePolicyManager.severeLog(e);
+                severeLog(e);
             }
         }
     }
@@ -62,8 +62,7 @@ public abstract class FilePolicyManager implements PolicyManager {
          * (or if the given {@link File} is not a directory that exists,
          * but that situation has already been accounted for).
          */
-        final var dotClassFiles =
-                Objects.requireNonNull(this.directory().list(f));
+        final var dotClassFiles = Objects.requireNonNull(this.directory().list(f));
 
         Arrays.stream(dotClassFiles)
               .map(FilePolicyManager::removeDotClassSuffix)
@@ -83,20 +82,16 @@ public abstract class FilePolicyManager implements PolicyManager {
 
     protected abstract String packageName ();
 
-    /* package-private */
     public static void severeLog (final Throwable e) {
-        Logger.getLogger(FilePolicyManager.class.getName())
-              .log(Level.SEVERE, null, e);
+        Logger.getLogger(FilePolicyManager.class.getName()).log(Level.SEVERE, null, e);
     }
 
     private static String removeDotClassSuffix (final String s) {
-        return FilePolicyManager.removeSuffix(s, ".class");
+        return removeSuffix(s, ".class");
     }
 
     private String getExecutableName () {
-        return Objects.requireNonNull(
-                this.getClass().getResource(this.className())
-        ).toString();
+        return Objects.requireNonNull(this.getClass().getResource(this.className())).toString();
     }
 
     private static String removeSuffix (final String str, final String suffix) {
@@ -120,10 +115,7 @@ public abstract class FilePolicyManager implements PolicyManager {
      */
     @Override
     public String getPolicyTemplate (final String policyName) {
-        return this.getTemplate().replace(
-                FilePolicyManager.POLICY_NAME_REPL,
-                policyName
-        );
+        return this.getTemplate().replace(FilePolicyManager.POLICY_NAME_REPL, policyName);
     }
 
     protected abstract String getTemplate ();
@@ -142,15 +134,12 @@ public abstract class FilePolicyManager implements PolicyManager {
     @Override
     public boolean escrever (final String nome, final String codigo) {
         try (
-                final var fw = new FileWriter(
-                        this.policyJavaFile(nome),
-                        StandardCharsets.UTF_8
-                )
+                final var fw = new FileWriter(this.policyJavaFile(nome), StandardCharsets.UTF_8)
         ) {
             fw.write(codigo);
             return true;
         } catch (final IOException ex) {
-            FilePolicyManager.severeLog(ex);
+            severeLog(ex);
             return false;
         }
     }
@@ -167,21 +156,21 @@ public abstract class FilePolicyManager implements PolicyManager {
     @Override
     public String compilar (final String nome) {
         final var target = this.policyJavaFile(nome);
-        final var err    = FilePolicyManager.compile(target);
+        final var err    = compile(target);
 
         try {
             /*
-              {@link Runtime#exec(String)} runs on a <i>separate</i>
-              process, so we need to wait for potential compilation time.<br>
-              However, this solution is <b>bad</b> because the compilation
-              may easily take longer than {@code 1000} milliseconds
-              (complicated target files or low-end systems running the
-              application).<br>
+              {@link Runtime#exec(String)} runs on a <i>separate</i> process, so we need to wait for potential
+              compilation time.
+              <p>
+              However, this solution is <b>bad</b> because the compilation may easily take longer than {@code 1000}
+              milliseconds (complicated target files or low-end systems running the application).
+              <p>
               Thus, we need to look for an alternative in the future.
              */
             Thread.sleep(1000);
         } catch (final InterruptedException ex) {
-            FilePolicyManager.severeLog(ex);
+            severeLog(ex);
         }
 
         if (this.checkIfDotClassExists(nome)) {
@@ -225,15 +214,12 @@ public abstract class FilePolicyManager implements PolicyManager {
     public String ler (final String policy) {
         try (
                 final var br = new BufferedReader(
-                        new FileReader(
-                                this.policyJavaFile(policy),
-                                StandardCharsets.UTF_8
-                        )
+                        new FileReader(this.policyJavaFile(policy), StandardCharsets.UTF_8)
                 )
         ) {
             return br.lines().collect(Collectors.joining("\n"));
         } catch (final IOException ex) {
-            FilePolicyManager.severeLog(ex);
+            severeLog(ex);
             return null;
         }
     }
@@ -249,17 +235,15 @@ public abstract class FilePolicyManager implements PolicyManager {
      */
     @Override
     public boolean remover (final String policy) {
-        // TODO: This logic is sus
+        // TODO: This logic is convoluted
 
-        boolean deleted = FilePolicyManager
-                .canDeleteFile(this.policyDotClassFile(policy));
+        boolean deleted = canDeleteFile(this.policyDotClassFile(policy));
 
         if (deleted) {
             this.removePolicy(policy);
         }
 
-        deleted = deleted || FilePolicyManager
-                .canDeleteFile(this.policyJavaFile(policy));
+        deleted = deleted || canDeleteFile(this.policyJavaFile(policy));
 
         return deleted;
     }
@@ -291,16 +275,15 @@ public abstract class FilePolicyManager implements PolicyManager {
     public boolean importJavaPolicy (final File arquivo) {
         // TODO: Merge this and static method compile into one
         final var target = new File(this.directory(), arquivo.getName());
-        FilePolicyManager.transferFileContents(arquivo, target);
+        transferFileContents(arquivo, target);
 
-        final var err = FilePolicyManager.compile(target);
+        final var err = compile(target);
 
         if (!err.isEmpty()) {
             return false;
         }
 
-        final var policyName = FilePolicyManager
-                .removeSuffix(arquivo.getName(), ".java");
+        final var policyName = removeSuffix(arquivo.getName(), ".java");
 
         if (!this.checkIfDotClassExists(policyName)) {
             return false;
@@ -322,7 +305,7 @@ public abstract class FilePolicyManager implements PolicyManager {
         ) {
             srcFs.transferTo(destFs);
         } catch (final IOException ex) {
-            FilePolicyManager.severeLog(ex);
+            severeLog(ex);
         }
     }
 

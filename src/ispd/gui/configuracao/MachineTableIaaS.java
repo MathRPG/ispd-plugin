@@ -40,12 +40,13 @@ public class MachineTableIaaS extends AbstractTableModel {
     private static final String[]          NO_USERS           = {};
     private final        JButton           slaves             = this.setButton();
     private final        JComboBox<?>      schedulers         =
-            MachineTableIaaS.toolTippedComboBox(CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
-                                                "Select the task scheduling policy"
+            toolTippedComboBox(
+                    CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+                    "Select the task scheduling policy"
             );
     private final        JComboBox<String> users              =
-            MachineTableIaaS.toolTippedComboBox(MachineTableIaaS.NO_USERS, "Select the resource owner");
-    private final        JComboBox<String> allocators         = MachineTableIaaS.toolTippedComboBox(
+            toolTippedComboBox(MachineTableIaaS.NO_USERS, "Select the resource owner");
+    private final        JComboBox<String> allocators         = toolTippedComboBox(
             VmAllocationPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
             "Select the virtual machine allocation policy"
     );
@@ -53,14 +54,12 @@ public class MachineTableIaaS extends AbstractTableModel {
     private              ResourceBundle    words;
     private              Machine           machine            = null;
 
-    MachineTableIaaS (final ResourceBundle words) {
+    public MachineTableIaaS (final ResourceBundle words) {
         this.words = words;
         new CheckListRenderer(this.slaveList);
     }
 
-    private static <T> JComboBox<T> toolTippedComboBox (
-            final T[] items, final String text
-    ) {
+    private static <T> JComboBox<T> toolTippedComboBox (final T[] items, final String text) {
         final var box = new JComboBox<>(items);
         box.setToolTipText(text);
         return box;
@@ -102,11 +101,15 @@ public class MachineTableIaaS extends AbstractTableModel {
         switch (columnIndex) {
             case MachineTableIaaS.TYPE -> {
                 final var name = this.returnNameForIndex(rowIndex);
-                if (name != null) {return name;}
+                if (name != null) {
+                    return name;
+                }
             }
             case MachineTableIaaS.VALUE -> {
                 final var val = this.getValueForMachine(rowIndex);
-                if (val != null) {return val;}
+                if (val != null) {
+                    return val;
+                }
             }
         }
         throw new IndexOutOfBoundsException("ColumnIndex out of bounds");
@@ -177,9 +180,7 @@ public class MachineTableIaaS extends AbstractTableModel {
     }
 
     @Override
-    public void setValueAt (
-            final Object aValue, final int rowIndex, final int columnIndex
-    ) {
+    public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
         if (columnIndex != MachineTableIaaS.VALUE || this.machine == null) {
             return;
         }
@@ -213,7 +214,7 @@ public class MachineTableIaaS extends AbstractTableModel {
         return this.schedulers;
     }
 
-    JComboBox getAlocadores () {
+    public JComboBox getAlocadores () {
         return this.allocators;
     }
 
@@ -235,7 +236,7 @@ public class MachineTableIaaS extends AbstractTableModel {
                 return;
             }
 
-            final var modelList = new DefaultListModel<GridItem>();
+            final var modelList     = new DefaultListModel<GridItem>();
             final var connectedList = MachineTableIaaS.this.machine.connectedSchedulableNodes();
 
             for (final var item : connectedList) {
@@ -244,8 +245,10 @@ public class MachineTableIaaS extends AbstractTableModel {
 
             MachineTableIaaS.this.slaveList.setModel(modelList);
 
-            MachineTableIaaS.this.machine.getSlaves().stream().mapToInt(connectedList::indexOf).forEachOrdered(
-                    i -> MachineTableIaaS.this.slaveList.addSelectionInterval(i, i));
+            MachineTableIaaS.this.machine.getSlaves().stream()
+                                         .mapToInt(connectedList::indexOf)
+                                         .forEachOrdered(
+                                                 i -> MachineTableIaaS.this.slaveList.addSelectionInterval(i, i));
 
             MachineTableIaaS.this.slaveList.setVisible(true);
         }
@@ -255,11 +258,10 @@ public class MachineTableIaaS extends AbstractTableModel {
                 return;
             }
 
-            final int option =
-                    JOptionPane.showConfirmDialog(MachineTableIaaS.this.slaves, MachineTableIaaS.this.slaveList,
-                                                  "Select the slaves", JOptionPane.OK_CANCEL_OPTION,
-                                                  JOptionPane.PLAIN_MESSAGE
-                    );
+            final int option = JOptionPane.showConfirmDialog(
+                    MachineTableIaaS.this.slaves, MachineTableIaaS.this.slaveList, "Select the slaves",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE
+            );
 
             if (option != JOptionPane.OK_OPTION) {
                 return;

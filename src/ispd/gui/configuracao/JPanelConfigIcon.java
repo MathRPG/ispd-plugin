@@ -25,9 +25,9 @@ import ispd.policy.PolicyManager;
 public class JPanelConfigIcon extends JPanel {
 
     private static final int            ROW_HEIGHT       = 20;
-    private static final Font           TAHOMA_FONT_BOLD = new Font("Tahoma", 1, 12);
+    private static final Font           TAHOMA_FONT_BOLD = new Font("Tahoma", Font.BOLD, 12);
     private final        JLabel         jLabelIconName   = new JLabel("Configuration for the icon # 0");
-    private final        JLabel         jLabelTitle      = JPanelConfigIcon.makeTitleLabel();
+    private final        JLabel         jLabelTitle      = makeTitleLabel();
     private final        JScrollPane    jScrollPane      = new JScrollPane();
     private              ResourceBundle words            =
             ResourceBundle.getBundle("ispd.idioma.Idioma", new Locale("en", "US"));
@@ -127,7 +127,7 @@ public class JPanelConfigIcon extends JPanel {
 
     public void setIcone (final GridItem icon) {
         if (icon instanceof Link) {
-            String text = this.translate("Network icon configuration");
+            final String text = this.translate("Network icon configuration");
             this.jLabelTitle.setText(text);
             System.out.printf("%s - %s%n", this.words.getLocale(), text);
         } else if (icon instanceof Internet) {
@@ -147,9 +147,7 @@ public class JPanelConfigIcon extends JPanel {
         return (LinkTable) this.linkTable.getModel();
     }
 
-    public void setIcone (
-            final GridItem icon, final Iterable<String> users, final int choice
-    ) {
+    public void setIcone (final GridItem icon, final Iterable<String> users, final int choice) {
         if (choice == PickModelTypeDialog.GRID) {
             if (!this.schedulers.listarRemovidos().isEmpty()) {
                 for (final Object escal : this.schedulers.listarRemovidos()) {
@@ -239,14 +237,16 @@ public class JPanelConfigIcon extends JPanel {
     private static class MachineVariedRowTable extends VariedRowTable {
 
         private static final String[] TOOL_TIPS = {
-                "Insert the label name of the resource", "Select the resource owner",
-                "Insert the amount of computing power of the resource in " + "MFlops",
-                "Insert the percentage of background computing in decimal " + "notation",
+                "Insert the label name of the resource",
+                "Select the resource owner",
+                "Insert the amount of computing power of the resource in MFlops",
+                "Insert the percentage of background computing in decimal notation",
                 "Insert the number of precessing cores of the resource",
                 "Insert the amount of memory of the resource in MBytes",
-                "Insert the amount of hard disk of the resource in GBytes", "Select if the resource is master node",
+                "Insert the amount of hard disk of the resource in GBytes",
+                "Select if the resource is master node",
                 "Select the task scheduling policy of the master",
-                "Select the slave nodes that will be coordinated by this " + "master",
+                "Select the slave nodes that will be coordinated by this master",
                 };
 
         public String getToolTipText (final MouseEvent e) {
@@ -261,14 +261,16 @@ public class JPanelConfigIcon extends JPanel {
                 if (colIndex != 1) {
                     return null;
                 }
-                return MachineVariedRowTable.getRowToolTip(rowIndex);
+                return getRowToolTip(rowIndex);
             } catch (final RuntimeException ignored) {
                 return null;
             }
         }
 
         private static String getRowToolTip (final int rowIndex) {
-            if (rowIndex >= MachineVariedRowTable.TOOL_TIPS.length) {return null;}
+            if (rowIndex >= MachineVariedRowTable.TOOL_TIPS.length) {
+                return null;
+            }
             return MachineVariedRowTable.TOOL_TIPS[rowIndex];
         }
     }
@@ -288,34 +290,32 @@ public class JPanelConfigIcon extends JPanel {
                     } else if (rowIndex == 1) {
                         tip = "Select the resource owner";
                     } else if (rowIndex == 2) {
-                        tip = "Insert the amount of computing power of " + "the resource in MFlops";
+                        tip = "Insert the amount of computing power of the resource in MFlops";
                     } else if (rowIndex == 3) {
-                        tip = "Insert the percentage of background " + "computing in decimal notation";
+                        tip = "Insert the percentage of background computing in decimal notation";
                     } else if (rowIndex == 4) {
-                        tip = "Insert the number of precessing cores of " + "the resource";
+                        tip = "Insert the number of precessing cores of the resource";
                     } else if (rowIndex == 5) {
-                        tip = "Insert the amount of memory of the " + "resource in MBytes";
+                        tip = "Insert the amount of memory of the resource in MBytes";
                     } else if (rowIndex == 6) {
-                        tip = "Insert the amount of hard disk of the " + "resource in GBytes";
+                        tip = "Insert the amount of hard disk of the resource in GBytes";
                     } else if (rowIndex == 7) {
-                        tip = "Insert the cost of processing utilization " + "($/cores/h)";
+                        tip = "Insert the cost of processing utilization ($/cores/h)";
                     } else if (rowIndex == 8) {
-                        tip = "Insert the cost of memory utilization " + "($/MB/h)";
+                        tip = "Insert the cost of memory utilization ($/MB/h)";
                     } else if (rowIndex == 9) {
-                        tip = "Insert the cost of disk utilization " + "($/GB/h)";
+                        tip = "Insert the cost of disk utilization ($/GB/h)";
                     } else if (rowIndex == 10) {
-                        tip = "Select if the resource is a virtual " + "machine monitor";
+                        tip = "Select if the resource is a virtual machine monitor";
                     } else if (rowIndex == 11) {
-                        tip = "Select the task scheduling policy of the " + "VMM";
+                        tip = "Select the task scheduling policy of the VMM";
                     } else if (rowIndex == 12) {
-                        tip = "Select the virtual machine allocation " + "policy of the VMM";
+                        tip = "Select the virtual machine allocation policy of the VMM";
                     } else if (rowIndex == 13) {
-                        tip = "Select the nodes that will be coordinated " + "by this VMM";
+                        tip = "Select the nodes that will be coordinated by this VMM";
                     }
                 }
-            } catch (final RuntimeException e1) {
-
-
+            } catch (final RuntimeException ignored) {
             }
 
             return tip;
@@ -337,30 +337,28 @@ public class JPanelConfigIcon extends JPanel {
                     } else if (rowIndex == 1) {
                         tip = "Select the resource owner";
                     } else if (rowIndex == 2) {
-                        tip = "Insert the number of nodes that composes " + "the cluster";
+                        tip = "Insert the number of nodes that composes the cluster";
                     } else if (rowIndex == 3) {
-                        tip = "Insert the amount of computing power of " + "the resource in MFlops";
+                        tip = "Insert the amount of computing power of the resource in MFlops";
                     } else if (rowIndex == 4) {
-                        tip = "Insert the number of precessing cores of " + "the resource";
+                        tip = "Insert the number of precessing cores of the resource";
                     } else if (rowIndex == 5) {
-                        tip = "Insert the amount of memory of the " + "resource in MBytes";
+                        tip = "Insert the amount of memory of the resource in MBytes";
                     } else if (rowIndex == 6) {
-                        tip = "Insert the amount of hard disk of the " + "resource in GBytes";
+                        tip = "Insert the amount of hard disk of the resource in GBytes";
                     } else if (rowIndex == 7) {
-                        tip = "Insert the amount of bandwidth that " + "connect the cluster nodes in Mbps";
+                        tip = "Insert the amount of bandwidth that connect the cluster nodes in Mbps";
                     } else if (rowIndex == 8) {
-                        tip = "Insert the latency time of the links that " + "connect the cluster nodes in seconds";
+                        tip = "Insert the latency time of the links that connect the cluster nodes in seconds";
                     } else if (rowIndex == 9) {
                         tip = "Select if the resource is a master node";
                     } else if (rowIndex == 10) {
-                        tip = "Select the task scheduling policy of the " + "master node";
+                        tip = "Select the task scheduling policy of the master node";
                     } else if (rowIndex == 11) {
-                        tip = "Select the slave nodes that will be " + "coordinated by this master";
+                        tip = "Select the slave nodes that will be coordinated by this master";
                     }
                 }
-            } catch (final RuntimeException e1) {
-
-
+            } catch (final RuntimeException ignored) {
             }
 
             return tip;
@@ -382,38 +380,36 @@ public class JPanelConfigIcon extends JPanel {
                     } else if (rowIndex == 1) {
                         tip = "Select the resource owner";
                     } else if (rowIndex == 2) {
-                        tip = "Insert the number of nodes that composes " + "the cluster";
+                        tip = "Insert the number of nodes that composes the cluster";
                     } else if (rowIndex == 3) {
-                        tip = "Insert the amount of computing power of " + "the resource in MFlops";
+                        tip = "Insert the amount of computing power of the resource in MFlops";
                     } else if (rowIndex == 4) {
-                        tip = "Insert the number of precessing cores of " + "the resource";
+                        tip = "Insert the number of precessing cores of the resource";
                     } else if (rowIndex == 5) {
-                        tip = "Insert the amount of memory of the " + "resource in MBytes";
+                        tip = "Insert the amount of memory of the resource in MBytes";
                     } else if (rowIndex == 6) {
-                        tip = "Insert the amount of hard disk of the " + "resource in GBytes";
+                        tip = "Insert the amount of hard disk of the resource in GBytes";
                     } else if (rowIndex == 7) {
-                        tip = "Insert the cost of processing utilization " + "($/cores/h)";
+                        tip = "Insert the cost of processing utilization ($/cores/h)";
                     } else if (rowIndex == 8) {
-                        tip = "Insert the cost of memory utilization " + "($/MB/h)";
+                        tip = "Insert the cost of memory utilization ($/MB/h)";
                     } else if (rowIndex == 9) {
-                        tip = "Insert the cost of disk utilization " + "($/GB/h)";
+                        tip = "Insert the cost of disk utilization ($/GB/h)";
                     } else if (rowIndex == 10) {
-                        tip = "Insert the amount of bandwidth that " + "connect the cluster nodes in Mbps";
+                        tip = "Insert the amount of bandwidth that connect the cluster nodes in Mbps";
                     } else if (rowIndex == 11) {
-                        tip = "Insert the latency time of the links that " + "connect the cluster nodes in seconds";
+                        tip = "Insert the latency time of the links that connect the cluster nodes in seconds";
                     } else if (rowIndex == 12) {
-                        tip = "Select if the resource is a virtual " + "machine monitor";
+                        tip = "Select if the resource is a virtual machine monitor";
                     } else if (rowIndex == 13) {
-                        tip = "Select the task scheduling policy of the " + "VMM";
+                        tip = "Select the task scheduling policy of the VMM";
                     } else if (rowIndex == 14) {
-                        tip = "Select the virtual machine allocation " + "policy of the VMM";
+                        tip = "Select the virtual machine allocation policy of the VMM";
                     } else if (rowIndex == 15) {
-                        tip = "Select the nodes that will be coordinated " + "by this VMM";
+                        tip = "Select the nodes that will be coordinated by this VMM";
                     }
                 }
-            } catch (final RuntimeException e1) {
-
-
+            } catch (final RuntimeException ignored) {
             }
 
             return tip;
@@ -433,16 +429,14 @@ public class JPanelConfigIcon extends JPanel {
                     if (rowIndex == 0) {
                         tip = "Insert the label name of the resource";
                     } else if (rowIndex == 1) {
-                        tip = "Insert the latency time of the resource in" + " seconds";
+                        tip = "Insert the latency time of the resource in seconds";
                     } else if (rowIndex == 2) {
-                        tip = "Insert the percentage of background " + "communication in decimal notation";
+                        tip = "Insert the percentage of background communication in decimal notation";
                     } else if (rowIndex == 3) {
-                        tip = "Insert the amount of bandwidth of the " + "resource in seconds";
+                        tip = "Insert the amount of bandwidth of the resource in seconds";
                     }
                 }
-            } catch (final RuntimeException e1) {
-
-
+            } catch (final RuntimeException ignored) {
             }
 
             return tip;

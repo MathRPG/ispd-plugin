@@ -23,162 +23,128 @@ public class MetricasGlobais implements Serializable {
     private double custoTotalMem;
     private int    totaldeVMs;
     private int    numVMsRejeitadas;
-    private int total;
+    private int    total;
 
-    public MetricasGlobais (
-            double tempoSimulacao, double satisfacaoMedia, double ociosidadeComputacao, double ociosidadeComunicacao,
-            double eficiencia, double custoTotalDisco, double custoTotalProc, double custoTotalMem, int total
-    ) {
-        this.tempoSimulacao        = tempoSimulacao;
-        this.satisfacaoMedia       = satisfacaoMedia;
-        this.ociosidadeComputacao  = ociosidadeComputacao;
-        this.ociosidadeComunicacao = ociosidadeComunicacao;
-        this.eficiencia            = eficiencia;
-        this.custoTotalDisco       = custoTotalDisco;
-        this.custoTotalProc        = custoTotalProc;
-        this.custoTotalMem         = custoTotalMem;
-        this.total                 = total;
-    }
-
-    public MetricasGlobais (RedeDeFilas redeDeFilas, double tempoSimulacao, List<Tarefa> tarefas) {
+    public MetricasGlobais (final RedeDeFilas redeDeFilas, final double tempoSimulacao, final List<Tarefa> tarefas) {
         this.tempoSimulacao        = tempoSimulacao;
         this.satisfacaoMedia       = 100;
-        this.ociosidadeComputacao  = getOciosidadeComputacao(redeDeFilas);
-        this.ociosidadeComunicacao = getOciosidadeComunicacao(redeDeFilas);
-        this.eficiencia            = getEficiencia(tarefas);
+        this.ociosidadeComputacao  = this.getOciosidadeComputacao(redeDeFilas);
+        this.ociosidadeComunicacao = this.getOciosidadeComunicacao(redeDeFilas);
+        this.eficiencia            = this.getEficiencia(tarefas);
         this.total                 = 0;
     }
 
-    private double getOciosidadeComputacao (RedeDeFilas redeDeFilas) {
+    private double getOciosidadeComputacao (final RedeDeFilas redeDeFilas) {
         double tempoLivreMedio = 0.0;
-        for (CS_Processamento maquina : redeDeFilas.getMaquinas()) {
+        for (final CS_Processamento maquina : redeDeFilas.getMaquinas()) {
             double aux = maquina.getMetrica().getSegundosDeProcessamento();
-            aux = (this.getTempoSimulacao() - aux);
-            tempoLivreMedio += aux;//tempo livre
+            aux = (this.tempoSimulacao - aux);
+            tempoLivreMedio += aux; // tempo livre
             aux = maquina.getOcupacao() * aux;
             tempoLivreMedio -= aux;
         }
         tempoLivreMedio = tempoLivreMedio / redeDeFilas.getMaquinas().size();
-        return (tempoLivreMedio * 100) / getTempoSimulacao();
+        return (tempoLivreMedio * 100) / tempoSimulacao;
     }
 
-    private double getOciosidadeComunicacao (RedeDeFilas redeDeFilas) {
+    private double getOciosidadeComunicacao (final RedeDeFilas redeDeFilas) {
         double tempoLivreMedio = 0.0;
-        for (CS_Comunicacao link : redeDeFilas.getLinks()) {
+        for (final CS_Comunicacao link : redeDeFilas.getLinks()) {
             double aux = link.getMetrica().getSegundosDeTransmissao();
-            aux = (this.getTempoSimulacao() - aux);
+            aux = (this.tempoSimulacao - aux);
             tempoLivreMedio += aux; //tempo livre
             aux = link.getOcupacao() * aux;
             tempoLivreMedio -= aux;
         }
         tempoLivreMedio = tempoLivreMedio / redeDeFilas.getLinks().size();
-        return (tempoLivreMedio * 100) / getTempoSimulacao();
+        return (tempoLivreMedio * 100) / tempoSimulacao;
     }
 
-    private double getEficiencia (List<Tarefa> tarefas) {
+    private double getEficiencia (final List<Tarefa> tarefas) {
         double somaEfic = 0;
-        for (Tarefa tar : tarefas) {
+        for (final Tarefa tar : tarefas) {
             somaEfic += tar.getMetricas().getEficiencia();
         }
         return somaEfic / tarefas.size();
-        /*
-         double tempoUtil = 0.0;
-         double tempoMedio = 0.0;
-         for (CS_Processamento maquina : redeDeFilas.getMaquinas()) {
-         double aux = maquina.getMetrica().getSegundosDeProcessamento();
-         aux = (this.getTempoSimulacao() - aux);//tempo livre
-         aux = maquina.getOcupacao() * aux;//tempo processando sem ser tarefa
-         tempoUtil = aux + maquina.getMetrica().getSegundosDeProcessamento();
-         tempoMedio += tempoUtil / this.getTempoSimulacao();
-         }
-         tempoMedio = tempoMedio / redeDeFilas.getMaquinas().size();
-         return tempoMedio;
-         */
     }
 
-    public double getTempoSimulacao () {
-        return tempoSimulacao;
-    }
-
-    public void setTempoSimulacao (double tempoSimulacao) {
-        this.tempoSimulacao = tempoSimulacao;
-    }
-
-    public MetricasGlobais (RedeDeFilasCloud redeDeFilas, double tempoSimulacao, List<Tarefa> tarefas) {
+    public MetricasGlobais (
+            final RedeDeFilasCloud redeDeFilas, final double tempoSimulacao, final List<Tarefa> tarefas
+    ) {
         this.tempoSimulacao        = tempoSimulacao;
         this.satisfacaoMedia       = 100;
-        this.ociosidadeComputacao  = getOciosidadeComputacaoCloud(redeDeFilas);
-        this.ociosidadeComunicacao = getOciosidadeComunicacao(redeDeFilas);
-        this.eficiencia            = getEficiencia(tarefas);
-        this.custoTotalDisco       = getCustoTotalDisco(redeDeFilas);
-        this.custoTotalMem         = getCustoTotalMem(redeDeFilas);
-        this.custoTotalProc        = getCustoTotalProc(redeDeFilas);
-        this.totaldeVMs            = getTotalVMs(redeDeFilas);
-        this.numVMsRejeitadas      = getNumVMsRejeitadas(redeDeFilas);
+        this.ociosidadeComputacao  = this.getOciosidadeComputacaoCloud(redeDeFilas);
+        this.ociosidadeComunicacao = this.getOciosidadeComunicacao(redeDeFilas);
+        this.eficiencia            = this.getEficiencia(tarefas);
+        this.custoTotalDisco       = this.getCustoTotalDisco(redeDeFilas);
+        this.custoTotalMem         = this.getCustoTotalMem(redeDeFilas);
+        this.custoTotalProc        = this.getCustoTotalProc(redeDeFilas);
+        this.totaldeVMs            = this.getTotalVMs(redeDeFilas);
+        this.numVMsRejeitadas      = this.getNumVMsRejeitadas(redeDeFilas);
         this.total                 = 0;
     }
 
-    private double getOciosidadeComputacaoCloud (RedeDeFilasCloud redeDeFilas) {
+    private double getOciosidadeComputacaoCloud (final RedeDeFilasCloud redeDeFilas) {
         double tempoLivreMedio = 0.0;
-        for (CS_Processamento auxVM : redeDeFilas.getVMs()) {
-            CS_VirtualMac vm = (CS_VirtualMac) auxVM;
+        for (final CS_Processamento auxVM : redeDeFilas.getVMs()) {
+            final CS_VirtualMac vm = (CS_VirtualMac) auxVM;
             if (vm.getStatus() == CS_VirtualMac.ALOCADA) {
                 double aux = auxVM.getMetrica().getSegundosDeProcessamento();
-                aux = (this.getTempoSimulacao() - aux);
+                aux = (this.tempoSimulacao - aux);
                 tempoLivreMedio += aux;//tempo livre
                 aux = auxVM.getOcupacao() * aux;
                 tempoLivreMedio -= aux;
             }
         }
         tempoLivreMedio = tempoLivreMedio / redeDeFilas.getVMs().size();
-        return (tempoLivreMedio * 100) / getTempoSimulacao();
+        return (tempoLivreMedio * 100) / tempoSimulacao;
     }
 
-    //calcula o custo total de uso de disco na nuvem
-    public double getCustoTotalDisco (RedeDeFilasCloud redeDeFilas) {
-        for (CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
+    public double getCustoTotalDisco (final RedeDeFilasCloud redeDeFilas) {
+        // calcula o custo total de uso de disco na nuvem
+        for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
             if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
-                custoTotalDisco = custoTotalDisco + auxVM.getMetricaCusto().getCustoDisco();
+                this.custoTotalDisco = this.custoTotalDisco + auxVM.getMetricaCusto().getCustoDisco();
             }
         }
-        return custoTotalDisco;
+        return this.custoTotalDisco;
     }
 
-    //calcula custo total de uso de memória pela nuvem
-    public double getCustoTotalMem (RedeDeFilasCloud redeDeFilas) {
-        for (CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
+    public double getCustoTotalMem (final RedeDeFilasCloud redeDeFilas) {
+        // calcula custo total de uso de memória pela nuvem
+        for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
             if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
-                custoTotalMem = custoTotalMem + auxVM.getMetricaCusto().getCustoMem();
+                this.custoTotalMem = this.custoTotalMem + auxVM.getMetricaCusto().getCustoMem();
             }
         }
-        return custoTotalMem;
+        return this.custoTotalMem;
     }
 
-    //calcula o custo total de uso de processamento da nuvem
-    public double getCustoTotalProc (RedeDeFilasCloud redeDeFilas) {
-        for (CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
+    public double getCustoTotalProc (final RedeDeFilasCloud redeDeFilas) {
+        // calcula o custo total de uso de processamento da nuvem
+        for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
             if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
-                custoTotalProc = custoTotalProc + auxVM.getMetricaCusto().getCustoProc();
+                this.custoTotalProc = this.custoTotalProc + auxVM.getMetricaCusto().getCustoProc();
             }
         }
-        return custoTotalProc;
+        return this.custoTotalProc;
     }
 
-    //calcula o total de vms do modelo
-    private int getTotalVMs (RedeDeFilasCloud redeDeFilas) {
+    private int getTotalVMs (final RedeDeFilasCloud redeDeFilas) {
+        // calcula o total de vms do modelo
         int total = 0;
-        for (CS_Processamento aux : redeDeFilas.getMestres()) {
-            CS_VMM auxVMM = (CS_VMM) aux;
+        for (final CS_Processamento aux : redeDeFilas.getMestres()) {
+            final CS_VMM auxVMM = (CS_VMM) aux;
             total += auxVMM.getEscalonador().getEscravos().size();
         }
         return total;
     }
 
-    //calcula número de VMs rejeitadas
-    private int getNumVMsRejeitadas (RedeDeFilasCloud redeDeFilas) {
+    private int getNumVMsRejeitadas (final RedeDeFilasCloud redeDeFilas) {
+        // calcula número de VMs rejeitadas
         int totalRejeitadas = 0;
-        for (CS_Processamento aux : redeDeFilas.getMestres()) {
-            CS_VMM auxVMM = (CS_VMM) aux;
+        for (final CS_Processamento aux : redeDeFilas.getMestres()) {
+            final CS_VMM auxVMM = (CS_VMM) aux;
             totalRejeitadas += auxVMM.getAlocadorVM().getVMsRejeitadas().size();
         }
         return totalRejeitadas;
@@ -196,109 +162,99 @@ public class MetricasGlobais implements Serializable {
         this.custoTotalProc        = 0;
     }
 
-    public double getCustoTotalDisco () {
-        return custoTotalDisco;
+    public double getTempoSimulacao () {
+        return this.tempoSimulacao;
     }
 
-    public void setCustoTotalDisco (double custoTotalDisco) {
-        this.custoTotalDisco = custoTotalDisco;
+    public void setTempoSimulacao (final double tempoSimulacao) {
+        this.tempoSimulacao = tempoSimulacao;
+    }
+
+    public double getCustoTotalDisco () {
+        return this.custoTotalDisco;
     }
 
     public double getCustoTotalProc () {
-        return custoTotalProc;
-    }
-
-    public void setCustoTotalProc (double custoTotalProc) {
-        this.custoTotalProc = custoTotalProc;
+        return this.custoTotalProc;
     }
 
     public double getCustoTotalMem () {
-        return custoTotalMem;
-    }
-
-    public void setCustoTotalMem (double custoTotalMem) {
-        this.custoTotalMem = custoTotalMem;
+        return this.custoTotalMem;
     }
 
     public int getNumVMsAlocadas () {
-        return totaldeVMs - numVMsRejeitadas;
+        return this.totaldeVMs - this.numVMsRejeitadas;
     }
 
     public int getNumVMsRejeitadas () {
-        return numVMsRejeitadas;
+        return this.numVMsRejeitadas;
     }
 
     public int getTotaldeVMs () {
-        return totaldeVMs;
-    }
-
-    public void add (MetricasGlobais global) {
-        tempoSimulacao += global.getTempoSimulacao();
-        satisfacaoMedia += global.getSatisfacaoMedia();
-        ociosidadeComputacao += global.getOciosidadeComputacao();
-        ociosidadeComunicacao += global.getOciosidadeComunicacao();
-        eficiencia += global.getEficiencia();
-        total++;
+        return this.totaldeVMs;
     }
 
     public double getSatisfacaoMedia () {
-        return satisfacaoMedia;
+        return this.satisfacaoMedia;
+    }
+
+    public void setSatisfacaoMedia (final double satisfacaoMedia) {
+        this.satisfacaoMedia = satisfacaoMedia;
     }
 
     public double getOciosidadeComputacao () {
-        return ociosidadeComputacao;
+        return this.ociosidadeComputacao;
     }
 
-    public double getOciosidadeComunicacao () {
-        return ociosidadeComunicacao;
-    }
-
-    public double getEficiencia () {
-        return eficiencia;
-    }
-
-    public void setEficiencia (double eficiencia) {
-        this.eficiencia = eficiencia;
-    }
-
-    public void setOciosidadeComunicacao (double ociosidadeComunicacao) {
-        this.ociosidadeComunicacao = ociosidadeComunicacao;
-    }
-
-    public void setOciosidadeComputacao (double ociosidadeComputacao) {
+    public void setOciosidadeComputacao (final double ociosidadeComputacao) {
         this.ociosidadeComputacao = ociosidadeComputacao;
     }
 
-    public void setSatisfacaoMedia (double satisfacaoMedia) {
-        this.satisfacaoMedia = satisfacaoMedia;
+    public double getOciosidadeComunicacao () {
+        return this.ociosidadeComunicacao;
+    }
+
+    public void setOciosidadeComunicacao (final double ociosidadeComunicacao) {
+        this.ociosidadeComunicacao = ociosidadeComunicacao;
+    }
+
+    public double getEficiencia () {
+        return this.eficiencia;
+    }
+
+    public void setEficiencia (final double eficiencia) {
+        this.eficiencia = eficiencia;
     }
 
     @Override
     public String toString () {
         int totalTemp = 1;
-        if (total > 0) {
-            totalTemp = total;
+        if (this.total > 0) {
+            totalTemp = this.total;
         }
         String texto = "\t\tSimulation Results\n\n";
-        texto += String.format("\tTotal Simulated Time = %g \n", tempoSimulacao / totalTemp);
-        texto += String.format("\tSatisfaction = %g %%\n", satisfacaoMedia / totalTemp);
-        texto += String.format("\tIdleness of processing resources = %g %%\n", ociosidadeComputacao / totalTemp);
-        texto += String.format("\tIdleness of communication resources = %g %%\n", ociosidadeComunicacao / totalTemp);
-        texto += String.format("\tEfficiency = %g %%\n", eficiencia / totalTemp);
-        if (eficiencia / totalTemp > 70.0) {
+        texto += String.format("\tTotal Simulated Time = %g \n", this.tempoSimulacao / totalTemp);
+        texto += String.format("\tSatisfaction = %g %%\n", this.satisfacaoMedia / totalTemp);
+        texto += String.format("\tIdleness of processing resources = %g %%\n", this.ociosidadeComputacao / totalTemp);
+        texto += String.format(
+                "\tIdleness of communication resources = %g %%\n",
+                this.ociosidadeComunicacao / totalTemp
+        );
+        texto += String.format("\tEfficiency = %g %%\n", this.eficiencia / totalTemp);
+        if (this.eficiencia / totalTemp > 70.0) {
             texto += "\tEfficiency GOOD\n ";
-        } else if (eficiencia / totalTemp > 40.0) {
+        } else if (this.eficiencia / totalTemp > 40.0) {
             texto += "\tEfficiency MEDIA\n ";
         } else {
             texto += "\tEfficiency BAD\n ";
         }
         texto += "\t\tCost Results:\n\n";
-        texto += String.format("\tCost Total de Processing = %g %%\n", custoTotalProc);
-        texto += String.format("\tCost Total de Memory = %g %%\n", custoTotalMem);
-        texto += String.format("\tCost Total de Disk = %g %%\n", custoTotalDisco);
+        texto += String.format("\tCost Total de Processing = %g %%\n", this.custoTotalProc);
+        texto += String.format("\tCost Total de Memory = %g %%\n", this.custoTotalMem);
+        texto += String.format("\tCost Total de Disk = %g %%\n", this.custoTotalDisco);
         texto += "\t\tVM Alocation results:";
-        texto += String.format("\tTotal of VMs alocated = %d %%\n", (totaldeVMs - numVMsRejeitadas));
-        texto += String.format("\tTotal of VMs rejected = %d %%\n", numVMsRejeitadas);
+        texto += String.format("\tTotal of VMs alocated = %d %%\n", (this.totaldeVMs - this.numVMsRejeitadas));
+        texto += String.format("\tTotal of VMs rejected = %d %%\n", this.numVMsRejeitadas);
         return texto;
     }
 

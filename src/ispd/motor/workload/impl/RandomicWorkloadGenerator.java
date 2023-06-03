@@ -15,8 +15,7 @@ import jdk.jfr.Unsigned;
  * It also standardizes the use of a {@link Supplier<Integer>} for generating
  * task ids.
  */
-/* package-private */
-abstract class RandomicWorkloadGenerator extends TaskBuilder implements WorkloadGenerator {
+public abstract class RandomicWorkloadGenerator extends TaskBuilder implements WorkloadGenerator {
 
     /**
      * The number of tasks to generate.
@@ -59,13 +58,14 @@ abstract class RandomicWorkloadGenerator extends TaskBuilder implements Workload
      *         {@link Distribution} to be invoked to generate
      *         random values when needed.
      */
-    /* package-private */ RandomicWorkloadGenerator (
+    protected RandomicWorkloadGenerator (
             final int taskCount,
             final TwoStageUniform computation,
             final TwoStageUniform communication,
             final IntSupplier idSupplier,
             final Distribution random
     ) {
+        super();
         this.computation   = computation;
         this.communication = communication;
         this.taskCount     = taskCount;

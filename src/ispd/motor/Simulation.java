@@ -22,20 +22,14 @@ public abstract class Simulation {
     private       RedeDeFilas        queueNetwork      = null;
     private       RedeDeFilasCloud   cloudQueueNetwork = null;
 
-    protected Simulation (
-            final ProgressoSimulacao window,
-            final RedeDeFilas queueNetwork,
-            final List<Tarefa> jobs
-    ) {
+    protected Simulation (final ProgressoSimulacao window, final RedeDeFilas queueNetwork, final List<Tarefa> jobs) {
         this.jobs         = jobs;
         this.queueNetwork = queueNetwork;
         this.window       = window;
     }
 
     protected Simulation (
-            final ProgressoSimulacao window,
-            final RedeDeFilasCloud cloudQueueNetwork,
-            final List<Tarefa> jobs
+            final ProgressoSimulacao window, final RedeDeFilasCloud cloudQueueNetwork, final List<Tarefa> jobs
     ) {
         this.jobs              = jobs;
         this.cloudQueueNetwork = cloudQueueNetwork;
@@ -62,9 +56,7 @@ public abstract class Simulation {
 
     public abstract void addFutureEvent (FutureEvent ev);
 
-    public abstract boolean removeFutureEvent (
-            int eventType, CentroServico eventServer, Client eventClient
-    );
+    public abstract boolean removeFutureEvent (int eventType, CentroServico eventServer, Client eventClient);
 
     public void addJob (final Tarefa job) {
         this.jobs.add(job);
@@ -77,27 +69,19 @@ public abstract class Simulation {
     }
 
     void initCloudAllocators () {
-        for (final CS_Processamento genericMaster :
-                this.cloudQueueNetwork.getMestres()) {
+        for (final CS_Processamento genericMaster : this.cloudQueueNetwork.getMestres()) {
             final CS_VMM master = (CS_VMM) genericMaster;
-
-            System.out.printf("VMM %s iniciando o alocador %s%n",
-                              genericMaster.getId(), master.getAlocadorVM().toString()
-            );
-
+            System.out.printf(
+                    "VMM %s iniciando o alocador %s%n", genericMaster.getId(), master.getAlocadorVM().toString());
             master.getAlocadorVM().iniciar();
         }
     }
 
     void initCloudSchedulers () {
-        for (final CS_Processamento genericMaster :
-                this.cloudQueueNetwork.getMestres()) {
+        for (final CS_Processamento genericMaster : this.cloudQueueNetwork.getMestres()) {
             final CS_VMM master = (CS_VMM) genericMaster;
-
-            System.out.printf("VMM %s iniciando escalonador %s%n",
-                              genericMaster.getId(), master.getEscalonador().toString()
-            );
-
+            System.out.printf(
+                    "VMM %s iniciando escalonador %s%n", genericMaster.getId(), master.getEscalonador().toString());
             master.getEscalonador().iniciar();
             master.instanciarCaminhosVMs();
         }
@@ -114,10 +98,7 @@ public abstract class Simulation {
             master.determinarCaminhos();
         }
         if (this.queueNetwork.getMaquinas() == null || this.queueNetwork.getMaquinas().isEmpty()) {
-            this.window.println(
-                    "The model has no processing slaves.",
-                    Color.orange
-            );
+            this.window.println("The model has no processing slaves.", Color.orange);
         } else {
             // Find the shortest path between each slave and the master.
             for (final CS_Maquina machine : this.queueNetwork.getMaquinas()) {
@@ -127,9 +108,7 @@ public abstract class Simulation {
     }
 
     public Metricas getMetrics () {
-        final Metricas metric = new Metricas(this.queueNetwork,
-                                             this.getTime(null), this.jobs
-        );
+        final Metricas metric = new Metricas(this.queueNetwork, this.getTime(null), this.jobs);
 
         this.window.print("Getting Results.");
         this.window.print(" -> ");
@@ -149,9 +128,7 @@ public abstract class Simulation {
         this.window.print("Getting Results.");
         this.window.print(" -> ");
 
-        final Metricas metric = new Metricas(this.cloudQueueNetwork,
-                                             this.getTime(null), this.jobs
-        );
+        final Metricas metric = new Metricas(this.cloudQueueNetwork, this.getTime(null), this.jobs);
 
         this.window.incProgresso(5);
         this.window.println("OK", Color.green);

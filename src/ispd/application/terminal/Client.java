@@ -1,7 +1,5 @@
 package ispd.application.terminal;
 
-import ispd.motor.metricas.Metricas;
-
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -10,6 +8,8 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import ispd.motor.metricas.Metricas;
 
 /**
  * A helper class for the client part of the terminal application simulation.
@@ -32,7 +32,7 @@ public class Client {
      * @param model
      *         A configuration file for setting up a simulation.
      */
-    public void sendModelToServer (Document model) {
+    public void sendModelToServer (final Document model) {
         try (
                 final var socket = new Socket(this.serverAddress.getHostName(), this.serverPort);
                 final var outputStream = new ObjectOutputStream(socket.getOutputStream())
@@ -40,7 +40,7 @@ public class Client {
             socket.setReuseAddress(true);
             outputStream.writeObject(model);
             this.clientPort = socket.getLocalPort();
-        } catch (IOException e) {
+        } catch (final IOException ignored) {
             System.out.println("Couldn't create the client socket.");
         }
     }
@@ -56,9 +56,8 @@ public class Client {
                 final var inputStream = new ObjectInputStream(serverSocket.accept().getInputStream())
         ) {
             return (Metricas) inputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (final IOException | ClassNotFoundException e) {
             throw new AssertionError(e);
         }
     }
-
 }

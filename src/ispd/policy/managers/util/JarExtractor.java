@@ -12,9 +12,7 @@ import ispd.policy.managers.FilePolicyManager;
 public class JarExtractor {
 
     private static final String  MOTOR_PKG_PATH = "motor";
-    private final        ZipFile jar            = new JarFile(new File(
-            System.getProperty("java.class.path")
-    ));
+    private final        ZipFile jar            = new JarFile(new File(System.getProperty("java.class.path")));
     private final        String  targetPackage;
 
     public JarExtractor (final String targetPackage) throws IOException {
@@ -44,11 +42,8 @@ public class JarExtractor {
             return;
         }
 
-        // TODO: Idea; process ALL directories FIRST, and only THEN
-        //  non-directory entries.
-        //  In such a way, this logic (entry without parent directory
-        //  created) may not be necessary anymore
-
+        // TODO: Idea; process ALL directories FIRST, and only THEN non-directory entries.
+        //  In such a way, this logic (entry without parent directory created) may not be necessary anymore
         final var parent = file.getParentFile();
 
         if (!parent.exists()) {

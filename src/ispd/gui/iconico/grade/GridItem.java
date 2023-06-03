@@ -61,9 +61,7 @@ public interface GridItem {
      *
      * @return a copy of this {@link GridItem}
      */
-    GridItem makeCopy (
-            int mousePosX, int mousePosY, int globalId, int localId
-    );
+    GridItem makeCopy (int mousePosX, int mousePosY, int globalId, int localId);
 
     /**
      * Returns {@code true} since this {@link GridItem} is

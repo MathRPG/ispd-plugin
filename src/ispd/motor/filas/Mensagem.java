@@ -8,21 +8,21 @@ import ispd.motor.filas.servidores.CentroServico;
 
 public class Mensagem implements Client {
 
-    private int                 tipo;
-    private Tarefa              tarefa;
-    private CentroServico       origem;
-    private List<CentroServico> caminho;
-    private double              tamComunicacao;
-    private List<Tarefa>        filaEscravo;
-    private List<Tarefa>        processadorEscravo;
+    private final int                 tipo;
+    private final CentroServico       origem;
+    private final double              tamComunicacao;
+    private       Tarefa              tarefa;
+    private       List<CentroServico> caminho;
+    private       List<Tarefa>        filaEscravo;
+    private       List<Tarefa>        processadorEscravo;
 
-    public Mensagem (CS_Processamento origem, int tipo) {
+    public Mensagem (final CS_Processamento origem, final int tipo) {
         this.origem         = origem;
         this.tipo           = tipo;
         this.tamComunicacao = 0.011444091796875;
     }
 
-    public Mensagem (CS_Processamento origem, int tipo, Tarefa tarefa) {
+    public Mensagem (final CS_Processamento origem, final int tipo, final Tarefa tarefa) {
         this.origem         = origem;
         this.tipo           = tipo;
         this.tamComunicacao = 0.011444091796875;
@@ -30,7 +30,7 @@ public class Mensagem implements Client {
         this.caminho        = new ArrayList<CentroServico>();
     }
 
-    public Mensagem (CS_Processamento origem, double tamComunicacao, int tipo) {
+    public Mensagem (final CS_Processamento origem, final double tamComunicacao, final int tipo) {
         this.origem         = origem;
         this.tipo           = tipo;
         this.tamComunicacao = tamComunicacao;
@@ -38,7 +38,7 @@ public class Mensagem implements Client {
 
     @Override
     public double getTamComunicacao () {
-        return tamComunicacao;
+        return this.tamComunicacao;
     }
 
     @Override
@@ -53,40 +53,40 @@ public class Mensagem implements Client {
 
     @Override
     public CentroServico getOrigem () {
-        return origem;
+        return this.origem;
     }
 
     @Override
     public List<CentroServico> getCaminho () {
-        return caminho;
+        return this.caminho;
     }
 
     @Override
-    public void setCaminho (List<CentroServico> caminho) {
+    public void setCaminho (final List<CentroServico> caminho) {
         this.caminho = caminho;
     }
 
     public List<Tarefa> getFilaEscravo () {
-        return filaEscravo;
+        return this.filaEscravo;
     }
 
-    public void setFilaEscravo (List<Tarefa> filaEscravo) {
+    public void setFilaEscravo (final List<Tarefa> filaEscravo) {
         this.filaEscravo = filaEscravo;
     }
 
     public List<Tarefa> getProcessadorEscravo () {
-        return processadorEscravo;
+        return this.processadorEscravo;
     }
 
-    public void setProcessadorEscravo (List<Tarefa> processadorEscravo) {
+    public void setProcessadorEscravo (final List<Tarefa> processadorEscravo) {
         this.processadorEscravo = processadorEscravo;
     }
 
     public int getTipo () {
-        return tipo;
+        return this.tipo;
     }
 
     public Tarefa getTarefa () {
-        return tarefa;
+        return this.tarefa;
     }
 }

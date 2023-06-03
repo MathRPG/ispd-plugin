@@ -27,8 +27,7 @@ import ispd.motor.random.TwoStageUniform;
  */
 public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
 
-    private static final TwoStageUniform TASK_COMM_SIZE =
-            new TwoStageUniform(200, 5000, 25000);
+    private static final TwoStageUniform TASK_COMM_SIZE = new TwoStageUniform(200, 5000, 25000);
     private final        Distribution    random;
     private final        double          averageComputationPower;
 
@@ -50,11 +49,10 @@ public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
      *         which tasks will be generated for.
      */
     public ExternalTraceTaskBuilder (
-            final List<TraceTaskInfo> traceTaskInfos,
-            final Distribution random, final double averageCompPower
+            final List<TraceTaskInfo> traceTaskInfos, final Distribution random, final double averageCompPower
     ) {
         super(traceTaskInfos);
-        this.random                  = random;
+        this.random = random;
         this.averageComputationPower = averageCompPower;
     }
 

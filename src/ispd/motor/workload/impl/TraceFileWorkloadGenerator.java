@@ -69,9 +69,7 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
      * @see #makeTaskList(RedeDeFilas)
      * @see #makeTaskBuilder(RedeDeFilas)
      */
-    public TraceFileWorkloadGenerator (
-            final File traceFile, final int taskCount, final String traceType
-    ) {
+    public TraceFileWorkloadGenerator (            final File traceFile, final int taskCount, final String traceType    ) {
         this.traceFile = traceFile;
         this.taskCount = taskCount;
         this.traceType = traceType;
@@ -88,8 +86,7 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
      */
     private List<TraceTaskInfo> getTraceTaskInfoFromFile () {
         try (
-                final var br = new BufferedReader(
-                        new FileReader(this.traceFile, StandardCharsets.UTF_8))
+                final var br = new BufferedReader(                        new FileReader(this.traceFile, StandardCharsets.UTF_8))
         ) {
             return br.lines()
                      .skip(TraceFileWorkloadGenerator.HEADER_LINE_COUNT)
@@ -140,7 +137,7 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
                                       .filter(Predicate.not(qn.getUsuarios()::contains))
                                       .toList();
 
-        TraceFileWorkloadGenerator.updateSchedulerUserMetrics(qn, userIds);
+        updateSchedulerUserMetrics(qn, userIds);
         qn.getUsuarios().addAll(userIds);
     }
 
@@ -184,12 +181,10 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
      * @param users
      *         {@link List} of user ids.
      */
-    private static void updateSchedulerUserMetrics (
-            final RedeDeFilas qn, final List<String> users
-    ) {
+    private static void updateSchedulerUserMetrics (            final RedeDeFilas qn, final List<String> users    ) {
         final var count     = users.size();
-        final var compPower = TraceFileWorkloadGenerator.filledList(0, count);
-        final var limits    = TraceFileWorkloadGenerator.filledList(100, count);
+        final var compPower = filledList(0, count);
+        final var limits    = filledList(100, count);
 
         qn.getMestres().stream()
           .map(CS_Mestre.class::cast)

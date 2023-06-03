@@ -6,15 +6,15 @@ import ispd.motor.filas.servidores.CentroServico;
 
 public interface Client {
 
-    public double getTamComunicacao ();
+    double getTamComunicacao ();
 
-    public double getTamProcessamento ();
+    double getTamProcessamento ();
 
-    public double getTimeCriacao ();
+    double getTimeCriacao ();
 
-    public CentroServico getOrigem ();
+    CentroServico getOrigem ();
 
-    public List<CentroServico> getCaminho ();
+    List<CentroServico> getCaminho ();
 
-    public void setCaminho (List<CentroServico> caminho);
+    void setCaminho (List<CentroServico> caminho);
 }

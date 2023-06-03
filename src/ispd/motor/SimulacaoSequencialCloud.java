@@ -8,18 +8,8 @@ import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
 import ispd.gui.PickSimulationFaultsDialog;
-import ispd.motor.falhas.FIBadDesign;
-import ispd.motor.falhas.FIDenialService;
-import ispd.motor.falhas.FIEarly;
-import ispd.motor.falhas.FIFullHD;
 import ispd.motor.falhas.FIHardware;
-import ispd.motor.falhas.FIIncompatibility;
-import ispd.motor.falhas.FIInterdependencie;
-import ispd.motor.falhas.FILate;
-import ispd.motor.falhas.FIOverload;
-import ispd.motor.falhas.FIPermanent;
 import ispd.motor.falhas.FISoftware;
-import ispd.motor.falhas.FITransient;
 import ispd.motor.falhas.FIValue;
 import ispd.motor.falhas.FState;
 import ispd.motor.filas.Client;
@@ -47,9 +37,7 @@ public class SimulacaoSequencialCloud extends Simulation {
      * @throws IllegalArgumentException
      */
     public SimulacaoSequencialCloud (
-            final ProgressoSimulacao window,
-            final RedeDeFilasCloud cloudQueueNetwork,
-            final List<Tarefa> jobs
+            final ProgressoSimulacao window, final RedeDeFilasCloud cloudQueueNetwork, final List<Tarefa> jobs
     ) {
         super(window, cloudQueueNetwork, jobs);
 
@@ -60,14 +48,11 @@ public class SimulacaoSequencialCloud extends Simulation {
         } else if (cloudQueueNetwork.getLinks() == null || cloudQueueNetwork.getLinks().isEmpty()) {
             window.println("The model has no Networks.", Color.orange);
         } else if (cloudQueueNetwork.getVMs() == null || cloudQueueNetwork.getVMs().isEmpty()) {
-            window.println(
-                    "The model has no virtual machines configured.",
-                    Color.orange
-            );
+            window.println("The model has no virtual machines configured.", Color.orange);
         }
+
         if (jobs == null || jobs.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "One or more  workloads have not been configured.");
+            throw new IllegalArgumentException("One or more  workloads have not been configured.");
         }
 
         window.print("Creating routing.");
@@ -75,83 +60,58 @@ public class SimulacaoSequencialCloud extends Simulation {
 
         System.out.println("---------------------------------------");
         for (final CS_Processamento mst : cloudQueueNetwork.getMestres()) {
-            // TODO: WTF?
             final PolicyMaster temp = (PolicyMaster) mst;
             final PolicyMaster aux  = (PolicyMaster) mst;
             //Cede acesso ao mestre a fila de eventos futuros
             aux.setSimulation(this);
             temp.setSimulation(this);
             //Encontra menor caminho entre o mestre e seus escravos
-            System.out.printf(
-                    "Mestre %s encontrando seus escravos\n",
-                    mst.getId()
-            );
-            mst.determinarCaminhos(); //mestre encontra caminho para seus
-            // escravos
+            System.out.printf("Mestre %s encontrando seus escravos\n", mst.getId());
+            mst.determinarCaminhos(); //mestre encontra caminho para seus escravos
         }
 
         window.incProgresso(5);
         window.println("OK", Color.green);
 
-        //--------------- Injeção de falhas
-        //By Camila
         /*Injetando as falhas:
         verifica qual checkbox foi clicado quando escolheu a falha e executa*/
         //Injetar falhar de Omissão de Hardware: desligar uma máquina física
         final var selecionarFalhas = new PickSimulationFaultsDialog();
 
-
         if (selecionarFalhas.isActive()) {
             //-----------Injeção da Falha de Omissão de Hardware --------
             if (selecionarFalhas.cbkOmissaoHardware != null) {
-                window.println("There are injected hardware omission failures" +
-                               ".");
+                window.println("There are injected hardware omission failures.");
                 window.println("Creating Hardware fault.");
-                //ir para ispd.motor.falhas.FIHardware.java
                 final FIHardware fihardware = new FIHardware();
-                fihardware.FIHardware1(window, cloudQueueNetwork, jobs);
+                fihardware.FIHardware1(window, cloudQueueNetwork);
             } else {
-                window.println("There aren't injected hardware omission " +
-                               "failures.");
+                window.println("There aren't injected hardware omission failures.");
             }
             //-----------Injeção da  Falha de Omissão de Software --------
             if (selecionarFalhas.cbkOmissaoSoftware != null) {
-                window.println("There are injected software omission failures" +
-                               ".");
+                window.println("There are injected software omission failures.");
                 window.println("Creating software fault.");
                 window.println("Software failure created.");
-                //ir para ispd.motor.falhas.FISoftware.java
                 final FISoftware fisoftdware = new FISoftware();
-                fisoftdware.FISfotware1(window, cloudQueueNetwork, jobs);
-            }//if (selecionarFalhas.cbkOmissaoSoftware.isSelected()){
-            else {
-                window.println("There aren't injected software omission " +
-                               "failures.");
+                fisoftdware.FISfotware1(window, cloudQueueNetwork);
+            } else {
+                window.println("There aren't injected software omission failures.");
             }
             //-----------Injeção da  Falha de Negação de serviço --------
             if (selecionarFalhas.cbxNegacaoService != null) {
-                window.println("There are injected denial of service failures" +
-                               ".");
+                window.println("There are injected denial of service failures.");
                 window.println("Creating Denial of service fault.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FIDenialService.java
-                final FIDenialService negacaoServico = new FIDenialService();
-
-            }//if (selecionarFalhas.cbxNegacaoService.isSelected()){
-            else {
-                window.println("There aren't injected denial of service " +
-                               "failures.");
+            } else {
+                window.println("There aren't injected denial of service failures.");
             }
             //-----------Injeção da  Falha de HD Cheio --------
             if (selecionarFalhas.cbxHDCheio != null) {
                 window.println("There are injected Full HD failures.");
                 window.println("Creating Full HD fault.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FIHardware.java
-                final FIFullHD HDCheio = new FIFullHD();
-
-            }//if (selecionarFalhas.cbkHDCheio.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected Full HD failures.");
             }
 
@@ -159,12 +119,10 @@ public class SimulacaoSequencialCloud extends Simulation {
             if (selecionarFalhas.cbxValores != null) {
                 window.println("There are injected Values failures.");
                 window.println("Creating value fault.");
-                //ir para ispd.motor.falhas.FValue.java
                 final MetricasGlobais global = new MetricasGlobais();
                 final FIValue         value  = new FIValue();
                 value.FIValue1(window, cloudQueueNetwork, global);
-            }//if (selecionarFalhas.cbx.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected Value failures.");
             }
 
@@ -172,11 +130,9 @@ public class SimulacaoSequencialCloud extends Simulation {
             if (selecionarFalhas.cbxEstado != null) {
                 window.println("There are injected State failures.");
                 window.println("Creating state fault.");
-                //ir para ispd.motor.falhas.FState.java
                 final FState state = new FState();
                 state.FIState1(window, cloudQueueNetwork);
-            }//if (selecionarFalhas.cbxEstado.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected State failures.");
             }
             //-----------Injeção da  Falha de Sobrecarga de Tempo --------
@@ -184,88 +140,61 @@ public class SimulacaoSequencialCloud extends Simulation {
                 window.println("There are injected time overload failures.");
                 window.println("Creating time overload fault.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FIOverload.java
-                final FIOverload overload = new FIOverload();
-
-            }//if (selecionarFalhas.cbxSobrecargaTempo.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected time overload failures.");
             }
             //-----------Injeção da  Falha de Interdependencia --------
             if (selecionarFalhas.cbxInterdependencia != null) {
-                window.println("There are injected interdependencies failures" +
-                               ".");
+                window.println("There are injected interdependencies failures.");
                 window.println("Creating interdependencie fault.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FIInterdependencie.java
-                final FIInterdependencie fiInterdependencia =
-                        new FIInterdependencie();
-
-            }//if (selecionarFalhas.cbkOmissaoSoftware.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected interdependencies " +
                                "failures.");
             }
+
             //-----------Injeção da  Falha de Incompatibilidade --------
             if (selecionarFalhas.cbxIncompatibilidade != null) {
                 window.println("There are injected Incompatibility failures.");
                 window.println("Creating Incompatibility fault.");
-                window.println("Development fault.");//ir para ispd.motor
-                // .falhas.FIHardware.java
-                final FIIncompatibility fiIncompatibility =
-                        new FIIncompatibility();
-
-            }//if (selecionarFalhas.cbxIncompatibilidade.isSelected()){
-            else {
-                window.println("There aren't injected Incompatibility " +
-                               "failures.");
+                window.println("Development fault.");
+            } else {
+                window.println("There aren't injected Incompatibility failures.");
             }
+
             //-----------Injeção de Falhas Pemanentes --------   
             if (selecionarFalhas.cbxFPermanentes != null) {
                 window.println("There are injected permanents failures.");
                 window.println("Creating permanents fault.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FIPermanent.java
-                final FIPermanent fiPermanent = new FIPermanent();
-
-            }//if (selecionarFalhas.cbxFPermanentes.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected permanents failures.");
             }
+
             //-----------Injeção da  Falha de Desenho incorreto --------
             if (selecionarFalhas.cbxDesenhoIncorreto != null) {
                 window.println("There are injected bad design failures.");
                 window.println("Creating bad design fault.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FIHardware.java
-                final FIBadDesign fibadesign = new FIBadDesign();
-
-            }//if (selecionarFalhas.cbxDesenhoIncorreto.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected bad design failures.");
             }
+
             //-----------Injeção da  Falha Precosse --------
             if (selecionarFalhas.cbxPrecoce != null) {
                 window.println("There are injected early failures.");
                 window.println("Creating early fault.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FIEarly.java
-                final FIEarly fiearly = new FIEarly();
-
-            }//if (selecionarFalhas.cbxPrecoce.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected early failures.");
             }
-//-----------Injeção da  Falha de Tardia --------   
+
+            //-----------Injeção da  Falha de Tardia --------
             if (selecionarFalhas.cbxTardia != null) {
                 window.println("There are injected late failures.");
                 window.println("Creating late fault.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FILate.java
-                final FILate fiTardia = new FILate();
-
-            }//if (selecionarFalhas.cbxTardia.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected late failures.");
             }
 
@@ -274,30 +203,25 @@ public class SimulacaoSequencialCloud extends Simulation {
                 window.println("There are injected transient failures.");
                 window.println("Creating transient failure.");
                 window.println("Development fault.");
-                //ir para ispd.motor.falhas.FIHardware.java
-                final FITransient fitransient = new FITransient();
-
-            }//if (selecionarFalhas.cbkOmissaoSoftware.isSelected()){
-            else {
+            } else {
                 window.println("There aren't injected transient failures.");
             }
-        }//if (selecionarFalhas!=null)
-        else {window.println("There aren't selected faults.");}
+        } else {
+            window.println("There aren't selected faults.");
+        }
+
         if (cloudQueueNetwork.getMaquinasCloud() == null || cloudQueueNetwork.getMaquinasCloud().isEmpty()) {
             window.println("The model has no phisical machines.", Color.orange);
         } else {
             System.out.println("---------------------------------------");
-            for (final CS_MaquinaCloud maq :
-                    cloudQueueNetwork.getMaquinasCloud()) {
-                //Encontra menor caminho entre o escravo e seu mestre
+            for (final CS_MaquinaCloud maq : cloudQueueNetwork.getMaquinasCloud()) {
+                // Encontra menor caminho entre o escravo e seu mestre
                 maq.setStatus(CS_MaquinaCloud.LIGADO);
-                maq.determinarCaminhos();//escravo encontra caminhos para seu
-                // mestre
-                //System.out.println("Maquina " + maq.getId() + " encontrando
-                // seus mestres");
+                maq.determinarCaminhos(); // escravo encontra caminhos para seu mestre
             }
         }
         //fim roteamento
+
         window.incProgresso(5);
     }
 
@@ -326,19 +250,15 @@ public class SimulacaoSequencialCloud extends Simulation {
     }
 
     public void addEventos (final List<Tarefa> tarefas) {
-        System.out.println("Tarefas sendo adicionadas na lista de eventos " +
-                           "futuros");
+        System.out.println("Tarefas sendo adicionadas na lista de eventos futuros");
         for (final Tarefa tarefa : tarefas) {
-            final FutureEvent evt = new FutureEvent(tarefa.getTimeCriacao(),
-                                                    FutureEvent.CHEGADA, tarefa.getOrigem(), tarefa
-            );
+            final var evt = new FutureEvent(tarefa.getTimeCriacao(), FutureEvent.CHEGADA, tarefa.getOrigem(), tarefa);
             this.eventos.add(evt);
         }
     }
 
     private boolean atualizarEscalonadores () {
-        for (final CS_Processamento mst :
-                this.getCloudQueueNetwork().getMestres()) {
+        for (final CS_Processamento mst : this.getCloudQueueNetwork().getMestres()) {
             final CS_VMM mestre = (CS_VMM) mst;
             if (mestre.getEscalonador().getTempoAtualizar() != null) {
                 return true;
@@ -364,8 +284,7 @@ public class SimulacaoSequencialCloud extends Simulation {
                 Objects.requireNonNull(event);
                 if ((Double) ob[2] < event.getCreationTime()) {
                     final CS_Mestre mestre = (CS_Mestre) ob[0];
-                    for (final CS_Processamento maq :
-                            mestre.getEscalonador().getEscravos()) {
+                    for (final CS_Processamento maq : mestre.getEscalonador().getEscravos()) {
                         mestre.atualizar(maq, (Double) ob[2]);
                     }
                     ob[2] = (Double) ob[2] + (Double) ob[1];
@@ -385,9 +304,7 @@ public class SimulacaoSequencialCloud extends Simulation {
         }
     }
 
-    private void desligarMaquinas (
-            final Simulation simulation, final RedeDeFilasCloud qn
-    ) {
+    private void desligarMaquinas (final Simulation simulation, final RedeDeFilasCloud qn) {
         for (final CS_MaquinaCloud aux : qn.getMaquinasCloud()) {
             aux.desligar(simulation);
         }
@@ -410,29 +327,15 @@ public class SimulacaoSequencialCloud extends Simulation {
         Objects.requireNonNull(eventoAtual);
         this.time = eventoAtual.getCreationTime();
         switch (eventoAtual.getType()) {
-            case FutureEvent.CHEGADA -> eventoAtual.getServidor().chegadaDeCliente(
-                    this,
-                    (Tarefa) eventoAtual.getClient()
-            );
-            case FutureEvent.ATENDIMENTO -> eventoAtual.getServidor().atendimento(
-                    this,
-                    (Tarefa) eventoAtual.getClient()
-            );
-            case FutureEvent.SAIDA -> eventoAtual.getServidor().saidaDeCliente(
-                    this,
-                    (Tarefa) eventoAtual.getClient()
-            );
-            case FutureEvent.ESCALONAR -> eventoAtual.getServidor().requisicao(this, null,
-                                                                               FutureEvent.ESCALONAR
-            );
-            case FutureEvent.ALOCAR_VMS -> eventoAtual.getServidor().requisicao(this, null,
-                                                                                FutureEvent.ALOCAR_VMS
-            );
-            default -> eventoAtual.getServidor().requisicao(
-                    this,
-                    (Mensagem) eventoAtual.getClient(),
-                    eventoAtual.getType()
-            );
+            case FutureEvent.CHEGADA -> eventoAtual.getServidor()
+                                                   .chegadaDeCliente(this, (Tarefa) eventoAtual.getClient());
+            case FutureEvent.ATENDIMENTO -> eventoAtual.getServidor()
+                                                       .atendimento(this, (Tarefa) eventoAtual.getClient());
+            case FutureEvent.SAIDA -> eventoAtual.getServidor().saidaDeCliente(this, (Tarefa) eventoAtual.getClient());
+            case FutureEvent.ESCALONAR -> eventoAtual.getServidor().requisicao(this, null, FutureEvent.ESCALONAR);
+            case FutureEvent.ALOCAR_VMS -> eventoAtual.getServidor().requisicao(this, null, FutureEvent.ALOCAR_VMS);
+            default -> eventoAtual.getServidor()
+                                  .requisicao(this, (Mensagem) eventoAtual.getClient(), eventoAtual.getType());
         }
     }
 
@@ -442,12 +345,8 @@ public class SimulacaoSequencialCloud extends Simulation {
     }
 
     @Override
-    public boolean removeFutureEvent (
-            final int eventType,
-            final CentroServico eventServer,
-            final Client eventClient
-    ) {
-        //remover evento de saida do cliente do servidor
+    public boolean removeFutureEvent (final int eventType, final CentroServico eventServer, final Client eventClient) {
+        // remover evento de saida do cliente do servidor
         final var interator = this.eventos.iterator();
         while (interator.hasNext()) {
             final FutureEvent ev = interator.next();

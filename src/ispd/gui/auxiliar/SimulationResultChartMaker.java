@@ -97,23 +97,18 @@ public final class SimulationResultChartMaker {
      *         the task list
      */
     public SimulationResultChartMaker (
-            final Metricas metrics,
-            final RedeDeFilas queueNetwork,
-            final List<Tarefa> taskList
+            final Metricas metrics, final RedeDeFilas queueNetwork, final List<Tarefa> taskList
     ) {
         this(metrics);
 
-        final var computingPowerPerMachineChartInfo
-                = this.makeComputingPowerPerMachineChart(queueNetwork);
+        final var computingPowerPerMachineChartInfo = this.makeComputingPowerPerMachineChart(queueNetwork);
 
         this.computingPowerPerMachineChart = computingPowerPerMachineChartInfo.getFirst();
-        this.computingPowerPerUserChart    = this.makeComputingPowerPerUserChart(taskList,
-                                                                                 computingPowerPerMachineChartInfo.getSecond(),
-                                                                                 queueNetwork
+        this.computingPowerPerUserChart    = this.makeComputingPowerPerUserChart(
+                taskList, computingPowerPerMachineChartInfo.getSecond(), queueNetwork
         );
         this.computingPowerPerTaskChart    = this.makeComputingPowerPerTaskChart(
-                taskList,
-                computingPowerPerMachineChartInfo.getSecond()
+                taskList, computingPowerPerMachineChartInfo.getSecond()
         );
     }
 
@@ -125,10 +120,8 @@ public final class SimulationResultChartMaker {
      *         the metrics
      */
     public SimulationResultChartMaker (final Metricas metrics) {
-        final var processingCharts
-                = this.makeProcessingCharts(metrics.getMetricasProcessamento());
-        final var communicationCharts
-                = this.makeCommunicationCharts(metrics.getMetricasComunicacao());
+        final var processingCharts    = this.makeProcessingCharts(metrics.getMetricasProcessamento());
+        final var communicationCharts = this.makeCommunicationCharts(metrics.getMetricasComunicacao());
 
         this.processingBarChart = processingCharts.getFirst();
         this.processingPieChart = processingCharts.getSecond();
@@ -149,9 +142,7 @@ public final class SimulationResultChartMaker {
      *         computing power per machine results and the total computational
      *         power, respectively
      */
-    private Pair<ChartPanel, Double> makeComputingPowerPerMachineChart (
-            final RedeDeFilas queueNetwork
-    ) {
+    private Pair<ChartPanel, Double> makeComputingPowerPerMachineChart (final RedeDeFilas queueNetwork) {
         final var chartData               = new XYSeriesCollection();
         var       totalComputationalPower = 0.0;
 
@@ -224,8 +215,7 @@ public final class SimulationResultChartMaker {
      * @return the bar chart for the computing power per user results
      */
     private ChartPanel makeComputingPowerPerUserChart (
-            final Collection<? extends Tarefa> tasks,
-            final double totalComputationalPower,
+            final Collection<? extends Tarefa> tasks, final double totalComputationalPower,
             final RedeDeFilas queueNetwork
     ) {
         final var userOperationTimeList = new ArrayList<UserOperationTime>();
@@ -249,23 +239,23 @@ public final class SimulationResultChartMaker {
 
         /* Add each task as two points in the user operation time list */
         for (final var task : tasks) {
-            final var serviceCenterProcessing
-                    = (CS_Processamento) task.getLocalProcessamento();
+            final var serviceCenterProcessing = (CS_Processamento) task.getLocalProcessamento();
 
-            if (serviceCenterProcessing == null) {continue;}
+            if (serviceCenterProcessing == null) {
+                continue;
+            }
 
             for (int i = 0; i < task.getTempoInicial().size(); i++) {
                 final var startTime = task.getTempoInicial().get(i);
                 final var endTime   = task.getTempoFinal().get(i);
 
-                final var usePercentage = task.getHistoricoProcessamento()
-                                              .get(i).getPoderComputacional() / totalComputationalPower * 100.0;
+                final var usePercentage =
+                        task.getHistoricoProcessamento().get(i).getPoderComputacional()
+                        / totalComputationalPower * 100.0;
                 final var owner = users.get(task.getProprietario());
 
-                final var startUserOperationTime
-                        = new UserOperationTime(startTime, true, usePercentage, owner);
-                final var endUserOperationTime
-                        = new UserOperationTime(endTime, false, usePercentage, owner);
+                final var startUserOperationTime = new UserOperationTime(startTime, true, usePercentage, owner);
+                final var endUserOperationTime   = new UserOperationTime(endTime, false, usePercentage, owner);
 
                 userOperationTimeList.add(startUserOperationTime);
                 userOperationTimeList.add(endUserOperationTime);
@@ -297,7 +287,9 @@ public final class SimulationResultChartMaker {
         }
 
         /* Add the series to the chart data for each user */
-        for (int i = 0; i < usersNumber; i++) {chartData.addSeries(usersXYSeries[i]);}
+        for (int i = 0; i < usersNumber; i++) {
+            chartData.addSeries(usersXYSeries[i]);
+        }
 
         final var barChart = ChartFactory.createXYAreaChart(
                 "Use of total computing power through time \nUsers", // Title
@@ -328,19 +320,19 @@ public final class SimulationResultChartMaker {
      * @return the bar chart for the computing power per task results
      */
     private ChartPanel makeComputingPowerPerTaskChart (
-            final Collection<? extends Tarefa> tasks,
-            final double totalComputingPower
+            final Collection<? extends Tarefa> tasks, final double totalComputingPower
     ) {
         /* Ensure the tasks is not null */
         if (tasks == null) {
-            throw new NullPointerException("tasks is null. " +
-                                           "It was not possible to build the computing power through time per task " +
-                                           "chart.");
+            throw new NullPointerException(
+                    "tasks is null. It was not possible to build the computing power through time per task chart.");
         }
 
         /* It checks if the amount of tasks is greater than or equal to 50, then */
         /* the computing power through time per task chart is not going to be returned. */
-        if (tasks.size() >= 50) {return null;}
+        if (tasks.size() >= 50) {
+            return null;
+        }
 
         final var chartData = new XYSeriesCollection();
 
@@ -348,10 +340,11 @@ public final class SimulationResultChartMaker {
             final var xySeries                = new XYSeries("task " + task.getIdentificador());
             final var serviceCenterProcessing = (CS_Processamento) task.getLocalProcessamento();
 
-            if (serviceCenterProcessing == null) {continue;}
+            if (serviceCenterProcessing == null) {
+                continue;
+            }
 
-            final var userPercentage = serviceCenterProcessing.getPoderComputacional()
-                                       / totalComputingPower * 100.0;
+            final var userPercentage = serviceCenterProcessing.getPoderComputacional() / totalComputingPower * 100.0;
 
             for (int j = 0; j < task.getTempoInicial().size(); j++) {
                 final double startTime = task.getTempoInicial().get(j);
@@ -404,8 +397,8 @@ public final class SimulationResultChartMaker {
     ) {
         /* It ensures that the processing map is not null */
         if (processingMap == null) {
-            throw new NullPointerException("processingMap is null." +
-                                           " It could not be possible generate the processing charts.");
+            throw new NullPointerException(
+                    "processingMap is null. It could not be possible generate the processing charts.");
         }
 
         final var barChartData = new DefaultCategoryDataset();
@@ -465,8 +458,8 @@ public final class SimulationResultChartMaker {
     ) {
         /* It ensures that the processing map is not null */
         if (communicationMap == null) {
-            throw new NullPointerException("communicationMap is null." +
-                                           " It could not be possible generate the communication charts.");
+            throw new NullPointerException(
+                    "communicationMap is null. It could not be possible generate the communication charts.");
         }
 
         final var barChartData = new DefaultCategoryDataset();
@@ -521,9 +514,7 @@ public final class SimulationResultChartMaker {
      *         the bar and pie chart, respectively
      */
     private static Pair<ChartPanel, ChartPanel> makeBarPieChartPair (
-            final JFreeChart barChart,
-            final JFreeChart pieChart,
-            final Map<String, ?> barChartMap
+            final JFreeChart barChart, final JFreeChart pieChart, final Map<String, ?> barChartMap
     ) {
         /* It rotates the bar chart's X-axis labels in 45 degrees. */
         if (barChartMap.size() > 10) {
@@ -540,7 +531,6 @@ public final class SimulationResultChartMaker {
         return new Pair<>(barChartPanel, pieChartPanel);
     }
 
-    /* Getters */
 
     /**
      * It returns the processing bar chart. This chart contains the processing

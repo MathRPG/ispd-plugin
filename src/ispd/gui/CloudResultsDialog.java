@@ -16,8 +16,10 @@ import org.jfree.data.xy.XYSeriesCollection;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -46,9 +48,11 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.DefaultTableModel;
 
 import ispd.arquivo.SalvarResultadosHTML;
 import ispd.arquivo.interpretador.cargas.Interpretador;
@@ -69,7 +73,7 @@ import ispd.motor.metricas.MetricasGlobais;
 import ispd.motor.metricas.MetricasProcessamento;
 import ispd.motor.metricas.MetricasUsuarios;
 
-class CloudResultsDialog extends JDialog {
+public class CloudResultsDialog extends JDialog {
 
     private final List<? extends Tarefa> tarefas;
     private final Object[][]             tabelaRecurso;
@@ -103,10 +107,8 @@ class CloudResultsDialog extends JDialog {
     private       double                 poderComputacionalTotal         = 0;
 
     CloudResultsDialog (
-            final Frame parent,
-            final Metricas metricas,
-            final RedeDeFilasCloud rdf, final List<?
-            extends Tarefa> tarefas
+            final Frame parent, final Metricas metricas, final RedeDeFilasCloud rdf,
+            final List<? extends Tarefa> tarefas
     ) {
         super(parent, true);
         this.tarefas = tarefas;
@@ -114,23 +116,18 @@ class CloudResultsDialog extends JDialog {
         this.gerarGraficosComunicacao(metricas.getMetricasComunicacao());
         this.gerarGraficosAlocacao(metricas.getMetricasAlocacao());
         this.gerarGraficosCusto(metricas.getMetricasCusto());
-        this.tabelaRecurso = CloudResultsDialog.setTabelaRecurso(metricas);
+        this.tabelaRecurso = setTabelaRecurso(metricas);
         this.initComponents();
-        this.jTextAreaGlobal.setText(CloudResultsDialog.getResultadosGlobais(metricas.getMetricasGlobais()));
+        this.jTextAreaGlobal.setText(getResultadosGlobais(metricas.getMetricasGlobais()));
         this.html.setMetricasGlobais(metricas.getMetricasGlobais());
-        this.jTextAreaTarefa.setText(CloudResultsDialog.getResultadosTarefas(metricas));
+        this.jTextAreaTarefa.setText(getResultadosTarefas(metricas));
         this.html.setMetricasTarefas(metricas);
         final CS_VMM mestre = (CS_VMM) rdf.getMestres().get(0);
-        this.setResultadosUsuario(
-                mestre.getEscalonador().getMetricaUsuarios(),
-                metricas
-        );
+        this.setResultadosUsuario(mestre.getEscalonador().getMetricaUsuarios(), metricas);
 
         if (rdf.getVMs().size() < 21) {
-            this.graficoProcessamentoTempo =
-                    new ChartPanel(this.criarGraficoProcessamentoTempo(rdf));
-            this.graficoProcessamentoTempo.setPreferredSize(new Dimension(600
-                    , 300));
+            this.graficoProcessamentoTempo = new ChartPanel(this.criarGraficoProcessamentoTempo(rdf));
+            this.graficoProcessamentoTempo.setPreferredSize(new Dimension(600, 300));
         } else {
             this.jButtonProcessamentoMaquina.setVisible(false);
             for (final CS_Processamento maq : rdf.getVMs()) {
@@ -139,24 +136,16 @@ class CloudResultsDialog extends JDialog {
             }
         }
         if (tarefas.size() < 50) {
-            this.graficoProcessamentoTempoTarefa =
-                    new ChartPanel(this.criarGraficoProcessamentoTempoTarefa(tarefas));
+            this.graficoProcessamentoTempoTarefa = new ChartPanel(this.criarGraficoProcessamentoTempoTarefa(tarefas));
             this.graficoProcessamentoTempoTarefa.setPreferredSize(new Dimension(600, 300));
         } else {
             this.jButtonProcessamentoTarefa.setVisible(false);
         }
-        final JFreeChart[] temp =
-                this.gerarGraficoProcessamentoTempoUser(tarefas, rdf);
+        final JFreeChart[] temp = this.gerarGraficoProcessamentoTempoUser(tarefas, rdf);
         this.graficoProcessamentoTempoUser1 = new ChartPanel(temp[0]);
-        this.graficoProcessamentoTempoUser1.setPreferredSize(new Dimension(
-                600,
-                300
-        ));
+        this.graficoProcessamentoTempoUser1.setPreferredSize(new Dimension(600, 300));
         this.graficoProcessamentoTempoUser2 = new ChartPanel(temp[1]);
-        this.graficoProcessamentoTempoUser2.setPreferredSize(new Dimension(
-                600,
-                300
-        ));
+        this.graficoProcessamentoTempoUser2.setPreferredSize(new Dimension(600, 300));
         this.jScrollPaneAlocacao.setViewportView(this.graficoBarraAlocacao);
         this.jScrollPaneCustos.setViewportView(this.graficoBarraCustoTotal);
         this.jScrollPaneProcessamento.setViewportView(this.graficoBarraProcessamento);
@@ -165,96 +154,67 @@ class CloudResultsDialog extends JDialog {
 
     }
 
-    private void gerarGraficosProcessamento (
-            final Map<String,
-                    MetricasProcessamento> mProcess
-    ) {
-        final DefaultCategoryDataset dadosGraficoProcessamento =
-                new DefaultCategoryDataset();
-        final DefaultPieDataset dadosGraficoPizzaProcessamento =
-                new DefaultPieDataset();
+    private void gerarGraficosProcessamento (final Map<String, MetricasProcessamento> mProcess) {
+        final DefaultCategoryDataset dadosGraficoProcessamento      = new DefaultCategoryDataset();
+        final DefaultPieDataset      dadosGraficoPizzaProcessamento = new DefaultPieDataset();
 
         if (mProcess != null) {
-            for (final Map.Entry<String, MetricasProcessamento> entry :
-                    mProcess.entrySet()) {
+            for (final Map.Entry<String, MetricasProcessamento> entry : mProcess.entrySet()) {
                 final MetricasProcessamento mt = entry.getValue();
                 if (mt.getnumeroMaquina() == 0) {
                     dadosGraficoProcessamento.addValue(mt.getMFlopsProcessados(), "vermelho", mt.getId());
-                    dadosGraficoPizzaProcessamento.insertValue(0, mt.getId(),
-                                                               mt.getMFlopsProcessados()
-                    );
+                    dadosGraficoPizzaProcessamento.insertValue(0, mt.getId(), mt.getMFlopsProcessados());
                 } else {
                     dadosGraficoProcessamento.addValue(
                             mt.getMFlopsProcessados(), "vermelho", mt.getId() + " node " + mt.getnumeroMaquina());
                     dadosGraficoPizzaProcessamento.insertValue(
-                            0,
-                            mt.getId() + " node " + mt.getnumeroMaquina(),
-                            mt.getMFlopsProcessados()
-                    );
+                            0, mt.getId() + " node " + mt.getnumeroMaquina(), mt.getMFlopsProcessados());
                 }
             }
         }
 
-        JFreeChart jfc = ChartFactory.createBarChart(
-                "Total processed on each resource", //Titulo
-                "Resource", // Eixo X
-                "Mflops", //Eixo Y
-                dadosGraficoProcessamento, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                false, false, false
+        JFreeChart jfc = ChartFactory.createBarChart("Total processed on each resource", //Titulo
+                                                     "Resource", // Eixo X
+                                                     "Mflops", //Eixo Y
+                                                     dadosGraficoProcessamento, // Dados para o grafico
+                                                     PlotOrientation.VERTICAL, //Orientacao do grafico
+                                                     false, false, false
         ); // exibir: legendas, tooltips, url
         //Inclina nome da barra em 45 graus
         if (mProcess.size() > 10) {
             jfc.getCategoryPlot().getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_45);
         }
         this.graficoBarraProcessamento = new ChartPanel(jfc);
-        this.graficoBarraProcessamento.setPreferredSize(new Dimension(
-                600,
-                300
-        ));
+        this.graficoBarraProcessamento.setPreferredSize(new Dimension(600, 300));
 
-        jfc                            = ChartFactory.createPieChart(
-                "Total processed on each resource", //Titulo
-                dadosGraficoPizzaProcessamento, // Dados para o grafico
-                true, false, false
+        jfc                            = ChartFactory.createPieChart("Total processed on each resource", //Titulo
+                                                                     dadosGraficoPizzaProcessamento,
+                                                                     // Dados para o grafico
+                                                                     true, false, false
         );
         this.graficoPizzaProcessamento = new ChartPanel(jfc);
-        this.graficoPizzaProcessamento.setPreferredSize(new Dimension(
-                600,
-                300
-        ));
+        this.graficoPizzaProcessamento.setPreferredSize(new Dimension(600, 300));
 
     }
 
-    private void gerarGraficosComunicacao (
-            final Map<String,
-                    MetricasComunicacao> mComunicacao
-    ) {
-        final DefaultCategoryDataset dadosGraficoComunicacao =
-                new DefaultCategoryDataset();
-        final DefaultPieDataset dadosGraficoPizzaComunicacao =
-                new DefaultPieDataset();
+    private void gerarGraficosComunicacao (final Map<String, MetricasComunicacao> mComunicacao) {
+        final DefaultCategoryDataset dadosGraficoComunicacao      = new DefaultCategoryDataset();
+        final DefaultPieDataset      dadosGraficoPizzaComunicacao = new DefaultPieDataset();
 
         if (mComunicacao != null) {
-            for (final Map.Entry<String, MetricasComunicacao> entry :
-                    mComunicacao.entrySet()) {
+            for (final Map.Entry<String, MetricasComunicacao> entry : mComunicacao.entrySet()) {
                 final MetricasComunicacao link = entry.getValue();
-                dadosGraficoComunicacao.addValue(link.getMbitsTransmitidos(),
-                                                 "vermelho", link.getId()
-                );
-                dadosGraficoPizzaComunicacao.insertValue(0, link.getId(),
-                                                         link.getMbitsTransmitidos()
-                );
+                dadosGraficoComunicacao.addValue(link.getMbitsTransmitidos(), "vermelho", link.getId());
+                dadosGraficoPizzaComunicacao.insertValue(0, link.getId(), link.getMbitsTransmitidos());
             }
         }
 
-        JFreeChart jfc = ChartFactory.createBarChart(
-                "Total communication in each resource", //Titulo
-                "Resource", // Eixo X
-                "Mbits", //Eixo Y
-                dadosGraficoComunicacao, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                false, false, false
+        JFreeChart jfc = ChartFactory.createBarChart("Total communication in each resource", //Titulo
+                                                     "Resource", // Eixo X
+                                                     "Mbits", //Eixo Y
+                                                     dadosGraficoComunicacao, // Dados para o grafico
+                                                     PlotOrientation.VERTICAL, //Orientacao do grafico
+                                                     false, false, false
         ); // exibir: legendas, tooltips, url
         //Inclina nome da barra em 45 graus
         if (mComunicacao != null && mComunicacao.size() > 10) {
@@ -263,40 +223,32 @@ class CloudResultsDialog extends JDialog {
         this.graficoBarraComunicacao = new ChartPanel(jfc);
         this.graficoBarraComunicacao.setPreferredSize(new Dimension(600, 300));
 
-        jfc                          = ChartFactory.createPieChart(
-                "Total communication in each resource", //Titulo
-                dadosGraficoPizzaComunicacao, // Dados para o grafico
-                true, false, false
+        jfc                          = ChartFactory.createPieChart("Total communication in each resource", //Titulo
+                                                                   dadosGraficoPizzaComunicacao, // Dados para o grafico
+                                                                   true, false, false
         );
         this.graficoPizzaComunicacao = new ChartPanel(jfc);
         this.graficoPizzaComunicacao.setPreferredSize(new Dimension(600, 300));
     }
 
     private void gerarGraficosAlocacao (final Map<String, MetricasAlocacao> mAloc) {
-        final DefaultCategoryDataset dadosGraficoAloc =
-                new DefaultCategoryDataset();
-        final DefaultPieDataset dadosGraficoPizzaAloc = new DefaultPieDataset();
+        final DefaultCategoryDataset dadosGraficoAloc      = new DefaultCategoryDataset();
+        final DefaultPieDataset      dadosGraficoPizzaAloc = new DefaultPieDataset();
 
         if (mAloc != null) {
-            for (final Map.Entry<String, MetricasAlocacao> entry :
-                    mAloc.entrySet()) {
+            for (final Map.Entry<String, MetricasAlocacao> entry : mAloc.entrySet()) {
                 final MetricasAlocacao mt = entry.getValue();
-                dadosGraficoAloc.addValue(mt.getNumVMs(), "vermelho",
-                                          mt.getId()
-                );
-                dadosGraficoPizzaAloc.insertValue(0, mt.getId(),
-                                                  mt.getNumVMs()
-                );
+                dadosGraficoAloc.addValue(mt.getNumVMs(), "vermelho", mt.getId());
+                dadosGraficoPizzaAloc.insertValue(0, mt.getId(), mt.getNumVMs());
             }
         }
 
-        JFreeChart jfc = ChartFactory.createBarChart(
-                "Total of virtual machines allocated in each resource", //Titulo
-                "Resource", // Eixo X
-                "Number of VMs", //Eixo Y
-                dadosGraficoAloc, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                false, false, false
+        JFreeChart jfc = ChartFactory.createBarChart("Total of virtual machines allocated in each resource", //Titulo
+                                                     "Resource", // Eixo X
+                                                     "Number of VMs", //Eixo Y
+                                                     dadosGraficoAloc, // Dados para o grafico
+                                                     PlotOrientation.VERTICAL, //Orientacao do grafico
+                                                     false, false, false
         ); // exibir: legendas, tooltips, url
         //Inclina nome da barra em 45 graus
         if (mAloc.size() > 10) {
@@ -305,50 +257,39 @@ class CloudResultsDialog extends JDialog {
         this.graficoBarraAlocacao = new ChartPanel(jfc);
         this.graficoBarraAlocacao.setPreferredSize(new Dimension(600, 300));
 
-        jfc                       = ChartFactory.createPieChart(
-                "Total of virtual machines allocated in each resource", //Titulo
-                dadosGraficoPizzaAloc, // Dados para o grafico
-                true, false, false
-        );
+        jfc                       =
+                ChartFactory.createPieChart("Total of virtual machines allocated in each resource", //Titulo
+                                            dadosGraficoPizzaAloc, // Dados para o grafico
+                                            true, false, false
+                );
         this.graficoPizzaAlocacao = new ChartPanel(jfc);
         this.graficoPizzaAlocacao.setPreferredSize(new Dimension(600, 300));
 
     }
 
     private void gerarGraficosCusto (final Map<String, MetricasCusto> mCusto) {
-        final DefaultCategoryDataset dadosGraficoCustoTotal =
-                new DefaultCategoryDataset();
-        final DefaultCategoryDataset dadosGraficoCustoDisco =
-                new DefaultCategoryDataset();
-        final DefaultCategoryDataset dadosGraficoCustoMem =
-                new DefaultCategoryDataset();
-        final DefaultCategoryDataset dadosGraficoCustoProc =
-                new DefaultCategoryDataset();
+        final DefaultCategoryDataset dadosGraficoCustoTotal = new DefaultCategoryDataset();
+        final DefaultCategoryDataset dadosGraficoCustoDisco = new DefaultCategoryDataset();
+        final DefaultCategoryDataset dadosGraficoCustoMem   = new DefaultCategoryDataset();
+        final DefaultCategoryDataset dadosGraficoCustoProc  = new DefaultCategoryDataset();
 
         if (mCusto != null) {
-            for (final Map.Entry<String, MetricasCusto> entry :
-                    mCusto.entrySet()) {
+            for (final Map.Entry<String, MetricasCusto> entry : mCusto.entrySet()) {
                 final MetricasCusto mt = entry.getValue();
                 dadosGraficoCustoTotal.addValue(
                         mt.getCustoDisco() + mt.getCustoMem() + mt.getCustoProc(), "vermelho", mt.getId());
-                dadosGraficoCustoDisco.addValue(mt.getCustoDisco(), "vermelho"
-                        , mt.getId());
-                dadosGraficoCustoMem.addValue(mt.getCustoMem(), "vermelho",
-                                              mt.getId()
-                );
-                dadosGraficoCustoProc.addValue(mt.getCustoProc(), "vermelho",
-                                               mt.getId()
-                );
+                dadosGraficoCustoDisco.addValue(mt.getCustoDisco(), "vermelho", mt.getId());
+                dadosGraficoCustoMem.addValue(mt.getCustoMem(), "vermelho", mt.getId());
+                dadosGraficoCustoProc.addValue(mt.getCustoProc(), "vermelho", mt.getId());
             }
         }
 
-        final JFreeChart jfct = ChartFactory.createBarChart(
-                "Total cost of utilization per virtual machine", //Titulo
-                "Virtual machines", // Eixo X
-                "Cost ($)", //Eixo Y
-                dadosGraficoCustoTotal, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                false, false, false
+        final JFreeChart jfct = ChartFactory.createBarChart("Total cost of utilization per virtual machine", //Titulo
+                                                            "Virtual machines", // Eixo X
+                                                            "Cost ($)", //Eixo Y
+                                                            dadosGraficoCustoTotal, // Dados para o grafico
+                                                            PlotOrientation.VERTICAL, //Orientacao do grafico
+                                                            false, false, false
         ); // exibir: legendas, tooltips, url
         //Inclina nome da barra em 45 graus
         if (mCusto.size() > 10) {
@@ -357,13 +298,12 @@ class CloudResultsDialog extends JDialog {
         this.graficoBarraCustoTotal = new ChartPanel(jfct);
         this.graficoBarraAlocacao.setPreferredSize(new Dimension(600, 300));
 
-        final JFreeChart jfcd = ChartFactory.createBarChart(
-                "Cost of disk utilization per virtual machine", //Titulo
-                "Virtual machines", // Eixo X
-                "Cost ($)", //Eixo Y
-                dadosGraficoCustoDisco, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                false, false, false
+        final JFreeChart jfcd = ChartFactory.createBarChart("Cost of disk utilization per virtual machine", //Titulo
+                                                            "Virtual machines", // Eixo X
+                                                            "Cost ($)", //Eixo Y
+                                                            dadosGraficoCustoDisco, // Dados para o grafico
+                                                            PlotOrientation.VERTICAL, //Orientacao do grafico
+                                                            false, false, false
         ); // exibir: legendas, tooltips, url
         //Inclina nome da barra em 45 graus
         if (mCusto.size() > 10) {
@@ -372,13 +312,12 @@ class CloudResultsDialog extends JDialog {
         this.graficoBarraCustoDisco = new ChartPanel(jfcd);
         this.graficoBarraCustoDisco.setPreferredSize(new Dimension(600, 300));
 
-        final JFreeChart jfcm = ChartFactory.createBarChart(
-                "Cost of memory utilization per virtual machine", //Titulo
-                "Virtual machines", // Eixo X
-                "Cost ($)", //Eixo Y
-                dadosGraficoCustoMem, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                false, false, false
+        final JFreeChart jfcm = ChartFactory.createBarChart("Cost of memory utilization per virtual machine", //Titulo
+                                                            "Virtual machines", // Eixo X
+                                                            "Cost ($)", //Eixo Y
+                                                            dadosGraficoCustoMem, // Dados para o grafico
+                                                            PlotOrientation.VERTICAL, //Orientacao do grafico
+                                                            false, false, false
         ); // exibir: legendas, tooltips, url
         //Inclina nome da barra em 45 graus
         if (mCusto.size() > 10) {
@@ -387,14 +326,14 @@ class CloudResultsDialog extends JDialog {
         this.graficoBarraCustoMem = new ChartPanel(jfcm);
         this.graficoBarraCustoMem.setPreferredSize(new Dimension(600, 300));
 
-        final JFreeChart jfcp = ChartFactory.createBarChart(
-                "Cost of processing utilization per virtual machine", //Titulo
-                "Virtual machines", // Eixo X
-                "Cost ($)", //Eixo Y
-                dadosGraficoCustoProc, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                false, false, false
-        ); // exibir: legendas, tooltips, url
+        final JFreeChart jfcp =
+                ChartFactory.createBarChart("Cost of processing utilization per virtual machine", //Titulo
+                                            "Virtual machines", // Eixo X
+                                            "Cost ($)", //Eixo Y
+                                            dadosGraficoCustoProc, // Dados para o grafico
+                                            PlotOrientation.VERTICAL, //Orientacao do grafico
+                                            false, false, false
+                ); // exibir: legendas, tooltips, url
         //Inclina nome da barra em 45 graus
         if (mCusto.size() > 10) {
             jfcp.getCategoryPlot().getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.UP_45);
@@ -412,8 +351,8 @@ class CloudResultsDialog extends JDialog {
         double proc;
         double comu;
         if (metricas.getMetricasProcessamento() != null) {
-            for (final Map.Entry<String, MetricasProcessamento> entry :
-                    metricas.getMetricasProcessamento().entrySet()) {
+            for (final Map.Entry<String, MetricasProcessamento> entry : metricas.getMetricasProcessamento()
+                                                                                .entrySet()) {
                 final MetricasProcessamento maq = entry.getValue();
                 if (maq.getnumeroMaquina() == 0) {
                     nome = maq.getId();
@@ -427,8 +366,7 @@ class CloudResultsDialog extends JDialog {
             }
         }
         if (metricas.getMetricasComunicacao() != null) {
-            for (final Map.Entry<String, MetricasComunicacao> entry :
-                    metricas.getMetricasComunicacao().entrySet()) {
+            for (final Map.Entry<String, MetricasComunicacao> entry : metricas.getMetricasComunicacao().entrySet()) {
                 final MetricasComunicacao link = entry.getValue();
                 nome = link.getId();
                 prop = "---";
@@ -451,47 +389,35 @@ class CloudResultsDialog extends JDialog {
         final JToolBar       jToolBar1           = new JToolBar();
         final AbstractButton jButtonSalvar       = new JButton();
         final AbstractButton jButtonSalvarTraces = new JButton();
-        final JScrollPane jScrollPaneGobal =
-                new JScrollPane();
+        final JScrollPane    jScrollPaneGobal    = new JScrollPane();
         this.jTextAreaGlobal = new JTextArea();
-        final JScrollPane jScrollPaneTarefa =
-                new JScrollPane();
+        final JScrollPane jScrollPaneTarefa = new JScrollPane();
         this.jTextAreaTarefa    = new JTextArea();
         this.jScrollPaneUsuario = new JScrollPane();
         this.jTextAreaUsuario   = new JTextArea();
-        final JScrollPane jScrollPaneRecurso =
-                new JScrollPane();
-        final Object[] colunas = {
-                "Label", "Owner", "Processing performed",
-                "Communication performed"
-        };
-        final JTable jTableRecurso       = new JTable();
-        final JPanel jPanelProcessamento = new JPanel();
-        final JToolBar jToolBarProcessamento =
-                new JToolBar();
-        final AbstractButton jButtonPBarra = new JButton();
-        final AbstractButton jButtonPPizza = new JButton();
+        final JScrollPane jScrollPaneRecurso = new JScrollPane();
+        final Object[] colunas = { "Label", "Owner", "Processing performed", "Communication performed" };
+        final JTable         jTableRecurso         = new JTable();
+        final JPanel         jPanelProcessamento   = new JPanel();
+        final JToolBar       jToolBarProcessamento = new JToolBar();
+        final AbstractButton jButtonPBarra         = new JButton();
+        final AbstractButton jButtonPPizza         = new JButton();
         this.jScrollPaneProcessamento = new JScrollPane();
-        final JPanel jPanelComunicacao = new JPanel();
-        final JToolBar jToolBarComunicacao =
-                new JToolBar();
-        final AbstractButton jButtonCBarra = new JButton();
-        final AbstractButton jButtonCPizza = new JButton();
+        final JPanel         jPanelComunicacao   = new JPanel();
+        final JToolBar       jToolBarComunicacao = new JToolBar();
+        final AbstractButton jButtonCBarra       = new JButton();
+        final AbstractButton jButtonCPizza       = new JButton();
         this.jScrollPaneComunicacao = new JScrollPane();
-        final JPanel jPanelProcessamentoTempo =
-                new JPanel();
-        final JToolBar jToolBarProcessamentoTempo =
-                new JToolBar();
-        final AbstractButton jButtonProcessamentoUser =
-                new JButton();
+        final JPanel         jPanelProcessamentoTempo   = new JPanel();
+        final JToolBar       jToolBarProcessamentoTempo = new JToolBar();
+        final AbstractButton jButtonProcessamentoUser   = new JButton();
         this.jButtonProcessamentoMaquina   = new JButton();
         this.jButtonProcessamentoTarefa    = new JButton();
         this.jScrollPaneProcessamentoTempo = new JScrollPane();
-        final JPanel jPanelAlocacao = new JPanel();
-        final JToolBar jToolBarAlocacao =
-                new JToolBar();
-        final AbstractButton jButtonABarra = new JButton();
-        final AbstractButton jButtonAPizza = new JButton();
+        final JPanel         jPanelAlocacao   = new JPanel();
+        final JToolBar       jToolBarAlocacao = new JToolBar();
+        final AbstractButton jButtonABarra    = new JButton();
+        final AbstractButton jButtonAPizza    = new JButton();
         this.jScrollPaneAlocacao = new JScrollPane();
         final JPanel         jPanelCusto   = new JPanel();
         final JToolBar       jToolBarCusto = new JToolBar();
@@ -504,8 +430,7 @@ class CloudResultsDialog extends JDialog {
 
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.setTitle("Simulation Results");
-        this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getResource(
-                "imagens/Logo_iSPD_25.png")));
+        this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getResource("imagens/Logo_iSPD_25.png")));
 
         jToolBar1.setRollover(true);
 
@@ -528,75 +453,55 @@ class CloudResultsDialog extends JDialog {
 
         this.jTextAreaGlobal.setEditable(false);
         this.jTextAreaGlobal.setColumns(20);
-        this.jTextAreaGlobal.setFont(new java.awt.Font("Courier New", 1, 14)); //
+        this.jTextAreaGlobal.setFont(new Font("Courier New", 1, 14)); //
 
         this.jTextAreaGlobal.setRows(5);
         jScrollPaneGobal.setViewportView(this.jTextAreaGlobal);
 
-        final GroupLayout jPanelGlobalLayout =
-                new GroupLayout(jPanelGlobal);
+        final GroupLayout jPanelGlobalLayout = new GroupLayout(jPanelGlobal);
         jPanelGlobal.setLayout(jPanelGlobalLayout);
-        jPanelGlobalLayout.setHorizontalGroup(
-                jPanelGlobalLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                  .addComponent(jToolBar1,
-                                                GroupLayout.Alignment.TRAILING,
-                                                GroupLayout.DEFAULT_SIZE, 651,
-                                                Short.MAX_VALUE
-                                  )
-                                  .addGroup(jPanelGlobalLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                              .addGroup(
-                                                                      GroupLayout.Alignment.TRAILING,
-                                                                      jPanelGlobalLayout.createSequentialGroup()
-                                                                                        .addContainerGap(
-                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                Short.MAX_VALUE
-                                                                                        )
-                                                                                        .addComponent(
-                                                                                                jScrollPaneGobal,
-                                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                                627,
-                                                                                                GroupLayout.PREFERRED_SIZE
-                                                                                        )
-                                                                                        .addContainerGap(
-                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                Short.MAX_VALUE
-                                                                                        )
-                                                              ))
-        );
-        jPanelGlobalLayout.setVerticalGroup(
-                jPanelGlobalLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                  .addGroup(jPanelGlobalLayout.createSequentialGroup()
-                                                              .addComponent(jToolBar1,
-                                                                            GroupLayout.PREFERRED_SIZE, 25,
-                                                                            GroupLayout.PREFERRED_SIZE
-                                                              )
-                                                              .addGap(0, 316, Short.MAX_VALUE))
-                                  .addGroup(jPanelGlobalLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                              .addGroup(
-                                                                      GroupLayout.Alignment.TRAILING,
-                                                                      jPanelGlobalLayout.createSequentialGroup()
-                                                                                        .addContainerGap(
-                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                Short.MAX_VALUE
-                                                                                        )
-                                                                                        .addComponent(
-                                                                                                jScrollPaneGobal,
-                                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                                298,
-                                                                                                GroupLayout.PREFERRED_SIZE
-                                                                                        )
-                                                                                        .addContainerGap(
-                                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                                Short.MAX_VALUE
-                                                                                        )
-                                                              ))
-        );
+        jPanelGlobalLayout.setHorizontalGroup(jPanelGlobalLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                                .addComponent(jToolBar1, GroupLayout.Alignment.TRAILING,
+                                                                              GroupLayout.DEFAULT_SIZE, 651,
+                                                                              Short.MAX_VALUE
+                                                                ).addGroup(
+                        jPanelGlobalLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                          .addGroup(GroupLayout.Alignment.TRAILING,
+                                                    jPanelGlobalLayout.createSequentialGroup()
+                                                                      .addContainerGap(GroupLayout.DEFAULT_SIZE,
+                                                                                       Short.MAX_VALUE
+                                                                      ).addComponent(jScrollPaneGobal,
+                                                                                     GroupLayout.PREFERRED_SIZE, 627,
+                                                                                     GroupLayout.PREFERRED_SIZE
+                                                                      ).addContainerGap(GroupLayout.DEFAULT_SIZE,
+                                                                                        Short.MAX_VALUE)
+                                          )));
+        jPanelGlobalLayout.setVerticalGroup(jPanelGlobalLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                              .addGroup(jPanelGlobalLayout.createSequentialGroup()
+                                                                                          .addComponent(jToolBar1,
+                                                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                                                        25,
+                                                                                                        GroupLayout.PREFERRED_SIZE
+                                                                                          ).addGap(0, 316,
+                                                                                                   Short.MAX_VALUE
+                                                                      )).addGroup(
+                        jPanelGlobalLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                          .addGroup(GroupLayout.Alignment.TRAILING,
+                                                    jPanelGlobalLayout.createSequentialGroup()
+                                                                      .addContainerGap(GroupLayout.DEFAULT_SIZE,
+                                                                                       Short.MAX_VALUE
+                                                                      ).addComponent(jScrollPaneGobal,
+                                                                                     GroupLayout.PREFERRED_SIZE, 298,
+                                                                                     GroupLayout.PREFERRED_SIZE
+                                                                      ).addContainerGap(GroupLayout.DEFAULT_SIZE,
+                                                                                        Short.MAX_VALUE)
+                                          )));
 
         this.jTabbedPaneGrid.addTab("Global", jPanelGlobal);
 
         this.jTextAreaTarefa.setColumns(20);
         this.jTextAreaTarefa.setEditable(false);
-        this.jTextAreaTarefa.setFont(new java.awt.Font("Courier New", 0, 14)); //
+        this.jTextAreaTarefa.setFont(new Font("Courier New", 0, 14)); //
 
         this.jTextAreaTarefa.setRows(5);
         jScrollPaneTarefa.setViewportView(this.jTextAreaTarefa);
@@ -605,14 +510,14 @@ class CloudResultsDialog extends JDialog {
 
         this.jTextAreaUsuario.setColumns(20);
         this.jTextAreaUsuario.setEditable(false);
-        this.jTextAreaUsuario.setFont(new java.awt.Font("Courier New", 0, 14)); //
+        this.jTextAreaUsuario.setFont(new Font("Courier New", 0, 14)); //
 
         this.jTextAreaUsuario.setRows(5);
         this.jScrollPaneUsuario.setViewportView(this.jTextAreaUsuario);
 
         this.jTabbedPaneGrid.addTab("User", this.jScrollPaneUsuario);
 
-        jTableRecurso.setModel(new javax.swing.table.DefaultTableModel(this.tabelaRecurso, colunas));
+        jTableRecurso.setModel(new DefaultTableModel(this.tabelaRecurso, colunas));
         jScrollPaneRecurso.setViewportView(jTableRecurso);
 
         this.jTabbedPaneGrid.addTab("Resources", jScrollPaneRecurso);
@@ -633,40 +538,26 @@ class CloudResultsDialog extends JDialog {
         jButtonPPizza.addActionListener(this::jButtonPPizzaActionPerformed);
         jToolBarProcessamento.add(jButtonPPizza);
 
-        final GroupLayout jPanelProcessamentoLayout =
-                new GroupLayout(jPanelProcessamento);
+        final GroupLayout jPanelProcessamentoLayout = new GroupLayout(jPanelProcessamento);
         jPanelProcessamento.setLayout(jPanelProcessamentoLayout);
         jPanelProcessamentoLayout.setHorizontalGroup(
                 jPanelProcessamentoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                         .addComponent(jToolBarProcessamento,
-                                                       GroupLayout.DEFAULT_SIZE, 651,
+                                         .addComponent(jToolBarProcessamento, GroupLayout.DEFAULT_SIZE, 651,
                                                        Short.MAX_VALUE
-                                         )
-                                         .addComponent(this.jScrollPaneProcessamento,
-                                                       GroupLayout.DEFAULT_SIZE, 651,
-                                                       Short.MAX_VALUE
-                                         )
-        );
+                                         ).addComponent(this.jScrollPaneProcessamento, GroupLayout.DEFAULT_SIZE, 651,
+                                                        Short.MAX_VALUE
+                                         ));
         jPanelProcessamentoLayout.setVerticalGroup(
-                jPanelProcessamentoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                         .addGroup(jPanelProcessamentoLayout.createSequentialGroup()
-                                                                            .addComponent(jToolBarProcessamento,
-                                                                                          GroupLayout.PREFERRED_SIZE,
-                                                                                          25,
-                                                                                          GroupLayout.PREFERRED_SIZE
-                                                                            )
-                                                                            .addPreferredGap(
-                                                                                    javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                            .addComponent(this.jScrollPaneProcessamento,
-                                                                                          GroupLayout.DEFAULT_SIZE,
-                                                                                          291, Short.MAX_VALUE
-                                                                            ))
-        );
+                jPanelProcessamentoLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                        jPanelProcessamentoLayout.createSequentialGroup()
+                                                 .addComponent(jToolBarProcessamento, GroupLayout.PREFERRED_SIZE, 25,
+                                                               GroupLayout.PREFERRED_SIZE
+                                                 ).addPreferredGap(ComponentPlacement.RELATED)
+                                                 .addComponent(this.jScrollPaneProcessamento, GroupLayout.DEFAULT_SIZE,
+                                                               291, Short.MAX_VALUE
+                                                 )));
 
-        this.jTabbedPaneGrid.addTab(
-                "Chart of the processing",
-                jPanelProcessamento
-        );
+        this.jTabbedPaneGrid.addTab("Chart of the processing", jPanelProcessamento);
 
         jToolBarComunicacao.setRollover(true);
 
@@ -684,39 +575,26 @@ class CloudResultsDialog extends JDialog {
         jButtonCPizza.addActionListener(this::jButtonCPizzaActionPerformed);
         jToolBarComunicacao.add(jButtonCPizza);
 
-        final GroupLayout jPanelComunicacaoLayout =
-                new GroupLayout(jPanelComunicacao);
+        final GroupLayout jPanelComunicacaoLayout = new GroupLayout(jPanelComunicacao);
         jPanelComunicacao.setLayout(jPanelComunicacaoLayout);
         jPanelComunicacaoLayout.setHorizontalGroup(
                 jPanelComunicacaoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                       .addComponent(jToolBarComunicacao,
-                                                     GroupLayout.DEFAULT_SIZE, 651,
+                                       .addComponent(jToolBarComunicacao, GroupLayout.DEFAULT_SIZE, 651,
                                                      Short.MAX_VALUE
-                                       )
-                                       .addComponent(this.jScrollPaneComunicacao,
-                                                     GroupLayout.DEFAULT_SIZE, 651,
-                                                     Short.MAX_VALUE
-                                       )
-        );
+                                       ).addComponent(this.jScrollPaneComunicacao, GroupLayout.DEFAULT_SIZE, 651,
+                                                      Short.MAX_VALUE
+                                       ));
         jPanelComunicacaoLayout.setVerticalGroup(
-                jPanelComunicacaoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                       .addGroup(jPanelComunicacaoLayout.createSequentialGroup()
-                                                                        .addComponent(jToolBarComunicacao,
-                                                                                      GroupLayout.PREFERRED_SIZE, 25,
-                                                                                      GroupLayout.PREFERRED_SIZE
-                                                                        )
-                                                                        .addPreferredGap(
-                                                                                javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                        .addComponent(this.jScrollPaneComunicacao,
-                                                                                      GroupLayout.DEFAULT_SIZE,
-                                                                                      291, Short.MAX_VALUE
-                                                                        ))
-        );
+                jPanelComunicacaoLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                        jPanelComunicacaoLayout.createSequentialGroup()
+                                               .addComponent(jToolBarComunicacao, GroupLayout.PREFERRED_SIZE, 25,
+                                                             GroupLayout.PREFERRED_SIZE
+                                               ).addPreferredGap(ComponentPlacement.RELATED)
+                                               .addComponent(this.jScrollPaneComunicacao, GroupLayout.DEFAULT_SIZE, 291,
+                                                             Short.MAX_VALUE
+                                               )));
 
-        this.jTabbedPaneGrid.addTab(
-                "Chart of the communication",
-                jPanelComunicacao
-        );
+        this.jTabbedPaneGrid.addTab("Chart of the communication", jPanelComunicacao);
 
         jToolBarProcessamentoTempo.setRollover(true);
 
@@ -741,42 +619,27 @@ class CloudResultsDialog extends JDialog {
         this.jButtonProcessamentoTarefa.addActionListener(this::jButtonProcessamentoTarefaActionPerformed);
         jToolBarProcessamentoTempo.add(this.jButtonProcessamentoTarefa);
 
-        final GroupLayout jPanelProcessamentoTempoLayout =
-                new GroupLayout(jPanelProcessamentoTempo);
+        final GroupLayout jPanelProcessamentoTempoLayout = new GroupLayout(jPanelProcessamentoTempo);
         jPanelProcessamentoTempo.setLayout(jPanelProcessamentoTempoLayout);
         jPanelProcessamentoTempoLayout.setHorizontalGroup(
                 jPanelProcessamentoTempoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                              .addComponent(jToolBarProcessamentoTempo,
-                                                            GroupLayout.DEFAULT_SIZE, 651,
+                                              .addComponent(jToolBarProcessamentoTempo, GroupLayout.DEFAULT_SIZE, 651,
                                                             Short.MAX_VALUE
-                                              )
-                                              .addComponent(this.jScrollPaneProcessamentoTempo,
-                                                            GroupLayout.DEFAULT_SIZE, 651,
-                                                            Short.MAX_VALUE
-                                              )
-        );
+                                              ).addComponent(this.jScrollPaneProcessamentoTempo,
+                                                             GroupLayout.DEFAULT_SIZE, 651, Short.MAX_VALUE
+                                              ));
         jPanelProcessamentoTempoLayout.setVerticalGroup(
-                jPanelProcessamentoTempoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                              .addGroup(jPanelProcessamentoTempoLayout.createSequentialGroup()
-                                                                                      .addComponent(
-                                                                                              jToolBarProcessamentoTempo,
-                                                                                              GroupLayout.PREFERRED_SIZE,
-                                                                                              25,
-                                                                                              GroupLayout.PREFERRED_SIZE
-                                                                                      )
-                                                                                      .addPreferredGap(
-                                                                                              javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                      .addComponent(
-                                                                                              this.jScrollPaneProcessamentoTempo,
-                                                                                              GroupLayout.DEFAULT_SIZE,
-                                                                                              291, Short.MAX_VALUE
-                                                                                      ))
-        );
+                jPanelProcessamentoTempoLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                        jPanelProcessamentoTempoLayout.createSequentialGroup().addComponent(jToolBarProcessamentoTempo,
+                                                                                            GroupLayout.PREFERRED_SIZE,
+                                                                                            25,
+                                                                                            GroupLayout.PREFERRED_SIZE
+                        ).addPreferredGap(ComponentPlacement.RELATED).addComponent(this.jScrollPaneProcessamentoTempo,
+                                                                                   GroupLayout.DEFAULT_SIZE, 291,
+                                                                                   Short.MAX_VALUE
+                        )));
 
-        this.jTabbedPaneGrid.addTab(
-                "Use of computing power through time",
-                jPanelProcessamentoTempo
-        );
+        this.jTabbedPaneGrid.addTab("Use of computing power through time", jPanelProcessamentoTempo);
 
         jToolBarAlocacao.setRollover(true);
 
@@ -794,36 +657,30 @@ class CloudResultsDialog extends JDialog {
         jButtonAPizza.addActionListener(this::jButtonAPizzaActionPerformed);
         jToolBarAlocacao.add(jButtonAPizza);
 
-        final GroupLayout jPanelAlocacaoLayout =
-                new GroupLayout(jPanelAlocacao);
+        final GroupLayout jPanelAlocacaoLayout = new GroupLayout(jPanelAlocacao);
         jPanelAlocacao.setLayout(jPanelAlocacaoLayout);
-        jPanelAlocacaoLayout.setHorizontalGroup(
-                jPanelAlocacaoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                    .addComponent(jToolBarAlocacao,
-                                                  GroupLayout.DEFAULT_SIZE, 651,
-                                                  Short.MAX_VALUE
-                                    )
-                                    .addComponent(this.jScrollPaneAlocacao)
-        );
-        jPanelAlocacaoLayout.setVerticalGroup(
-                jPanelAlocacaoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanelAlocacaoLayout.createSequentialGroup()
-                                                                  .addComponent(jToolBarAlocacao,
-                                                                                GroupLayout.PREFERRED_SIZE, 25,
-                                                                                GroupLayout.PREFERRED_SIZE
-                                                                  )
-                                                                  .addPreferredGap(
-                                                                          javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                  .addComponent(this.jScrollPaneAlocacao,
-                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                291, Short.MAX_VALUE
-                                                                  ))
-        );
+        jPanelAlocacaoLayout.setHorizontalGroup(jPanelAlocacaoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                                    .addComponent(jToolBarAlocacao,
+                                                                                  GroupLayout.DEFAULT_SIZE, 651,
+                                                                                  Short.MAX_VALUE
+                                                                    ).addComponent(this.jScrollPaneAlocacao));
+        jPanelAlocacaoLayout.setVerticalGroup(jPanelAlocacaoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                                  .addGroup(jPanelAlocacaoLayout.createSequentialGroup()
+                                                                                                .addComponent(
+                                                                                                        jToolBarAlocacao,
+                                                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                                                        25,
+                                                                                                        GroupLayout.PREFERRED_SIZE
+                                                                                                ).addPreferredGap(
+                                                                                  ComponentPlacement.RELATED)
+                                                                                                .addComponent(
+                                                                                                        this.jScrollPaneAlocacao,
+                                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                                        291,
+                                                                                                        Short.MAX_VALUE
+                                                                                                )));
 
-        this.jTabbedPaneGrid.addTab(
-                "Chart of virtual machine allocation",
-                jPanelAlocacao
-        );
+        this.jTabbedPaneGrid.addTab("Chart of virtual machine allocation", jPanelAlocacao);
 
         jToolBarCusto.setRollover(true);
 
@@ -855,89 +712,56 @@ class CloudResultsDialog extends JDialog {
         jButtonProc.addActionListener(this::jButtonProcActionPerformed);
         jToolBarCusto.add(jButtonProc);
 
-        final GroupLayout jPanelCustoLayout =
-                new GroupLayout(jPanelCusto);
+        final GroupLayout jPanelCustoLayout = new GroupLayout(jPanelCusto);
         jPanelCusto.setLayout(jPanelCustoLayout);
-        jPanelCustoLayout.setHorizontalGroup(
-                jPanelCustoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                 .addComponent(jToolBarCusto,
-                                               GroupLayout.DEFAULT_SIZE, 651,
-                                               Short.MAX_VALUE
-                                 )
-                                 .addComponent(this.jScrollPaneCustos)
-        );
-        jPanelCustoLayout.setVerticalGroup(
-                jPanelCustoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                 .addGroup(jPanelCustoLayout.createSequentialGroup()
-                                                            .addComponent(jToolBarCusto,
-                                                                          GroupLayout.PREFERRED_SIZE, 25,
-                                                                          GroupLayout.PREFERRED_SIZE
-                                                            )
-                                                            .addPreferredGap(
-                                                                    javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                            .addComponent(this.jScrollPaneCustos,
-                                                                          GroupLayout.DEFAULT_SIZE,
-                                                                          291, Short.MAX_VALUE
-                                                            ))
-        );
+        jPanelCustoLayout.setHorizontalGroup(jPanelCustoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                              .addComponent(jToolBarCusto, GroupLayout.DEFAULT_SIZE,
+                                                                            651, Short.MAX_VALUE
+                                                              ).addComponent(this.jScrollPaneCustos));
+        jPanelCustoLayout.setVerticalGroup(jPanelCustoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                            .addGroup(jPanelCustoLayout.createSequentialGroup()
+                                                                                       .addComponent(jToolBarCusto,
+                                                                                                     GroupLayout.PREFERRED_SIZE,
+                                                                                                     25,
+                                                                                                     GroupLayout.PREFERRED_SIZE
+                                                                                       ).addPreferredGap(
+                                                                            ComponentPlacement.RELATED).addComponent(
+                                                                            this.jScrollPaneCustos,
+                                                                            GroupLayout.DEFAULT_SIZE, 291,
+                                                                            Short.MAX_VALUE
+                                                                    )));
 
-        this.jTabbedPaneGrid.addTab(
-                "Chart of the cost of utilization",
-                jPanelCusto
-        );
+        this.jTabbedPaneGrid.addTab("Chart of the cost of utilization", jPanelCusto);
 
-        final GroupLayout layout =
-                new GroupLayout(this.getContentPane());
+        final GroupLayout layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addComponent(this.jTabbedPaneGrid)
-                      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                      .addGroup(layout.createSequentialGroup()
-                                                      .addGap(0, 0, Short.MAX_VALUE)
-                                                      .addComponent(jTabbedPane2,
-                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                    100, GroupLayout.PREFERRED_SIZE
-                                                      )
-                                                      .addGap(0, 0, Short.MAX_VALUE)))
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addComponent(this.jTabbedPaneGrid,
-                                    GroupLayout.PREFERRED_SIZE, 386,
-                                    Short.MAX_VALUE
-                      )
-                      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                      .addGroup(layout.createSequentialGroup()
-                                                      .addGap(0, 0, Short.MAX_VALUE)
-                                                      .addComponent(jTabbedPane2,
-                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                    100, GroupLayout.PREFERRED_SIZE
-                                                      )
-                                                      .addGap(0, 0, Short.MAX_VALUE)))
-        );
+                layout.createParallelGroup(GroupLayout.Alignment.LEADING).addComponent(this.jTabbedPaneGrid).addGroup(
+                        layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                                layout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE)
+                                      .addComponent(jTabbedPane2, GroupLayout.PREFERRED_SIZE, 100,
+                                                    GroupLayout.PREFERRED_SIZE
+                                      ).addGap(0, 0, Short.MAX_VALUE))));
+        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                      .addComponent(this.jTabbedPaneGrid, GroupLayout.PREFERRED_SIZE, 386,
+                                                    Short.MAX_VALUE
+                                      ).addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                        layout.createSequentialGroup().addGap(0, 0, Short.MAX_VALUE)
+                              .addComponent(jTabbedPane2, GroupLayout.PREFERRED_SIZE, 100, GroupLayout.PREFERRED_SIZE)
+                              .addGap(0, 0, Short.MAX_VALUE))));
 
         this.pack();
     }
 
     private static String getResultadosGlobais (final MetricasGlobais globais) {
         String texto = "\t\tSimulation Results:\n\n";
-        texto += String.format(
-                "\tTotal Simulated Time = %g \n",
-                globais.getTempoSimulacao()
+        texto += String.format("\tTotal Simulated Time = %g \n", globais.getTempoSimulacao());
+        texto += String.format("\tSatisfaction = %g %%\n", globais.getSatisfacaoMedia());
+        texto += String.format("\tIdleness of processing resources = %g %%\n", globais.getOciosidadeComputacao());
+        texto += String.format("\tIdleness of communication resources = %g " + "%%\n",
+                               globais.getOciosidadeComunicacao()
         );
-        texto += String.format(
-                "\tSatisfaction = %g %%\n",
-                globais.getSatisfacaoMedia()
-        );
-        texto += String.format("\tIdleness of processing resources = %g %%\n"
-                , globais.getOciosidadeComputacao());
-        texto += String.format("\tIdleness of communication resources = %g " +
-                               "%%\n", globais.getOciosidadeComunicacao());
-        texto += String.format(
-                "\tEfficiency = %g %%\n",
-                globais.getEficiencia()
-        );
+        texto += String.format("\tEfficiency = %g %%\n", globais.getEficiencia());
         if (globais.getEficiencia() > 70.0) {
             texto += "\tEfficiency GOOD\n\n ";
         } else if (globais.getEficiencia() > 40.0) {
@@ -946,27 +770,12 @@ class CloudResultsDialog extends JDialog {
             texto += "\tEfficiency BAD\n\n ";
         }
         texto += "\t\tCost Results:\n\n";
-        texto += String.format(
-                "\tCost Total Processing = %g $\n",
-                globais.getCustoTotalProc()
-        );
-        texto += String.format(
-                "\tCost Total Memory = %g $\n",
-                globais.getCustoTotalMem()
-        );
-        texto += String.format(
-                "\tCost Total Disk = %g $\n\n",
-                globais.getCustoTotalDisco()
-        );
+        texto += String.format("\tCost Total Processing = %g $\n", globais.getCustoTotalProc());
+        texto += String.format("\tCost Total Memory = %g $\n", globais.getCustoTotalMem());
+        texto += String.format("\tCost Total Disk = %g $\n\n", globais.getCustoTotalDisco());
         texto += "\t\tVM Alocation Results:\n\n";
-        texto += String.format(
-                "\tTotal of VMs alocated = %d \n",
-                globais.getNumVMsAlocadas()
-        );
-        texto += String.format(
-                "\tTotal of VMs rejected = %d \n",
-                globais.getNumVMsRejeitadas()
-        );
+        texto += String.format("\tTotal of VMs alocated = %d \n", globais.getNumVMsAlocadas());
+        texto += String.format("\tTotal of VMs rejected = %d \n", globais.getNumVMsRejeitadas());
 
         return texto;
     }
@@ -978,112 +787,68 @@ class CloudResultsDialog extends JDialog {
         final double tempoMedioSistemaProcessamento =
                 metrica.getTempoMedioFilaProcessamento() + metrica.getTempoMedioProcessamento();
         texto += "\n Communication \n";
-        texto += String.format(
-                "    Queue average time: %g seconds.\n",
-                metrica.getTempoMedioFilaComunicacao()
-        );
-        texto += String.format("    Communication average time: %g seconds" +
-                               ".\n", metrica.getTempoMedioComunicacao());
-        texto += String.format(
-                "    System average time: %g seconds.\n",
-                tempoMedioSistemaComunicacao
-        );
+        texto += String.format("    Queue average time: %g seconds.\n", metrica.getTempoMedioFilaComunicacao());
+        texto +=
+                String.format("    Communication average time: %g seconds" + ".\n", metrica.getTempoMedioComunicacao());
+        texto += String.format("    System average time: %g seconds.\n", tempoMedioSistemaComunicacao);
         texto += "\n Processing \n";
-        texto += String.format(
-                "    Queue average time: %g seconds.\n",
-                metrica.getTempoMedioFilaProcessamento()
-        );
-        texto += String.format(
-                "    Processing average time: %g seconds.\n",
-                metrica.getTempoMedioProcessamento()
-        );
-        texto += String.format(
-                "    System average time: %g seconds.\n",
-                tempoMedioSistemaProcessamento
-        );
+        texto += String.format("    Queue average time: %g seconds.\n", metrica.getTempoMedioFilaProcessamento());
+        texto += String.format("    Processing average time: %g seconds.\n", metrica.getTempoMedioProcessamento());
+        texto += String.format("    System average time: %g seconds.\n", tempoMedioSistemaProcessamento);
         if (metrica.getNumTarefasCanceladas() > 0) {
             texto += "\n Tasks Canceled \n";
-            texto += String.format(
-                    "    Number: %d \n",
-                    metrica.getNumTarefasCanceladas()
-            );
-            texto += String.format(
-                    "    Wasted Processing: %g Mflops",
-                    metrica.getMflopsDesperdicio()
-            );
+            texto += String.format("    Number: %d \n", metrica.getNumTarefasCanceladas());
+            texto += String.format("    Wasted Processing: %g Mflops", metrica.getMflopsDesperdicio());
         }
         return texto;
     }
 
-    private void setResultadosUsuario (
-            final MetricasUsuarios metricasUsuarios,
-            final Metricas metricas
-    ) {
+    private void setResultadosUsuario (final MetricasUsuarios metricasUsuarios, final Metricas metricas) {
         if (metricasUsuarios != null && metricasUsuarios.getUsuarios().size() > 1) {
             String texto = "";
             for (int i = 0; i < metricasUsuarios.getUsuarios().size(); i++) {
                 final String userName = metricasUsuarios.getUsuarios().get(i);
                 texto += "\n\n\t\tUser " + userName + "\n";
-                final HashSet set =
-                        metricasUsuarios.getTarefasConcluidas(userName);
+                final HashSet set = metricasUsuarios.getTarefasConcluidas(userName);
                 texto += "\nNumber of task: " + set.size() + "\n";
-                //Applications:
-                //Name: Number of task: Mflops:
+                //Applications: Name: Number of task: Mflops:
                 double       tempoMedioFilaComunicacao   = 0;
                 double       tempoMedioComunicacao       = 0;
                 final double tempoMedioSistemaComunicacao;
                 double       tempoMedioFilaProcessamento = 0;
                 double       tempoMedioProcessamento     = 0;
                 final double tempoMedioSistemaProcessamento;
-                final int    numTarefasCanceladas        = 0;
                 int          numTarefas                  = 0;
-                for (final Tarefa no :
-                        metricasUsuarios.getTarefasConcluidas(userName)) {
+                for (final Tarefa no : metricasUsuarios.getTarefasConcluidas(userName)) {
                     tempoMedioFilaComunicacao += no.getMetricas().getTempoEsperaComu();
                     tempoMedioComunicacao += no.getMetricas().getTempoComunicacao();
-                    tempoMedioFilaProcessamento =
-                            no.getMetricas().getTempoEsperaProc();
-                    tempoMedioProcessamento     =
-                            no.getMetricas().getTempoProcessamento();
+                    tempoMedioFilaProcessamento = no.getMetricas().getTempoEsperaProc();
+                    tempoMedioProcessamento     = no.getMetricas().getTempoProcessamento();
                     numTarefas++;
                 }
-                tempoMedioFilaComunicacao      =
-                        tempoMedioFilaComunicacao / numTarefas;
+                tempoMedioFilaComunicacao      = tempoMedioFilaComunicacao / numTarefas;
                 tempoMedioComunicacao          = tempoMedioComunicacao / numTarefas;
-                tempoMedioFilaProcessamento    =
-                        tempoMedioFilaProcessamento / numTarefas;
+                tempoMedioFilaProcessamento    = tempoMedioFilaProcessamento / numTarefas;
                 tempoMedioProcessamento        = tempoMedioProcessamento / numTarefas;
-                tempoMedioSistemaComunicacao   =
-                        tempoMedioFilaComunicacao + tempoMedioComunicacao;
-                tempoMedioSistemaProcessamento =
-                        tempoMedioFilaProcessamento + tempoMedioProcessamento;
+                tempoMedioSistemaComunicacao   = tempoMedioFilaComunicacao + tempoMedioComunicacao;
+                tempoMedioSistemaProcessamento = tempoMedioFilaProcessamento + tempoMedioProcessamento;
                 texto += "\n Communication \n";
-                texto += String.format("    Queue average time: %g seconds" +
-                                       ".\n", tempoMedioFilaComunicacao);
-                texto += String.format("    Communication average time: %g " +
-                                       "seconds.\n", tempoMedioComunicacao);
-                texto += String.format("    System average time: %g seconds" +
-                                       ".\n", tempoMedioSistemaComunicacao);
+                texto += String.format("    Queue average time: %g seconds" + ".\n", tempoMedioFilaComunicacao);
+                texto += String.format("    Communication average time: %g " + "seconds.\n", tempoMedioComunicacao);
+                texto += String.format("    System average time: %g seconds" + ".\n", tempoMedioSistemaComunicacao);
                 texto += "\n Processing \n";
-                texto += String.format("    Queue average time: %g seconds" +
-                                       ".\n", tempoMedioFilaProcessamento);
-                texto += String.format("    Processing average time: %g " +
-                                       "seconds.\n", tempoMedioProcessamento);
-                texto += String.format("    System average time: %g seconds" +
-                                       ".\n", tempoMedioSistemaProcessamento);
+                texto += String.format("    Queue average time: %g seconds" + ".\n", tempoMedioFilaProcessamento);
+                texto += String.format("    Processing average time: %g " + "seconds.\n", tempoMedioProcessamento);
+                texto += String.format("    System average time: %g seconds" + ".\n", tempoMedioSistemaProcessamento);
             }
-            String name;
             texto += """
 
                      Satisfação dos usuários em porcentagem
                      """;
-            for (final Map.Entry<String, Double> entry :
-                    metricas.getMetricasSatisfacao().entrySet()) {
-
+            for (final Map.Entry<String, Double> entry : metricas.getMetricasSatisfacao().entrySet()) {
                 final String user       = entry.getKey();
                 final Double satisfacao = entry.getValue();
                 texto += user + " : " + satisfacao + " %\n";
-
             }
             this.jTextAreaUsuario.setText(texto);
         } else {
@@ -1103,8 +868,7 @@ class CloudResultsDialog extends JDialog {
             for (final CS_Processamento maq : rdf.getVMs()) {
                 //Lista que recebe os pares de intervalo de tempo em que a
                 // máquina executou.
-                final List<ParesOrdenadosUso> lista =
-                        maq.getListaProcessamento();
+                final List<ParesOrdenadosUso> lista = maq.getListaProcessamento();
                 this.poderComputacionalTotal +=
                         (maq.getPoderComputacional() - (maq.getOcupacao() * maq.getPoderComputacional()));
                 //Se a máquina tiver intervalos.
@@ -1120,13 +884,10 @@ class CloudResultsDialog extends JDialog {
                     else //Estancia tmp_series com o nome concatenado com a
                     // palavra node e seu numero.
                     {
-                        tmp_series =
-                                new XYSeries(maq.getId() + " node " + maq.getnumeroMaquina());
+                        tmp_series = new XYSeries(maq.getId() + " node " + maq.getnumeroMaquina());
                     }
-                    int i;
-                    //Laço que vai adicionando os pontos para a criação do
-                    // gráfico.
-                    for (i = 0; i < lista.size(); i++) {
+                    //Laço que vai adicionando os pontos para a criação do gráfico.
+                    for (int i = 0; i < lista.size(); i++) {
                         //Calcula o uso, que é 100% - taxa de ocupação inicial.
                         Double uso = 100 - (maq.getOcupacao() * 100);
                         //Adiciona ponto inicial.
@@ -1145,43 +906,29 @@ class CloudResultsDialog extends JDialog {
             }
         }
 
-        return ChartFactory.createXYAreaChart(
-                "Use of computing power through time "
-                + "\nMachines", //Titulo
-                "Time (seconds)", // Eixo X
-                "Rate of use of computing power for each node (%)", //Eixo Y
-                dadosGrafico, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                true, true, false
+        return ChartFactory.createXYAreaChart("Use of computing power through time " + "\nMachines", //Titulo
+                                              "Time (seconds)", // Eixo X
+                                              "Rate of use of computing power for each node (%)", //Eixo Y
+                                              dadosGrafico, // Dados para o grafico
+                                              PlotOrientation.VERTICAL, //Orientacao do grafico
+                                              true, true, false
         );
     }
 
-    private JFreeChart criarGraficoProcessamentoTempoTarefa (
-            final Collection<?
-                    extends Tarefa> tarefas
-    ) {
-
+    private JFreeChart criarGraficoProcessamentoTempoTarefa (final Collection<? extends Tarefa> tarefas) {
         final XYSeriesCollection dadosGrafico = new XYSeriesCollection();
         if (!tarefas.isEmpty()) {
             for (final Tarefa task : tarefas) {
                 final XYSeries tmp_series;
                 tmp_series = new XYSeries("task " + task.getIdentificador());
-                final CS_Processamento temp =
-                        (CS_Processamento) task.getLocalProcessamento();
+                final CS_Processamento temp = (CS_Processamento) task.getLocalProcessamento();
                 if (temp != null) {
-                    final Double uso =
-                            (temp.getPoderComputacional() / this.poderComputacionalTotal) * 100;
+                    final Double uso = (temp.getPoderComputacional() / this.poderComputacionalTotal) * 100;
                     for (int j = 0; j < task.getTempoInicial().size(); j++) {
-                        tmp_series.add(
-                                task.getTempoInicial().get(j),
-                                (Double) 0.0
-                        );
+                        tmp_series.add(task.getTempoInicial().get(j), (Double) 0.0);
                         tmp_series.add(task.getTempoInicial().get(j), uso);
                         tmp_series.add(task.getTempoFinal().get(j), uso);
-                        tmp_series.add(
-                                task.getTempoFinal().get(j),
-                                (Double) 0.0
-                        );
+                        tmp_series.add(task.getTempoFinal().get(j), (Double) 0.0);
                     }
                     dadosGrafico.addSeries(tmp_series);
                 }
@@ -1189,20 +936,17 @@ class CloudResultsDialog extends JDialog {
 
         }
 
-        return ChartFactory.createXYAreaChart(
-                "Use of total computing power through time "
-                + "\nTasks", //Titulo
-                "Time (seconds)", // Eixo X
-                "Rate of total use of computing power (%)", //Eixo Y
-                dadosGrafico, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                true, true, false
+        return ChartFactory.createXYAreaChart("Use of total computing power through time " + "\nTasks", //Titulo
+                                              "Time (seconds)", // Eixo X
+                                              "Rate of total use of computing power (%)", //Eixo Y
+                                              dadosGrafico, // Dados para o grafico
+                                              PlotOrientation.VERTICAL, //Orientacao do grafico
+                                              true, true, false
         );
     }
 
     private JFreeChart[] gerarGraficoProcessamentoTempoUser (
-            final Collection<?
-                    extends Tarefa> tarefas, final RedeDeFilas rdf
+            final Collection<? extends Tarefa> tarefas, final RedeDeFilas rdf
     ) {
         final List<UserOperationTime> lista           = new ArrayList<>();
         final int                     numberUsers     = rdf.getUsuarios().size();
@@ -1223,23 +967,22 @@ class CloudResultsDialog extends JDialog {
         if (!tarefas.isEmpty()) {
             //Insere cada tarefa como dois pontos na lista
             for (final Tarefa task : tarefas) {
-                final CS_Processamento local =
-                        (CS_Processamento) task.getLocalProcessamento();
+                final CS_Processamento local = (CS_Processamento) task.getLocalProcessamento();
                 if (local != null) {
-
                     for (int i = 0; i < task.getTempoInicial().size(); i++) {
-                        final Double uso =
-                                (
-                                        task.getHistoricoProcessamento().get(i).getPoderComputacional() /
-                                        this.poderComputacionalTotal
-                                ) * 100;
+                        final Double uso = (
+                                                   task.getHistoricoProcessamento().get(i).getPoderComputacional() /
+                                                   this.poderComputacionalTotal
+                                           ) * 100;
                         final UserOperationTime provisorio1 =
-                                new UserOperationTime(
-                                        task.getTempoInicial().get(i), true, uso, users.get(task.getProprietario()));
+                                new UserOperationTime(task.getTempoInicial().get(i), true, uso,
+                                                      users.get(task.getProprietario())
+                                );
                         lista.add(provisorio1);
                         final UserOperationTime provisorio2 =
-                                new UserOperationTime(
-                                        task.getTempoFinal().get(i), false, uso, users.get(task.getProprietario()));
+                                new UserOperationTime(task.getTempoFinal().get(i), false, uso,
+                                                      users.get(task.getProprietario())
+                                );
                         lista.add(provisorio2);
                     }
                 }
@@ -1247,70 +990,52 @@ class CloudResultsDialog extends JDialog {
             //Ordena lista
             Collections.sort(lista);
         }
-        for (final UserOperationTime UserOperationTime :
-                lista) {
+        for (final UserOperationTime UserOperationTime : lista) {
             final int usuario = UserOperationTime.getUserId();
             //Altera os valores do usuario atual e todos acima dele
             for (int j = usuario; j < numberUsers; j++) {
                 //Salva valores anteriores
-                tmp_series[j].add(
-                        UserOperationTime.getTime(),
-                        utilizacaoUser[j]
-                );
+                tmp_series[j].add(UserOperationTime.getTime(), utilizacaoUser[j]);
                 if (UserOperationTime.isStartTime()) {
                     utilizacaoUser[j] += UserOperationTime.getNodeUse();
                 } else {
                     utilizacaoUser[j] -= UserOperationTime.getNodeUse();
                 }
                 //Novo valor
-                tmp_series[j].add(
-                        UserOperationTime.getTime(),
-                        utilizacaoUser[j]
-                );
+                tmp_series[j].add(UserOperationTime.getTime(), utilizacaoUser[j]);
             }
             //Grafico1
-            tmp_series1[usuario].add(
-                    UserOperationTime.getTime(),
-                    utilizacaoUser1[usuario]
-            );
+            tmp_series1[usuario].add(UserOperationTime.getTime(), utilizacaoUser1[usuario]);
             if (UserOperationTime.isStartTime()) {
                 utilizacaoUser1[usuario] += UserOperationTime.getNodeUse();
             } else {
                 utilizacaoUser1[usuario] -= UserOperationTime.getNodeUse();
             }
-            tmp_series1[usuario].add(
-                    UserOperationTime.getTime(),
-                    utilizacaoUser1[usuario]
-            );
+            tmp_series1[usuario].add(UserOperationTime.getTime(), utilizacaoUser1[usuario]);
         }
         for (int i = 0; i < numberUsers; i++) {
             dadosGrafico.addSeries(tmp_series[i]);
             dadosGrafico1.addSeries(tmp_series1[i]);
         }
         final JFreeChart[] saida = new JFreeChart[2];
-        saida[0] = ChartFactory.createXYAreaChart(
-                "Use of total computing power through time"
-                + "\nUsers", //Titulo
-                "Time (seconds)", // Eixo X
-                "Rate of total use of computing power (%)", //Eixo Y
-                dadosGrafico1, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                true, true, false
+        saida[0] = ChartFactory.createXYAreaChart("Use of total computing power through time" + "\nUsers", //Titulo
+                                                  "Time (seconds)", // Eixo X
+                                                  "Rate of total use of computing power (%)", //Eixo Y
+                                                  dadosGrafico1, // Dados para o grafico
+                                                  PlotOrientation.VERTICAL, //Orientacao do grafico
+                                                  true, true, false
         ); // exibir: legendas, tooltips, url
 
-        saida[1] = ChartFactory.createXYLineChart(
-                "Use of total computing power through time"
-                + "\nUsers", //Titulo
-                "Time (seconds)", // Eixo X
-                "Rate of total use of computing power (%)", //Eixo Y
-                dadosGrafico, // Dados para o grafico
-                PlotOrientation.VERTICAL, //Orientacao do grafico
-                true, true, false
+        saida[1] = ChartFactory.createXYLineChart("Use of total computing power through time" + "\nUsers", //Titulo
+                                                  "Time (seconds)", // Eixo X
+                                                  "Rate of total use of computing power (%)", //Eixo Y
+                                                  dadosGrafico, // Dados para o grafico
+                                                  PlotOrientation.VERTICAL, //Orientacao do grafico
+                                                  true, true, false
         ); // exibir: legendas, tooltips, url
         final XYPlot xyplot = (XYPlot) saida[1].getPlot();
         xyplot.setDomainPannable(true);
-        final AbstractXYItemRenderer xysteparearenderer =
-                new XYStepAreaRenderer(2);
+        final AbstractXYItemRenderer xysteparearenderer = new XYStepAreaRenderer(2);
         xysteparearenderer.setDataBoundsIncludesVisibleSeriesOnly(false);
         xysteparearenderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
         xysteparearenderer.setDefaultEntityRadius(6);
@@ -1323,7 +1048,7 @@ class CloudResultsDialog extends JDialog {
         return this.getClass().getResource(name);
     }
 
-    private void jButtonSalvarActionPerformed (final java.awt.event.ActionEvent evt) {
+    private void jButtonSalvarActionPerformed (final ActionEvent evt) {
         final JFileChooser jFileChooser = new JFileChooser();
         jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         final int returnVal = jFileChooser.showSaveDialog(this);
@@ -1338,11 +1063,8 @@ class CloudResultsDialog extends JDialog {
         }
     }
 
-    private void jButtonSalvarTracesActionPerformed (final java.awt.event.ActionEvent evt) {
-        final FileFilter filtro = new MultipleExtensionFileFilter("Workload Model of " +
-                                                                  "Simulation", ".wmsx",
-                                                                  true
-        );
+    private void jButtonSalvarTracesActionPerformed (final ActionEvent evt) {
+        final FileFilter filtro = new MultipleExtensionFileFilter("Workload Model of " + "Simulation", ".wmsx", true);
         final JFileChooser jFileChooser = new JFileChooser();
         jFileChooser.setFileFilter(filtro);
         final int returnVal = jFileChooser.showSaveDialog(this);
@@ -1351,33 +1073,28 @@ class CloudResultsDialog extends JDialog {
             if (!file.getName().endsWith(".wmsx")) {
                 file = new File(file + ".wmsx");
             }
-            final Interpretador interpret =
-                    new Interpretador(file.getAbsolutePath());
+            final Interpretador interpret = new Interpretador(file.getAbsolutePath());
             interpret.geraTraceSim(this.tarefas);
         }
     }
 
-    private void jButtonPBarraActionPerformed (final java.awt.event.ActionEvent evt) {
-
+    private void jButtonPBarraActionPerformed (final ActionEvent evt) {
         this.jScrollPaneProcessamento.setViewportView(this.graficoBarraProcessamento);
     }
 
-    private void jButtonPPizzaActionPerformed (final java.awt.event.ActionEvent evt) {
-
+    private void jButtonPPizzaActionPerformed (final ActionEvent evt) {
         this.jScrollPaneProcessamento.setViewportView(this.graficoPizzaProcessamento);
     }
 
-    private void jButtonCBarraActionPerformed (final java.awt.event.ActionEvent evt) {
-
+    private void jButtonCBarraActionPerformed (final ActionEvent evt) {
         this.jScrollPaneComunicacao.setViewportView(this.graficoBarraComunicacao);
     }
 
-    private void jButtonCPizzaActionPerformed (final java.awt.event.ActionEvent evt) {
-
+    private void jButtonCPizzaActionPerformed (final ActionEvent evt) {
         this.jScrollPaneComunicacao.setViewportView(this.graficoPizzaComunicacao);
     }
 
-    private void jButtonProcessamentoUserActionPerformed (final java.awt.event.ActionEvent evt) {
+    private void jButtonProcessamentoUserActionPerformed (final ActionEvent evt) {
         if (this.jScrollPaneProcessamentoTempo.getViewport().getView() != this.graficoProcessamentoTempoUser1) {
             this.jScrollPaneProcessamentoTempo.setViewportView(this.graficoProcessamentoTempoUser1);
         } else {
@@ -1385,43 +1102,35 @@ class CloudResultsDialog extends JDialog {
         }
     }
 
-    private void jButtonProcessamentoMaquinaActionPerformed (final java.awt.event.ActionEvent evt) {
+    private void jButtonProcessamentoMaquinaActionPerformed (final ActionEvent evt) {
         this.jScrollPaneProcessamentoTempo.setViewportView(this.graficoProcessamentoTempo);
     }
 
-    private void jButtonProcessamentoTarefaActionPerformed (final java.awt.event.ActionEvent evt) {
+    private void jButtonProcessamentoTarefaActionPerformed (final ActionEvent evt) {
         this.jScrollPaneProcessamentoTempo.setViewportView(this.graficoProcessamentoTempoTarefa);
     }
 
-    private void jButtonABarraActionPerformed (final java.awt.event.ActionEvent evt) {
+    private void jButtonABarraActionPerformed (final ActionEvent evt) {
         this.jScrollPaneAlocacao.setViewportView(this.graficoBarraAlocacao);
     }
 
-    private void jButtonAPizzaActionPerformed (final java.awt.event.ActionEvent evt) {
-
+    private void jButtonAPizzaActionPerformed (final ActionEvent evt) {
         this.jScrollPaneAlocacao.setViewportView(this.graficoPizzaAlocacao);
     }
 
-    private void jButtonTotalActionPerformed (final java.awt.event.ActionEvent evt) {
-
+    private void jButtonTotalActionPerformed (final ActionEvent evt) {
         this.jScrollPaneCustos.setViewportView(this.graficoBarraCustoTotal);
     }
 
-    private void jButtonDiscActionPerformed (final java.awt.event.ActionEvent evt) {
-
-
+    private void jButtonDiscActionPerformed (final ActionEvent evt) {
         this.jScrollPaneCustos.setViewportView(this.graficoBarraCustoDisco);
     }
 
-    private void jButtonMemActionPerformed (final java.awt.event.ActionEvent evt) {
-
-
+    private void jButtonMemActionPerformed (final ActionEvent evt) {
         this.jScrollPaneCustos.setViewportView(this.graficoBarraCustoMem);
     }
 
-    private void jButtonProcActionPerformed (final java.awt.event.ActionEvent evt) {
-
-
+    private void jButtonProcActionPerformed (final ActionEvent evt) {
         this.jScrollPaneCustos.setViewportView(this.graficoBarraCustoProc);
     }
 
@@ -1436,36 +1145,28 @@ class CloudResultsDialog extends JDialog {
         this.html.setTabela(this.tabelaRecurso);
         final BufferedImage[] charts = new BufferedImage[8];
         if (this.graficoBarraProcessamento != null) {
-            charts[0] =
-                    this.graficoBarraProcessamento.getChart().createBufferedImage(1200, 600);
+            charts[0] = this.graficoBarraProcessamento.getChart().createBufferedImage(1200, 600);
         }
         if (this.graficoPizzaProcessamento != null) {
-            charts[1] =
-                    this.graficoPizzaProcessamento.getChart().createBufferedImage(1200, 600);
+            charts[1] = this.graficoPizzaProcessamento.getChart().createBufferedImage(1200, 600);
         }
         if (this.graficoBarraComunicacao != null) {
-            charts[2] =
-                    this.graficoBarraComunicacao.getChart().createBufferedImage(1200, 600);
+            charts[2] = this.graficoBarraComunicacao.getChart().createBufferedImage(1200, 600);
         }
         if (this.graficoPizzaComunicacao != null) {
-            charts[3] =
-                    this.graficoPizzaComunicacao.getChart().createBufferedImage(1200, 600);
+            charts[3] = this.graficoPizzaComunicacao.getChart().createBufferedImage(1200, 600);
         }
         if (this.graficoProcessamentoTempo != null) {
-            charts[4] =
-                    this.graficoProcessamentoTempo.getChart().createBufferedImage(1200, 600);
+            charts[4] = this.graficoProcessamentoTempo.getChart().createBufferedImage(1200, 600);
         }
         if (this.graficoProcessamentoTempoTarefa != null) {
-            charts[5] =
-                    this.graficoProcessamentoTempoTarefa.getChart().createBufferedImage(1200, 600);
+            charts[5] = this.graficoProcessamentoTempoTarefa.getChart().createBufferedImage(1200, 600);
         }
         if (this.graficoProcessamentoTempoUser1 != null) {
-            charts[6] =
-                    this.graficoProcessamentoTempoUser1.getChart().createBufferedImage(1200, 600);
+            charts[6] = this.graficoProcessamentoTempoUser1.getChart().createBufferedImage(1200, 600);
         }
         if (this.graficoProcessamentoTempoUser2 != null) {
-            charts[7] =
-                    this.graficoProcessamentoTempoUser2.getChart().createBufferedImage(1200, 600);
+            charts[7] = this.graficoProcessamentoTempoUser2.getChart().createBufferedImage(1200, 600);
         }
         this.html.setCharts(charts);
         try {

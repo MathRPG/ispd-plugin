@@ -24,13 +24,9 @@ public class GridSchedulingPolicyManager extends FilePolicyManager {
             "OSEP",
             "EHOSEP"
     );
-    private static final String       GRID_DIR_PATH   =
-            String.join(File.separator, "policies", "scheduling", "grid");
+    private static final String       GRID_DIR_PATH   = String.join(File.separator, "policies", "scheduling", "grid");
     private static final File         GRID_DIRECTORY  =
-            new File(
-                    ConfiguracaoISPD.DIRETORIO_ISPD,
-                    GridSchedulingPolicyManager.GRID_DIR_PATH
-            );
+            new File(ConfiguracaoISPD.DIRETORIO_ISPD, GridSchedulingPolicyManager.GRID_DIR_PATH);
 
     @Override
     public File directory () {
@@ -38,13 +34,13 @@ public class GridSchedulingPolicyManager extends FilePolicyManager {
     }
 
     @Override
-    protected String className () {
-        return "GridSchedulingPolicyManager.class";
+    protected String packageName () {
+        return "escalonador";
     }
 
     @Override
-    protected String packageName () {
-        return "escalonador";
+    protected String className () {
+        return "GridSchedulingPolicyManager.class";
     }
 
     protected String getTemplate () {

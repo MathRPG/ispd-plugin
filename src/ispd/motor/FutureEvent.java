@@ -34,7 +34,7 @@ public class FutureEvent implements Comparable<FutureEvent> {
      * @param client
      *         cliente do evento
      */
-    public FutureEvent (double time, int eventType, CentroServico resource, Client client) {
+    public FutureEvent (final double time, final int eventType, final CentroServico resource, final Client client) {
         this.creationTime = time;
         this.resource     = resource;
         this.eventType    = eventType;
@@ -80,7 +80,7 @@ public class FutureEvent implements Comparable<FutureEvent> {
      *
      * @return 0 se valores iguais, um menor que 0 se "o" inferior, e maior que 0 se "o" for maior.
      */
-    public int compareTo (FutureEvent o) {
+    public int compareTo (final FutureEvent o) {
         return this.creationTime.compareTo(o.creationTime);
     }
 }

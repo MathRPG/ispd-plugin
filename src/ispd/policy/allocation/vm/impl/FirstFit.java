@@ -38,17 +38,13 @@ public class FirstFit extends VmAllocationPolicy {
         return this.maquinasVirtuais.remove(0);
     }
 
-    private static boolean canMachineFitVm (
-            final CS_MaquinaCloud machine, final CS_VirtualMac vm
-    ) {
+    private static boolean canMachineFitVm (final CS_MaquinaCloud machine, final CS_VirtualMac vm) {
         return vm.getMemoriaDisponivel() <= machine.getMemoriaDisponivel()
                && vm.getDiscoDisponivel() <= machine.getDiscoDisponivel()
                && vm.getProcessadoresDisponiveis() <= machine.getProcessadoresDisponiveis();
     }
 
-    private static void makeMachineHostVm (
-            final CS_MaquinaCloud machine, final CS_VirtualMac vm
-    ) {
+    private static void makeMachineHostVm (final CS_MaquinaCloud machine, final CS_VirtualMac vm) {
         machine.setMemoriaDisponivel(machine.getMemoriaDisponivel() - vm.getMemoriaDisponivel());
         machine.setDiscoDisponivel(machine.getDiscoDisponivel() - vm.getDiscoDisponivel());
         machine.setProcessadoresDisponiveis(machine.getProcessadoresDisponiveis() - vm.getProcessadoresDisponiveis());
@@ -80,22 +76,16 @@ public class FirstFit extends VmAllocationPolicy {
                 this.maqIndex++;
 
                 if (auxMaq instanceof CS_VMM) {
-                    System.out.printf(
-                            "%s é um VMM, a VM será redirecionada\n",
-                            auxMaq.getId()
-                    );
+                    System.out.printf("%s é um VMM, a VM será redirecionada\n", auxMaq.getId());
                     auxVM.setCaminho(this.escalonarRota(auxMaq));
-                    System.out.printf("%s enviada para %s\n",
-                                      auxVM.getId(), auxMaq.getId()
-                    );
+                    System.out.printf("%s enviada para %s\n", auxVM.getId(), auxMaq.getId());
                     this.mestre.sendVm(auxVM);
-                    System.out.println(
-                            "---------------------------------------");
+                    System.out.println("---------------------------------------");
                     break;
                 } else {
                     final var maq = (CS_MaquinaCloud) auxMaq;
-                    if (FirstFit.canMachineFitVm(maq, auxVM)) {
-                        FirstFit.makeMachineHostVm(maq, auxVM);
+                    if (canMachineFitVm(maq, auxVM)) {
+                        makeMachineHostVm(maq, auxVM);
                         auxVM.setCaminho(this.escalonarRota(auxMaq));
 
                         this.mestre.sendVm(auxVM);
@@ -116,5 +106,4 @@ public class FirstFit extends VmAllocationPolicy {
     public CS_Processamento escalonarRecurso () {
         return this.escravos.get(this.fit ? 0 : this.maqIndex);
     }
-
 }

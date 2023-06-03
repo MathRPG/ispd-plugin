@@ -109,10 +109,6 @@
       <option name="m_ignoreUsedIgnoredName" value="true" />
     </inspection_tool>
     <inspection_tool class="ChainedEquality" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ChainedMethodCall" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignoreFieldInitializations" value="true" />
-      <option name="m_ignoreThisSuperCalls" value="true" />
-    </inspection_tool>
     <inspection_tool class="ChannelResource" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="insideTryAllowed" value="false" />
       <option name="anyMethodMayClose" value="false" />
@@ -171,7 +167,6 @@
     <inspection_tool class="ClassWithTooManyTransitiveDependents" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="limit" value="10" />
     </inspection_tool>
-    <inspection_tool class="ClassWithoutConstructor" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ClassWithoutLogger" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="loggerNamesString" value="java.util.logging.Logger,org.slf4j.Logger,org.apache.commons.logging.Log,org.apache.log4j.Logger,org.apache.logging.log4j.Logger" />
       <option name="ignoreSuperLoggers" value="false" />
@@ -294,11 +289,15 @@
     <inspection_tool class="FieldNamingConvention" enabled="true" level="WARNING" enabled_by_default="true">
       <extension name="ConstantNamingConvention" enabled="true" />
       <extension name="ConstantWithMutableFieldTypeNamingConvention" enabled="true" />
-      <extension name="EnumeratedConstantNamingConvention" enabled="true" />
+      <extension name="EnumeratedConstantNamingConvention" enabled="true">
+        <option name="m_regex" value="[A-Z][A-Z_\d]*" />
+        <option name="m_minLength" value="3" />
+        <option name="m_maxLength" value="32" />
+      </extension>
       <extension name="InstanceVariableNamingConvention" enabled="true">
         <option name="m_regex" value="[a-z][A-Za-z\d]*" />
         <option name="m_minLength" value="3" />
-        <option name="m_maxLength" value="20" />
+        <option name="m_maxLength" value="32" />
       </extension>
       <extension name="StaticVariableNamingConvention" enabled="true" />
     </inspection_tool>
@@ -327,9 +326,11 @@
       <option name="ignoreForClassReferences" value="true" />
       <option name="ignoreForPropertyKeyReferences" value="true" />
       <option name="ignoreForNonAlpha" value="true" />
-      <option name="ignoreAssignedToConstants" value="false" />
+      <option name="ignoreAssignedToConstants" value="true" />
       <option name="ignoreToString" value="false" />
       <option name="nonNlsCommentPattern" value="NON-NLS" />
+      <option name="ignoreForEnumConstant" value="true" />
+      <option name="reportUnannotatedReferences" value="true" />
     </inspection_tool>
     <inspection_tool class="HardcodedFileSeparators" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_recognizeExampleMediaType" value="false" />
@@ -550,7 +551,7 @@
     <inspection_tool class="NegativelyNamedBooleanVariable" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NestedAssignment" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NestedConditionalExpression" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="NestedMethodCall" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="NestedMethodCall" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="m_ignoreFieldInitializations" value="true" />
       <option name="ignoreStaticMethods" value="true" />
       <option name="ignoreGetterCalls" value="true" />
@@ -577,7 +578,7 @@
       <extension name="ClassNamingConvention" enabled="true">
         <option name="m_regex" value="[A-Z][A-Za-z\d]*" />
         <option name="m_minLength" value="3" />
-        <option name="m_maxLength" value="20" />
+        <option name="m_maxLength" value="32" />
       </extension>
       <extension name="EnumeratedClassNamingConvention" enabled="true">
         <option name="inheritDefaultSettings" value="true" />
@@ -601,11 +602,7 @@
     </inspection_tool>
     <inspection_tool class="NewExceptionWithoutArguments" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NewMethodNamingConvention" enabled="true" level="WARNING" enabled_by_default="true">
-      <extension name="InstanceMethodNamingConvention" enabled="true">
-        <option name="m_regex" value="[a-z][A-Za-z\d]*" />
-        <option name="m_minLength" value="4" />
-        <option name="m_maxLength" value="20" />
-      </extension>
+      <extension name="InstanceMethodNamingConvention" enabled="true" />
       <extension name="JUnit4MethodNamingConvention" enabled="true" />
       <extension name="StaticMethodNamingConvention" enabled="true" />
     </inspection_tool>
@@ -721,7 +718,7 @@
       <option name="m_ignoreInvisibleFields" value="true" />
       <option name="m_ignoreStaticMethodParametersHidingInstanceFields" value="false" />
       <option name="m_ignoreForConstructors" value="true" />
-      <option name="m_ignoreForPropertySetters" value="false" />
+      <option name="m_ignoreForPropertySetters" value="true" />
       <option name="m_ignoreForAbstractMethods" value="false" />
     </inspection_tool>
     <inspection_tool class="ParameterNameDiffersFromOverriddenParameter" enabled="true" level="WARNING" enabled_by_default="true">
@@ -848,12 +845,8 @@
       <option name="ignoreParameterNameSameAsSuper" value="true" />
     </inspection_tool>
     <inspection_tool class="StaticCallOnSubclass" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="StaticCollection" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignoreWeakCollections" value="false" />
-    </inspection_tool>
     <inspection_tool class="StaticFieldReferenceOnSubclass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticGuardedByInstance" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="StaticImport" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticInheritance" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticMethodOnlyUsedInOneClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StaticNonFinalField" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -960,6 +953,7 @@
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
+      <option name="doNotWeakenInferredVariableType" value="true" />
     </inspection_tool>
     <inspection_tool class="TypeParameterExtendsFinalClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UncheckedExceptionClass" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -981,7 +975,6 @@
     <inspection_tool class="UnnecessaryDefault" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="onlyReportSwitchExpressions" value="false" />
     </inspection_tool>
-    <inspection_tool class="UnnecessaryExplicitNumericCast" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnnecessaryInheritDoc" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnnecessaryJavaDocLink" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreInlineLinkToSuper" value="true" />
@@ -1020,7 +1013,7 @@
     <inspection_tool class="UpperCaseFieldNameNotConstant" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UseOfAWTPeerClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UseOfAnotherObjectsPrivateField" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoreSameClass" value="false" />
+      <option name="ignoreSameClass" value="true" />
       <option name="ignoreEquals" value="true" />
     </inspection_tool>
     <inspection_tool class="UseOfClone" enabled="true" level="WARNING" enabled_by_default="true" />

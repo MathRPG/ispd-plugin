@@ -61,7 +61,9 @@ public class ClusterTable extends AbstractTableModel {
         switch (columnIndex) {
             case ClusterTable.TYPE:
                 final var typeName = this.getColumnTypeName(rowIndex);
-                if (typeName != null) {return typeName;}
+                if (typeName != null) {
+                    return typeName;
+                }
             case ClusterTable.VALUE:
                 if (this.cluster != null) {
                     switch (rowIndex) {
@@ -136,9 +138,7 @@ public class ClusterTable extends AbstractTableModel {
     }
 
     @Override
-    public void setValueAt (
-            final Object aValue, final int rowIndex, final int columnIndex
-    ) {
+    public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
         if (!(columnIndex == ClusterTable.VALUE && this.cluster != null)) {
             return;
         }

@@ -15,13 +15,13 @@ public record TwoStageUniform(
 ) {
 
     @Percentage
-    private static final double EVEN_PROBABILITY = 0.5;
+    private static final double EVEN_PROBABILITY = 0.5d;
 
     /**
      * Construct an instance with all values set to 0.
      */
     public TwoStageUniform () {
-        this(0, 0, 0, 0);
+        this(0.0, 0.0, 0.0, 0.0);
     }
 
     /**
@@ -36,7 +36,7 @@ public record TwoStageUniform(
      *         distribution maximum
      */
     public TwoStageUniform (final double minimum, final double maximum) {
-        this(minimum, (minimum + maximum) / 2, maximum, TwoStageUniform.EVEN_PROBABILITY);
+        this(minimum, (minimum + maximum) / 2.0, maximum, TwoStageUniform.EVEN_PROBABILITY);
     }
 
     /**
@@ -52,9 +52,7 @@ public record TwoStageUniform(
      * @param maximum
      *         distribution maximum
      */
-    public TwoStageUniform (
-            final double minimum, final double intervalSplit, final double maximum
-    ) {
+    public TwoStageUniform (final double minimum, final double intervalSplit, final double maximum) {
         this(minimum, intervalSplit, maximum, TwoStageUniform.EVEN_PROBABILITY);
     }
 
@@ -68,10 +66,11 @@ public record TwoStageUniform(
      * @return normalized instance
      */
     public TwoStageUniform rangeNormalized () {
-        return new TwoStageUniform(TwoStageUniform.normalizeValue(this.intervalSplit(), this.minimum()),
-                                   this.intervalSplit(),
-                                   TwoStageUniform.normalizeValue(this.intervalSplit(), this.minimum()),
-                                   this.firstIntervalProbability()
+        return new TwoStageUniform(
+                normalizeValue(this.intervalSplit(), this.minimum()),
+                this.intervalSplit(),
+                normalizeValue(this.intervalSplit(), this.minimum()),
+                this.firstIntervalProbability()
         );
     }
 
@@ -87,10 +86,10 @@ public record TwoStageUniform(
      * @return normalized value, within [0, 1]; if value is {@code 0}, {@code
      *         0} is returned.
      */
-    private static double normalizeValue (
-            final double value, final double boundary
-    ) {
-        if (value == 0.0) {return 0.0;}
+    private static double normalizeValue (final double value, final double boundary) {
+        if (value == 0.0) {
+            return 0.0;
+        }
         final var d = Math.abs(value - boundary) / value;
         return Math.min(1.0, d);
     }
@@ -119,8 +118,8 @@ public record TwoStageUniform(
      */
     @Override
     public String toString () {
-        return "TwoStageUniform{min=%f, med=%f, max=%f, prob=%f}".formatted(this.minimum, this.intervalSplit,
-                                                                            this.maximum, this.firstIntervalProbability
+        return "TwoStageUniform{min=%f, med=%f, max=%f, prob=%f}".formatted(
+                this.minimum, this.intervalSplit, this.maximum, this.firstIntervalProbability
         );
     }
 }

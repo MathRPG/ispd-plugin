@@ -27,7 +27,8 @@ import javax.xml.transform.stream.StreamResult;
  * @see IconicoXML
  * @see ConfiguracaoISPD
  */
-public class ManipuladorXML {
+public enum ManipuladorXML {
+    ;
 
     /**
      * Read a xml file using the dtd pointed to by the path
@@ -47,9 +48,8 @@ public class ManipuladorXML {
     public static Document read (final File file, final String dtdPath)
             throws ParserConfigurationException, IOException, SAXException {
 
-        final var factory = ManipuladorXML.makeFactory();
-        return ManipuladorXML.makeDocBuilder(dtdPath, factory)
-                             .parse(file);
+        final var factory = makeFactory();
+        return makeDocBuilder(dtdPath, factory).parse(file);
     }
 
     private static DocumentBuilderFactory makeFactory () {
@@ -59,9 +59,8 @@ public class ManipuladorXML {
         return factory;
     }
 
-    private static DocumentBuilder makeDocBuilder (
-            final String dtdPath, final DocumentBuilderFactory factory
-    ) throws ParserConfigurationException {
+    private static DocumentBuilder makeDocBuilder (final String dtdPath, final DocumentBuilderFactory factory)
+            throws ParserConfigurationException {
         final var builder = factory.newDocumentBuilder();
         builder.setEntityResolver(new SubstituteEntityResolver(dtdPath));
         return builder;
@@ -83,41 +82,32 @@ public class ManipuladorXML {
      *         otherwise
      */
     public static boolean write (
-            final Document doc, final File outputFile,
-            final String docTypeSystem, final Boolean omitXmlDecl
+            final Document doc, final File outputFile, final String docTypeSystem, final boolean omitXmlDecl
     ) {
         try {
             final var source = new DOMSource(doc);
             final var result = new StreamResult(outputFile);
 
-            ManipuladorXML.makeTransformer(docTypeSystem, omitXmlDecl)
-                          .transform(source, result);
+            makeTransformer(docTypeSystem, omitXmlDecl).transform(source, result);
 
             return true;
         } catch (final TransformerException ex) {
-            Logger.getLogger(ManipuladorXML.class.getName())
-                  .log(Level.SEVERE, null, ex);
-
+            Logger.getLogger(ManipuladorXML.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }
 
-    private static Transformer makeTransformer (
-            final String docTypeSystem, final Boolean omitXmlDecl
-    )
+    private static Transformer makeTransformer (final String docTypeSystem, final boolean omitXmlDecl)
             throws TransformerConfigurationException {
-        final var transformer = TransformerFactory.newInstance()
-                                                  .newTransformer();
+        final var transformer = TransformerFactory.newInstance().newTransformer();
 
         transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(
-                "{http://xml.apache.org/xslt}indent-amount", "4");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
         transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM, docTypeSystem);
 
         if (omitXmlDecl) {
-            transformer.setOutputProperty(
-                    OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
         }
 
         return transformer;
@@ -130,12 +120,9 @@ public class ManipuladorXML {
      */
     public static Document newDocument () {
         try {
-            return DocumentBuilderFactory.newInstance()
-                                         .newDocumentBuilder()
-                                         .newDocument();
+            return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (final ParserConfigurationException ex) {
-            Logger.getLogger(ManipuladorXML.class.getName())
-                  .log(Level.SEVERE, null, ex);
+            Logger.getLogger(ManipuladorXML.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return null;
@@ -146,14 +133,11 @@ public class ManipuladorXML {
         private final InputSource substitute;
 
         private SubstituteEntityResolver (final String dtd) {
-            this.substitute = new InputSource(
-                    ManipuladorXML.class.getResourceAsStream("dtd/" + dtd));
+            this.substitute = new InputSource(ManipuladorXML.class.getResourceAsStream("dtd/" + dtd));
         }
 
         @Override
-        public InputSource resolveEntity (
-                final String publicId, final String systemId
-        ) {
+        public InputSource resolveEntity (final String s, final String s1) {
             return this.substitute;
         }
     }

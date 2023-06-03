@@ -41,7 +41,11 @@ public class WrappedElement {
             final Predicate<? super WrappedElement> filteringPredicate,
             final Function<? super WrappedElement, TwoStageUniform> mappingFunction
     ) {
-        return this.sizes().filter(filteringPredicate).findFirst().map(mappingFunction).orElseGet(TwoStageUniform::new);
+        return this.sizes()
+                   .filter(filteringPredicate)
+                   .findFirst()
+                   .map(mappingFunction)
+                   .orElseGet(TwoStageUniform::new);
     }
 
     /**
@@ -52,7 +56,7 @@ public class WrappedElement {
     }
 
     private Stream<WrappedElement> elementsWithTag (final String tag) {
-        return WrappedElement.nodeListToWrappedElementStream(this.getElementsByTagName(tag));
+        return nodeListToWrappedElementStream(this.getElementsByTagName(tag));
     }
 
     /**
@@ -62,8 +66,7 @@ public class WrappedElement {
      * @return convert given {@link NodeList} into a {@link Stream} of {@code
      *         WrappedElement}s
      */
-    /* package-private */
-    static Stream<WrappedElement> nodeListToWrappedElementStream (final NodeList nl) {
+    public static Stream<WrappedElement> nodeListToWrappedElementStream (final NodeList nl) {
         return IntStream.range(0, nl.getLength()).mapToObj(nl::item).map(Element.class::cast).map(WrappedElement::new);
     }
 

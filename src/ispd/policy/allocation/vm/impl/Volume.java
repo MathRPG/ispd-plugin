@@ -18,8 +18,7 @@ import ispd.policy.allocation.vm.impl.util.ComparaVolume;
 @Policy
 public class Volume extends VmAllocationPolicy {
 
-    private final Comparator<CS_VirtualMac> comparaReq    =
-            new ComparaRequisitos();
+    private final Comparator<CS_VirtualMac> comparaReq    = new ComparaRequisitos();
     private final ComparaVolume             comparaRec    = new ComparaVolume();
     private       boolean                   fit           = false;
     private       int                       maqIndex      = 0;
@@ -74,34 +73,28 @@ public class Volume extends VmAllocationPolicy {
             final CS_VirtualMac auxVM = this.escalonarVM();
 
             while (num_escravos >= 0) {
-                if (num_escravos > 0) {//caso existam máquinas livres
+                if (num_escravos > 0) {// caso existam máquinas livres
                     final CS_Processamento auxMaq = this.escalonarRecurso();
-                    //escalona
-                    // o recurso
+                    // escalona o recurso
                     if (auxMaq instanceof CS_VMM) {
 
-                        System.out.println(auxMaq.getId() + " é um VMM, a VM " +
-                                           "será redirecionada");
+                        System.out.println(auxMaq.getId() + " é um VMM, a VM " + "será redirecionada");
                         auxVM.setCaminho(this.escalonarRota(auxMaq));
-                        //salvando uma lista de VMMs intermediarios no 
-                        // caminho da vm e seus respectivos caminhos
+                        // salvando uma lista de VMMs intermediarios no caminho da vm e seus respectivos caminhos
                         System.out.println(auxVM.getId() + " enviada para " + auxMaq.getId());
                         this.mestre.sendVm(auxVM);
-                        System.out.println(
-                                "---------------------------------------");
+                        System.out.println("---------------------------------------");
                         break;
                     } else {
                         System.out.println("Checagem de recursos:");
                         final CS_MaquinaCloud maq        = (CS_MaquinaCloud) auxMaq;
                         final double          memoriaMaq = maq.getMemoriaDisponivel();
                         System.out.println("memoriaMaq: " + memoriaMaq);
-                        final double memoriaNecessaria =
-                                auxVM.getMemoriaDisponivel();
+                        final double memoriaNecessaria = auxVM.getMemoriaDisponivel();
                         System.out.println("memorianecessaria: " + memoriaNecessaria);
                         final double discoMaq = maq.getDiscoDisponivel();
                         System.out.println("discoMaq: " + discoMaq);
-                        final double discoNecessario =
-                                auxVM.getDiscoDisponivel();
+                        final double discoNecessario = auxVM.getDiscoDisponivel();
                         System.out.println("disconecessario: " + discoNecessario);
                         final int maqProc = maq.getProcessadoresDisponiveis();
                         System.out.println("ProcMaq: " + maqProc);
@@ -110,8 +103,7 @@ public class Volume extends VmAllocationPolicy {
 
                         if ((memoriaNecessaria <= memoriaMaq && discoNecessario <= discoMaq && procVM <= maqProc)) {
                             maq.setMemoriaDisponivel(memoriaMaq - memoriaNecessaria);
-                            System.out.println("Realizando o controle de " +
-                                               "recurso:");
+                            System.out.println("Realizando o controle de recurso:");
                             System.out.println("memoria atual da maq: " + (memoriaMaq - memoriaNecessaria));
                             maq.setDiscoDisponivel(discoMaq - discoNecessario);
                             System.out.println("disco atual maq: " + (discoMaq - discoNecessario));
@@ -119,11 +111,9 @@ public class Volume extends VmAllocationPolicy {
                             System.out.println("proc atual: " + (maqProc - procVM));
                             auxVM.setMaquinaHospedeira((CS_MaquinaCloud) auxMaq);
                             auxVM.setCaminho(this.escalonarRota(auxMaq));
-                            System.out.println(auxVM.getId() + " enviada para" +
-                                               " " + auxMaq.getId());
+                            System.out.println(auxVM.getId() + " enviada para " + auxMaq.getId());
                             this.mestre.sendVm(auxVM);
-                            System.out.println(
-                                    "---------------------------------------");
+                            System.out.println("---------------------------------------");
                             this.atualizarVolume();
                             break;
 
@@ -137,8 +127,7 @@ public class Volume extends VmAllocationPolicy {
                     this.VMsRejeitadas.add(auxVM);
                     System.out.println("Adicionada na lista de rejeitadas");
                     num_escravos--;
-                    System.out.println(
-                            "---------------------------------------");
+                    System.out.println("---------------------------------------");
                 }
             }
         }

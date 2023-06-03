@@ -62,7 +62,9 @@ public class Multipane extends JScrollPane {
         prePane.add(toolbar);
 
         /* Add the first button's component as the default one */
-        if (!this.buttons.isEmpty()) {prePane.add(this.buttons.get(0).getComponent());}
+        if (!this.buttons.isEmpty()) {
+            prePane.add(this.buttons.get(0).getComponent());
+        }
 
         toolbar.setRollover(true);
         toolbar.setFloatable(false);
@@ -85,9 +87,7 @@ public class Multipane extends JScrollPane {
             multipaneButton.setFocusable(false);
             multipaneButton.setHorizontalTextPosition(SwingConstants.LEFT);
             multipaneButton.setVerticalTextPosition(SwingConstants.CENTER);
-            multipaneButton.addActionListener((event) ->
-                                                      switchComponent.accept(multipaneButton.getComponent()));
-
+            multipaneButton.addActionListener(event -> switchComponent.accept(multipaneButton.getComponent()));
             toolbar.add(multipaneButton);
         }
     }

@@ -7,8 +7,7 @@ import java.util.Set;
 
 import ispd.gui.iconico.Vertex;
 
-/* package-private */ abstract class VertexGridItem
-        extends Vertex implements GridItem {
+public abstract class VertexGridItem extends Vertex implements GridItem {
 
     /**
      * It contains the grid item identifier.
@@ -18,12 +17,12 @@ import ispd.gui.iconico.Vertex;
     /**
      * It stores all of inbound connections.
      */
-    protected final Set<GridItem> inboundConnections;
+    private final Set<GridItem> inboundConnections;
 
     /**
      * It stores all of outbound connections.
      */
-    protected final Set<GridItem> outboundConnections;
+    private final Set<GridItem> outboundConnections;
 
     /**
      * It stores the state of whether this vertex is
@@ -55,13 +54,7 @@ import ispd.gui.iconico.Vertex;
      *         the vertex grid item y-coordinate
      *         in cartesian coordinates
      */
-    public VertexGridItem (
-            final int localId,
-            final int globalId,
-            final String name,
-            final Integer x,
-            final Integer y
-    ) {
+    public VertexGridItem (final int localId, final int globalId, final String name, final Integer x, final Integer y) {
         this(localId, globalId, name, x, y, false);
     }
 
@@ -86,11 +79,7 @@ import ispd.gui.iconico.Vertex;
      *         whether is selected
      */
     public VertexGridItem (
-            final int localId,
-            final int globalId,
-            final String name,
-            final Integer x,
-            final Integer y,
+            final int localId, final int globalId, final String name, final Integer x, final Integer y,
             final boolean selected
     ) {
         super(x, y, selected);
@@ -104,20 +93,13 @@ import ispd.gui.iconico.Vertex;
      */
     @Override
     public void draw (final Graphics g) {
-        final var configuredStatusImage = this.configured ?
-                                          DesenhoGrade.greenIcon : DesenhoGrade.redIcon;
+        final var configuredStatusImage = this.configured ? DesenhoGrade.GREEN_ICON : DesenhoGrade.RED_ICON;
 
-        g.drawImage(this.getImage(), this.getX() - 15,
-                    this.getY() - 15, null
-        );
-        g.drawImage(configuredStatusImage, this.getX() + 15,
-                    this.getY() + 15, null
-        );
+        g.drawImage(this.getImage(), this.getX() - 15, this.getY() - 15, null);
+        g.drawImage(configuredStatusImage, this.getX() + 15, this.getY() + 15, null);
 
         g.setColor(Color.BLACK);
-        g.drawString(String.valueOf(this.id.getGlobalId()),
-                     this.getX(), this.getY() + 30
-        );
+        g.drawString(String.valueOf(this.id.getGlobalId()), this.getX(), this.getY() + 30);
 
         /* If the icon is active, then a margin is drawn */
         if (this.isSelected()) {
@@ -142,7 +124,7 @@ import ispd.gui.iconico.Vertex;
      *         x-coordinate and y-coordinate in {@link #contains(int, int)}
      *         method.
      */
-    protected int getOffset () {
+    private int getOffset () {
         return 17;
     }
 

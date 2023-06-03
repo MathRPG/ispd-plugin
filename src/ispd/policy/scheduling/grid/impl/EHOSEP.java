@@ -28,10 +28,15 @@ public class EHOSEP extends AbstractHOSEP<UserEnergyControl> {
     }
 
     @Override
+    protected Stream<CS_Processamento> availableMachinesFor (final UserEnergyControl taskOwner) {
+        return super.availableMachinesFor(taskOwner)
+                    .filter(taskOwner::canUseMachineWithoutExceedingEnergyLimit);
+    }
+
+    @Override
     protected Comparator<CS_Processamento> compareAvailableMachinesFor (final Tarefa task) {
         // Extracted as a variable to aid type inference
-        final ToDoubleFunction<CS_Processamento> energyConsumption =
-                m -> EHOSEP.calculateEnergyConsumptionForTask(m, task);
+        final ToDoubleFunction<CS_Processamento> energyConsumption = m -> calculateEnergyConsumptionForTask(m, task);
 
         return Comparator
                 .comparingDouble(energyConsumption)
@@ -39,31 +44,23 @@ public class EHOSEP extends AbstractHOSEP<UserEnergyControl> {
                 .thenComparing(super.compareAvailableMachinesFor(task));
     }
 
-    private static double calculateEnergyConsumptionForTask (
-            final CS_Processamento machine, final Tarefa task
-    ) {
+    private static double calculateEnergyConsumptionForTask (final CS_Processamento machine, final Tarefa task) {
         return task.getTamProcessamento()
                / machine.getPoderComputacional()
                * machine.getConsumoEnergia();
     }
 
     @Override
-    protected Stream<CS_Processamento> availableMachinesFor (final UserEnergyControl taskOwner) {
-        return super.availableMachinesFor(taskOwner)
-                    .filter(taskOwner::canUseMachineWithoutExceedingEnergyLimit);
-    }
-
-    @Override
     protected Optional<CS_Processamento> findMachineToPreemptFor (final UserEnergyControl taskOwner) {
-        return this.findUserToPreemptFor(taskOwner).flatMap(
-                userToPreempt -> this.findMachineToTransferBetween(userToPreempt, taskOwner));
+        return this.findUserToPreemptFor(taskOwner)
+                   .flatMap(userToPreempt -> this.findMachineToTransferBetween(userToPreempt, taskOwner));
     }
 
     @Override
     protected Optional<UserEnergyControl> findUserToPreemptFor (final UserEnergyControl taskOwner) {
         return this.userControls.values().stream()
                                 .filter(UserEnergyControl::hasExcessProcessingPower)
-                                .max(EHOSEP.compareConsumptionWeightedByEfficiency())
+                                .max(compareConsumptionWeightedByEfficiency())
                                 .filter(taskOwner::hasLessEnergyConsumptionThan);
     }
 

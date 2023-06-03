@@ -28,9 +28,7 @@ public class GridItemIdentifier {
      * @param name
      *         the name identifier
      */
-    public GridItemIdentifier (
-            final int localId, final int globalId, final String name
-    ) {
+    public GridItemIdentifier (final int localId, final int globalId, final String name) {
         this.localId  = localId;
         this.globalId = globalId;
         this.name     = name;

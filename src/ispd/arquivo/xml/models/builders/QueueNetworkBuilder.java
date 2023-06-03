@@ -95,10 +95,7 @@ public class QueueNetworkBuilder {
 
         this.serviceCenters.put(e.globalIconId(), machine);
 
-        this.increaseUserPower(
-                machine.getProprietario(),
-                machine.getPoderComputacional()
-        );
+        this.increaseUserPower(machine.getProprietario(), machine.getPoderComputacional());
     }
 
     /**
@@ -119,8 +116,7 @@ public class QueueNetworkBuilder {
 
             final int slaveCount = e.nodes();
 
-            final double power =
-                    cluster.getPoderComputacional() * (slaveCount + 1);
+            final double power = cluster.getPoderComputacional() * (slaveCount + 1);
 
             this.increaseUserPower(cluster.getProprietario(), power);
 
@@ -153,8 +149,7 @@ public class QueueNetworkBuilder {
             final var slaves = new ArrayList<CS_Maquina>(slaveCount);
 
             for (int i = 0; i < slaveCount; i++) {
-                final var machine =
-                        ServiceCenterBuilder.aMachineWithId(e, i);
+                final var machine = ServiceCenterBuilder.aMachineWithId(e, i);
                 SwitchConnection.toMachine(theSwitch, machine);
                 slaves.add(machine);
             }
@@ -174,9 +169,7 @@ public class QueueNetworkBuilder {
     private void processLinkElement (final WrappedElement e) {
         final var link = ServiceCenterBuilder.aLink(e);
 
-        QueueNetworkBuilder.connectLinkAndVertices(
-                link, this.getVertex(e.origination()), this.getVertex(e.destination())
-        );
+        connectLinkAndVertices(link, this.getVertex(e.origination()), this.getVertex(e.destination()));
 
         this.links.add(link);
     }
@@ -227,9 +220,7 @@ public class QueueNetworkBuilder {
      *         amount to increment the power limit by. Should be
      *         <b>positive</b>.
      */
-    protected void increaseUserPower (
-            final String userId, final double increment
-    ) {
+    protected void increaseUserPower (final String userId, final double increment) {
         final var oldValue = this.powerLimits.get(userId);
         this.powerLimits.put(userId, oldValue + increment);
     }
@@ -277,9 +268,9 @@ public class QueueNetworkBuilder {
      */
     protected void addSlavesToProcessingCenter (final CS_Processamento master, final CentroServico slave) {
         final var theMaster = (CS_Mestre) master;
-        if (slave instanceof CS_Processamento proc) {
+        if (slave instanceof final CS_Processamento proc) {
             theMaster.addEscravo(proc);
-            if (slave instanceof CS_Maquina machine) {
+            if (slave instanceof final CS_Maquina machine) {
                 machine.addMestre(theMaster);
             }
         } else if (slave instanceof CS_Switch) {
@@ -338,10 +329,6 @@ public class QueueNetworkBuilder {
      * @return initialized {@link RedeDeFilas}.
      */
     protected RedeDeFilas initQueueNetwork () {
-        return new RedeDeFilas(
-                this.masters, this.machines,
-                this.links, this.internets,
-                this.powerLimits
-        );
+        return new RedeDeFilas(this.masters, this.machines, this.links, this.internets, this.powerLimits);
     }
 }

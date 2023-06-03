@@ -362,7 +362,7 @@ class Interpretador implements InterpretadorConstants {
         t1 = jj_consume_token(nome);
         t2 = jj_consume_token(inteiro);
         t3 = jj_consume_token(inteiro);
-                         idCs = redeFilas.adicionaCentroServico(0,Integer.parseInt(t3.image),Integer.parseInt(t2.image),0,temp);
+                         idCs = redeFilas.adicionaCentroServico(0, Integer.parseInt(t3.image),                                                                 temp);
                          if(listaCS.contains(t1.image)){
                                 addErro("Nome de centro de servi\u00c3\u00a7o duplicado na linha "+t1.endLine+", coluna "+t1.endColumn);
                                 erroEncontrado = true;
@@ -378,7 +378,7 @@ class Interpretador implements InterpretadorConstants {
         t2 = jj_consume_token(inteiro);
         t3 = jj_consume_token(inteiro);
         jj_consume_token(nome);
-                         idCs = redeFilas.adicionaCentroServico(1,Integer.parseInt(t3.image),Integer.parseInt(t2.image),0,temp);
+                         idCs = redeFilas.adicionaCentroServico(1, Integer.parseInt(t3.image),                                                                temp);
                          if(listaCS.contains(t1.image)){
                                 addErro("Nome de centro de servi\u00c3\u00a7o duplicado na linha "+t1.endLine+", coluna "+t1.endColumn);
                                 erroEncontrado = true;
@@ -393,7 +393,7 @@ class Interpretador implements InterpretadorConstants {
         t1 = jj_consume_token(nome);
         t2 = jj_consume_token(inteiro);
         t3 = jj_consume_token(inteiro);
-                         idCs = redeFilas.adicionaCentroServico(2,Integer.parseInt(t3.image),Integer.parseInt(t2.image));
+                         idCs = redeFilas.adicionaCentroServico(2,Integer.parseInt(t3.image));
                          if(listaCS.contains(t1.image)){
                                 addErro("Nome de centro de servi\u00c3\u00a7o duplicado na linha "+t1.endLine+", coluna "+t1.endColumn);
                                 erroEncontrado = true;
@@ -408,7 +408,7 @@ class Interpretador implements InterpretadorConstants {
         t1 = jj_consume_token(nome);
         t2 = jj_consume_token(inteiro);
         t3 = jj_consume_token(inteiro);
-                         idCs = redeFilas.adicionaCentroServico(3,Integer.parseInt(t3.image),Integer.parseInt(t2.image));
+                         idCs = redeFilas.adicionaCentroServico(3,Integer.parseInt(t3.image));
                          if(listaCS.contains(t1.image)){
                                 addErro("Nome de centro de servi\u00c3\u00a7o duplicado na linha "+t1.endLine+", coluna "+t1.endColumn);
                                 erroEncontrado = true;
@@ -465,7 +465,7 @@ class Interpretador implements InterpretadorConstants {
       t3 = jj_consume_token(flutuante);
       t4 = jj_consume_token(flutuante);
       mestre = Mestre();
-                          redeFilas.adicionaServidorProcto(idCs, 0, mestre, Double.parseDouble(t3.image));
+                          redeFilas.adicionaServidorProcto(idCs, mestre);
     } catch (ParseException e) {
                 Token t = getToken(1);
                 addErro("Erro semantico encontrado na linha "+t.endLine+", coluna "+t.endColumn);
@@ -485,7 +485,7 @@ class Interpretador implements InterpretadorConstants {
         t3 = jj_consume_token(flutuante);
         t4 = jj_consume_token(flutuante);
         t5 = jj_consume_token(flutuante);
-                          redeFilas.adicionaServidorCom( idCs, Integer.parseInt(t2.image), Double.parseDouble(t3.image), Double.parseDouble(t5.image), Double.parseDouble(t4.image));
+                          redeFilas.adicionaServidorCom( idCs );
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
         case nome:
           ;
@@ -512,7 +512,7 @@ class Interpretador implements InterpretadorConstants {
       t3 = jj_consume_token(flutuante);
       t4 = jj_consume_token(flutuante);
       t5 = jj_consume_token(flutuante);
-                          redeFilas.adicionaServidoresClr( idCs, Integer.parseInt(t2.image), Double.parseDouble(t3.image), Double.parseDouble(t4.image), Double.parseDouble(t5.image), 0.0 );
+                          redeFilas.adicionaServidoresClr( idCs );
     } catch (ParseException e) {
                 Token t = getToken(1);
                 addErro("Erro semantico encontrado na linha "+t.endLine+", coluna "+t.endColumn);

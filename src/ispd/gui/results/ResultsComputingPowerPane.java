@@ -11,7 +11,7 @@ import ispd.gui.utils.MultipaneButton;
  * containing the bar charts showing the information about the computing power
  * use for machines, users and tasks.
  */
-/* package-private */ class ResultsComputingPowerPane extends Multipane {
+public class ResultsComputingPowerPane extends Multipane {
 
     /**
      * Constructor which creates a pane that contains results of the computing

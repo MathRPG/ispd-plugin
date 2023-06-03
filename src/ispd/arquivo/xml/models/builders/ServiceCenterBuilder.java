@@ -159,8 +159,7 @@ public class ServiceCenterBuilder {
                 e.owner(),
                 (int) e.power(),
                 e.memAlloc(),
-                e.diskAlloc(),
-                e.opSystem()
+                e.diskAlloc()
         );
     }
 
@@ -170,7 +169,13 @@ public class ServiceCenterBuilder {
      */
     public static VirtualMachine aVirtualMachineWithVmm (final WrappedElement e) {
         return new VirtualMachine(
-                e.id(), e.owner(), e.vmm(), (int) e.power(), e.memAlloc(), e.diskAlloc(), e.opSystem()
+                e.id(),
+                e.owner(),
+                e.vmm(),
+                (int) e.power(),
+                e.memAlloc(),
+                e.diskAlloc(),
+                e.opSystem()
         );
     }
 }

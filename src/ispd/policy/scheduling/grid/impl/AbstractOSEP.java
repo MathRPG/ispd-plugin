@@ -15,8 +15,7 @@ import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
 public abstract class AbstractOSEP <T extends UserProcessingControl> extends GridSchedulingPolicy {
 
     private static final double                              REFRESH_TIME  = 15.0;
-    protected final      Map<CS_Processamento, SlaveControl> slaveControls =
-            new HashMap<>();
+    protected final      Map<CS_Processamento, SlaveControl> slaveControls = new HashMap<>();
     protected final      Map<String, T>                      userControls  = new HashMap<>();
 
     public AbstractOSEP () {

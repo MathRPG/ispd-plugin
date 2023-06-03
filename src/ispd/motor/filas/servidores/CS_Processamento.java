@@ -5,9 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import ispd.gui.auxiliar.ParesOrdenadosUso;
-import ispd.motor.filas.servidores.implementacao.CS_Internet;
 import ispd.motor.filas.servidores.implementacao.CS_Link;
-import ispd.motor.filas.servidores.implementacao.CS_Switch;
 import ispd.motor.metricas.MetricasProcessamento;
 import ispd.policy.allocation.vm.VmMaster;
 import ispd.policy.scheduling.grid.GridMaster;
@@ -19,16 +17,13 @@ import ispd.policy.scheduling.grid.GridMaster;
  */
 public abstract class CS_Processamento extends CentroServico {
 
-    /**
-     * Identificador do centro de serviço, deve ser o mesmo do modelo icônico
-     */
-    private double                  poderComputacional;
-    private int                     numeroProcessadores;
-    private double                  Ocupacao;
-    private double                  PoderComputacionalDisponivelPorProcessador;
-    private MetricasProcessamento   metrica;
-    private List<ParesOrdenadosUso> lista_pares = new ArrayList<ParesOrdenadosUso>();
-    private Double                  consumoEnergia;
+    private final int                     numeroProcessadores;
+    private final double                  Ocupacao;
+    private final MetricasProcessamento   metrica;
+    private final List<ParesOrdenadosUso> lista_pares = new ArrayList<>();
+    private final Double                  consumoEnergia;
+    private       double                  poderComputacional;
+    private       double                  PoderComputacionalDisponivelPorProcessador;
 
     /**
      * Constructor which specifies the configuration of
@@ -54,13 +49,9 @@ public abstract class CS_Processamento extends CentroServico {
      * @see #CS_Processamento(String, String, double, int, double, int, double)
      *         for specify the energy consumption
      */
-    public CS_Processamento (
-            final String id,
-            final String owner,
-            final double computationalPower,
-            final int coreCount,
-            final double loadFactor,
-            final int machineNumber
+    protected CS_Processamento (
+            final String id, final String owner, final double computationalPower, final int coreCount,
+            final double loadFactor, final int machineNumber
     ) {
         this(id, owner, computationalPower, coreCount, loadFactor, machineNumber, 0.0);
     }
@@ -86,22 +77,15 @@ public abstract class CS_Processamento extends CentroServico {
      * @param energy
      *         the energy
      */
-    public CS_Processamento (
-            final String id,
-            final String owner,
-            final double computationalPower,
-            final int coreCount,
-            final double loadFactor,
-            final int machineNumber,
-            final double energy
+    protected CS_Processamento (
+            final String id, final String owner, final double computationalPower, final int coreCount,
+            final double loadFactor, final int machineNumber, final double energy
     ) {
         this.poderComputacional                         = computationalPower;
         this.numeroProcessadores                        = coreCount;
         this.Ocupacao                                   = loadFactor;
-        this.PoderComputacionalDisponivelPorProcessador = (
-                                                                  computationalPower
-                                                                  - (computationalPower * loadFactor)
-                                                          ) / coreCount;
+        this.PoderComputacionalDisponivelPorProcessador = (computationalPower - (computationalPower * loadFactor))
+                                                          / coreCount;
         this.consumoEnergia                             = energy;
         this.metrica                                    = new MetricasProcessamento(id, machineNumber, owner);
     }
@@ -116,23 +100,22 @@ public abstract class CS_Processamento extends CentroServico {
      *
      * @return caminho completo a partir do primeiro link até o recurso destino
      */
-    public static List<CentroServico> getMenorCaminho (CS_Processamento origem, CS_Processamento destino) {
+    public static List<CentroServico> getMenorCaminho (final CS_Processamento origem, final CS_Processamento destino) {
         //cria vetor com distancia acumulada
-        List<CentroServico> nosExpandidos = new ArrayList<CentroServico>();
-        List<Object[]>      caminho       = new ArrayList<Object[]>();
-        CentroServico       atual         = origem;
+        final List<CentroServico> nosExpandidos = new ArrayList<>();
+        final List<Object[]>      caminho       = new ArrayList<>();
+        CentroServico             atual         = origem;
         //armazena valor acumulado até atingir o nó atual
         Double acumulado = 0.0;
         do {
             //busca valores das conexões de saida do recurso atual e coloca no vetor caminho
             if (atual instanceof CS_Link) {
-                Object caminhoItem[] = new Object[4];
+                final Object[] caminhoItem = new Object[4];
                 caminhoItem[0] = atual;
                 if (atual.getConexoesSaida() instanceof CS_Processamento && atual.getConexoesSaida() != destino) {
                     caminhoItem[1] = Double.MAX_VALUE;
                     caminhoItem[2] = null;
-                } else if (atual.getConexoesSaida() instanceof CS_Comunicacao) {
-                    CS_Comunicacao cs = (CS_Comunicacao) atual.getConexoesSaida();
+                } else if (atual.getConexoesSaida() instanceof CS_Comunicacao cs) {
                     caminhoItem[1] = cs.tempoTransmitir(10000) + acumulado;
                     caminhoItem[2] = atual.getConexoesSaida();
                 } else {
@@ -142,15 +125,14 @@ public abstract class CS_Processamento extends CentroServico {
                 caminhoItem[3] = acumulado;
                 caminho.add(caminhoItem);
             } else {
-                ArrayList<CentroServico> lista = (ArrayList<CentroServico>) atual.getConexoesSaida();
-                for (CentroServico cs : lista) {
-                    Object caminhoItem[] = new Object[4];
+                final ArrayList<CentroServico> lista = (ArrayList<CentroServico>) atual.getConexoesSaida();
+                for (final CentroServico cs : lista) {
+                    final Object[] caminhoItem = new Object[4];
                     caminhoItem[0] = atual;
                     if (cs instanceof CS_Processamento && cs != destino) {
                         caminhoItem[1] = Double.MAX_VALUE;
                         caminhoItem[2] = null;
-                    } else if (cs instanceof CS_Comunicacao) {
-                        CS_Comunicacao comu = (CS_Comunicacao) cs;
+                    } else if (cs instanceof CS_Comunicacao comu) {
                         caminhoItem[1] = comu.tempoTransmitir(10000) + acumulado;
                         caminhoItem[2] = cs;
                     } else {
@@ -170,9 +152,9 @@ public abstract class CS_Processamento extends CentroServico {
             menorCaminho[2] = null;
             menorCaminho[3] = Double.MAX_VALUE;
             //busca menor caminho não expandido
-            for (Object[] obj : caminho) {
-                Double menor    = (Double) menorCaminho[1];
-                Double objAtual = (Double) obj[1];
+            for (final Object[] obj : caminho) {
+                final Double menor    = (Double) menorCaminho[1];
+                final Double objAtual = (Double) obj[1];
                 if (menor > objAtual && !nosExpandidos.contains(obj[2])) {
                     menorCaminho = obj;
                 }
@@ -182,9 +164,9 @@ public abstract class CS_Processamento extends CentroServico {
             acumulado = (Double) menorCaminho[1];
         } while (atual != null && atual != destino);
         if (atual == destino) {
-            List<CentroServico> menorCaminho = new ArrayList<CentroServico>();
-            List<CentroServico> inverso      = new ArrayList<CentroServico>();
-            Object[]            obj;
+            final List<CentroServico> menorCaminho = new ArrayList<>();
+            final List<CentroServico> inverso      = new ArrayList<>();
+            Object[]                  obj;
             while (atual != origem) {
                 int i = 0;
                 do {
@@ -213,20 +195,21 @@ public abstract class CS_Processamento extends CentroServico {
      *
      * @return caminho completo a partir do primeiro link até o recurso destino
      */
-    public static List<CentroServico> getMenorCaminhoIndireto (CS_Processamento origem, CS_Processamento destino) {
+    public static List<CentroServico> getMenorCaminhoIndireto (
+            final CS_Processamento origem, final CS_Processamento destino
+    ) {
         //cria vetor com distancia acumulada
-        ArrayList<CentroServico> nosExpandidos = new ArrayList<CentroServico>();
-        ArrayList<Object[]>      caminho       = new ArrayList<Object[]>();
-        CentroServico            atual         = origem;
+        final ArrayList<CentroServico> nosExpandidos = new ArrayList<>();
+        final ArrayList<Object[]>      caminho       = new ArrayList<>();
+        CentroServico                  atual         = origem;
         //armazena valor acumulado até atingir o nó atual
         Double acumulado = 0.0;
         do {
             //busca valores das conexões de saida do recurso atual e coloca no vetor caminho
             if (atual instanceof CS_Link) {
-                Object caminhoItem[] = new Object[4];
+                final Object[] caminhoItem = new Object[4];
                 caminhoItem[0] = atual;
-                if (atual.getConexoesSaida() instanceof CS_Comunicacao) {
-                    CS_Comunicacao cs = (CS_Comunicacao) atual.getConexoesSaida();
+                if (atual.getConexoesSaida() instanceof CS_Comunicacao cs) {
                     caminhoItem[1] = cs.tempoTransmitir(10000) + acumulado;
                     caminhoItem[2] = atual.getConexoesSaida();
                 } else if (atual.getConexoesSaida() instanceof GridMaster || atual.getConexoesSaida() == destino) {
@@ -239,12 +222,11 @@ public abstract class CS_Processamento extends CentroServico {
                 caminhoItem[3] = acumulado;
                 caminho.add(caminhoItem);
             } else {
-                ArrayList<CentroServico> lista = (ArrayList<CentroServico>) atual.getConexoesSaida();
-                for (CentroServico cs : lista) {
-                    Object caminhoItem[] = new Object[4];
+                final ArrayList<CentroServico> lista = (ArrayList<CentroServico>) atual.getConexoesSaida();
+                for (final CentroServico cs : lista) {
+                    final Object[] caminhoItem = new Object[4];
                     caminhoItem[0] = atual;
-                    if (cs instanceof CS_Comunicacao) {
-                        CS_Comunicacao comu = (CS_Comunicacao) cs;
+                    if (cs instanceof CS_Comunicacao comu) {
                         caminhoItem[1] = comu.tempoTransmitir(10000) + acumulado;
                         caminhoItem[2] = cs;
                     } else if (cs instanceof GridMaster || cs == destino) {
@@ -267,9 +249,9 @@ public abstract class CS_Processamento extends CentroServico {
             menorCaminho[2] = null;
             menorCaminho[3] = Double.MAX_VALUE;
             //busca menor caminho não expandido
-            for (Object[] obj : caminho) {
-                Double menor    = (Double) menorCaminho[1];
-                Double objAtual = (Double) obj[1];
+            for (final Object[] obj : caminho) {
+                final Double menor    = (Double) menorCaminho[1];
+                final Double objAtual = (Double) obj[1];
                 if (menor > objAtual && !nosExpandidos.contains(obj[2])) {
                     menorCaminho = obj;
                 }
@@ -279,9 +261,9 @@ public abstract class CS_Processamento extends CentroServico {
             acumulado = (Double) menorCaminho[1];
         } while (atual != null && atual != destino);
         if (atual == destino) {
-            List<CentroServico> menorCaminho = new ArrayList<CentroServico>();
-            List<CentroServico> inverso      = new ArrayList<CentroServico>();
-            Object[]            obj;
+            final List<CentroServico> menorCaminho = new ArrayList<>();
+            final List<CentroServico> inverso      = new ArrayList<>();
+            Object[]                  obj;
             while (atual != origem) {
                 int i = 0;
                 do {
@@ -299,23 +281,24 @@ public abstract class CS_Processamento extends CentroServico {
         return null;
     }
 
-    public static List<CentroServico> getMenorCaminhoCloud (CS_Processamento origem, CS_Processamento destino) {
+    public static List<CentroServico> getMenorCaminhoCloud (
+            final CS_Processamento origem, final CS_Processamento destino
+    ) {
         //cria vetor com distancia acumulada
-        List<CentroServico> nosExpandidos = new ArrayList<CentroServico>();
-        List<Object[]>      caminho       = new ArrayList<Object[]>();
-        CentroServico       atual         = origem;
+        final List<CentroServico> nosExpandidos = new ArrayList<>();
+        final List<Object[]>      caminho       = new ArrayList<>();
+        CentroServico             atual         = origem;
         //armazena valor acumulado até atingir o nó atual
         Double acumulado = 0.0;
         do {
             //busca valores das conexões de saida do recurso atual e coloca no vetor caminho
             if (atual instanceof CS_Link) {
-                Object caminhoItem[] = new Object[4];
+                final Object[] caminhoItem = new Object[4];
                 caminhoItem[0] = atual;
                 if (atual.getConexoesSaida() instanceof CS_Processamento && atual.getConexoesSaida() != destino) {
                     caminhoItem[1] = Double.MAX_VALUE;
                     caminhoItem[2] = null;
-                } else if (atual.getConexoesSaida() instanceof CS_Comunicacao) {
-                    CS_Comunicacao cs = (CS_Comunicacao) atual.getConexoesSaida();
+                } else if (atual.getConexoesSaida() instanceof CS_Comunicacao cs) {
                     caminhoItem[1] = cs.tempoTransmitir(10000) + acumulado;
                     caminhoItem[2] = atual.getConexoesSaida();
                 } else {
@@ -325,15 +308,14 @@ public abstract class CS_Processamento extends CentroServico {
                 caminhoItem[3] = acumulado;
                 caminho.add(caminhoItem);
             } else {
-                ArrayList<CentroServico> lista = (ArrayList<CentroServico>) atual.getConexoesSaida();
-                for (CentroServico cs : lista) {
-                    Object caminhoItem[] = new Object[4];
+                final ArrayList<CentroServico> lista = (ArrayList<CentroServico>) atual.getConexoesSaida();
+                for (final CentroServico cs : lista) {
+                    final Object[] caminhoItem = new Object[4];
                     caminhoItem[0] = atual;
                     if (cs instanceof CS_Processamento && cs != destino) {
                         caminhoItem[1] = Double.MAX_VALUE;
                         caminhoItem[2] = null;
-                    } else if (cs instanceof CS_Comunicacao) {
-                        CS_Comunicacao comu = (CS_Comunicacao) cs;
+                    } else if (cs instanceof CS_Comunicacao comu) {
                         caminhoItem[1] = comu.tempoTransmitir(10000) + acumulado;
                         caminhoItem[2] = cs;
                     } else {
@@ -353,9 +335,9 @@ public abstract class CS_Processamento extends CentroServico {
             menorCaminho[2] = null;
             menorCaminho[3] = Double.MAX_VALUE;
             //busca menor caminho não expandido
-            for (Object[] obj : caminho) {
-                Double menor    = (Double) menorCaminho[1];
-                Double objAtual = (Double) obj[1];
+            for (final Object[] obj : caminho) {
+                final Double menor    = (Double) menorCaminho[1];
+                final Double objAtual = (Double) obj[1];
                 if (menor > objAtual && !nosExpandidos.contains(obj[2])) {
                     menorCaminho = obj;
                 }
@@ -365,9 +347,9 @@ public abstract class CS_Processamento extends CentroServico {
             acumulado = (Double) menorCaminho[1];
         } while (atual != null && atual != destino);
         if (atual == destino) {
-            List<CentroServico> menorCaminho = new ArrayList<CentroServico>();
-            List<CentroServico> inverso      = new ArrayList<CentroServico>();
-            Object[]            obj;
+            final List<CentroServico> menorCaminho = new ArrayList<>();
+            final List<CentroServico> inverso      = new ArrayList<>();
+            Object[]                  obj;
             while (atual != origem) {
                 int i = 0;
                 do {
@@ -396,20 +378,21 @@ public abstract class CS_Processamento extends CentroServico {
      *
      * @return caminho completo a partir do primeiro link até o recurso destino
      */
-    public static List<CentroServico> getMenorCaminhoIndiretoCloud (CS_Processamento origem, CS_Processamento destino) {
+    public static List<CentroServico> getMenorCaminhoIndiretoCloud (
+            final CS_Processamento origem, final CS_Processamento destino
+    ) {
         //cria vetor com distancia acumulada
-        ArrayList<CentroServico> nosExpandidos = new ArrayList<CentroServico>();
-        ArrayList<Object[]>      caminho       = new ArrayList<Object[]>();
-        CentroServico            atual         = origem;
+        final ArrayList<CentroServico> nosExpandidos = new ArrayList<>();
+        final ArrayList<Object[]>      caminho       = new ArrayList<>();
+        CentroServico                  atual         = origem;
         //armazena valor acumulado até atingir o nó atual
         Double acumulado = 0.0;
         do {
             //busca valores das conexões de saida do recurso atual e coloca no vetor caminho
             if (atual instanceof CS_Link) {
-                Object caminhoItem[] = new Object[4];
+                final Object[] caminhoItem = new Object[4];
                 caminhoItem[0] = atual;
-                if (atual.getConexoesSaida() instanceof CS_Comunicacao) {
-                    CS_Comunicacao cs = (CS_Comunicacao) atual.getConexoesSaida();
+                if (atual.getConexoesSaida() instanceof CS_Comunicacao cs) {
                     caminhoItem[1] = cs.tempoTransmitir(10000) + acumulado;
                     caminhoItem[2] = atual.getConexoesSaida();
                 } else if (atual.getConexoesSaida() instanceof VmMaster || atual.getConexoesSaida() == destino) {
@@ -422,12 +405,11 @@ public abstract class CS_Processamento extends CentroServico {
                 caminhoItem[3] = acumulado;
                 caminho.add(caminhoItem);
             } else {
-                ArrayList<CentroServico> lista = (ArrayList<CentroServico>) atual.getConexoesSaida();
-                for (CentroServico cs : lista) {
-                    Object caminhoItem[] = new Object[4];
+                final ArrayList<CentroServico> lista = (ArrayList<CentroServico>) atual.getConexoesSaida();
+                for (final CentroServico cs : lista) {
+                    final Object[] caminhoItem = new Object[4];
                     caminhoItem[0] = atual;
-                    if (cs instanceof CS_Comunicacao) {
-                        CS_Comunicacao comu = (CS_Comunicacao) cs;
+                    if (cs instanceof CS_Comunicacao comu) {
                         caminhoItem[1] = comu.tempoTransmitir(10000) + acumulado;
                         caminhoItem[2] = cs;
                     } else if (cs instanceof VmMaster || cs == destino) {
@@ -450,9 +432,9 @@ public abstract class CS_Processamento extends CentroServico {
             menorCaminho[2] = null;
             menorCaminho[3] = Double.MAX_VALUE;
             //busca menor caminho não expandido
-            for (Object[] obj : caminho) {
-                Double menor    = (Double) menorCaminho[1];
-                Double objAtual = (Double) obj[1];
+            for (final Object[] obj : caminho) {
+                final Double menor    = (Double) menorCaminho[1];
+                final Double objAtual = (Double) obj[1];
                 if (menor > objAtual && !nosExpandidos.contains(obj[2])) {
                     menorCaminho = obj;
                 }
@@ -462,9 +444,9 @@ public abstract class CS_Processamento extends CentroServico {
             acumulado = (Double) menorCaminho[1];
         } while (atual != null && atual != destino);
         if (atual == destino) {
-            List<CentroServico> menorCaminho = new ArrayList<CentroServico>();
-            List<CentroServico> inverso      = new ArrayList<CentroServico>();
-            Object[]            obj;
+            final List<CentroServico> menorCaminho = new ArrayList<>();
+            final List<CentroServico> inverso      = new ArrayList<>();
+            Object[]                  obj;
             while (atual != origem) {
                 int i = 0;
                 do {
@@ -483,7 +465,7 @@ public abstract class CS_Processamento extends CentroServico {
     }
 
     public int getnumeroMaquina () {
-        return metrica.getnumeroMaquina();
+        return this.metrica.getnumeroMaquina();
     }
 
     public Double getConsumoEnergia () {
@@ -491,43 +473,45 @@ public abstract class CS_Processamento extends CentroServico {
     }
 
     public double getOcupacao () {
-        return Ocupacao;
+        return this.Ocupacao;
     }
 
     public double getPoderComputacional () {
-        return poderComputacional;
+        return this.poderComputacional;
     }
 
-    public void setPoderComputacional (double poderComputacional) {
+    public void setPoderComputacional (final double poderComputacional) {
         this.poderComputacional = poderComputacional;
     }
 
     @Override
     public String getId () {
-        return metrica.getId();
+        return this.metrica.getId();
     }
 
     public String getProprietario () {
-        return metrica.getProprietario();
+        return this.metrica.getProprietario();
     }
 
     public int getNumeroProcessadores () {
-        return numeroProcessadores;
+        return this.numeroProcessadores;
     }
 
-    public double tempoProcessar (double Mflops) {
-        return (Mflops / PoderComputacionalDisponivelPorProcessador);
+    public double tempoProcessar (final double Mflops) {
+        return (Mflops / this.PoderComputacionalDisponivelPorProcessador);
     }
 
-    public double getMflopsProcessados (double tempoProc) {
-        return (tempoProc * PoderComputacionalDisponivelPorProcessador);
+    public double getMflopsProcessados (final double tempoProc) {
+        return (tempoProc * this.PoderComputacionalDisponivelPorProcessador);
     }
 
     public MetricasProcessamento getMetrica () {
-        return metrica;
+        return this.metrica;
     }
 
-    public void setPoderComputacionalDisponivelPorProcessador (double PoderComputacionalDisponivelPorProcessador) {
+    public void setPoderComputacionalDisponivelPorProcessador (
+            final double PoderComputacionalDisponivelPorProcessador
+    ) {
         this.PoderComputacionalDisponivelPorProcessador = PoderComputacionalDisponivelPorProcessador;
     }
 
@@ -537,71 +521,13 @@ public abstract class CS_Processamento extends CentroServico {
      */
     public abstract void determinarCaminhos () throws LinkageError;
 
-    /**
-     * Método que determina todas as conexões entre dois recursos
-     * podendo haver conexões indiretas, passando por diverssos elementos de comunicação
-     *
-     * @param inicio
-     *         CS_Internet inicial
-     * @param fim
-     *         Recurso que está sendo buscado um caminho
-     *
-     * @return lista de caminho existentes
-     */
-    protected List<List> getCaminhos (CS_Comunicacao inicio, CentroServico fim, List itensVerificados) {
-        List<List> lista = new ArrayList<List>();
-        //Adiciona camino para elementos diretamente conectados
-        if (inicio instanceof CS_Link && inicio.getConexoesSaida().equals(fim)) {
-            List novoCaminho = new ArrayList<CentroServico>();
-            novoCaminho.add(inicio);
-            novoCaminho.add(fim);
-            lista.add(novoCaminho);
-        } //Adiciona caminho para elementos diretamentes conectados por um switch
-        else if (inicio instanceof CS_Switch) {
-            CS_Switch Switch = (CS_Switch) inicio;
-            for (CentroServico saida : Switch.getConexoesSaida()) {
-                if (saida.equals(fim)) {
-                    List novoCaminho = new ArrayList<CentroServico>();
-                    novoCaminho.add(inicio);
-                    novoCaminho.add(fim);
-                    lista.add(novoCaminho);
-                }
-            }
-        } //faz chamada recursiva para novo caminho
-        else if (inicio.getConexoesSaida() instanceof CS_Internet &&
-                 !itensVerificados.contains(inicio.getConexoesSaida())) {
-            CS_Internet net = (CS_Internet) inicio.getConexoesSaida();
-            itensVerificados.add(net);
-            List<List> recursivo = null;
-            for (CS_Link link : net.getConexoesSaida()) {
-                recursivo = getCaminhos(link, fim, itensVerificados);
-                if (recursivo != null) {
-                    for (List caminho : recursivo) {
-                        List novoCaminho = new ArrayList<CentroServico>();
-                        novoCaminho.add(inicio);
-                        novoCaminho.add(net);
-                        novoCaminho.addAll(caminho);
-                        lista.add(novoCaminho);
-                    }
-                }
-            }
-            itensVerificados.remove(net);
-        }
-        if (lista.isEmpty()) {
-            return null;
-        } else {
-            return lista;
-        }
-    }
-
-    public void setTempoProcessamento (double inicio, double fim) {
-        ParesOrdenadosUso par = new ParesOrdenadosUso(inicio, fim);
-        lista_pares.add(par);
+    public void setTempoProcessamento (final double inicio, final double fim) {
+        final ParesOrdenadosUso par = new ParesOrdenadosUso(inicio, fim);
+        this.lista_pares.add(par);
     }
 
     public List<ParesOrdenadosUso> getListaProcessamento () {
-        Collections.sort(lista_pares);
+        Collections.sort(this.lista_pares);
         return (this.lista_pares);
     }
-
 }

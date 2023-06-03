@@ -16,11 +16,10 @@ import ispd.policy.allocation.vm.impl.util.ComparaRequisitos;
 @Policy
 public class FirstFitDecreasing extends VmAllocationPolicy {
 
-    private final ComparaRequisitos      comparaReq;
-    private       boolean                fit           = false;
-    private       int                    maqIndex      = 0;
-    private       List<CS_VirtualMac>    VMsOrdenadas  = null;
-    private       List<CS_Processamento> MaqsOrdenadas = null;
+    private final ComparaRequisitos   comparaReq;
+    private       boolean             fit          = false;
+    private       int                 maqIndex     = 0;
+    private       List<CS_VirtualMac> VMsOrdenadas = null;
 
     public FirstFitDecreasing () {
         this.maquinasVirtuais = new ArrayList<>();
@@ -72,16 +71,14 @@ public class FirstFitDecreasing extends VmAllocationPolicy {
             final CS_VirtualMac auxVM = this.escalonarVM();
 
             while (num_escravos >= 0) {
-                if (num_escravos > 0) {//caso existam máquinas livres
+                if (num_escravos > 0) { // caso existam máquinas livres
                     final var auxMaq = this.escalonarRecurso();
-                    //escalona
-                    // o recurso
+                    // escalona o recurso
                     if (auxMaq instanceof CS_VMM) {
 
                         System.out.println(auxMaq.getId() + " é um VMM, a VM " + "será redirecionada");
                         auxVM.setCaminho(this.escalonarRota(auxMaq));
-                        //salvando uma lista de VMMs intermediarios no
-                        // caminho da vm e seus respectivos caminhos
+                        // salvando uma lista de VMMs intermediarios no caminho da vm e seus respectivos caminhos
                         System.out.println(auxVM.getId() + " enviada para " + auxMaq.getId());
                         this.mestre.sendVm(auxVM);
                         System.out.println("---------------------------------------");
@@ -101,8 +98,6 @@ public class FirstFitDecreasing extends VmAllocationPolicy {
                         System.out.println("ProcMaq: " + maqProc);
                         final int procVM = auxVM.getProcessadoresDisponiveis();
                         System.out.println("ProcVM: " + procVM);
-                        //System.out.println
-                        // ("---------------------------------------");
 
                         if ((memoriaNecessaria <= memoriaMaq && discoNecessario <= discoMaq && procVM <= maqProc)) {
                             maq.setMemoriaDisponivel(memoriaMaq - memoriaNecessaria);

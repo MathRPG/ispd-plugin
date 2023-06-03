@@ -4,13 +4,12 @@ import java.io.Serializable;
 
 public class MetricasCusto implements Serializable {
 
-    //lista de atributos
-    private String id; //id da máquina virtual que se está calculando as métricas
-    private double custoProc;
-    private double custoMem;
-    private double custoDisco;
+    private final String id; // id da máquina virtual que se está calculando as métricas
+    private       double custoProc;
+    private       double custoMem;
+    private       double custoDisco;
 
-    public MetricasCusto (String id) {
+    public MetricasCusto (final String id) {
         this.id         = id;
         this.custoProc  = 0;
         this.custoMem   = 0;
@@ -18,32 +17,30 @@ public class MetricasCusto implements Serializable {
     }
 
     public String getId () {
-        return id;
+        return this.id;
     }
 
     public double getCustoProc () {
-        return custoProc;
+        return this.custoProc;
     }
 
-    public void setCustoProc (double custoProc) {
+    public void setCustoProc (final double custoProc) {
         this.custoProc = custoProc;
     }
 
     public double getCustoMem () {
-        return custoMem;
+        return this.custoMem;
     }
 
-    public void setCustoMem (double custoMem) {
+    public void setCustoMem (final double custoMem) {
         this.custoMem = custoMem;
     }
 
     public double getCustoDisco () {
-        return custoDisco;
+        return this.custoDisco;
     }
 
-    public void setCustoDisco (double custoDisco) {
+    public void setCustoDisco (final double custoDisco) {
         this.custoDisco = custoDisco;
     }
-
-
 }

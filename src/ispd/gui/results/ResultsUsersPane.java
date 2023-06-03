@@ -11,7 +11,7 @@ import ispd.motor.filas.servidores.implementacao.CS_Mestre;
  * information about processing and communication performed for resolve the tasks
  * for each user.
  */
-/* package-private */ class ResultsUsersPane extends JScrollPane {
+public class ResultsUsersPane extends JScrollPane {
 
     /**
      * Constructor which creates a pane that contains the processing and
@@ -26,16 +26,12 @@ import ispd.motor.filas.servidores.implementacao.CS_Mestre;
         this.setPreferredSize(ResultsDialog.CHART_PREFERRED_SIZE);
         this.setViewportView(textArea);
 
-
         textArea.setEditable(false);
         textArea.setColumns(20);
         textArea.setRows(5);
         textArea.setFont(ResultsDialog.COURIER_NEW_FONT_BOLD);
         textArea.setText(this.makeUsersResultText(queueNetwork));
     }
-
-    /* Private Methods */
-    /* Utility Resources Pane Methods */
 
     /**
      * It creates the users results text, this text contains the queue time and
@@ -54,8 +50,7 @@ import ispd.motor.filas.servidores.implementacao.CS_Mestre;
         final var sb = new StringBuilder();
 
         for (final var userName : userMetrics.getUsuarios()) {
-            final var completedTasks
-                    = userMetrics.getTarefasConcluidas(userName);
+            final var completedTasks = userMetrics.getTarefasConcluidas(userName);
 
             sb.append("\n\n\t\tUser ").append(userName).append('\n');
             sb.append("\nNumber of task: ").append(completedTasks.size()).append('\n');
@@ -102,5 +97,4 @@ import ispd.motor.filas.servidores.implementacao.CS_Mestre;
 
         return sb.toString();
     }
-
 }

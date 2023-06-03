@@ -29,90 +29,22 @@ public final class AuxiliaryFileFilter extends FileFilter {
     private final boolean filterDirectory;
 
     /**
-     * Constructor of {@link AuxiliaryFileFilter} specifying the file
-     * filter description and extensions. Further, in this case the
-     * directories will not be filtered.
-     *
-     * @param description
-     *         the description
-     * @param extensions
-     *         the file extensions
-     *
-     * @see #AuxiliaryFileFilter(String, List, boolean) for filtering
-     *         option
-     */
-    public AuxiliaryFileFilter (
-            final String description,
-            final List<String> extensions
-    ) {
-        this(description, extensions, false);
-    }
-
-    /**
-     * Constructor of {@link AuxiliaryFileFilter} specifying the
-     * file filter description, extensions and whether  file filter
-     * must filter directories as well.
+     * Constructor of {@link AuxiliaryFileFilter} specifying the file filter description, extensions and whether
+     * file filter must filter directories as well.
      *
      * @param description
      *         the description
      * @param extensions
      *         the file extensions
      * @param filterDirectory
-     *         whether or not directories must be
-     *         filtered
+     *         whether directories must be filtered
      */
     public AuxiliaryFileFilter (
-            final String description,
-            final List<String> extensions,
-            final boolean filterDirectory
+            final String description, final List<String> extensions, final boolean filterDirectory
     ) {
         this.description     = description;
-        this.extensions      = Objects.requireNonNullElse(
-                extensions,
-                Collections.emptyList()
-        );
+        this.extensions      = Objects.requireNonNullElse(extensions, Collections.emptyList());
         this.filterDirectory = filterDirectory;
-    }
-
-    /**
-     * Constructor of {@link AuxiliaryFileFilter} specifying the file
-     * filter description and extension. Further, in this case the
-     * directories will not be filtered.
-     *
-     * @param description
-     *         the description
-     * @param extension
-     *         a file extension
-     *
-     * @see #AuxiliaryFileFilter(String, String, boolean) for filtering
-     *         option
-     */
-    public AuxiliaryFileFilter (
-            final String description,
-            final String extension
-    ) {
-        this(description, extension, false);
-    }
-
-    /**
-     * Constructor of {@link AuxiliaryFileFilter} specifying the file
-     * filter description, a extension and whether file filter must
-     * filter directories as well.
-     *
-     * @param description
-     *         the description
-     * @param extension
-     *         a file extension
-     * @param filterDirectory
-     *         whether or not directories must be
-     *         filtered
-     */
-    public AuxiliaryFileFilter (
-            final String description,
-            final String extension,
-            final boolean filterDirectory
-    ) {
-        this(description, Collections.singletonList(extension), filterDirectory);
     }
 
     /**
@@ -127,8 +59,7 @@ public final class AuxiliaryFileFilter extends FileFilter {
     @Override
     public boolean accept (final File file) {
         return (file.isDirectory() && this.filterDirectory) ||
-               this.extensions.stream().anyMatch((extension)
-                                                         -> file.getName().toLowerCase().endsWith(extension));
+               this.extensions.stream().anyMatch((extension) -> file.getName().toLowerCase().endsWith(extension));
     }
 
     /**

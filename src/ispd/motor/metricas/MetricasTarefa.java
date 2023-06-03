@@ -21,43 +21,43 @@ public class MetricasTarefa {
 
     private double eficiencia = 0;
 
-    public void incTempoComunicacao (double tempoComunicacao) {
+    public void incTempoComunicacao (final double tempoComunicacao) {
         this.tempoComunicacao += tempoComunicacao;
     }
 
-    public void incTempoEsperaComu (double tempoEsperaComu) {
+    public void incTempoEsperaComu (final double tempoEsperaComu) {
         this.tempoEsperaComu += tempoEsperaComu;
     }
 
-    public void incTempoEsperaProc (double tempoEsperaProc) {
+    public void incTempoEsperaProc (final double tempoEsperaProc) {
         this.tempoEsperaProc += tempoEsperaProc;
     }
 
-    public void incTempoProcessamento (double tempoProcessamento) {
+    public void incTempoProcessamento (final double tempoProcessamento) {
         this.tempoProcessamento += tempoProcessamento;
     }
 
-    public void calcEficiencia (double capacidadeRecebida, double tamanhoTarefa) {
-        eficiencia = capacidadeRecebida / (tamanhoTarefa * tempoProcessamento);
+    public void calcEficiencia (final double capacidadeRecebida, final double tamanhoTarefa) {
+        this.eficiencia = capacidadeRecebida / (tamanhoTarefa * this.tempoProcessamento);
     }
 
     public double getTempoComunicacao () {
-        return tempoComunicacao;
+        return this.tempoComunicacao;
     }
 
     public double getTempoEsperaComu () {
-        return tempoEsperaComu;
+        return this.tempoEsperaComu;
     }
 
     public double getTempoEsperaProc () {
-        return tempoEsperaProc;
+        return this.tempoEsperaProc;
     }
 
     public double getTempoProcessamento () {
-        return tempoProcessamento;
+        return this.tempoProcessamento;
     }
 
     public double getEficiencia () {
-        return eficiencia;
+        return this.eficiencia;
     }
 }

@@ -34,15 +34,13 @@ public class TraceXML {
     public TraceXML (final String path) {
         this.path = path;
 
-        final var split = TraceXML.splitAtLast(path, TraceXML.FILE_EXT_DELIMITER);
+        final var split = splitAtLast(path, TraceXML.FILE_EXT_DELIMITER);
 
         this.output = split[0] + ".wmsx";
         this.type   = split[1].toUpperCase();
     }
 
-    private static String[] splitAtLast (
-            final String str, final char delimiter
-    ) {
+    private static String[] splitAtLast (final String str, final char delimiter) {
         final int i = str.lastIndexOf(delimiter);
         return new String[] {
                 str.substring(0, i), str.substring(i + 1) // Skip delimiter
@@ -102,19 +100,16 @@ public class TraceXML {
         for (this.taskCount = 0; in.ready(); this.taskCount++) {
             final var line = in.readLine();
 
-            if (TraceXML.shouldSkipLine(line)) {
+            if (shouldSkipLine(line)) {
                 continue;
             }
 
             final String str;
 
             if (this.isSwfType()) {
-                str = TraceXML.makeSwfTaskTag(line);
+                str = makeSwfTaskTag(line);
             } else if (this.isGwfType()) {
-                if (firstTaskArrival.isEmpty()) {
-                    firstTaskArrival = Optional.of(TraceXML.parseArrivalTime(line));
-                }
-                str = TraceXML.makeGwfTaskTag(line, firstTaskArrival.get());
+                str = makeGwfTaskTag(line, firstTaskArrival.orElseGet(() -> parseArrivalTime(line)));
             } else {
                 str = "";
             }
@@ -149,15 +144,7 @@ public class TraceXML {
         return "GWF".equals(this.type);
     }
 
-    private static int parseArrivalTime (final String line) {
-        final var fields = TraceXML.TABS.matcher(line).replaceAll(" ").trim().split(" ");
-
-        return Integer.parseInt(fields[1]);
-    }
-
-    private static String makeGwfTaskTag (
-            final String line, final int firstTaskArrival
-    ) {
+    private static String makeGwfTaskTag (final String line, final int firstTaskArrival) {
 
         final var fields = TraceXML.TABS.matcher(line).replaceAll(" ").trim().split(" ");
 
@@ -167,9 +154,20 @@ public class TraceXML {
 
         return """
                <task id="%s" arr="%d" sts="%s" cpsz ="%s" cmsz="%s" usr="%s" />
-               """.formatted(fields[0], Integer.parseInt(fields[1]) - firstTaskArrival, fields[10], fields[3],
-                             fields[20], fields[11]
+               """.formatted(
+                fields[0],
+                Integer.parseInt(fields[1]) - firstTaskArrival,
+                fields[10],
+                fields[3],
+                fields[20],
+                fields[11]
         );
+    }
+
+    private static int parseArrivalTime (final String line) {
+        final var fields = TraceXML.TABS.matcher(line).replaceAll(" ").trim().split(" ");
+
+        return Integer.parseInt(fields[1]);
     }
 
     /**
@@ -177,7 +175,7 @@ public class TraceXML {
      */
     @Override
     public String toString () {
-        this.output = TraceXML.splitAtLast(this.output, TraceXML.FILE_PATH_DELIMITER)[1];
+        this.output = splitAtLast(this.output, TraceXML.FILE_PATH_DELIMITER)[1];
 
         return """
                File %s was generated sucessfully:
@@ -194,7 +192,7 @@ public class TraceXML {
         try (
                 final var in = new BufferedReader(new FileReader(this.path, StandardCharsets.UTF_8))
         ) {
-            final var fileName = TraceXML.splitAtLast(this.path, TraceXML.FILE_PATH_DELIMITER)[1];
+            final var fileName = splitAtLast(this.path, TraceXML.FILE_PATH_DELIMITER)[1];
 
             final var sb = new StringBuilder("File %s was opened sucessfully:\n".formatted(fileName));
 
@@ -268,8 +266,12 @@ public class TraceXML {
     private static String makeTaskDescription (final Tarefa t) {
         return """
                <task id="%d" arr="%s" sts="1" cpsz ="%s" cmsz="%s" usr="%s" />
-               """.formatted(t.getIdentificador(), t.getTimeCriacao(), t.getTamProcessamento(), t.getArquivoEnvio(),
-                             t.getProprietario()
+               """.formatted(
+                t.getIdentificador(),
+                t.getTimeCriacao(),
+                t.getTamProcessamento(),
+                t.getArquivoEnvio(),
+                t.getProprietario()
         );
     }
 }

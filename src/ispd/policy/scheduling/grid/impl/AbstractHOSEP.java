@@ -21,8 +21,7 @@ import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
 public abstract class AbstractHOSEP <T extends UserProcessingControl> extends AbstractOSEP<T> {
 
     private final Collection<Tarefa>          tasksToSchedule   = new HashSet<>();
-    private final Collection<PreemptionEntry> preemptionEntries =
-            new HashSet<>();
+    private final Collection<PreemptionEntry> preemptionEntries = new HashSet<>();
 
     /**
      * Attempts to schedule a task and a suitable machine for one of the
@@ -64,8 +63,10 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      */
     @Override
     public CS_Processamento escalonarRecurso () {
-        throw new UnsupportedOperationException("""
-                                                Do not call method .escalonarRecurso() on HOSEP-like algorithms.""");
+        throw new UnsupportedOperationException(
+                """
+                Do not call method .escalonarRecurso() on HOSEP-like algorithms."""
+        );
     }
 
     private List<T> sortedUserControls () {
@@ -93,7 +94,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         try {
             this.tryFindTaskAndResourceFor(uc);
             return true;
-        } catch (final NoSuchElementException | IllegalStateException ex) {
+        } catch (final NoSuchElementException | IllegalStateException ignored) {
             return false;
         }
     }
@@ -150,9 +151,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
                    .min(Comparator.comparingDouble(Tarefa::getTamProcessamento));
     }
 
-    private Optional<CS_Processamento> findMachineBestSuitedFor (
-            final Tarefa task, final T taskOwner
-    ) {
+    private Optional<CS_Processamento> findMachineBestSuitedFor (final Tarefa task, final T taskOwner) {
         return this
                 .findAvailableMachineBestSuitedFor(task, taskOwner)
                 .or(() -> this.findOccupiedMachineBestSuitedFor(taskOwner));
@@ -185,14 +184,12 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      *         hosting a new task
      * @see #canMachineHostNewTask(CS_Processamento) Machine Status Validation
      */
-    private void tryHostTaskFromUserInMachine (
-            final Tarefa task, final T taskOwner,
-            final CS_Processamento machine
-    ) {
+    private void tryHostTaskFromUserInMachine (final Tarefa task, final T taskOwner, final CS_Processamento machine) {
         if (!this.canMachineHostNewTask(machine)) {
-            throw new IllegalStateException("""
-                                            Scheduled machine %s can not host tasks"""
-                                                    .formatted(machine));
+            throw new IllegalStateException(
+                    """
+                    Scheduled machine %s can not host tasks""".formatted(machine)
+            );
         }
 
         this.hostTaskFromUserInMachine(task, taskOwner, machine);
@@ -202,9 +199,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         return this.tarefas.stream().filter(uc::isOwnerOf);
     }
 
-    private Optional<CS_Processamento> findAvailableMachineBestSuitedFor (
-            final Tarefa task, final T taskOwner
-    ) {
+    private Optional<CS_Processamento> findAvailableMachineBestSuitedFor (final Tarefa task, final T taskOwner) {
         return this.availableMachinesFor(taskOwner)
                    .max(this.compareAvailableMachinesFor(task));
     }
@@ -225,10 +220,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         return this.slaveControls.get(machine).canHostNewTask();
     }
 
-    private void hostTaskFromUserInMachine (
-            final Tarefa task, final T taskOwner,
-            final CS_Processamento machine
-    ) {
+    private void hostTaskFromUserInMachine (final Tarefa task, final T taskOwner, final CS_Processamento machine) {
         this.sendTaskToResource(task, machine);
         this.tarefas.remove(task);
 
@@ -271,10 +263,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         return this.slaveControls.get(machine).isFree();
     }
 
-    private void hostTaskNormally (
-            final Tarefa task, final T uc,
-            final CS_Processamento machine
-    ) {
+    private void hostTaskNormally (final Tarefa task, final T uc, final CS_Processamento machine) {
         this.sendTaskFromUserToMachine(task, uc, machine);
         uc.decreaseTaskDemand();
     }
@@ -284,8 +273,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
     }
 
     private void hostTaskWithPreemption (
-            final Tarefa taskToSchedule, final T taskOwner,
-            final CS_Processamento machine
+            final Tarefa taskToSchedule, final T taskOwner, final CS_Processamento machine
     ) {
         final var taskToPreempt = this.taskToPreemptIn(machine);
 
@@ -315,10 +303,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
                            machine, userToPreempt, taskOwner));
     }
 
-    private void sendTaskFromUserToMachine (
-            final Tarefa task, final T taskOwner,
-            final CS_Processamento machine
-    ) {
+    private void sendTaskFromUserToMachine (final Tarefa task, final T taskOwner, final CS_Processamento machine) {
         this.mestre.sendTask(task);
         taskOwner.startTaskFrom(machine);
     }
@@ -351,10 +336,10 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
     }
 
     /**
-     * This algorithm's task scheduling does not conform to the standard
-     * {@link SchedulingPolicy} interface.<br>
-     * Therefore, calling this method on instances of this algorithm will
-     * result in an {@link UnsupportedOperationException} being thrown.
+     * This algorithm's task scheduling does not conform to the standard {@link SchedulingPolicy} interface.
+     * <p>
+     * Therefore, calling this method on instances of this algorithm will result in an
+     * {@link UnsupportedOperationException} being thrown.
      *
      * @return not applicable in this context, an exception is thrown instead.
      *
@@ -363,8 +348,10 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      */
     @Override
     public Tarefa escalonarTarefa () {
-        throw new UnsupportedOperationException("""
-                                                Do not call method .escalonarTarefa() on HOSEP-like algorithms.""");
+        throw new UnsupportedOperationException(
+                """
+                Do not call method .escalonarTarefa() on HOSEP-like algorithms."""
+        );
     }
 
     @Override
@@ -402,9 +389,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
                                      .orElseThrow();
     }
 
-    private void insertTaskIntoPreemptedTaskSlot (
-            final Tarefa scheduled, final Tarefa preempted
-    ) {
+    private void insertTaskIntoPreemptedTaskSlot (final Tarefa scheduled, final Tarefa preempted) {
         this.tasksToSchedule.remove(scheduled);
 
         final var mach = preempted.getCSLProcessamento();

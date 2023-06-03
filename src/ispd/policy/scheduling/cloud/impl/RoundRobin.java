@@ -23,7 +23,7 @@ public class RoundRobin extends CloudSchedulingPolicy {
     private LinkedList<CS_Processamento>   slavesUser = null;
 
     public RoundRobin () {
-        this.tarefas  = new ArrayList<>(0);
+        this.tarefas  = new ArrayList<>();
         this.escravos = new LinkedList<>();
     }
 
@@ -41,7 +41,6 @@ public class RoundRobin extends CloudSchedulingPolicy {
 
         System.out.println("traçando rota para a VM: " + destination.getId());
         return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
-
     }
 
     @Override
@@ -49,8 +48,7 @@ public class RoundRobin extends CloudSchedulingPolicy {
         System.out.println("---------------------------");
         final var task      = this.escalonarTarefa();
         final var taskOwner = task.getProprietario();
-        this.slavesUser = (LinkedList<CS_Processamento>)
-                this.getVMsAdequadas(taskOwner);
+        this.slavesUser = (LinkedList<CS_Processamento>) this.getVMsAdequadas(taskOwner);
 
         if (this.slavesUser.isEmpty()) {
             this.noAllocatedVms(task);
@@ -67,19 +65,14 @@ public class RoundRobin extends CloudSchedulingPolicy {
     }
 
     private void noAllocatedVms (final Tarefa task) {
-        System.out.printf(
-                "Não existem VMs alocadas ainda, devolvendo tarefa %d%n",
-                task.getIdentificador()
-        );
+        System.out.printf("Não existem VMs alocadas ainda, devolvendo tarefa %d%n", task.getIdentificador());
         this.adicionarTarefa(task);
         this.mestre.freeScheduler();
     }
 
     private void scheduleTask (final Tarefa task) {
         final var resource = this.escalonarRecurso();
-        System.out.printf("escalonando tarefa %d para:%s%n",
-                          task.getIdentificador(), resource.getId()
-        );
+        System.out.printf("escalonando tarefa %d para:%s%n", task.getIdentificador(), resource.getId());
         task.setLocalProcessamento(resource);
         task.setCaminho(this.escalonarRota(resource));
         this.mestre.sendTask(task);
