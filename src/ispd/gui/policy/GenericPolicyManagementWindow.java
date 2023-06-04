@@ -52,7 +52,7 @@ import ispd.gui.auxiliar.MultipleExtensionFileFilter;
 import ispd.gui.auxiliar.TextEditorStyle;
 import ispd.gui.utils.ButtonBuilder;
 import ispd.policy.PolicyManager;
-import ispd.utils.ValidaValores;
+import ispd.utils.NameValidator;
 
 public abstract class GenericPolicyManagementWindow extends JFrame {
 
@@ -466,7 +466,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         );
 
         Optional.ofNullable(name)
-                .filter(ValidaValores::isValidClassName)
+                .filter(NameValidator::isValidClassName)
                 .ifPresent(this::openNewPolicyInEditor);
     }
 

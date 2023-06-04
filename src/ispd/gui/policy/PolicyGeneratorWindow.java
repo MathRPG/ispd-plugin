@@ -49,7 +49,7 @@ import javax.swing.text.StyleConstants;
 
 import ispd.arquivo.interpretador.gerador.InterpretadorGerador;
 import ispd.policy.PolicyManager;
-import ispd.utils.ValidaValores;
+import ispd.utils.NameValidator;
 
 public class PolicyGeneratorWindow extends JDialog {
 
@@ -1975,7 +1975,7 @@ public class PolicyGeneratorWindow extends JDialog {
             this.jLabelP1Informacao.setText(this.translate("Provide a valid name for a Java class"));
             this.jTextFieldP1LocalArq.setText("");
             this.buttonNext.setEnabled(false);
-        } else if (ValidaValores.isValidClassName(this.jTextFieldP1NomeEsc.getText())) {
+        } else if (NameValidator.isValidClassName(this.jTextFieldP1NomeEsc.getText())) {
             this.jLabelP1Informacao.setText("");
 
             final var fileName = String.join(File.separator, this.path, this.jTextFieldP1NomeEsc.getText());
