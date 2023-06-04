@@ -1,7 +1,7 @@
 package ispd.application.terminal;
 
-import org.w3c.dom.Document;
-
+import ispd.motor.metricas.Metricas;
+import ispd.utils.constants.StringConstants;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,22 +9,23 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import ispd.motor.metricas.Metricas;
+import org.w3c.dom.Document;
 
 /**
  * A helper class for the server part of the terminal application simulation.
  */
 public class Server {
 
-    private final int         serverPort;
-    private       int         clientPort;
-    private       InetAddress clientAddress;
+    private final int serverPort;
 
-    public Server (final int serverPort) throws UnknownHostException {
+    private int clientPort = 0;
+
+    private InetAddress clientAddress;
+
+    public Server (final int serverPort)
+        throws UnknownHostException {
         this.serverPort    = serverPort;
-        this.clientPort    = 0;
-        this.clientAddress = InetAddress.getByName("127.0.0.1");
+        this.clientAddress = InetAddress.getByName(StringConstants.LOCALHOST);
     }
 
     /**
@@ -34,7 +35,7 @@ public class Server {
      */
     public Document getMetricsFromClient () {
         try (
-                final var serverSocket = new ServerSocket(this.serverPort)
+            final var serverSocket = new ServerSocket(this.serverPort)
         ) {
             final var inputSocket = serverSocket.accept();
             final var inputStream = new ObjectInputStream(inputSocket.getInputStream());
@@ -53,12 +54,12 @@ public class Server {
      * Return metrics from a simulation to the client that asked for it.
      *
      * @param modelMetrics
-     *         Metrics from a simulation result
+     *     Metrics from a simulation result
      */
     public void returnMetricsToClient (final Metricas modelMetrics) {
         try (
-                final var outputSocket = new Socket(this.clientAddress, this.clientPort);
-                final var outputStream = new ObjectOutputStream(outputSocket.getOutputStream())
+            final var outputSocket = new Socket(this.clientAddress, this.clientPort);
+            final var outputStream = new ObjectOutputStream(outputSocket.getOutputStream())
         ) {
             outputStream.writeObject(modelMetrics);
         } catch (final IOException ignored) {

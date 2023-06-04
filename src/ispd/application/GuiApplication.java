@@ -1,23 +1,18 @@
 package ispd.application;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import ispd.gui.LogExceptions;
 import ispd.gui.MainWindow;
 import ispd.gui.SplashWindow;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 public class GuiApplication implements Application {
 
-    private static final String GUI_LOOK_AND_FEEL_CLASS_NAME = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
+    private static final String LOOK_AND_FEEL = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
 
-    @Override
-    public void run () {
-        openGui();
-    }
+    private static final Logger LOGGER = Logger.getLogger(GuiApplication.class.getName());
 
     private static void openGui () {
         final var splash     = new SplashWindow();
@@ -34,7 +29,6 @@ public class GuiApplication implements Application {
 
         final var mainWindow = buildMainWindow();
 
-
         exceptionLogger.setParentComponent(mainWindow);
 
         return mainWindow;
@@ -42,10 +36,12 @@ public class GuiApplication implements Application {
 
     private static void setGuiLookAndFeel () {
         try {
-            UIManager.setLookAndFeel(GuiApplication.GUI_LOOK_AND_FEEL_CLASS_NAME);
-        } catch (final ClassNotFoundException | IllegalAccessException | InstantiationException |
+            UIManager.setLookAndFeel(GuiApplication.LOOK_AND_FEEL);
+        } catch (final ClassNotFoundException |
+                       IllegalAccessException |
+                       InstantiationException |
                        UnsupportedLookAndFeelException e) {
-            logWithMainLogger(e);
+            logThrowableSeverely(e);
         }
     }
 
@@ -55,7 +51,12 @@ public class GuiApplication implements Application {
         return gui;
     }
 
-    private static void logWithMainLogger (final Throwable ex) {
-        Logger.getLogger(GuiApplication.class.getName()).log(Level.SEVERE, null, ex);
+    private static void logThrowableSeverely (final Throwable t) {
+        GuiApplication.LOGGER.log(Level.SEVERE, null, t);
+    }
+
+    @Override
+    public void run () {
+        openGui();
     }
 }
