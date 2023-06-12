@@ -74,19 +74,19 @@ public class Tarefa implements Client {
     /**
      * Indica a quantidade de mflops já processados no momento de um bloqueio
      */
-    private double mflopsProcessado = 0;
+    private double mflopsProcessado = 0.0;
 
     /**
      * Local de destino da mensagem/tarefa
      */
-    private CentroServico localProcessamento;
+    private CentroServico localProcessamento = null;
 
     /**
      * Caminho que o pacote deve percorrer até o destino O destino é o ultimo item desta lista
      */
-    private List<CentroServico> caminho;
+    private List<CentroServico> caminho = null;
 
-    private double inicioEspera;
+    private double inicioEspera = 0.0;
 
     private int estado = Tarefa.PARADO;
 
