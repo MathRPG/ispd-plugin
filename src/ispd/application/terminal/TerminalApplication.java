@@ -167,7 +167,7 @@ public class TerminalApplication implements Application {
         if (this.inputFile.isPresent()) {
             final var file = this.inputFile.get();
 
-            if (file.getName().endsWith(FileExtensions.IMSX) && file.exists()) {
+            if (file.getName().endsWith(FileExtensions.ICONIC_MODEL) && file.exists()) {
                 this.runNSimulations();
             } else {
                 System.out.printf("iSPD can not open the file: %s%n", file.getName());
@@ -347,7 +347,7 @@ public class TerminalApplication implements Application {
 
         try {
             final var model = IconicoXML.ler(this.inputFile.get());
-            System.out.println(ConsoleColors.GREEN + StringConstants.OKAY + ConsoleColors.RESET);
+            System.out.println(ConsoleColors.GREEN + "OK" + ConsoleColors.RESET);
             this.simulationProgress.validarInicioSimulacao(model);
             return model;
         } catch (final Exception ex) {
@@ -405,7 +405,7 @@ public class TerminalApplication implements Application {
     private List<Tarefa> createJobsList (final Document model, final RedeDeFilas queueNetwork) {
         System.out.print("  Creating tasks: ");
         final var jobs = IconicoXML.newGerarCarga(model).makeTaskList(queueNetwork);
-        System.out.println(ConsoleColors.surroundGreen(StringConstants.OKAY_EXCLAMATION));
+        System.out.println(ConsoleColors.surroundGreen("OK!"));
         return jobs;
     }
 
@@ -420,7 +420,7 @@ public class TerminalApplication implements Application {
     private RedeDeFilas createQueueNetwork (final Document model) {
         System.out.print("  Mounting network queue: ");
         final var queueNetwork = IconicoXML.newRedeDeFilas(model);
-        System.out.println(ConsoleColors.surroundGreen(StringConstants.OKAY_EXCLAMATION));
+        System.out.println(ConsoleColors.surroundGreen("OK!"));
         return queueNetwork;
     }
 

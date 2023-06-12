@@ -1,5 +1,6 @@
 package ispd.arquivo.xml;
 
+import ispd.arquivo.interpretador.cargas.TaskTraceSerializer;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -77,7 +78,6 @@ public class TraceXML {
                 final var in = new BufferedReader(new FileReader(this.path, StandardCharsets.UTF_8));
                 final var out = new BufferedWriter(new FileWriter(this.output, StandardCharsets.UTF_8))
         ) {
-
             out.write("""
                       <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
                       <!DOCTYPE system SYSTEM " iSPDcarga.dtd">
@@ -228,7 +228,7 @@ public class TraceXML {
     /**
      * Output simulation trace from collection of tasks
      *
-     * @see ispd.arquivo.interpretador.cargas.Interpretador
+     * @see TaskTraceSerializer
      */
     public void geraTraceSim (final Collection<? extends Tarefa> tasks) {
         try (

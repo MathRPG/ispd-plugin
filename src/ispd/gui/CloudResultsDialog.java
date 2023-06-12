@@ -55,7 +55,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableModel;
 
 import ispd.arquivo.SalvarResultadosHTML;
-import ispd.arquivo.interpretador.cargas.Interpretador;
+import ispd.arquivo.interpretador.cargas.TaskTraceSerializer;
 import ispd.gui.auxiliar.HtmlPane;
 import ispd.gui.auxiliar.MultipleExtensionFileFilter;
 import ispd.gui.auxiliar.ParesOrdenadosUso;
@@ -1073,8 +1073,7 @@ public class CloudResultsDialog extends JDialog {
             if (!file.getName().endsWith(".wmsx")) {
                 file = new File(file + ".wmsx");
             }
-            final Interpretador interpret = new Interpretador(file.getAbsolutePath());
-            interpret.geraTraceSim(this.tarefas);
+            TaskTraceSerializer.outputTaskTraceToFile(this.tarefas, file);
         }
     }
 

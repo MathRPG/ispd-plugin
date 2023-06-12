@@ -7,7 +7,7 @@ public enum FileExtensions {
     ;
 
     /**
-     * The extension of iconic models for the application. Namely, {@value #IMSX}.
+     * The extension of iconic models for the application. Namely, {@value #ICONIC_MODEL}.
      */
-    public static final String IMSX = ".imsx";
+    public static final String ICONIC_MODEL = ".imsx";
 }

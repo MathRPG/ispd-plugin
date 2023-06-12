@@ -1,133 +1,155 @@
 package ispd.motor.filas;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.motor.metricas.MetricasTarefa;
+import ispd.utils.constants.StringConstants;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
- * Classe que representa o cliente do modelo de filas, ele será atendo pelos
- * centros de serviços Os clientes podem ser: Tarefas
+ * Classe que representa o cliente do modelo de filas, ele será atendo pelos centros de serviços Os
+ * clientes podem ser: Tarefas
  */
 public class Tarefa implements Client {
 
     //Estados que a tarefa pode estar
-    public static final int                    PARADO                 = 1;
-    public static final int                    PROCESSANDO            = 2;
-    public static final int                    CANCELADO              = 3;
-    public static final int                    CONCLUIDO              = 4;
-    public static final int                    FALHA                  = 5;
-    private final       String                 proprietario;
-    private final       String                 aplicacao;
-    private final       int                    identificador;
-    private final       boolean                copia;
-    private final       List<CS_Processamento> historicoProcessamento = new ArrayList<>();
+    public static final int PARADO = 1;
+
+    public static final int PROCESSANDO = 2;
+
+    public static final int CANCELADO = 3;
+
+    public static final int CONCLUIDO = 4;
+
+    public static final int FALHA = 5;
+
+    private final String proprietario;
+
+    private final String aplicacao;
+
+    private final int identificador;
+
+    private final boolean copia;
+
+    private final List<CS_Processamento> historicoProcessamento = new ArrayList<>();
+
     /**
      * Tamanho do arquivo em Mbits que será enviado para o escravo.
      */
-    private final       double                 arquivoEnvio;
+    private final double arquivoEnvio;
+
     /**
      * Tamanho do arquivo em Mbits que será devolvido para o mestre.
      */
-    private final       double                 arquivoRecebimento;
+    private final double arquivoRecebimento;
+
     /**
      * Tamanho em Mflops para processar.
      */
-    private final       double                 tamProcessamento;
+    private final double tamProcessamento;
+
     /**
      * Local de origem da mensagem/tarefa.
      */
-    private final       CentroServico          origem;
-    private final       MetricasTarefa         metricas;
-    private final       double                 tempoCriacao;
-    private final       List<Double>           tempoFinal; //Criando o tempo em que a tarefa acabou.
-    private final       List<Double>           tempoInicial; //Criando o tempo em que a tarefa começou a ser executada.
+    private final CentroServico origem;
+
+    private final MetricasTarefa metricas = new MetricasTarefa();
+
+    private final double tempoCriacao;
+
+    /**
+     * Criando o tempo em que a tarefa acabou.
+     */
+    private final List<Double> tempoFinal = new ArrayList<>();
+
+    /**
+     * Criando o tempo em que a tarefa começou a ser executada.
+     */
+    private final List<Double> tempoInicial = new ArrayList<>();
+
     /**
      * Indica a quantidade de mflops já processados no momento de um bloqueio
      */
-    private             double                 mflopsProcessado;
-    /**
-     * Indica a quantidade de mflops desperdiçados por uma preempção ou cancelamento
-     */
-    private             double                 mflopsDesperdicados    = 0;
+    private double mflopsProcessado = 0;
+
     /**
      * Local de destino da mensagem/tarefa
      */
-    private             CentroServico          localProcessamento;
+    private CentroServico localProcessamento;
+
     /**
-     * Caminho que o pacote deve percorrer até o destino O destino é o ultimo
-     * item desta lista
+     * Caminho que o pacote deve percorrer até o destino O destino é o ultimo item desta lista
      */
-    private             List<CentroServico>    caminho;
-    private             double                 inicioEspera;
-    private             int                    estado;
-    private             double                 tamComunicacao;
+    private List<CentroServico> caminho;
+
+    private double inicioEspera;
+
+    private int estado = Tarefa.PARADO;
+
+    private double tamComunicacao;
 
     public Tarefa (
-            final int id, final String proprietario, final String aplicacao, final CentroServico origem,
-            final double arquivoEnvio, final double tamProcessamento, final double tempoCriacao
+        final int id, final String proprietario, final String aplicacao, final CentroServico origem,
+        final double arquivoEnvio, final double tamProcessamento, final double tempoCriacao
     ) {
-        this.proprietario       = proprietario;
-        this.aplicacao          = aplicacao;
-        this.identificador      = id;
-        this.copia              = false;
-        this.origem             = origem;
-        this.tamComunicacao     = arquivoEnvio;
-        this.arquivoEnvio       = arquivoEnvio;
-        this.arquivoRecebimento = 0;
-        this.tamProcessamento   = tamProcessamento;
-        this.metricas           = new MetricasTarefa();
-        this.tempoCriacao       = tempoCriacao;
-        this.estado             = ispd.motor.filas.Tarefa.PARADO;
-        this.mflopsProcessado   = 0;
-        this.tempoInicial       = new ArrayList<>();
-        this.tempoFinal         = new ArrayList<>();
+        this(
+            id,
+            proprietario,
+            aplicacao,
+            origem,
+            arquivoEnvio,
+            0,
+            tamProcessamento,
+            tempoCriacao
+        );
     }
 
     public Tarefa (
-            final int id, final String proprietario, final String aplicacao, final CentroServico origem,
-            final double arquivoEnvio, final double arquivoRecebimento, final double tamProcessamento,
-            final double tempoCriacao
+        final int id, final String proprietario, final String aplicacao, final CentroServico origem,
+        final double arquivoEnvio, final double arquivoRecebimento, final double tamProcessamento,
+        final double tempoCriacao
     ) {
-        this.identificador      = id;
-        this.proprietario       = proprietario;
         this.aplicacao          = aplicacao;
-        this.copia              = false;
-        this.origem             = origem;
-        this.tamComunicacao     = arquivoEnvio;
         this.arquivoEnvio       = arquivoEnvio;
         this.arquivoRecebimento = arquivoRecebimento;
+        this.copia              = false;
+        this.identificador      = id;
+        this.origem             = origem;
+        this.proprietario       = proprietario;
+        this.tamComunicacao     = arquivoEnvio;
         this.tamProcessamento   = tamProcessamento;
-        this.metricas           = new MetricasTarefa();
         this.tempoCriacao       = tempoCriacao;
-        this.estado             = ispd.motor.filas.Tarefa.PARADO;
-        this.mflopsProcessado   = 0;
-        this.tempoInicial       = new ArrayList<>();
-        this.tempoFinal         = new ArrayList<>();
     }
 
     public Tarefa (final Tarefa tarefa) {
-        this.proprietario       = tarefa.proprietario;
         this.aplicacao          = tarefa.aplicacao;
-        this.identificador      = tarefa.identificador;
-        this.copia              = true;
-        this.origem             = tarefa.origem;
-        this.tamComunicacao     = tarefa.arquivoEnvio;
         this.arquivoEnvio       = tarefa.arquivoEnvio;
         this.arquivoRecebimento = tarefa.arquivoRecebimento;
+        this.copia              = true;
+        this.identificador      = tarefa.identificador;
+        this.origem             = tarefa.origem;
+        this.proprietario       = tarefa.proprietario;
+        this.tamComunicacao     = tarefa.arquivoEnvio;
         this.tamProcessamento   = tarefa.tamProcessamento;
-        this.metricas           = new MetricasTarefa();
         this.tempoCriacao       = tarefa.tempoCriacao;
-        this.estado             = ispd.motor.filas.Tarefa.PARADO;
-        this.mflopsProcessado   = 0;
-        this.tempoInicial       = new ArrayList<>();
-        this.tempoFinal         = new ArrayList<>();
     }
 
-    public String getAplicacao () {
-        return this.aplicacao;
+    private static String serializeSingleTask (final Tarefa task) {
+        return StringConstants.TASK_TAG_TEMPLATE.formatted(
+            task.identificador, task.tempoCriacao, task.tamProcessamento,
+            task.arquivoEnvio, task.proprietario
+        );
+    }
+
+    public static String serializeTaskCollection (final Collection<? extends Tarefa> tasks) {
+        return tasks.stream()
+            .filter(Predicate.not(Tarefa::isCopy))
+            .map(Tarefa::serializeSingleTask)
+            .collect(Collectors.joining());
     }
 
     public double getTamComunicacao () {
@@ -195,7 +217,7 @@ public class Tarefa implements Client {
     }
 
     public void iniciarAtendimentoProcessamento (final double tempo) {
-        this.estado       = ispd.motor.filas.Tarefa.PROCESSANDO;
+        this.estado       = Tarefa.PROCESSANDO;
         this.inicioEspera = tempo;
         this.tempoInicial.add(tempo);
         this.historicoProcessamento.add((CS_Processamento) this.localProcessamento);
@@ -206,7 +228,7 @@ public class Tarefa implements Client {
     }
 
     public void finalizarAtendimentoProcessamento (final double tempo) {
-        this.estado = ispd.motor.filas.Tarefa.CONCLUIDO;
+        this.estado = Tarefa.CONCLUIDO;
         this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
         if (this.tempoFinal.size() < this.tempoInicial.size()) {
             this.tempoFinal.add(tempo);
@@ -215,22 +237,22 @@ public class Tarefa implements Client {
     }
 
     public double cancelar (final double tempo) {
-        if (this.estado == ispd.motor.filas.Tarefa.PARADO || this.estado == ispd.motor.filas.Tarefa.PROCESSANDO) {
-            this.estado = ispd.motor.filas.Tarefa.CANCELADO;
+        if (this.estado == Tarefa.PARADO || this.estado == Tarefa.PROCESSANDO) {
+            this.estado = Tarefa.CANCELADO;
             this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
             if (this.tempoFinal.size() < this.tempoInicial.size()) {
                 this.tempoFinal.add(tempo);
             }
             return this.inicioEspera;
         } else {
-            this.estado = ispd.motor.filas.Tarefa.CANCELADO;
+            this.estado = Tarefa.CANCELADO;
             return tempo;
         }
     }
 
     public double parar (final double tempo) {
-        if (this.estado == ispd.motor.filas.Tarefa.PROCESSANDO) {
-            this.estado = ispd.motor.filas.Tarefa.PARADO;
+        if (this.estado == Tarefa.PROCESSANDO) {
+            this.estado = Tarefa.PARADO;
             this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
             if (this.tempoFinal.size() < this.tempoInicial.size()) {
                 this.tempoFinal.add(tempo);
@@ -285,17 +307,11 @@ public class Tarefa implements Client {
         this.mflopsProcessado = mflopsProcessado;
     }
 
-    public double getMflopsDesperdicados () {
-        return this.mflopsDesperdicados;
-    }
-
     public void incMflopsDesperdicados (final double mflopsDesperdicados) {
-        this.mflopsDesperdicados += mflopsDesperdicados;
     }
 
     public double getCheckPoint () {
-        //Se for alterado o tempo de checkpoint, alterar também no métricas
-        //Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+        // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
         return 0.0;
     }
 
