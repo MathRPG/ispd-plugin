@@ -3,20 +3,22 @@ package ispd.motor.metricas;
 import java.io.Serializable;
 
 /**
- * Cada centro de serviço usado para conexão deve ter um objeto desta classe
- * Responsavel por armazenar o total de comunicação realizada em Mbits e segundos
+ * Cada centro de serviço usado para conexão deve ter um objeto desta classe Responsavel por
+ * armazenar o total de comunicação realizada em Mbits e segundos
  */
 public class MetricasComunicacao implements Serializable {
 
     private final String id;
+
     /**
      * Armazena o total de comunicação realizada em Mbits
      */
-    private       double MbitsTransmitidos;
+    private double MbitsTransmitidos;
+
     /**
      * Armazena o total de comunicação realizada em segundos
      */
-    private       double SegundosDeTransmissao;
+    private double SegundosDeTransmissao;
 
     public MetricasComunicacao (final String id) {
         this.id                    = id;

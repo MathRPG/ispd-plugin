@@ -5,7 +5,8 @@ import java.io.Serializable;
 public class MetricasAlocacao implements Serializable {
 
     private final String id;
-    private       int    numVMs;
+
+    private int numVMs;
 
     public MetricasAlocacao (final String id) {
         this.id     = id;
