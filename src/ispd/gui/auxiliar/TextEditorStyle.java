@@ -17,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -41,93 +40,110 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
 /**
- * Text style to visualize Java code.
- * After instantiation, the method configurarTextComponent(JTextComponent)
- * must be invoked, which will configure the component appropriately.
+ * Text style to visualize Java code. After instantiation, the method
+ * configurarTextComponent(JTextComponent) must be invoked, which will configure the component
+ * appropriately.
  */
 public class TextEditorStyle extends DefaultStyledDocument implements CaretListener {
 
     private static final char NEW_LINE = '\n';
-    private static final char                OPEN_BRACKET            = '{';
-    private static final char                CLOSE_BRACKET           = '}';
-    private static final String              TAB_AS_SPACES           = "    ";
-    private static final String              AUTOCOMPLETE_ACTION_KEY = "completar";
-    private static final String[]            STRING_MATCHERS         = {
-            "\"(.*)\"",
-            "('.')",
-            "('..')"
-    };
-    private static final String              NUMBER_MATCHER          = "\\b\\d+\\b";
-    private static final String[]  AUTOCOMPLETE_STRINGS = {
-            "boolean", "break", "case", "class", "double", "else",
-            "false", "final", "float", "for", "if", "instanceof", "int",
-            "new", "null", "private", "protected", "public", "return",
-            "static", "String", "super", "switch", "System",
-            "this", "true", "try", "void", "while",
-            "escravos", "filaEscravo", "tarefas", "metricaUsuarios",
-            "mestre", "caminhoEscravo", "adicionarTarefa(tarefa)",
-            "getTempoAtualizar()", "resultadoAtualizar(mensagem)",
-            "addTarefaConcluida(tarefa)", "sendTask(Tarefa tarefa)",
-            "executeScheduling()",
-            "sendMessage(tarefa, escravo, tipo)",
-            "cloneTask(Tarefa get)",
-            "Mensagens.CANCELAR", "Mensagens.PARAR", "Mensagens.DEVOLVER",
-            "Mensagens.DEVOLVER_COM_PREEMPCAO", "Mensagens.ATUALIZAR"
+
+    private static final char OPEN_BRACKET = '{';
+
+    private static final char CLOSE_BRACKET = '}';
+
+    private static final String TAB_AS_SPACES = "    ";
+
+    private static final String AUTOCOMPLETE_ACTION_KEY = "completar";
+
+    private static final String[] STRING_MATCHERS = {
+        "\"(.*)\"",
+        "('.')",
+        "('..')"
     };
 
-    private final        Element   rootElement          = this.getDefaultRootElement();
-    private final        String[]  keywords             = {
-            "\\bfor\\b",
-            "\\bif\\b",
-            "\\belse\\b",
-            "\\bwhile\\b",
-            "\\bint\\b",
-            "\\bboolean\\b",
-            "\\bnew\\b",
-            "\\bdouble\\b",
-            "\\bpublic\\b",
-            "\\bprivate\\b",
-            "\\bprotected\\b",
-            "\\breturn\\b",
-            "\\bthis\\b",
-            "\\bstatic\\b",
-            "\\bvoid\\b",
-            "\\btry\\b",
-            "\\bcatch\\b",
-            "\\bbreak\\b",
-            "\\bthrow\\b",
-            "\\bpackage\\b",
-            "\\bimport\\b",
-            "\\bclass\\b",
-            "\\bextends\\b",
-            "\\btrue\\b",
-            "\\bfalse\\b"
+    private static final String NUMBER_MATCHER = "\\b\\d+\\b";
+
+    private static final String[] AUTOCOMPLETE_STRINGS = {
+        "boolean", "break", "case", "class", "double", "else",
+        "false", "final", "float", "for", "if", "instanceof", "int",
+        "new", "null", "private", "protected", "public", "return",
+        "static", "String", "super", "switch", "System",
+        "this", "true", "try", "void", "while",
+        "escravos", "filaEscravo", "tarefas", "metricaUsuarios",
+        "mestre", "caminhoEscravo", "adicionarTarefa(tarefa)",
+        "getTempoAtualizar()", "resultadoAtualizar(mensagem)",
+        "addTarefaConcluida(tarefa)", "sendTask(Tarefa tarefa)",
+        "executeScheduling()",
+        "sendMessage(tarefa, escravo, tipo)",
+        "cloneTask(Tarefa get)",
+        "Mensagens.CANCELAR", "Mensagens.PARAR", "Mensagens.DEVOLVER",
+        "Mensagens.DEVOLVER_COM_PREEMPCAO", "Mensagens.ATUALIZAR"
     };
-    private final        MutableAttributeSet style                   = new SimpleAttributeSet();
-    private final        Color               defaultStyle            = Color.black;
-    private final        Color               commentStyle            = Color.lightGray;
-    private final        Color               keyStyle                = Color.blue;
-    private final        Color               numberStyle             = new Color(0, 150, 0);
-    private final        Color               stringStyle             = new Color(250, 125, 0);
-    private final        Pattern             singleCommentDelim      = Pattern.compile("//");
-    private final        Pattern             multiCommentDelimStart  = Pattern.compile("/\\*");
-    private final        Pattern   multiCommentDelimEnd = Pattern.compile("\\*/");
-    private static final Font      font                 = Monospaced.BOLD_12;
-    private final        JTextArea lineCountBar         = this.makeLineCountBar();
-    private final        JLabel              barAfterCursor          = makeBarAfterCursor();
-    private final        JList<String>       autocompleteList        = this.makeAutoCompleteList();
-    private final        JPopupMenu          autocompletePopup       = this.makeAutocompletePopup();
-    private              Integer             lineCount               = 1;
+
+    private static final Font font = Monospaced.BOLD_12;
+
+    private final Element rootElement = this.getDefaultRootElement();
+
+    private final String[] keywords = {
+        "\\bfor\\b",
+        "\\bif\\b",
+        "\\belse\\b",
+        "\\bwhile\\b",
+        "\\bint\\b",
+        "\\bboolean\\b",
+        "\\bnew\\b",
+        "\\bdouble\\b",
+        "\\bpublic\\b",
+        "\\bprivate\\b",
+        "\\bprotected\\b",
+        "\\breturn\\b",
+        "\\bthis\\b",
+        "\\bstatic\\b",
+        "\\bvoid\\b",
+        "\\btry\\b",
+        "\\bcatch\\b",
+        "\\bbreak\\b",
+        "\\bthrow\\b",
+        "\\bpackage\\b",
+        "\\bimport\\b",
+        "\\bclass\\b",
+        "\\bextends\\b",
+        "\\btrue\\b",
+        "\\bfalse\\b"
+    };
+
+    private final MutableAttributeSet style = new SimpleAttributeSet();
+
+    private final Color defaultStyle = Color.black;
+
+    private final Color commentStyle = Color.lightGray;
+
+    private final Color keyStyle = Color.blue;
+
+    private final Color numberStyle = new Color(0, 150, 0);
+
+    private final Color stringStyle = new Color(250, 125, 0);
+
+    private final Pattern singleCommentDelim = Pattern.compile("//");
+
+    private final Pattern multiCommentDelimStart = Pattern.compile("/\\*");
+
+    private final Pattern multiCommentDelimEnd = Pattern.compile("\\*/");
+
+    private final JTextArea lineCountBar = this.makeLineCountBar();
+
+    private final JLabel barAfterCursor = makeBarAfterCursor();
+
+    private final JList<String> autocompleteList = this.makeAutoCompleteList();
+
+    private final JPopupMenu autocompletePopup = this.makeAutocompletePopup();
+
+    private Integer lineCount = 1;
 
     public TextEditorStyle () {
         this.putProperty(DefaultEditorKit.EndOfLineStringProperty, "\n");
         this.setStyleFromConstants();
-    }
-
-    private void setStyleFromConstants () {
-        StyleConstants.setFontFamily(this.style, Font.MONOSPACED);
-        StyleConstants.setBold(this.style, true);
-        StyleConstants.setFontSize(this.style, 12);
     }
 
     private static JLabel makeBarAfterCursor () {
@@ -146,6 +162,76 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
             total++;
         }
         return total;
+    }
+
+    @Override
+    public void remove (final int offset, final int length)
+        throws BadLocationException {
+        final int total = countMatches(this.getText(offset, length));
+
+        if (total > 0) {
+            this.updateLineCountBar(total);
+            this.updateColumns();
+        }
+
+        this.removeAndProcessChanges(offset, length);
+    }
+
+    @Override
+    public void insertString (final int offset, final String text, final AttributeSet attr)
+        throws BadLocationException {
+        if (text.length() != 1) {
+            this.insertPastedText(offset, text, attr);
+            this.processChangedLines();
+            return;
+        }
+
+        switch (text) {
+            case "\n" -> {
+                final var tabs =
+                    TextEditorStyle.TAB_AS_SPACES.repeat(this.calculateScopeDepthUntil(offset));
+                super.insertString(offset, "\n" + tabs, this.style);
+                this.insertLines(1);
+            }
+            case "\t" -> super.insertString(
+                offset,
+                ispd.gui.auxiliar.TextEditorStyle.TAB_AS_SPACES,
+                this.style
+            );
+            case "}" -> {
+                this.removeAdditionalSpaces(offset, text);
+                this.processChangedLines();
+            }
+            default -> {
+                super.insertString(offset, text, this.style);
+                this.processChangedLines();
+            }
+        }
+    }
+
+    @Override
+    public void caretUpdate (final CaretEvent ce) {
+        final int start = ce.getDot();
+        final int end   = ce.getMark();
+        final var text  = (JTextComponent) ce.getSource();
+
+        if (start == end) {
+            this.caretUpdateWithoutSelection(text, start);
+            return;
+        }
+
+        if (start < end) {
+            this.caretUpdateWithSelection(text.getText(), start, end);
+            return;
+        }
+
+        this.caretUpdateWithSelection(text.getText(), end, start);
+    }
+
+    private void setStyleFromConstants () {
+        StyleConstants.setFontFamily(this.style, Font.MONOSPACED);
+        StyleConstants.setBold(this.style, true);
+        StyleConstants.setFontSize(this.style, 12);
     }
 
     private JPopupMenu makeAutocompletePopup () {
@@ -167,7 +253,8 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
 
     private void insertAutocomplete () {
         try {
-            final int dot          = ((JTextComponent) this.autocompletePopup.getInvoker()).getCaret().getDot();
+            final int dot =
+                ((JTextComponent) this.autocompletePopup.getInvoker()).getCaret().getDot();
             final var autocomplete = this.autocompleteList.getSelectedValue();
             final int insertPos    = this.ignoreSpace(dot, autocomplete);
             this.insertString(insertPos, autocomplete, null);
@@ -180,7 +267,8 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         this.autocompletePopup.setVisible(false);
     }
 
-    private int ignoreSpace (final int dot, final String autocomplete) throws BadLocationException {
+    private int ignoreSpace (final int dot, final String autocomplete)
+        throws BadLocationException {
         if (dot <= 0) {
             return dot;
         }
@@ -193,57 +281,18 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         return dot - 1;
     }
 
-    @Override
-    public void remove (final int offset, final int length) throws BadLocationException {
-        final int total = countMatches(this.getText(offset, length));
-
-        if (total > 0) {
-            this.updateLineCountBar(total);
-            this.updateColumns();
-        }
-
-        this.removeAndProcessChanges(offset, length);
-    }
-
-    @Override
-    public void insertString (final int offset, final String text, final AttributeSet attr)
-            throws BadLocationException {
-        if (text.length() != 1) {
-            this.insertPastedText(offset, text, attr);
-            this.processChangedLines();
-            return;
-        }
-
-        switch (text) {
-            case "\n" -> {
-                final var tabs = TextEditorStyle.TAB_AS_SPACES.repeat(this.calculateScopeDepthUntil(offset));
-                super.insertString(offset, "\n" + tabs, this.style);
-                this.insertLines(1);
-            }
-            case "\t" -> super.insertString(offset, ispd.gui.auxiliar.TextEditorStyle.TAB_AS_SPACES, this.style);
-            case "}" -> {
-                this.removeAdditionalSpaces(offset, text);
-                this.processChangedLines();
-            }
-            default -> {
-                super.insertString(offset, text, this.style);
-                this.processChangedLines();
-            }
-        }
-    }
-
     private void insertPastedText (final int offset, final String str, final AttributeSet attr)
-            throws BadLocationException {
+        throws BadLocationException {
         final var spaces = str.replaceAll("\t", TextEditorStyle.TAB_AS_SPACES);
         final int total  = countMatches(spaces);
         this.insertLines(total);
         super.insertString(offset, spaces, attr);
     }
 
-    private int calculateScopeDepthUntil (final int offset) throws BadLocationException {
+    private int calculateScopeDepthUntil (final int offset)
+        throws BadLocationException {
         final var textBefore = this.getText(0, offset);
         int       depth      = 0;
-
 
         for (int i = 0; i < textBefore.length(); i++) {
             if (textBefore.charAt(i) == TextEditorStyle.OPEN_BRACKET) {
@@ -256,12 +305,14 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         return depth;
     }
 
-    private void insertLines (final int total) throws BadLocationException {
+    private void insertLines (final int total)
+        throws BadLocationException {
         this.updateText(total);
         this.updateColumns();
     }
 
-    private void removeAdditionalSpaces (final int offset, final String str) throws BadLocationException {
+    private void removeAdditionalSpaces (final int offset, final String str)
+        throws BadLocationException {
         final String text = this.getText(0, offset);
         super.insertString(offset, str, this.style);
         if (text.substring(offset - 4).equals(TextEditorStyle.TAB_AS_SPACES)) {
@@ -269,7 +320,8 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         }
     }
 
-    private void updateLineCountBar (final int total) throws BadLocationException {
+    private void updateLineCountBar (final int total)
+        throws BadLocationException {
         this.lineCount -= total;
         for (int i = 0; i < total; i++) {
             final int end = this.lineCountBar.getText().length();
@@ -284,12 +336,14 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         }
     }
 
-    private void removeAndProcessChanges (final int offset, final int length) throws BadLocationException {
+    private void removeAndProcessChanges (final int offset, final int length)
+        throws BadLocationException {
         super.remove(offset, length);
         this.processChangedLines();
     }
 
-    private void updateText (final int total) throws BadLocationException {
+    private void updateText (final int total)
+        throws BadLocationException {
         final Document doc = this.lineCountBar.getDocument();
         for (int i = 0; i < total; i++) {
             this.lineCount++;
@@ -321,30 +375,14 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         return this.lineCountBar;
     }
 
-    @Override
-    public void caretUpdate (final CaretEvent ce) {
-        final int start = ce.getDot();
-        final int end   = ce.getMark();
-        final var text  = (JTextComponent) ce.getSource();
-
-        if (start == end) {
-            this.caretUpdateWithoutSelection(text, start);
-            return;
-        }
-
-        if (start < end) {
-            this.caretUpdateWithSelection(text.getText(), start, end);
-            return;
-        }
-
-        this.caretUpdateWithSelection(text.getText(), end, start);
-    }
-
     private void caretUpdateWithoutSelection (final JTextComponent text, final int start) {
         try {
             final var caretCoords = (Rectangle) text.modelToView2D(start);
             this.barAfterCursor.setText(
-                    "Linha: %d | Coluna: %d ".formatted((caretCoords.y - 4) / 15 + 1, (caretCoords.x - 6) / 7));
+                "Linha: %d | Coluna: %d ".formatted(
+                    (caretCoords.y - 4) / 15 + 1,
+                    (caretCoords.x - 6) / 7
+                ));
         } catch (final BadLocationException ignored) {
         }
     }
@@ -363,7 +401,8 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         this.barAfterCursor.setText("selection from: %d to %d ".formatted(start, end));
     }
 
-    private void processChangedLines () throws BadLocationException {
+    private void processChangedLines ()
+        throws BadLocationException {
         // Normal Text
         final String text = this.getText(0, this.getLength());
         StyleConstants.setForeground(this.style, this.defaultStyle);
@@ -415,7 +454,12 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         final Matcher mlcEnd   = this.multiCommentDelimEnd.matcher(text);
         while (mlcStart.find()) {
             if (mlcEnd.find(mlcStart.end())) {
-                this.setCharacterAttributes(mlcStart.start(), (mlcEnd.end() - mlcStart.start()), this.style, true);
+                this.setCharacterAttributes(
+                    mlcStart.start(),
+                    (mlcEnd.end() - mlcStart.start()),
+                    this.style,
+                    true
+                );
             } else {
                 this.setCharacterAttributes(mlcStart.start(), this.getLength(), this.style, true);
             }
@@ -451,32 +495,38 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         component.setDocument(this);
         component.addCaretListener(this);
         component.getInputMap().put(
-                KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_DOWN_MASK),
-                TextEditorStyle.AUTOCOMPLETE_ACTION_KEY
+            KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_DOWN_MASK),
+            TextEditorStyle.AUTOCOMPLETE_ACTION_KEY
         );
         component.getActionMap().put(
-                TextEditorStyle.AUTOCOMPLETE_ACTION_KEY,
-                new TextPaneAction(component)
+            TextEditorStyle.AUTOCOMPLETE_ACTION_KEY,
+            new TextPaneAction(component)
         );
     }
 
-    private void displayAutocomplete (final int dot, final Rectangle caretCoords, final Component component)
-            throws BadLocationException {
+    private void displayAutocomplete (
+        final int dot,
+        final Rectangle caretCoords,
+        final Component component
+    )
+        throws BadLocationException {
         this.autocompletePopup.show(component, caretCoords.x, caretCoords.y);
         this.autocompleteList.setSelectedIndex(this.autocompleteListIndex(dot));
         this.autocompleteList.repaint();
         this.autocompleteList.requestFocus();
     }
 
-    private int autocompleteListIndex (final int dotPosition) throws BadLocationException {
+    private int autocompleteListIndex (final int dotPosition)
+        throws BadLocationException {
         if (dotPosition <= 0) {
             return 0;
         }
 
         final var text = this.getText(dotPosition - 1, 1);
         return (int) Arrays
-                .stream(TextEditorStyle.AUTOCOMPLETE_STRINGS)
-                .takeWhile(s -> !s.startsWith(text)).count();
+            .stream(TextEditorStyle.AUTOCOMPLETE_STRINGS)
+            .takeWhile(s -> !s.startsWith(text))
+            .count();
     }
 
     private class AutoCompleteMouseAdapter extends MouseAdapter {

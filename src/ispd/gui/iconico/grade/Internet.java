@@ -21,18 +21,17 @@ public class Internet extends VertexGridItem {
     private double loadFactor;
 
     /**
-     * Constructor of {@link Internet} which specifies the
-     * x-coordinate and y-coordinate (in cartesian coordinates),
-     * the local and global identifiers.
+     * Constructor of {@link Internet} which specifies the x-coordinate and y-coordinate (in
+     * cartesian coordinates), the local and global identifiers.
      *
      * @param x
-     *         the x-coordinate in cartesian coordinates
+     *     the x-coordinate in cartesian coordinates
      * @param y
-     *         the y-coordinate in cartesian coordinates
+     *     the y-coordinate in cartesian coordinates
      * @param localId
-     *         the local identifier
+     *     the local identifier
      * @param globalId
-     *         the global identifier
+     *     the global identifier
      */
     public Internet (final int x, final int y, final int localId, final int globalId) {
         super(localId, globalId, "net", x, y);
@@ -42,32 +41,31 @@ public class Internet extends VertexGridItem {
      * Return the internet attributes.
      *
      * @param translator
-     *         the resource bundle containing
-     *         the translation messages
+     *     the resource bundle containing the translation messages
      *
      * @return the internet attributes
      */
     @Override
     public String makeDescription (final ResourceBundle translator) {
         return (
-                "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: %s<br>%s: %s"
+            "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: %s<br>%s: %s"
         ).formatted(
-                translator.getString("Local ID:"),
-                this.id.getLocalId(),
-                translator.getString("Global ID:"),
-                this.id.getGlobalId(),
-                translator.getString("Label"),
-                this.id.getName(),
-                translator.getString("X-coordinate:"),
-                this.getX(),
-                translator.getString("Y-coordinate:"),
-                this.getY(),
-                translator.getString("Bandwidth"),
-                this.bandwidth,
-                translator.getString("Latency"),
-                this.latency,
-                translator.getString("Load Factor"),
-                this.loadFactor
+            translator.getString("Local ID:"),
+            this.id.getLocalId(),
+            translator.getString("Global ID:"),
+            this.id.getGlobalId(),
+            translator.getString("Label"),
+            this.id.getName(),
+            translator.getString("X-coordinate:"),
+            this.getX(),
+            translator.getString("Y-coordinate:"),
+            this.getY(),
+            translator.getString("Bandwidth"),
+            this.bandwidth,
+            translator.getString("Latency"),
+            this.latency,
+            translator.getString("Load Factor"),
+            this.loadFactor
         );
     }
 
@@ -75,20 +73,33 @@ public class Internet extends VertexGridItem {
      * {@inheritDoc}
      */
     @Override
-    public Internet makeCopy (final int mousePosX, final int mousePosY, final int globalId, final int localId) {
+    public Internet makeCopy (
+        final int mousePosX,
+        final int mousePosY,
+        final int globalId,
+        final int localId
+    ) {
         final var internet = new Internet(mousePosX, mousePosY, globalId, localId);
-        internet.bandwidth  = this.bandwidth;
+        internet.bandwidth = this.bandwidth;
         internet.loadFactor = this.loadFactor;
-        internet.latency    = this.latency;
+        internet.latency = this.latency;
         internet.checkConfiguration();
         return internet;
     }
 
+    /**
+     * Returns the internet image.
+     *
+     * @return the internet image
+     */
+    @Override
+    public Image getImage () {
+        return DesenhoGrade.INTERNET_ICON;
+    }
 
     /**
-     * It checks if the current internet configuration is
-     * well configured; if so, then {@link #configured} is
-     * set to {@code true}; otherwise, is set to {@code false}.
+     * It checks if the current internet configuration is well configured; if so, then
+     * {@link #configured} is set to {@code true}; otherwise, is set to {@code false}.
      */
     private void checkConfiguration () {
         this.configured = this.bandwidth > 0 && this.latency > 0;
@@ -107,7 +118,7 @@ public class Internet extends VertexGridItem {
      * It sets the bandwidth.
      *
      * @param bandwidth
-     *         the bandwidth to be set
+     *     the bandwidth to be set
      */
     public void setBandwidth (final double bandwidth) {
         this.bandwidth = bandwidth;
@@ -127,7 +138,7 @@ public class Internet extends VertexGridItem {
      * It sets the load factor.
      *
      * @param loadFactor
-     *         the load factor to be set
+     *     the load factor to be set
      */
     public void setLoadFactor (final double loadFactor) {
         this.loadFactor = loadFactor;
@@ -146,20 +157,10 @@ public class Internet extends VertexGridItem {
      * It sets the latency.
      *
      * @param latency
-     *         the latency to be set to
+     *     the latency to be set to
      */
     public void setLatency (final double latency) {
         this.latency = latency;
         this.checkConfiguration();
-    }
-
-    /**
-     * Returns the internet image.
-     *
-     * @return the internet image
-     */
-    @Override
-    public Image getImage () {
-        return DesenhoGrade.INTERNET_ICON;
     }
 }

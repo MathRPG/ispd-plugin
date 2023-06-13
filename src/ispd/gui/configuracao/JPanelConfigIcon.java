@@ -1,72 +1,61 @@
 package ispd.gui.configuracao;
 
-import ispd.gui.utils.Fonts.Tahoma;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import javax.swing.GroupLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.table.TableModel;
-
 import ispd.gui.PickModelTypeDialog;
 import ispd.gui.iconico.grade.Cluster;
 import ispd.gui.iconico.grade.GridItem;
 import ispd.gui.iconico.grade.Internet;
 import ispd.gui.iconico.grade.Link;
 import ispd.gui.iconico.grade.Machine;
+import ispd.gui.utils.Fonts.Tahoma;
 import ispd.policy.PolicyManager;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import javax.swing.GroupLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.table.TableModel;
 
 public class JPanelConfigIcon extends JPanel {
 
-    private static final int            ROW_HEIGHT       = 20;
+    private static final int ROW_HEIGHT = 20;
 
-    private final        JLabel         jLabelIconName   = new JLabel("Configuration for the icon # 0");
-    private final        JLabel         jLabelTitle      = makeTitleLabel();
-    private final        JScrollPane    jScrollPane      = new JScrollPane();
-    private              ResourceBundle words            =
-            ResourceBundle.getBundle("ispd.idioma.Idioma", new Locale("en", "US"));
-    private final        VariedRowTable machineTable     =
-            this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
-    private final        VariedRowTable iassMachineTable =
-            this.createTableWith(IaasMachineVariedRowTable::new, MachineTableIaaS::new);
-    private final        VariedRowTable clusterTable     =
-            this.createTableWith(ClusterVariedRowTable::new, ClusterTable::new);
-    private final        VariedRowTable iassClusterTable =
-            this.createTableWith(IaasClusterVariedRowTable::new, ClusterTableIaaS::new);
-    private final        VariedRowTable linkTable        =
-            this.createTableWith(LinkVariedRowTable::new, LinkTable::new);
-    private              PolicyManager  schedulers       = null;
-    private              PolicyManager  cloudSchedulers  = null;
-    private              PolicyManager  allocators       = null;
+    private final JLabel jLabelIconName = new JLabel("Configuration for the icon # 0");
+
+    private final JLabel jLabelTitle = makeTitleLabel();
+
+    private final JScrollPane jScrollPane = new JScrollPane();
+
+    private ResourceBundle words =
+        ResourceBundle.getBundle("ispd.idioma.Idioma", new Locale("en", "US"));
+
+    private final VariedRowTable machineTable =
+        this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
+
+    private final VariedRowTable iassMachineTable =
+        this.createTableWith(IaasMachineVariedRowTable::new, MachineTableIaaS::new);
+
+    private final VariedRowTable clusterTable =
+        this.createTableWith(ClusterVariedRowTable::new, ClusterTable::new);
+
+    private final VariedRowTable iassClusterTable =
+        this.createTableWith(IaasClusterVariedRowTable::new, ClusterTableIaaS::new);
+
+    private final VariedRowTable linkTable =
+        this.createTableWith(LinkVariedRowTable::new, LinkTable::new);
+
+    private PolicyManager schedulers = null;
+
+    private PolicyManager cloudSchedulers = null;
+
+    private PolicyManager allocators = null;
 
     public JPanelConfigIcon () {
         this.setLayout();
-    }
-
-    private void setLayout () {
-        final var layout = new GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addComponent(this.jScrollPane, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                        .addGroup(layout.createSequentialGroup().addContainerGap().addGroup(
-                                                layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
-                                                      .addComponent(this.jLabelTitle, GroupLayout.DEFAULT_SIZE,
-                                                                    GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE
-                                                      ).addComponent(this.jLabelIconName, GroupLayout.DEFAULT_SIZE,
-                                                                     GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE
-                                                      )).addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
-        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                layout.createSequentialGroup().addContainerGap().addComponent(this.jLabelTitle)
-                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                      .addComponent(this.jLabelIconName)
-                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                      .addComponent(this.jScrollPane, GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)));
     }
 
     private static JLabel makeTitleLabel () {
@@ -75,9 +64,52 @@ public class JPanelConfigIcon extends JPanel {
         return label;
     }
 
+    private void setLayout () {
+        final var layout = new GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                      .addComponent(
+                                          this.jScrollPane,
+                                          GroupLayout.PREFERRED_SIZE,
+                                          0,
+                                          Short.MAX_VALUE
+                                      )
+                                      .addGroup(layout
+                                                    .createSequentialGroup()
+                                                    .addContainerGap()
+                                                    .addGroup(
+                                                        layout
+                                                            .createParallelGroup(
+                                                                GroupLayout.Alignment.LEADING,
+                                                                false
+                                                            )
+                                                            .addComponent(
+                                                                this.jLabelTitle,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                Short.MAX_VALUE
+                                                            )
+                                                            .addComponent(
+                                                                this.jLabelIconName,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                GroupLayout.DEFAULT_SIZE,
+                                                                Short.MAX_VALUE
+                                                            ))
+                                                    .addContainerGap(
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        Short.MAX_VALUE
+                                                    )));
+        layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+            layout.createSequentialGroup().addContainerGap().addComponent(this.jLabelTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(this.jLabelIconName)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(this.jScrollPane, GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)));
+    }
+
     private VariedRowTable createTableWith (
-            final Supplier<? extends VariedRowTable> makeTable,
-            final Function<? super ResourceBundle, ? extends TableModel> makeModel
+        final Supplier<? extends VariedRowTable> makeTable,
+        final Function<? super ResourceBundle, ? extends TableModel> makeModel
     ) {
         final var t = makeTable.get();
         t.setModel(makeModel.apply(this.words));
@@ -134,7 +166,10 @@ public class JPanelConfigIcon extends JPanel {
             this.jLabelTitle.setText(this.translate("Internet icon configuration"));
         }
         this.jLabelIconName.setText(
-                "%s#: %d".formatted(this.translate("Configuration for the icon"), icon.getId().getGlobalId()));
+            "%s#: %d".formatted(
+                this.translate("Configuration for the icon"),
+                icon.getId().getGlobalId()
+            ));
         this.getTabelaLink().setLink(icon);
         this.jScrollPane.setViewportView(this.linkTable);
     }
@@ -152,7 +187,6 @@ public class JPanelConfigIcon extends JPanel {
             if (!this.schedulers.listarRemovidos().isEmpty()) {
                 for (final Object escal : this.schedulers.listarRemovidos()) {
                     this.getTabelaMaquina().getEscalonadores().removeItem(escal);
-
                 }
                 this.schedulers.listarRemovidos().clear();
             }
@@ -163,7 +197,10 @@ public class JPanelConfigIcon extends JPanel {
                 this.schedulers.listarAdicionados().clear();
             }
             this.jLabelIconName.setText(
-                    "%s#: %d".formatted(this.translate("Configuration for the icon"), icon.getId().getGlobalId()));
+                "%s#: %d".formatted(
+                    this.translate("Configuration for the icon"),
+                    icon.getId().getGlobalId()
+                ));
             if (icon instanceof Machine) {
                 this.jLabelTitle.setText(this.translate("Machine icon configuration"));
                 this.getTabelaMaquina().setMaquina((Machine) icon, users);
@@ -206,7 +243,10 @@ public class JPanelConfigIcon extends JPanel {
             }
 
             this.jLabelIconName.setText(
-                    "%s#: %d".formatted(this.translate("Configuration for the icon"), icon.getId().getGlobalId()));
+                "%s#: %d".formatted(
+                    this.translate("Configuration for the icon"),
+                    icon.getId().getGlobalId()
+                ));
             if (icon instanceof Machine) {
                 this.jLabelTitle.setText(this.translate("Machine icon configuration"));
                 this.getTabelaMaquinaIaaS().setMaquina((Machine) icon, users);
@@ -218,7 +258,6 @@ public class JPanelConfigIcon extends JPanel {
                 this.jScrollPane.setViewportView(this.iassClusterTable);
             }
         }
-
     }
 
     public String getTitle () {
@@ -237,17 +276,24 @@ public class JPanelConfigIcon extends JPanel {
     private static class MachineVariedRowTable extends VariedRowTable {
 
         private static final String[] TOOL_TIPS = {
-                "Insert the label name of the resource",
-                "Select the resource owner",
-                "Insert the amount of computing power of the resource in MFlops",
-                "Insert the percentage of background computing in decimal notation",
-                "Insert the number of precessing cores of the resource",
-                "Insert the amount of memory of the resource in MBytes",
-                "Insert the amount of hard disk of the resource in GBytes",
-                "Select if the resource is master node",
-                "Select the task scheduling policy of the master",
-                "Select the slave nodes that will be coordinated by this master",
-                };
+            "Insert the label name of the resource",
+            "Select the resource owner",
+            "Insert the amount of computing power of the resource in MFlops",
+            "Insert the percentage of background computing in decimal notation",
+            "Insert the number of precessing cores of the resource",
+            "Insert the amount of memory of the resource in MBytes",
+            "Insert the amount of hard disk of the resource in GBytes",
+            "Select if the resource is master node",
+            "Select the task scheduling policy of the master",
+            "Select the slave nodes that will be coordinated by this master",
+        };
+
+        private static String getRowToolTip (final int rowIndex) {
+            if (rowIndex >= MachineVariedRowTable.TOOL_TIPS.length) {
+                return null;
+            }
+            return MachineVariedRowTable.TOOL_TIPS[rowIndex];
+        }
 
         public String getToolTipText (final MouseEvent e) {
             final Point p        = e.getPoint();
@@ -265,13 +311,6 @@ public class JPanelConfigIcon extends JPanel {
             } catch (final RuntimeException ignored) {
                 return null;
             }
-        }
-
-        private static String getRowToolTip (final int rowIndex) {
-            if (rowIndex >= MachineVariedRowTable.TOOL_TIPS.length) {
-                return null;
-            }
-            return MachineVariedRowTable.TOOL_TIPS[rowIndex];
         }
     }
 
@@ -347,9 +386,11 @@ public class JPanelConfigIcon extends JPanel {
                     } else if (rowIndex == 6) {
                         tip = "Insert the amount of hard disk of the resource in GBytes";
                     } else if (rowIndex == 7) {
-                        tip = "Insert the amount of bandwidth that connect the cluster nodes in Mbps";
+                        tip =
+                            "Insert the amount of bandwidth that connect the cluster nodes in Mbps";
                     } else if (rowIndex == 8) {
-                        tip = "Insert the latency time of the links that connect the cluster nodes in seconds";
+                        tip =
+                            "Insert the latency time of the links that connect the cluster nodes in seconds";
                     } else if (rowIndex == 9) {
                         tip = "Select if the resource is a master node";
                     } else if (rowIndex == 10) {
@@ -396,9 +437,11 @@ public class JPanelConfigIcon extends JPanel {
                     } else if (rowIndex == 9) {
                         tip = "Insert the cost of disk utilization ($/GB/h)";
                     } else if (rowIndex == 10) {
-                        tip = "Insert the amount of bandwidth that connect the cluster nodes in Mbps";
+                        tip =
+                            "Insert the amount of bandwidth that connect the cluster nodes in Mbps";
                     } else if (rowIndex == 11) {
-                        tip = "Insert the latency time of the links that connect the cluster nodes in seconds";
+                        tip =
+                            "Insert the latency time of the links that connect the cluster nodes in seconds";
                     } else if (rowIndex == 12) {
                         tip = "Select if the resource is a virtual machine monitor";
                     } else if (rowIndex == 13) {
@@ -431,7 +474,8 @@ public class JPanelConfigIcon extends JPanel {
                     } else if (rowIndex == 1) {
                         tip = "Insert the latency time of the resource in seconds";
                     } else if (rowIndex == 2) {
-                        tip = "Insert the percentage of background communication in decimal notation";
+                        tip =
+                            "Insert the percentage of background communication in decimal notation";
                     } else if (rowIndex == 3) {
                         tip = "Insert the amount of bandwidth of the resource in seconds";
                     }

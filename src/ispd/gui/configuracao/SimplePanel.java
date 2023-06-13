@@ -19,12 +19,20 @@ public class SimplePanel extends JPanel {
     private void makeLayout () {
         final var layout = new GroupLayout(this);
         this.setLayout(layout);
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                layout.createSequentialGroup().addContainerGap().addComponent(this.label)
-                      .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+        layout.setHorizontalGroup(layout
+                                      .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                      .addGroup(
+                                          layout
+                                              .createSequentialGroup()
+                                              .addContainerGap()
+                                              .addComponent(this.label)
+                                              .addContainerGap(
+                                                  GroupLayout.DEFAULT_SIZE,
+                                                  Short.MAX_VALUE
+                                              )));
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                layout.createSequentialGroup().addContainerGap().addComponent(this.label)
-                      .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
+            layout.createSequentialGroup().addContainerGap().addComponent(this.label)
+                .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)));
     }
 
     public void setText (final String text) {

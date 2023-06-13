@@ -1,13 +1,12 @@
 package ispd.gui.iconico.grade;
 
+import ispd.policy.allocation.vm.VmMaster;
 import java.awt.Image;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Set;
-
-import ispd.policy.allocation.vm.VmMaster;
 
 public class Machine extends VertexGridItem {
 
@@ -59,9 +58,8 @@ public class Machine extends VertexGridItem {
     private int coreCount;
 
     /**
-     * It represents if this machine acts as master, that is,
-     * if this variable is {@code true}, then this machine
-     * is a master; otherwise {@code false}.
+     * It represents if this machine acts as master, that is, if this variable is {@code true}, then
+     * this machine is a master; otherwise {@code false}.
      */
     private boolean master;
 
@@ -86,22 +84,27 @@ public class Machine extends VertexGridItem {
     private List<GridItem> slaves;
 
     /**
-     * Constructor of  which specifies the
-     * x-coordinate and y-coordinate (in cartesian coordinates),
+     * Constructor of  which specifies the x-coordinate and y-coordinate (in cartesian coordinates),
      * the local, global identifiers and the energy consumption.
      *
      * @param x
-     *         the x-coordinate in cartesian coordinates
+     *     the x-coordinate in cartesian coordinates
      * @param y
-     *         the y-coordinate in cartesian coordinates
+     *     the y-coordinate in cartesian coordinates
      * @param localId
-     *         the local identifier
+     *     the local identifier
      * @param globalId
-     *         the global identifier
+     *     the global identifier
      * @param energyConsumption
-     *         the energy consumption
+     *     the energy consumption
      */
-    public Machine (final int x, final int y, final int localId, final int globalId, final Double energyConsumption) {
+    public Machine (
+        final int x,
+        final int y,
+        final int localId,
+        final int globalId,
+        final Double energyConsumption
+    ) {
         super(localId, globalId, "mac", x, y);
         this.owner               = "user1";
         this.coreCount           = 1;
@@ -115,31 +118,35 @@ public class Machine extends VertexGridItem {
      * Returns the machine attributes.
      *
      * @param translator
-     *         the resource bundle containing
-     *         the translation messages
+     *     the resource bundle containing the translation messages
      *
      * @return the machine attributes
      */
     @Override
     public String makeDescription (final ResourceBundle translator) {
         return (
-                "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: " +
-                "%s%s"
+            "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: " +
+            "%s%s"
         ).formatted(
-                translator.getString("Local ID:"), this.id.getLocalId(),
-                translator.getString("Global ID:"), this.id.getGlobalId(),
-                translator.getString("Label"), this.id.getName(),
-                translator.getString("X-coordinate:"), this.getX(),
-                translator.getString("Y-coordinate:"), this.getY(),
-                translator.getString("Computing power"),
-                this.computationalPower,
-                translator.getString("Load Factor"), this.loadFactor,
-                this.describeRole(translator)
+            translator.getString("Local ID:"), this.id.getLocalId(),
+            translator.getString("Global ID:"), this.id.getGlobalId(),
+            translator.getString("Label"), this.id.getName(),
+            translator.getString("X-coordinate:"), this.getX(),
+            translator.getString("Y-coordinate:"), this.getY(),
+            translator.getString("Computing power"),
+            this.computationalPower,
+            translator.getString("Load Factor"), this.loadFactor,
+            this.describeRole(translator)
         );
     }
 
     @Override
-    public Machine makeCopy (final int mousePosX, final int mousePosY, final int globalId, final int localId) {
+    public Machine makeCopy (
+        final int mousePosX,
+        final int mousePosY,
+        final int globalId,
+        final int localId
+    ) {
         final var machine = new Machine(mousePosX, mousePosY,
                                         globalId, localId, this.energyConsumption
         );
@@ -158,9 +165,28 @@ public class Machine extends VertexGridItem {
     }
 
     /**
-     * It checks if the current machine configuration is well
-     * configured; if so, then {@link #configured} is set to
-     * {@code true}; otherwise, is set to {@code false}.
+     * Returns the machine icon image.
+     *
+     * @return the machine icon image
+     */
+    @Override
+    public Image getImage () {
+        return DesenhoGrade.MACHINE_ICON;
+    }
+
+    /**
+     * Returns the string representation of .
+     *
+     * @return the string representation of
+     */
+    @Override
+    public String toString () {
+        return "id: " + this.id.getGlobalId() + " " + this.id.getName();
+    }
+
+    /**
+     * It checks if the current machine configuration is well configured; if so, then
+     * {@link #configured} is set to {@code true}; otherwise, is set to {@code false}.
      */
     private void checkConfiguration () {
         if (this.computationalPower <= 0) {
@@ -169,21 +195,19 @@ public class Machine extends VertexGridItem {
         }
 
         this.configured = !(
-                this.master &&
-                (
-                        "---".equals(this.schedulingAlgorithm) ||
-                        "---".equals(this.vmmAllocationPolicy)
-                )
+            this.master &&
+            (
+                "---".equals(this.schedulingAlgorithm) ||
+                "---".equals(this.vmmAllocationPolicy)
+            )
         );
     }
 
     /**
-     * It describes this machine's role relative if it is a
-     * master.
+     * It describes this machine's role relative if it is a master.
      *
      * @param translator
-     *         the translator containing the
-     *         translated messages
+     *     the translator containing the translated messages
      *
      * @return the described machine role
      */
@@ -193,17 +217,16 @@ public class Machine extends VertexGridItem {
         }
 
         return "<br>%s<br>%s: %s".formatted(
-                translator.getString("Master"),
-                translator.getString("Scheduling algorithm"),
-                this.schedulingAlgorithm
+            translator.getString("Master"),
+            translator.getString("Scheduling algorithm"),
+            this.schedulingAlgorithm
         );
     }
 
     /**
-     * It returns a set of <strong>connected</strong> nodes
-     * starting from this  and ending in other
-     * grid items. Further, {@code null} will never be returned,
-     * that is, an empty set is at least returned.
+     * It returns a set of <strong>connected</strong> nodes starting from this  and ending in other
+     * grid items. Further, {@code null} will never be returned, that is, an empty set is at least
+     * returned.
      *
      * @return a set of connected outbound nodes.
      */
@@ -214,31 +237,30 @@ public class Machine extends VertexGridItem {
     }
 
     /**
-     * It calculates the <strong>connected</strong> outbound
-     * nodes starting from the given <em>grid item</em>. Further,
-     * those nodes found in the process are added into the
-     * given outbound connected nodes set.
+     * It calculates the <strong>connected</strong> outbound nodes starting from the given <em>grid
+     * item</em>. Further, those nodes found in the process are added into the given outbound
+     * connected nodes set.
      *
      * @param gridItem
-     *         the grid item
+     *     the grid item
      * @param outboundConnectedNodes
-     *         the outbound connected
-     *         nodes
+     *     the outbound connected nodes
      *
-     * @implNote Pre-conditions:
-     *         1. It is supposed that the given grid item is
-     *         <strong>not null</strong>. Otherwise, a
-     *         {@link NullPointerException} will be thrown.
-     *         2. It is supposed that the given outbound
-     *         connected nodes set is <strong>not null</strong>.
-     *         Otherwise, a {@link NullPointerException} will be thrown.
+     * @implNote Pre-conditions: 1. It is supposed that the given grid item is
+     * <strong>not null</strong>. Otherwise, a
+     * {@link NullPointerException} will be thrown. 2. It is supposed that the given outbound
+     * connected nodes set is <strong>not null</strong>. Otherwise, a {@link NullPointerException}
+     * will be thrown.
      */
-    private void calculateConnectedOutboundNodes (final GridItem gridItem, final Set<GridItem> outboundConnectedNodes) {
+    private void calculateConnectedOutboundNodes (
+        final GridItem gridItem,
+        final Set<GridItem> outboundConnectedNodes
+    ) {
 
         for (final var gridItemLink : gridItem.getOutboundConnections()) {
             final var outboundLink = (Link) gridItemLink;
             final var destinationItem =
-                    (GridItem) outboundLink.getDestination();
+                (GridItem) outboundLink.getDestination();
 
             /* If the destination item is a Cluster or */
             /* a Machine, then just add them */
@@ -258,10 +280,9 @@ public class Machine extends VertexGridItem {
     }
 
     /**
-     * It returns a set of <strong>connected</strong> nodes
-     * ending at this  and starting from mother
-     * grid items. Further, {@code null} will never be returned,
-     * that is, an empty set is at least returned.
+     * It returns a set of <strong>connected</strong> nodes ending at this  and starting from mother
+     * grid items. Further, {@code null} will never be returned, that is, an empty set is at least
+     * returned.
      *
      * @return a set of connected outbound nodes.
      */
@@ -272,26 +293,25 @@ public class Machine extends VertexGridItem {
     }
 
     /**
-     * It calculates the <strong>connected</strong> inbound
-     * nodes ending at the given <em>grid item</em>. Further,
-     * those nodes found in the process are added into the
-     * inbound connected nodes set.
+     * It calculates the <strong>connected</strong> inbound nodes ending at the given <em>grid
+     * item</em>. Further, those nodes found in the process are added into the inbound connected
+     * nodes set.
      *
      * @param gridItem
-     *         the grid item
+     *     the grid item
      * @param inboundConnectedNodes
-     *         the inbound connected
-     *         nodes
+     *     the inbound connected nodes
      *
-     * @implNote Pre-conditions:
-     *         1. It is supposed that the given grid item is
-     *         <strong>not null</strong>. Otherwise, a
-     *         {@link NullPointerException} will be thrown.
-     *         2. It is supposed that the given inbound connected
-     *         nodes set is <strong>not null</strong>.
-     *         Otherwise, {@link NullPointerException} will be thrown.
+     * @implNote Pre-conditions: 1. It is supposed that the given grid item is
+     * <strong>not null</strong>. Otherwise, a
+     * {@link NullPointerException} will be thrown. 2. It is supposed that the given inbound
+     * connected nodes set is <strong>not null</strong>. Otherwise, {@link NullPointerException}
+     * will be thrown.
      */
-    private void calculateConnectedInboundNodes (final GridItem gridItem, final Set<GridItem> inboundConnectedNodes) {
+    private void calculateConnectedInboundNodes (
+        final GridItem gridItem,
+        final Set<GridItem> inboundConnectedNodes
+    ) {
         for (final var gridItemLink : gridItem.getInboundConnections()) {
             final var inboundLink = (Link) gridItemLink;
             final var sourceItem  = (GridItem) inboundLink.getSource();
@@ -314,9 +334,8 @@ public class Machine extends VertexGridItem {
     }
 
     /**
-     * It returns a list of <strong>connected</strong>
-     * schedulable nodes. Further, {@code null} will never
-     * be returned, that is, an empty list is at least returned.
+     * It returns a list of <strong>connected</strong> schedulable nodes. Further, {@code null} will
+     * never be returned, that is, an empty list is at least returned.
      *
      * @return a list of connected schedulable nodes
      */
@@ -330,25 +349,22 @@ public class Machine extends VertexGridItem {
     }
 
     /**
-     * It calculates the <strong>connected</strong> schedulable
-     * nodes. Further, those nodes found in the process are
-     * added into the schedulable items list.
+     * It calculates the <strong>connected</strong> schedulable nodes. Further, those nodes found in
+     * the process are added into the schedulable items list.
      *
      * @param gridItem
-     *         the grid item
+     *     the grid item
      * @param schedulableItems
-     *         the schedulable items
+     *     the schedulable items
      *
-     * @implNote Pre-conditions:
-     *         1. It is supposed that the given grid item is
-     *         <strong>not null</strong>. Otherwise, a
-     *         {@link NullPointerException} will be thrown.
-     *         2. It is supposed that the given schedulable items
-     *         list is <strong>not null</strong>. Otherwise,
-     *         {@link NullPointerException} will be thrown.
+     * @implNote Pre-conditions: 1. It is supposed that the given grid item is
+     * <strong>not null</strong>. Otherwise, a
+     * {@link NullPointerException} will be thrown. 2. It is supposed that the given schedulable
+     * items list is <strong>not null</strong>. Otherwise, {@link NullPointerException} will be
+     * thrown.
      */
     private void calculateConnectedSchedulableNodes (
-            final GridItem gridItem, final List<? super GridItem> schedulableItems
+        final GridItem gridItem, final List<? super GridItem> schedulableItems
     ) {
         for (final var gridItemLink : gridItem.getOutboundConnections()) {
             final var outboundLink    = (Link) gridItemLink;
@@ -383,8 +399,7 @@ public class Machine extends VertexGridItem {
      * It sets the computational power
      *
      * @param computationalPower
-     *         the computational power to
-     *         be set
+     *     the computational power to be set
      */
     public void setComputationalPower (final double computationalPower) {
         this.computationalPower = computationalPower;
@@ -404,7 +419,7 @@ public class Machine extends VertexGridItem {
      * It sets the load factor
      *
      * @param loadFactor
-     *         the load factor to be set
+     *     the load factor to be set
      */
     public void setLoadFactor (final Double loadFactor) {
         this.loadFactor = loadFactor;
@@ -423,7 +438,7 @@ public class Machine extends VertexGridItem {
      * It sets the amount of memory RAM in <em>gigabytes (GB)</em>.
      *
      * @param ram
-     *         the amount of memory RAM to be set
+     *     the amount of memory RAM to be set
      */
     public void setRam (final Double ram) {
         this.ram = ram;
@@ -442,7 +457,7 @@ public class Machine extends VertexGridItem {
      * It sets the amount of hard disk in <em>gigabytes (GB)</em>.
      *
      * @param hardDisk
-     *         the amount of hard disk to be set
+     *     the amount of hard disk to be set
      */
     public void setHardDisk (final Double hardDisk) {
         this.hardDisk = hardDisk;
@@ -461,8 +476,7 @@ public class Machine extends VertexGridItem {
      * It sets the energy consumption
      *
      * @param energyConsumption
-     *         the energy consumption to
-     *         be set
+     *     the energy consumption to be set
      */
     public void setEnergyConsumption (final Double energyConsumption) {
         this.energyConsumption = energyConsumption;
@@ -481,8 +495,7 @@ public class Machine extends VertexGridItem {
      * It sets the cost per processing
      *
      * @param costPerProcessing
-     *         the cost per processing
-     *         to be set
+     *     the cost per processing to be set
      */
     public void setCostPerProcessing (final Double costPerProcessing) {
         this.costPerProcessing = costPerProcessing;
@@ -501,7 +514,7 @@ public class Machine extends VertexGridItem {
      * It sets the cost per memory.
      *
      * @param costPerMemory
-     *         the cost per memory to be set
+     *     the cost per memory to be set
      */
     public void setCostPerMemory (final Double costPerMemory) {
         this.costPerMemory = costPerMemory;
@@ -520,7 +533,7 @@ public class Machine extends VertexGridItem {
      * It sets the cost per disk.
      *
      * @param costPerDisk
-     *         the cost per disk to be set
+     *     the cost per disk to be set
      */
     public void setCostPerDisk (final Double costPerDisk) {
         this.costPerDisk = costPerDisk;
@@ -539,19 +552,16 @@ public class Machine extends VertexGridItem {
      * It sets the amount of cores in the chip.
      *
      * @param coreCount
-     *         the amount of cores in the chip
-     *         to be set
+     *     the amount of cores in the chip to be set
      */
     public void setCoreCount (final Integer coreCount) {
         this.coreCount = coreCount;
     }
 
     /**
-     * Returns {@code true} since this machine is master.
-     * Otherwise, {@code false} is returned.
+     * Returns {@code true} since this machine is master. Otherwise, {@code false} is returned.
      *
-     * @return {@code true} since this machine is master;
-     *         otherwise, {@code false} is returned.
+     * @return {@code true} since this machine is master; otherwise, {@code false} is returned.
      */
     public Boolean isMaster () {
         return this.master;
@@ -561,8 +571,7 @@ public class Machine extends VertexGridItem {
      * It sets this machine as master or not.
      *
      * @param master
-     *         {@code true} to set this machine as
-     *         master, otherwise {@code false}.
+     *     {@code true} to set this machine as master, otherwise {@code false}.
      */
     public void setMaster (final Boolean master) {
         this.master = master;
@@ -582,7 +591,7 @@ public class Machine extends VertexGridItem {
      * It sets the owner.
      *
      * @param owner
-     *         the owner to be set
+     *     the owner to be set
      */
     public void setOwner (final String owner) {
         this.owner = owner;
@@ -601,8 +610,7 @@ public class Machine extends VertexGridItem {
      * It sets the scheduling algorithm.
      *
      * @param schedulingAlgorithm
-     *         the scheduling algorithm
-     *         to be set
+     *     the scheduling algorithm to be set
      */
     public void setSchedulingAlgorithm (final String schedulingAlgorithm) {
         this.schedulingAlgorithm = schedulingAlgorithm;
@@ -622,8 +630,7 @@ public class Machine extends VertexGridItem {
      * It sets the {@link VmMaster} allocation policy.
      *
      * @param vmmAllocationPolicy
-     *         the {@link VmMaster} allocation
-     *         policy to be set
+     *     the {@link VmMaster} allocation policy to be set
      */
     public void setVmmAllocationPolicy (final String vmmAllocationPolicy) {
         this.vmmAllocationPolicy = vmmAllocationPolicy;
@@ -643,29 +650,9 @@ public class Machine extends VertexGridItem {
      * It sets the list of slaves.
      *
      * @param slaves
-     *         the slave list to be set
+     *     the slave list to be set
      */
     public void setSlaves (final List<GridItem> slaves) {
         this.slaves = slaves;
-    }
-
-    /**
-     * Returns the machine icon image.
-     *
-     * @return the machine icon image
-     */
-    @Override
-    public Image getImage () {
-        return DesenhoGrade.MACHINE_ICON;
-    }
-
-    /**
-     * Returns the string representation of .
-     *
-     * @return the string representation of
-     */
-    @Override
-    public String toString () {
-        return "id: " + this.id.getGlobalId() + " " + this.id.getName();
     }
 }

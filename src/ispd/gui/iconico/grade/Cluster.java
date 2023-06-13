@@ -1,9 +1,8 @@
 package ispd.gui.iconico.grade;
 
+import ispd.policy.allocation.vm.VmMaster;
 import java.awt.Image;
 import java.util.ResourceBundle;
-
-import ispd.policy.allocation.vm.VmMaster;
 
 public class Cluster extends VertexGridItem {
 
@@ -65,9 +64,8 @@ public class Cluster extends VertexGridItem {
     private int slaveCount;
 
     /**
-     * It represents if this cluster acts as master, that is,
-     * if this variable is {@code true}, then this cluster is
-     * a master; otherwise {@code false}.
+     * It represents if this cluster acts as master, that is, if this variable is {@code true}, then
+     * this cluster is a master; otherwise {@code false}.
      */
     private boolean master;
 
@@ -87,23 +85,26 @@ public class Cluster extends VertexGridItem {
     private String vmmAllocationPolicy;
 
     /**
-     * Constructor of  which specifies the
-     * x-coordinate and y-coordinate (in cartesian coordinates),
+     * Constructor of  which specifies the x-coordinate and y-coordinate (in cartesian coordinates),
      * the local, global identifiers and the energy consumption.
      *
      * @param x
-     *         the x-coordinate in cartesian coordinates
+     *     the x-coordinate in cartesian coordinates
      * @param y
-     *         the y-coordinate in cartesian coordinates
+     *     the y-coordinate in cartesian coordinates
      * @param localId
-     *         the local identifier
+     *     the local identifier
      * @param globalId
-     *         the global identifier
+     *     the global identifier
      * @param energyConsumption
-     *         the energy consumption
+     *     the energy consumption
      */
     public Cluster (
-            final Integer x, final Integer y, final int localId, final int globalId, final double energyConsumption
+        final Integer x,
+        final Integer y,
+        final int localId,
+        final int globalId,
+        final double energyConsumption
     ) {
         super(localId, globalId, "cluster", x, y);
         this.schedulingAlgorithm = "---";
@@ -118,40 +119,45 @@ public class Cluster extends VertexGridItem {
      * Return the cluster attributes.
      *
      * @param translator
-     *         the resource bundle containing
-     *         the translation messages
+     *     the resource bundle containing the translation messages
      *
      * @return the cluster attributes
      */
     @Override
     public String makeDescription (final ResourceBundle translator) {
         return "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %d<br>%s: %s<br>%s: %s<br>%s: %s<br>%s: %s".formatted(
-                translator.getString("Local ID:"),
-                this.id.getLocalId(),
-                translator.getString("Global ID:"),
-                this.id.getGlobalId(),
-                translator.getString("Label"),
-                this.id.getName(),
-                translator.getString("X-coordinate:"),
-                this.getX(),
-                translator.getString("Y-coordinate:"),
-                this.getY(),
-                translator.getString("Number of slaves"),
-                this.slaveCount,
-                translator.getString("Computing power"),
-                this.computationalPower,
-                translator.getString("Bandwidth"),
-                this.bandwidth,
-                translator.getString("Latency"),
-                this.latency,
-                translator.getString("Scheduling algorithm"),
-                this.schedulingAlgorithm
+            translator.getString("Local ID:"),
+            this.id.getLocalId(),
+            translator.getString("Global ID:"),
+            this.id.getGlobalId(),
+            translator.getString("Label"),
+            this.id.getName(),
+            translator.getString("X-coordinate:"),
+            this.getX(),
+            translator.getString("Y-coordinate:"),
+            this.getY(),
+            translator.getString("Number of slaves"),
+            this.slaveCount,
+            translator.getString("Computing power"),
+            this.computationalPower,
+            translator.getString("Bandwidth"),
+            this.bandwidth,
+            translator.getString("Latency"),
+            this.latency,
+            translator.getString("Scheduling algorithm"),
+            this.schedulingAlgorithm
         );
     }
 
     @Override
-    public Cluster makeCopy (final int mousePosX, final int mousePosY, final int globalId, final int localId) {
-        final var cluster = new Cluster(mousePosX, mousePosY, globalId, localId, this.energyConsumption);
+    public Cluster makeCopy (
+        final int mousePosX,
+        final int mousePosY,
+        final int globalId,
+        final int localId
+    ) {
+        final var cluster =
+            new Cluster(mousePosX, mousePosY, globalId, localId, this.energyConsumption);
         cluster.schedulingAlgorithm = this.schedulingAlgorithm;
         cluster.computationalPower  = this.computationalPower;
         cluster.master              = this.master;
@@ -167,9 +173,28 @@ public class Cluster extends VertexGridItem {
     }
 
     /**
-     * It checks if the current cluster configuration is well
-     * configured; if so, then {@link #configured} is set to
-     * {@code true}; otherwise, is set to {@code false}.
+     * Returns the cluster image.
+     *
+     * @return the cluster image
+     */
+    @Override
+    public Image getImage () {
+        return DesenhoGrade.CLUSTER_ICON;
+    }
+
+    /**
+     * Returns the string representation of the .
+     *
+     * @return the string representation of the
+     */
+    @Override
+    public String toString () {
+        return "id: " + this.id.getGlobalId() + " " + this.id.getName();
+    }
+
+    /**
+     * It checks if the current cluster configuration is well configured; if so, then
+     * {@link #configured} is set to {@code true}; otherwise, is set to {@code false}.
      */
     private void checkConfiguration () {
         if (this.bandwidth <= 0 || this.latency <= 0 ||
@@ -179,7 +204,7 @@ public class Cluster extends VertexGridItem {
         }
 
         this.configured = !(
-                this.master && "---".equals(this.schedulingAlgorithm)
+            this.master && "---".equals(this.schedulingAlgorithm)
         );
     }
 
@@ -196,7 +221,7 @@ public class Cluster extends VertexGridItem {
      * It sets the bandwidth
      *
      * @param bandwidth
-     *         the bandwidth to be set
+     *     the bandwidth to be set
      */
     public void setBandwidth (final double bandwidth) {
         this.bandwidth = bandwidth;
@@ -216,7 +241,7 @@ public class Cluster extends VertexGridItem {
      * It sets the latency.
      *
      * @param latency
-     *         the latency to be set
+     *     the latency to be set
      */
     public void setLatency (final double latency) {
         this.latency = latency;
@@ -236,7 +261,7 @@ public class Cluster extends VertexGridItem {
      * It sets the amount of RAM memory in <em>gigabytes (GB)</em>.
      *
      * @param ram
-     *         the amount of RAM memory to be set
+     *     the amount of RAM memory to be set
      */
     public void setRam (final double ram) {
         this.ram = ram;
@@ -255,7 +280,7 @@ public class Cluster extends VertexGridItem {
      * It sets the amount of hard disk in <em>gigabytes (GB)</em>.
      *
      * @param hardDisk
-     *         the amount of hard disk to be set to
+     *     the amount of hard disk to be set to
      */
     public void setHardDisk (final double hardDisk) {
         this.hardDisk = hardDisk;
@@ -274,8 +299,7 @@ public class Cluster extends VertexGridItem {
      * It sets the computational power
      *
      * @param computationalPower
-     *         the computational power to
-     *         be set
+     *     the computational power to be set
      */
     public void setComputationalPower (final double computationalPower) {
         this.computationalPower = computationalPower;
@@ -295,8 +319,7 @@ public class Cluster extends VertexGridItem {
      * Set the energy consumption.
      *
      * @param energyConsumption
-     *         the energy consumption to
-     *         be set
+     *     the energy consumption to be set
      */
     public void setEnergyConsumption (final double energyConsumption) {
         this.energyConsumption = energyConsumption;
@@ -315,8 +338,7 @@ public class Cluster extends VertexGridItem {
      * It sets the cost per processing
      *
      * @param costPerProcessing
-     *         the cost per processing to
-     *         to be set
+     *     the cost per processing to to be set
      */
     public void setCostPerProcessing (final double costPerProcessing) {
         this.costPerProcessing = costPerProcessing;
@@ -335,7 +357,7 @@ public class Cluster extends VertexGridItem {
      * It sets the cost per memory.
      *
      * @param costPerMemory
-     *         the cost per memory to be set
+     *     the cost per memory to be set
      */
     public void setCostPerMemory (final double costPerMemory) {
         this.costPerMemory = costPerMemory;
@@ -354,7 +376,7 @@ public class Cluster extends VertexGridItem {
      * It sets the cost per disk.
      *
      * @param costPerDisk
-     *         the cost per disk
+     *     the cost per disk
      */
     public void setCostPerDisk (final double costPerDisk) {
         this.costPerDisk = costPerDisk;
@@ -373,13 +395,11 @@ public class Cluster extends VertexGridItem {
      * It sets the amount of cores in the chip.
      *
      * @param coreCount
-     *         the amount of cores in the chip
-     *         to be set
+     *     the amount of cores in the chip to be set
      */
     public void setCoreCount (final Integer coreCount) {
         this.coreCount = coreCount;
     }
-
 
     /**
      * Returns the amount of slaves.
@@ -388,14 +408,13 @@ public class Cluster extends VertexGridItem {
      */
     public int getSlaveCount () {
         return this.slaveCount;
-
     }
 
     /**
      * It sets the amount of slaves.
      *
      * @param slaveCount
-     *         the amount of slaves to be set
+     *     the amount of slaves to be set
      */
     public void setSlaveCount (final Integer slaveCount) {
         this.slaveCount = slaveCount;
@@ -403,11 +422,9 @@ public class Cluster extends VertexGridItem {
     }
 
     /**
-     * Returns {@code true} since this cluster is master.
-     * Otherwise, {@code false} is returned.
+     * Returns {@code true} since this cluster is master. Otherwise, {@code false} is returned.
      *
-     * @return {@code true} since this cluster is master;
-     *         otherwise, {@code false} is returned.
+     * @return {@code true} since this cluster is master; otherwise, {@code false} is returned.
      */
     public boolean isMaster () {
         return this.master;
@@ -417,8 +434,7 @@ public class Cluster extends VertexGridItem {
      * It sets this cluster as master or not.
      *
      * @param master
-     *         {@code true} to set this cluster as
-     *         master, otherwise {@code false}.
+     *     {@code true} to set this cluster as master, otherwise {@code false}.
      */
     public void setMaster (final Boolean master) {
         this.master = master;
@@ -438,8 +454,7 @@ public class Cluster extends VertexGridItem {
      * It sets the scheduling algorithm
      *
      * @param schedulingAlgorithm
-     *         the scheduling algorithm
-     *         to be set
+     *     the scheduling algorithm to be set
      */
     public void setSchedulingAlgorithm (final String schedulingAlgorithm) {
         this.schedulingAlgorithm = schedulingAlgorithm;
@@ -459,7 +474,7 @@ public class Cluster extends VertexGridItem {
      * It sets the owner
      *
      * @param owner
-     *         the owner to be set
+     *     the owner to be set
      */
     public void setOwner (final String owner) {
         this.owner = owner;
@@ -478,32 +493,9 @@ public class Cluster extends VertexGridItem {
      * It sets the {@link VmMaster} allocation policy.
      *
      * @param vmmAllocationPolicy
-     *         the {@link VmMaster} allocation
-     *         policy to be set
+     *     the {@link VmMaster} allocation policy to be set
      */
     public void setVmmAllocationPolicy (final String vmmAllocationPolicy) {
         this.vmmAllocationPolicy = vmmAllocationPolicy;
-    }
-
-    /**
-     * Returns the cluster image.
-     *
-     * @return the cluster image
-     */
-    @Override
-    public Image getImage () {
-        return DesenhoGrade.CLUSTER_ICON;
-    }
-
-    /**
-     * Returns the string representation of the
-     * .
-     *
-     * @return the string representation of the
-     *
-     */
-    @Override
-    public String toString () {
-        return "id: " + this.id.getGlobalId() + " " + this.id.getName();
     }
 }

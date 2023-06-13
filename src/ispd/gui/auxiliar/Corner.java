@@ -28,12 +28,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package ispd.gui.auxiliar;
 
 import java.awt.Color;
 import java.awt.Graphics;
-
 import javax.swing.JComponent;
 
 public class Corner extends JComponent {

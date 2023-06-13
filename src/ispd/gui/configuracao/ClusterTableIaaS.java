@@ -1,56 +1,55 @@
 package ispd.gui.configuracao;
 
-import java.io.Serializable;
-import java.util.ResourceBundle;
-
-import javax.swing.JComboBox;
-import javax.swing.table.AbstractTableModel;
-
 import ispd.gui.iconico.grade.Cluster;
 import ispd.policy.managers.CloudSchedulingPolicyManager;
 import ispd.policy.managers.VmAllocationPolicyManager;
+import java.io.Serializable;
+import java.util.ResourceBundle;
+import javax.swing.JComboBox;
+import javax.swing.table.AbstractTableModel;
 
 public class ClusterTableIaaS extends AbstractTableModel {
 
-    private static final int               TYPE                 = 0;
-    private static final int               VALUE                = 1;
-    private static final int               ROW_COUNT            = 15;
-    private static final int               COLUMN_COUNT         = 2;
-    private static final String[]          EMPTY_COMBO_BOX_LIST = {};
-    private final        JComboBox<Object> schedulers           =
-            makeComboBox(
-                    CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
-                    "Select the task scheduling policy"
-            );
-    private final        JComboBox<Object> users                =
-            makeComboBox(ClusterTableIaaS.EMPTY_COMBO_BOX_LIST, "Select the resource owner");
-    private final        JComboBox<Object> vmmPolicies          =
-            makeComboBox(
-                    VmAllocationPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
-                    "Select the virtual machine allocation policy"
-            );
-    private              Cluster           cluster              = null;
-    private              ResourceBundle    words;
+    private static final int TYPE = 0;
+
+    private static final int VALUE = 1;
+
+    private static final int ROW_COUNT = 15;
+
+    private static final int COLUMN_COUNT = 2;
+
+    private static final String[] EMPTY_COMBO_BOX_LIST = {};
+
+    private final JComboBox<Object> schedulers =
+        makeComboBox(
+            CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+            "Select the task scheduling policy"
+        );
+
+    private final JComboBox<Object> users =
+        makeComboBox(ClusterTableIaaS.EMPTY_COMBO_BOX_LIST, "Select the resource owner");
+
+    private final JComboBox<Object> vmmPolicies =
+        makeComboBox(
+            VmAllocationPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+            "Select the virtual machine allocation policy"
+        );
+
+    private Cluster cluster = null;
+
+    private ResourceBundle words;
 
     ClusterTableIaaS (final ResourceBundle words) {
         this.words = words;
     }
 
-    private static JComboBox<Object> makeComboBox (final String[] comboBoxArg, final String toolTipText) {
+    private static JComboBox<Object> makeComboBox (
+        final String[] comboBoxArg,
+        final String toolTipText
+    ) {
         final var comboBox = new JComboBox<Object>(comboBoxArg);
         comboBox.setToolTipText(toolTipText);
         return comboBox;
-    }
-
-    void setCluster (final Cluster cluster, final Iterable<String> users) {
-        this.cluster = cluster;
-        this.schedulers.setSelectedItem(this.cluster.getSchedulingAlgorithm());
-        this.vmmPolicies.setSelectedItem(this.cluster.getVmmAllocationPolicy());
-        this.users.removeAllItems();
-        for (final Object object : users) {
-            this.users.addItem(object);
-        }
-        this.users.setSelectedItem(cluster.getOwner());
     }
 
     @Override
@@ -83,6 +82,66 @@ public class ClusterTableIaaS extends AbstractTableModel {
             default:
                 throw new IndexOutOfBoundsException("columnIndex out of bounds");
         }
+    }
+
+    @Override
+    public String getColumnName (final int columnIndex) {
+        switch (columnIndex) {
+            case ClusterTableIaaS.TYPE:
+                return this.words.getString("Properties");
+            case ClusterTableIaaS.VALUE:
+                return this.words.getString("Values");
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isCellEditable (final int rowIndex, final int columnIndex) {
+        return columnIndex != ClusterTableIaaS.TYPE;
+    }
+
+    @Override
+    public void setValueAt (
+        final Object aValue, final int rowIndex, final int columnIndex
+    ) {
+        // Pega o sócio referente a linha especificada.
+        if (columnIndex != ClusterTableIaaS.VALUE || this.cluster == null) {
+            return;
+        }
+
+        switch (rowIndex) {
+            case TableRows.LABEL -> this.cluster.getId().setName(aValue.toString());
+            case TableRows.OWNER -> this.cluster.setOwner(this.users.getSelectedItem().toString());
+            case TableRows.NODES -> this.cluster.setSlaveCount(Integer.valueOf(aValue.toString()));
+            case TableRows.PROCESSORS -> this.cluster.setComputationalPower(Double.valueOf(aValue.toString()));
+            case TableRows.CORES -> this.cluster.setCoreCount(Integer.valueOf(aValue.toString()));
+            case TableRows.MEMORY -> this.cluster.setRam(Double.valueOf(aValue.toString()));
+            case TableRows.DISK -> this.cluster.setHardDisk(Double.valueOf(aValue.toString()));
+            case TableRows.COST_PER_PROCESSOR -> this.cluster.setCostPerProcessing(Double.valueOf(
+                aValue.toString()));
+            case TableRows.COST_PER_MEMORY -> this.cluster.setCostPerMemory(Double.valueOf(aValue.toString()));
+            case TableRows.COST_PER_DISK -> this.cluster.setCostPerDisk(Double.valueOf(aValue.toString()));
+            case TableRows.BANDWIDTH -> this.cluster.setBandwidth(Double.valueOf(aValue.toString()));
+            case TableRows.LATENCY -> this.cluster.setLatency(Double.valueOf(aValue.toString()));
+            case TableRows.VMM -> this.cluster.setMaster(Boolean.valueOf(aValue.toString()));
+            case TableRows.SCHEDULER -> this.cluster.setSchedulingAlgorithm(
+                this.schedulers.getSelectedItem().toString());
+            case TableRows.VMM_POLICIES -> this.cluster.setVmmAllocationPolicy(
+                this.vmmPolicies.getSelectedItem().toString());
+        }
+
+        this.fireTableCellUpdated(rowIndex, ClusterTableIaaS.VALUE);
+    }
+
+    void setCluster (final Cluster cluster, final Iterable<String> users) {
+        this.cluster = cluster;
+        this.schedulers.setSelectedItem(this.cluster.getSchedulingAlgorithm());
+        this.vmmPolicies.setSelectedItem(this.cluster.getVmmAllocationPolicy());
+        this.users.removeAllItems();
+        for (final Object object : users) {
+            this.users.addItem(object);
+        }
+        this.users.setSelectedItem(cluster.getOwner());
     }
 
     private String nameForRow (final int rowIndex) {
@@ -136,54 +195,6 @@ public class ClusterTableIaaS extends AbstractTableModel {
         };
     }
 
-    @Override
-    public String getColumnName (final int columnIndex) {
-        switch (columnIndex) {
-            case ClusterTableIaaS.TYPE:
-                return this.words.getString("Properties");
-            case ClusterTableIaaS.VALUE:
-                return this.words.getString("Values");
-        }
-        return null;
-    }
-
-    @Override
-    public boolean isCellEditable (final int rowIndex, final int columnIndex) {
-        return columnIndex != ClusterTableIaaS.TYPE;
-    }
-
-    @Override
-    public void setValueAt (
-            final Object aValue, final int rowIndex, final int columnIndex
-    ) {
-        // Pega o sócio referente a linha especificada.
-        if (columnIndex != ClusterTableIaaS.VALUE || this.cluster == null) {
-            return;
-        }
-
-        switch (rowIndex) {
-            case TableRows.LABEL -> this.cluster.getId().setName(aValue.toString());
-            case TableRows.OWNER -> this.cluster.setOwner(this.users.getSelectedItem().toString());
-            case TableRows.NODES -> this.cluster.setSlaveCount(Integer.valueOf(aValue.toString()));
-            case TableRows.PROCESSORS -> this.cluster.setComputationalPower(Double.valueOf(aValue.toString()));
-            case TableRows.CORES -> this.cluster.setCoreCount(Integer.valueOf(aValue.toString()));
-            case TableRows.MEMORY -> this.cluster.setRam(Double.valueOf(aValue.toString()));
-            case TableRows.DISK -> this.cluster.setHardDisk(Double.valueOf(aValue.toString()));
-            case TableRows.COST_PER_PROCESSOR -> this.cluster.setCostPerProcessing(Double.valueOf(aValue.toString()));
-            case TableRows.COST_PER_MEMORY -> this.cluster.setCostPerMemory(Double.valueOf(aValue.toString()));
-            case TableRows.COST_PER_DISK -> this.cluster.setCostPerDisk(Double.valueOf(aValue.toString()));
-            case TableRows.BANDWIDTH -> this.cluster.setBandwidth(Double.valueOf(aValue.toString()));
-            case TableRows.LATENCY -> this.cluster.setLatency(Double.valueOf(aValue.toString()));
-            case TableRows.VMM -> this.cluster.setMaster(Boolean.valueOf(aValue.toString()));
-            case TableRows.SCHEDULER -> this.cluster.setSchedulingAlgorithm(
-                    this.schedulers.getSelectedItem().toString());
-            case TableRows.VMM_POLICIES -> this.cluster.setVmmAllocationPolicy(
-                    this.vmmPolicies.getSelectedItem().toString());
-        }
-
-        this.fireTableCellUpdated(rowIndex, ClusterTableIaaS.VALUE);
-    }
-
     public JComboBox getEscalonadores () {
         return this.schedulers;
     }
@@ -199,20 +210,34 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private static class TableRows implements Serializable {
 
-        private static final int LABEL              = 0;
-        private static final int OWNER              = 1;
-        private static final int NODES              = 2;
-        private static final int PROCESSORS         = 3;
-        private static final int CORES              = 4;
-        private static final int MEMORY             = 5;
-        private static final int DISK               = 6;
+        private static final int LABEL = 0;
+
+        private static final int OWNER = 1;
+
+        private static final int NODES = 2;
+
+        private static final int PROCESSORS = 3;
+
+        private static final int CORES = 4;
+
+        private static final int MEMORY = 5;
+
+        private static final int DISK = 6;
+
         private static final int COST_PER_PROCESSOR = 7;
-        private static final int COST_PER_MEMORY    = 8;
-        private static final int COST_PER_DISK      = 9;
-        private static final int BANDWIDTH          = 10;
-        private static final int LATENCY            = 11;
-        private static final int VMM                = 12;
-        private static final int SCHEDULER          = 13;
-        private static final int VMM_POLICIES       = 14;
+
+        private static final int COST_PER_MEMORY = 8;
+
+        private static final int COST_PER_DISK = 9;
+
+        private static final int BANDWIDTH = 10;
+
+        private static final int LATENCY = 11;
+
+        private static final int VMM = 12;
+
+        private static final int SCHEDULER = 13;
+
+        private static final int VMM_POLICIES = 14;
     }
 }
