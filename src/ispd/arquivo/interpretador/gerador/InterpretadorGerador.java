@@ -41,17 +41,17 @@ public class InterpretadorGerador {
     public boolean executarParse () {
         try {
             parser         = new Interpretador(istream);
-            parser.verbose = false;
+            parser.setVerbose(false);
             parser.printv("Modo verbose ligado");
             parser.Escalonador();
-            return parser.erroEncontrado;
+            return parser.isErroEncontrado();
         } catch (ParseException ex) {
-            parser.erroEncontrado = true;
+            parser.setErroEncontrado(true);
             JOptionPane.showMessageDialog(null, "Foram encontrados os seguintes erros:\n" + ex.getMessage(),
                                           "Erros Encontrados", JOptionPane.ERROR_MESSAGE
             );
             Logger.getLogger(InterpretadorGerador.class.getName()).log(Level.SEVERE, null, ex);
-            return parser.erroEncontrado;
+            return parser.isErroEncontrado();
         }
     }
 
