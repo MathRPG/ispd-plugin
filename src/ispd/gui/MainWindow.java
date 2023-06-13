@@ -1508,7 +1508,7 @@ public class MainWindow extends JFrame implements KeyListener {
     private void jMenuItemGridSimActionPerformed (final ActionEvent evt) {
         this.configureFileFilterAndChooser(
             "Java Source Files (. java)",
-            new String[] { FileExtensions.JAVA },
+            new String[] { FileExtensions.JAVA_SOURCE },
             true
         );
 
@@ -1648,7 +1648,7 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void jMenuItemToGridSimActionPerformed (final ActionEvent evt) {
-        this.exportToFileType("Java Source Files (. java)", FileExtensions.JAVA);
+        this.exportToFileType("Java Source Files (. java)", FileExtensions.JAVA_SOURCE);
     }
 
     private File getFileWithExtension (final String ext) {

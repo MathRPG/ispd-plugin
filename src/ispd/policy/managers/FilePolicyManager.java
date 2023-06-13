@@ -50,7 +50,7 @@ public abstract class FilePolicyManager implements PolicyManager {
     }
 
     private static String removeDotClassSuffix (final String s) {
-        return removeSuffix(s, FileExtensions.CLASS);
+        return removeSuffix(s, FileExtensions.JAVA_CLASS);
     }
 
     private static String removeSuffix (final String str, final String suffix) {
@@ -232,7 +232,7 @@ public abstract class FilePolicyManager implements PolicyManager {
             return false;
         }
 
-        final var policyName = removeSuffix(arquivo.getName(), FileExtensions.JAVA);
+        final var policyName = removeSuffix(arquivo.getName(), FileExtensions.JAVA_SOURCE);
 
         if (!this.checkIfDotClassExists(policyName)) {
             return false;
@@ -275,7 +275,7 @@ public abstract class FilePolicyManager implements PolicyManager {
     }
 
     private void loadPoliciesFromFoundDotClassFiles () {
-        final FilenameFilter f = (b, name) -> name.endsWith(FileExtensions.CLASS);
+        final FilenameFilter f = (b, name) -> name.endsWith(FileExtensions.JAVA_CLASS);
 
         /*
          * {@link File#list()} returns {@code null} on I/O error
@@ -311,7 +311,7 @@ public abstract class FilePolicyManager implements PolicyManager {
     }
 
     private File policyDotClassFile (final String policyName) {
-        return this.fileWithExtension(policyName, FileExtensions.CLASS);
+        return this.fileWithExtension(policyName, FileExtensions.JAVA_CLASS);
     }
 
     private void removePolicy (final String policyName) {
@@ -324,7 +324,7 @@ public abstract class FilePolicyManager implements PolicyManager {
     }
 
     private File policyJavaFile (final String name) {
-        return this.fileWithExtension(name, FileExtensions.JAVA);
+        return this.fileWithExtension(name, FileExtensions.JAVA_SOURCE);
     }
 
     private File fileWithExtension (final String policyName, final String ext) {

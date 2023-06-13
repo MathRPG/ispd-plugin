@@ -106,7 +106,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private static String policyNameFromFile (final File file) {
         final var fullName = file.getName();
-        return fullName.substring(0, fullName.length() - FileExtensions.JAVA.length());
+        return fullName.substring(0, fullName.length() - FileExtensions.JAVA_SOURCE.length());
     }
 
     private static JMenuBar makeMenuBarWith (final JMenu... menus) {
@@ -139,7 +139,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var chooser = new JFileChooser();
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setFileFilter(new MultipleExtensionFileFilter(
-            this.translate("Java Source Files (. java)"), FileExtensions.JAVA, true
+            this.translate("Java Source Files (. java)"), FileExtensions.JAVA_SOURCE, true
         ));
         return chooser;
     }

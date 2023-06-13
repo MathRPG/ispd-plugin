@@ -11,7 +11,7 @@ public enum FileExtensions {
      */
     public static final String ICONIC_MODEL = ".imsx";
 
-    public static final String CLASS = ".class";
+    public static final String JAVA_CLASS = ".class";
 
-    public static final String JAVA  = ".java";
+    public static final String JAVA_SOURCE = ".java";
 }
