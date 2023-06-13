@@ -228,7 +228,6 @@ public class QueueNetworkBuilder {
     private static void connectLinkAndVertices (
             final CS_Link link, final Vertice origination, final Vertice destination
     ) {
-        link.setConexoesEntrada((CentroServico) origination);
         link.setConexoesSaida((CentroServico) destination);
         origination.addConexoesSaida(link);
         destination.addConexoesEntrada(link);

@@ -1,8 +1,5 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ispd.motor.FutureEvent;
 import ispd.motor.Mensagens;
 import ispd.motor.Simulation;
@@ -11,143 +8,141 @@ import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Comunicacao;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
 
-    private final List<CS_Comunicacao>   conexoesEntrada;
-    private final List<CS_Comunicacao>   conexoesSaida;
-    private final List<Tarefa>           filaTarefas;
-    private final List<CS_Processamento> mestres;
-    private final List<Tarefa>           tarefaEmExecucao;
-    private final List<Double>           falhas      = new ArrayList<>();
-    private final List<Double>           recuperacao = new ArrayList<>();
-    private final List<Tarefa>           historicoProcessamento;
-    private       List<List>             caminhoMestre;
-    private       int                    processadoresDisponiveis;
-    private       boolean                erroRecuperavel;
-    private       boolean                falha       = false;
+    private final List<CS_Comunicacao> conexoesEntrada = new ArrayList<>();
+
+    private final List<CS_Comunicacao> conexoesSaida = new ArrayList<>();
+
+    private final List<Tarefa> filaTarefas = new ArrayList<>();
+
+    private final List<CS_Processamento> mestres = new ArrayList<>();
+
+    private final List<Tarefa> tarefaEmExecucao;
+
+    private final List<Double> falhas = new ArrayList<>();
+
+    private final List<Double> recuperacao = new ArrayList<>();
+
+    private final List<Tarefa> historicoProcessamento = new ArrayList<>();
+
+    private List<List> caminhoMestre;
+
+    private int processadoresDisponiveis;
 
     /**
-     * Constructor which specifies the machine configuration,
-     * specifying the id, owner, computational power, core
-     * count and load factor.
+     * Constructor which specifies the machine configuration, specifying the id, owner,
+     * computational power, core count and load factor.
      * <p><br />
-     * Using this constructor the machine number and the
-     * energy consumption are both set as default to 0.
+     * Using this constructor the machine number and the energy consumption are both set as default
+     * to 0.
      *
      * @param id
-     *         the id
+     *     the id
      * @param owner
-     *         the owner
+     *     the owner
      * @param computationalPower
-     *         the computational power
+     *     the computational power
      * @param coreCount
-     *         the core count
+     *     the core count
      * @param loadFactor
-     *         the load factor
+     *     the load factor
      *
-     * @see #CS_Maquina(String, String, double, int, double, int, double)
-     *         for specify the machine number and energy consumption.
+     * @see #CS_Maquina(String, String, double, int, double, int, double) for specify the machine
+     * number and energy consumption.
      */
     public CS_Maquina (
-            final String id, final String owner, final double computationalPower, final int coreCount,
-            final double loadFactor
+        final String id, final String owner, final double computationalPower, final int coreCount,
+        final double loadFactor
     ) {
         this(id, owner, computationalPower, coreCount, loadFactor, 0, 0.0);
     }
 
     /**
-     * Constructor which specifies the machine configuration,
-     * specifying the id, owner, computational power, core
-     * count, load factor, machine number and energy consumption.
+     * Constructor which specifies the machine configuration, specifying the id, owner,
+     * computational power, core count, load factor, machine number and energy consumption.
      *
      * @param id
-     *         the id
+     *     the id
      * @param owner
-     *         the owner
+     *     the owner
      * @param computationalPower
-     *         the computational power
+     *     the computational power
      * @param coreCount
-     *         the core count
+     *     the core count
      * @param loadFactor
-     *         the load factor
+     *     the load factor
      * @param machineNumber
-     *         the machine number
+     *     the machine number
      * @param energy
-     *         the energy consumption
+     *     the energy consumption
      */
     public CS_Maquina (
-            final String id, final String owner, final double computationalPower, final int coreCount,
-            final double loadFactor, final int machineNumber, final double energy
+        final String id, final String owner, final double computationalPower, final int coreCount,
+        final double loadFactor, final int machineNumber, final double energy
     ) {
         super(id, owner, computationalPower, coreCount, loadFactor, machineNumber, energy);
-        this.conexoesEntrada          = new ArrayList<>();
-        this.conexoesSaida            = new ArrayList<>();
-        this.filaTarefas              = new ArrayList<>();
-        this.mestres                  = new ArrayList<>();
         this.processadoresDisponiveis = coreCount;
         this.tarefaEmExecucao         = new ArrayList<>(coreCount);
-        this.historicoProcessamento   = new ArrayList<>();
     }
 
     /**
-     * Constructor which specifies the machine configuration,
-     * specifying the id, owner, computational power, core
-     * count, load factor and energy consumption.
+     * Constructor which specifies the machine configuration, specifying the id, owner,
+     * computational power, core count, load factor and energy consumption.
      * <p><br />
-     * Using this constructor the machine number is set as
-     * default to 0.
+     * Using this constructor the machine number is set as default to 0.
      *
      * @param id
-     *         the id
+     *     the id
      * @param owner
-     *         the owner
+     *     the owner
      * @param computationalPower
-     *         the computational power
+     *     the computational power
      * @param coreCount
-     *         the core count
+     *     the core count
      * @param loadFactor
-     *         the load factor
+     *     the load factor
      * @param energy
-     *         the energy consumption.
+     *     the energy consumption.
      *
-     * @see #CS_Maquina(String, String, double, int, double, int, double)
-     *         for specify the machine number.
+     * @see #CS_Maquina(String, String, double, int, double, int, double) for specify the machine
+     * number.
      */
     public CS_Maquina (
-            final String id, final String owner, final double computationalPower, final int coreCount,
-            final double loadFactor, final double energy
+        final String id, final String owner, final double computationalPower, final int coreCount,
+        final double loadFactor, final double energy
     ) {
         this(id, owner, computationalPower, coreCount, loadFactor, 0, energy);
     }
 
     /**
-     * Constructor which specifies the machine configuration,
-     * specifying the id, owner, computational power, core
-     * count, load factor and machine number.
+     * Constructor which specifies the machine configuration, specifying the id, owner,
+     * computational power, core count, load factor and machine number.
      * <p><br />
-     * Using this constructor the energy consumption is set
-     * as default to 0.
+     * Using this constructor the energy consumption is set as default to 0.
      *
      * @param id
-     *         the id
+     *     the id
      * @param owner
-     *         the owner
+     *     the owner
      * @param computationalPower
-     *         the computational power
+     *     the computational power
      * @param coreCount
-     *         the core count
+     *     the core count
      * @param loadFactor
-     *         the load factor
+     *     the load factor
      * @param machineNumber
-     *         the machine number
+     *     the machine number
      *
-     * @see #CS_Maquina(String, String, double, int, double, int, double)
-     *         for specify the energy consumption
+     * @see #CS_Maquina(String, String, double, int, double, int, double) for specify the energy
+     * consumption
      */
     public CS_Maquina (
-            final String id, final String owner, final double computationalPower, final int coreCount,
-            final double loadFactor, final int machineNumber
+        final String id, final String owner, final double computationalPower, final int coreCount,
+        final double loadFactor, final int machineNumber
     ) {
         this(id, owner, computationalPower, coreCount, loadFactor, machineNumber, 0.0);
     }
@@ -162,14 +157,6 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         this.conexoesSaida.add(conexao);
     }
 
-    public void addConexoesEntrada (final CS_Switch conexao) {
-        this.conexoesEntrada.add(conexao);
-    }
-
-    public void addConexoesSaida (final CS_Switch conexao) {
-        this.conexoesSaida.add(conexao);
-    }
-
     @Override
     public void chegadaDeCliente (final Simulation simulacao, final Tarefa cliente) {
         if (cliente.getEstado() != Tarefa.CANCELADO) {
@@ -179,7 +166,7 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
                 this.processadoresDisponiveis--;
                 //cria evento para iniciar o atendimento imediatamente
                 final FutureEvent novoEvt = new FutureEvent(
-                        simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente
+                    simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente
                 );
                 simulacao.addFutureEvent(novoEvt);
             } else {
@@ -195,7 +182,8 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         cliente.iniciarAtendimentoProcessamento(simulacao.getTime(this));
         this.tarefaEmExecucao.add(cliente);
         final Double next = simulacao.getTime(this)
-                            + this.tempoProcessar(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
+                            + this.tempoProcessar(cliente.getTamProcessamento()
+                                                  - cliente.getMflopsProcessado());
         if (!this.falhas.isEmpty() && next > this.falhas.get(0)) {
             Double tFalha = this.falhas.remove(0);
             if (tFalha < simulacao.getTime(this)) {
@@ -203,11 +191,10 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
             }
             final Mensagem msg = new Mensagem(this, Mensagens.FALHAR, cliente);
             final FutureEvent evt = new FutureEvent(
-                    tFalha, FutureEvent.MENSAGEM, this, msg
+                tFalha, FutureEvent.MENSAGEM, this, msg
             );
             simulacao.addFutureEvent(evt);
         } else {
-            this.falha = false;
             //Gera evento para atender proximo cliente da lista
             final FutureEvent evtFut = new FutureEvent(next, FutureEvent.SAIDA, this, cliente);
             //Event adicionado a lista de evntos futuros
@@ -218,9 +205,12 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
     @Override
     public void saidaDeCliente (final Simulation simulacao, final Tarefa cliente) {
         //Incrementa o número de Mbits transmitido por este link
-        this.getMetrica().incMflopsProcessados(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
+        this
+            .getMetrica()
+            .incMflopsProcessados(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
         //Incrementa o tempo de processamento
-        final double tempoProc = this.tempoProcessar(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
+        final double tempoProc =
+            this.tempoProcessar(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
         this.getMetrica().incSegundosDeProcessamento(tempoProc);
         //Incrementa o tempo de transmissão no pacote
         cliente.finalizarAtendimentoProcessamento(simulacao.getTime(this));
@@ -229,25 +219,33 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         cliente.calcEficiencia(this.getPoderComputacional());
         //Devolve tarefa para o mestre
         if (this.mestres.contains(cliente.getOrigem())) {
-            final int                 index   = this.mestres.indexOf(cliente.getOrigem());
-            final List<CentroServico> caminho = new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
+            final int index = this.mestres.indexOf(cliente.getOrigem());
+            final List<CentroServico> caminho =
+                new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
             cliente.setCaminho(caminho);
             //Gera evento para chegada da tarefa no proximo servidor
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+                simulacao.getTime(this),
+                FutureEvent.CHEGADA,
+                cliente.getCaminho().remove(0),
+                cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         } else {
             //buscar menor caminho!!!
-            final CS_Processamento    novoMestre = (CS_Processamento) cliente.getOrigem();
-            final List<CentroServico> caminho    = new ArrayList<>(getMenorCaminhoIndireto(this, novoMestre));
+            final CS_Processamento novoMestre = (CS_Processamento) cliente.getOrigem();
+            final List<CentroServico> caminho =
+                new ArrayList<>(getMenorCaminhoIndireto(this, novoMestre));
             this.addMestre(novoMestre);
             this.caminhoMestre.add(caminho);
             cliente.setCaminho(new ArrayList<>(caminho));
             //Gera evento para chegada da tarefa no proximo servidor
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+                simulacao.getTime(this),
+                FutureEvent.CHEGADA,
+                cliente.getCaminho().remove(0),
+                cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -259,15 +257,11 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
             //Gera evento para atender proximo cliente da lista
             final Tarefa proxCliente = this.filaTarefas.remove(0);
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
+                simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
         }
-    }
-
-    public void addMestre (final CS_Processamento mestre) {
-        this.mestres.add(mestre);
     }
 
     @Override
@@ -275,13 +269,22 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         if (mensagem != null) {
             if (mensagem.getTipo() == Mensagens.ATUALIZAR) {
                 this.atenderAtualizacao(simulacao, mensagem);
-            } else if (mensagem.getTarefa() != null && mensagem.getTarefa().getLocalProcessamento().equals(this)) {
+            } else if (mensagem.getTarefa() != null && mensagem
+                .getTarefa()
+                .getLocalProcessamento()
+                .equals(this)) {
                 switch (mensagem.getTipo()) {
                     case ispd.motor.Mensagens.PARAR -> this.atenderParada(simulacao, mensagem);
-                    case ispd.motor.Mensagens.CANCELAR -> this.atenderCancelamento(simulacao, mensagem);
-                    case ispd.motor.Mensagens.DEVOLVER -> this.atenderDevolucao(simulacao, mensagem);
+                    case ispd.motor.Mensagens.CANCELAR -> this.atenderCancelamento(
+                        simulacao,
+                        mensagem
+                    );
+                    case ispd.motor.Mensagens.DEVOLVER -> this.atenderDevolucao(
+                        simulacao,
+                        mensagem
+                    );
                     case ispd.motor.Mensagens.DEVOLVER_COM_PREEMPCAO -> this.atenderDevolucaoPreemptiva(
-                            simulacao, mensagem);
+                        simulacao, mensagem);
                     case ispd.motor.Mensagens.FALHAR -> this.atenderFalha(simulacao, mensagem);
                 }
             }
@@ -291,15 +294,6 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
     @Override
     public List<CS_Comunicacao> getConexoesSaida () {
         return this.conexoesSaida;
-    }
-
-    @Override
-    public Integer getCargaTarefas () {
-        if (this.falha) {
-            return -100;
-        } else {
-            return (this.filaTarefas.size() + this.tarefaEmExecucao.size());
-        }
     }
 
     @Override
@@ -316,7 +310,7 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
+                    simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
@@ -346,9 +340,9 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this),
-                        FutureEvent.ATENDIMENTO,
-                        this, proxCliente
+                    simulacao.getTime(this),
+                    FutureEvent.ATENDIMENTO,
+                    this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
@@ -372,7 +366,10 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         final boolean remover = this.filaTarefas.remove(mensagem.getTarefa());
         if (remover) {
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, mensagem.getTarefa().getOrigem(), mensagem.getTarefa()
+                simulacao.getTime(this),
+                FutureEvent.CHEGADA,
+                mensagem.getTarefa().getOrigem(),
+                mensagem.getTarefa()
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -394,7 +391,12 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut =
-                        new FutureEvent(simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente);
+                    new FutureEvent(
+                        simulacao.getTime(this),
+                        FutureEvent.ATENDIMENTO,
+                        this,
+                        proxCliente
+                    );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
@@ -416,7 +418,10 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         }
         if (remover) {
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, mensagem.getTarefa().getOrigem(), mensagem.getTarefa()
+                simulacao.getTime(this),
+                FutureEvent.CHEGADA,
+                mensagem.getTarefa().getOrigem(),
+                mensagem.getTarefa()
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -426,16 +431,20 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
     @Override
     public void atenderAtualizacao (final Simulation simulacao, final Mensagem mensagem) {
         //enviar resultados
-        final int                 index   = this.mestres.indexOf(mensagem.getOrigem());
-        final List<CentroServico> caminho = new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
+        final int index = this.mestres.indexOf(mensagem.getOrigem());
+        final List<CentroServico> caminho =
+            new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
         final Mensagem novaMensagem =
-                new Mensagem(this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR);
+            new Mensagem(this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR);
         //Obtem informações dinâmicas
         novaMensagem.setProcessadorEscravo(new ArrayList<>(this.tarefaEmExecucao));
         novaMensagem.setFilaEscravo(new ArrayList<>(this.filaTarefas));
         novaMensagem.setCaminho(caminho);
         final FutureEvent evtFut = new FutureEvent(
-                simulacao.getTime(this), FutureEvent.MENSAGEM, novaMensagem.getCaminho().remove(0), novaMensagem
+            simulacao.getTime(this),
+            FutureEvent.MENSAGEM,
+            novaMensagem.getCaminho().remove(0),
+            novaMensagem
         );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
@@ -448,10 +457,9 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
 
     @Override
     public void atenderFalha (final Simulation simulacao, final Mensagem mensagem) {
-        final double tempoRec = this.recuperacao.remove(0);
+        this.recuperacao.remove(0);
         for (final Tarefa tar : this.tarefaEmExecucao) {
             if (tar.getEstado() == Tarefa.PROCESSANDO) {
-                this.falha = true;
                 final double inicioAtendimento = tar.parar(simulacao.getTime(this));
                 final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
                 final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
@@ -464,22 +472,11 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
                 // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
                 final double numCP = ((int) (mflopsProcessados / 0.0)) * 0.0;
                 tar.setMflopsProcessado(numCP);
-                if (this.erroRecuperavel) {
-                    //Reiniciar atendimento da tarefa
-                    tar.iniciarEsperaProcessamento(simulacao.getTime(this));
-                    //cria evento para iniciar o atendimento imediatamente
-                    final FutureEvent novoEvt =
-                            new FutureEvent(simulacao.getTime(this) + tempoRec, FutureEvent.ATENDIMENTO, this, tar);
-                    simulacao.addFutureEvent(novoEvt);
-                } else {
-                    tar.setEstado(Tarefa.FALHA);
-                }
+                tar.setEstado(Tarefa.FALHA);
             }
         }
-        if (!this.erroRecuperavel) {
-            this.processadoresDisponiveis += this.tarefaEmExecucao.size();
-            this.filaTarefas.clear();
-        }
+        this.processadoresDisponiveis += this.tarefaEmExecucao.size();
+        this.filaTarefas.clear();
         this.tarefaEmExecucao.clear();
     }
 
@@ -489,7 +486,8 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
     }
 
     @Override
-    public void determinarCaminhos () throws LinkageError {
+    public void determinarCaminhos ()
+        throws LinkageError {
         //Instancia objetos
         this.caminhoMestre = new ArrayList<>(this.mestres.size());
         //Busca pelos caminhos
@@ -504,13 +502,15 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         }
     }
 
-    public void addFalha (final Double tFalha, final double tRec, final boolean recuperavel) {
-        this.falhas.add(tFalha);
-        this.recuperacao.add(tRec);
-        this.erroRecuperavel = recuperavel;
+    public void addConexoesEntrada (final CS_Switch conexao) {
+        this.conexoesEntrada.add(conexao);
     }
 
-    public List<Tarefa> getHistorico () {
-        return this.historicoProcessamento;
+    public void addConexoesSaida (final CS_Switch conexao) {
+        this.conexoesSaida.add(conexao);
+    }
+
+    public void addMestre (final CS_Processamento mestre) {
+        this.mestres.add(mestre);
     }
 }

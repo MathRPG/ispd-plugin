@@ -216,7 +216,6 @@ public class SimulacaoSequencialCloud extends Simulation {
             System.out.println("---------------------------------------");
             for (final CS_MaquinaCloud maq : cloudQueueNetwork.getMaquinasCloud()) {
                 // Encontra menor caminho entre o escravo e seu mestre
-                maq.setStatus(CS_MaquinaCloud.LIGADO);
                 maq.determinarCaminhos(); // escravo encontra caminhos para seu mestre
             }
         }

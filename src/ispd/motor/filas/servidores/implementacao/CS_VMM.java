@@ -1,10 +1,5 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 import ispd.motor.FutureEvent;
 import ispd.motor.Mensagens;
 import ispd.motor.Simulation;
@@ -22,28 +17,50 @@ import ispd.policy.loaders.CloudSchedulingPolicyLoader;
 import ispd.policy.loaders.VmAllocationPolicyLoader;
 import ispd.policy.scheduling.cloud.CloudMaster;
 import ispd.policy.scheduling.cloud.CloudSchedulingPolicy;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, Mensagens, Vertice {
 
-    private final List<CS_Comunicacao>  conexoesEntrada   = new ArrayList<>();
-    private final List<CS_Comunicacao>  conexoesSaida     = new ArrayList<>();
+    private final List<CS_Comunicacao> conexoesEntrada = new ArrayList<>();
+
+    private final List<CS_Comunicacao> conexoesSaida = new ArrayList<>();
+
     private final CloudSchedulingPolicy escalonador;
-    private final VmAllocationPolicy    alocadorVM;
-    private final List<Tarefa>          filaTarefas       = new ArrayList<>();
-    private final List<CS_VirtualMac>   maquinasVirtuais  = new ArrayList<>();
-    private       boolean               vmsAlocadas       = false;
-    private       boolean               escDisponivel     = false;
-    private       boolean               alocDisponivel    = true;
-    private       Set<PolicyCondition>  tipoEscalonamento = PolicyConditions.WHILE_MUST_DISTRIBUTE;
-    private       Set<PolicyCondition>  tipoAlocacao      = PolicyConditions.WHILE_MUST_DISTRIBUTE;
-    private       List<List>            caminhoEscravo    = null;
-    private       List<List>            caminhoVMs        = null;
-    private       Simulation            simulacao         = null;
+
+    private final VmAllocationPolicy alocadorVM;
+
+    private final List<Tarefa> filaTarefas = new ArrayList<>();
+
+    private final List<CS_VirtualMac> maquinasVirtuais = new ArrayList<>();
+
+    private boolean vmsAlocadas = false;
+
+    private boolean escDisponivel = false;
+
+    private boolean alocDisponivel = true;
+
+    private Set<PolicyCondition> tipoEscalonamento = PolicyConditions.WHILE_MUST_DISTRIBUTE;
+
+    private Set<PolicyCondition> tipoAlocacao = PolicyConditions.WHILE_MUST_DISTRIBUTE;
+
+    private List<List> caminhoEscravo = null;
+
+    private List<List> caminhoVMs = null;
+
+    private Simulation simulacao = null;
 
     public CS_VMM (
-            final String id, final String owner, final double computationalPower, final double ignoredMemory,
-            final double ignoredDisk, final double loadFactor, final String schedulingPolicyName,
-            final String allocationPolicyName
+        final String id,
+        final String owner,
+        final double computationalPower,
+        final double ignoredMemory,
+        final double ignoredDisk,
+        final double loadFactor,
+        final String schedulingPolicyName,
+        final String allocationPolicyName
     ) {
         super(id, owner, computationalPower, 1, loadFactor, 0);
         this.alocadorVM = new VmAllocationPolicyLoader().loadPolicy(allocationPolicyName);
@@ -64,7 +81,11 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                     System.out.println("VM duplicada");
                     System.out.println("------------------------------------------");
                 } else {
-                    System.out.println("vm " + vm.getId() + " adicionada no " + "alocador do VMM " + this.getId());
+                    System.out.println("vm "
+                                       + vm.getId()
+                                       + " adicionada no "
+                                       + "alocador do VMM "
+                                       + this.getId());
                     System.out.println("------------------------------------------");
                     this.maquinasVirtuais.add(vm); // adiciona na lista de
                     // maquinas virtuais
@@ -79,32 +100,47 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                     }
                 }
             } else {// se não for ele a origem ele precisa encaminhá-la
-                System.out.println(this.getId() + ": sou VMM intermediario, " + "encamininhando " + vm.getId());
+                System.out.println(this.getId()
+                                   + ": sou VMM intermediario, "
+                                   + "encamininhando "
+                                   + vm.getId());
                 final FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+                    simulacao.getTime(this),
+                    FutureEvent.CHEGADA,
+                    cliente.getCaminho().remove(0),
+                    cliente
                 );
                 simulacao.addFutureEvent(evtFut);
             }
         } else { // cliente é tarefa comum
             System.out.println(
-                    "cliente é a tarefa " + cliente.getIdentificador() + " com status " + cliente.getEstado());
+                "cliente é a tarefa "
+                + cliente.getIdentificador()
+                + " com status "
+                + cliente.getEstado());
 
             if (cliente.getEstado() != Tarefa.CANCELADO) {
                 // Tarefas concluida possuem tratamento diferencial
                 if (cliente.getEstado() == Tarefa.CONCLUIDO) {
-                    System.out.println("cliente é o retorno de tarefa " + cliente.getIdentificador());
+                    System.out.println("cliente é o retorno de tarefa "
+                                       + cliente.getIdentificador());
                     // se não for origem da tarefa ela deve ser encaminhada
                     if (!cliente.getOrigem().equals(this)) {
                         // encaminhar tarefa!
                         // Gera evento para chegada da tarefa no proximo servidor
                         final FutureEvent evtFut = new FutureEvent(
-                                simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+                            simulacao.getTime(this),
+                            FutureEvent.CHEGADA,
+                            cliente.getCaminho().remove(0),
+                            cliente
                         );
                         // Adicionar na lista de eventos futuros
                         simulacao.addFutureEvent(evtFut);
                     }
                     // caso seja este o centro de serviço de origem
-                    System.out.println("Tarefa " + cliente.getIdentificador() + " adicionada na lista de concluídas");
+                    System.out.println("Tarefa "
+                                       + cliente.getIdentificador()
+                                       + " adicionada na lista de concluídas");
                     this.escalonador.addTarefaConcluida(cliente);
 
                     if (this.tipoEscalonamento.contains(PolicyCondition.WHEN_RECEIVES_RESULT)) {
@@ -118,13 +154,18 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                 else {
                     if (cliente.getCaminho() != null) {
                         final FutureEvent evtFut = new FutureEvent(
-                                simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+                            simulacao.getTime(this),
+                            FutureEvent.CHEGADA,
+                            cliente.getCaminho().remove(0),
+                            cliente
                         );
                         simulacao.addFutureEvent(evtFut);
                     } else {
                         if (this.escDisponivel) {
                             System.out.println(
-                                    "Tarefa " + cliente.getIdentificador() + " chegando para ser escalonada");
+                                "Tarefa "
+                                + cliente.getIdentificador()
+                                + " chegando para ser escalonada");
                             this.escDisponivel = false;
                             // escalonador adiciona nova tarefa
                             this.escalonador.adicionarTarefa(cliente);
@@ -152,7 +193,10 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         if (cliente instanceof final TarefaVM trf) {
             System.out.println("cliente é a vm " + trf.getVM_enviada().getId());
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+                simulacao.getTime(this),
+                FutureEvent.CHEGADA,
+                cliente.getCaminho().remove(0),
+                cliente
             );
             // Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -166,7 +210,10 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         } else {
             System.out.println("cliente é uma tarefa " + cliente.getIdentificador());
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+                simulacao.getTime(this),
+                FutureEvent.CHEGADA,
+                cliente.getCaminho().remove(0),
+                cliente
             );
             // Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -195,21 +242,27 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                 this.atenderAtualizacao(simulacao, mensagem);
             } else if (mensagem.getTipo() == Mensagens.ALOCAR_ACK) {
                 this.atenderAckAlocacao(simulacao, mensagem);
-            } else if (mensagem.getTarefa() != null && mensagem.getTarefa().getLocalProcessamento().equals(this)) {
+            } else if (mensagem.getTarefa() != null && mensagem
+                .getTarefa()
+                .getLocalProcessamento()
+                .equals(this)) {
                 switch (mensagem.getTipo()) {
                     case Mensagens.PARAR -> this.atenderParada(simulacao, mensagem);
                     case Mensagens.CANCELAR -> this.atenderCancelamento(simulacao, mensagem);
                     case Mensagens.DEVOLVER -> this.atenderDevolucao(simulacao, mensagem);
-                    case Mensagens.DEVOLVER_COM_PREEMPCAO -> this.atenderDevolucaoPreemptiva(simulacao, mensagem);
+                    case Mensagens.DEVOLVER_COM_PREEMPCAO -> this.atenderDevolucaoPreemptiva(
+                        simulacao,
+                        mensagem
+                    );
                 }
             } else if (mensagem.getTipo() == Mensagens.RESULTADO_ATUALIZAR) {
                 this.atenderRetornoAtualizacao(simulacao, mensagem);
             } else if (mensagem.getTarefa() != null) {
                 // encaminhando mensagem para o destino
                 this.sendMessage(
-                        mensagem.getTarefa(),
-                        (CS_Processamento) mensagem.getTarefa().getLocalProcessamento(),
-                        mensagem.getTipo()
+                    mensagem.getTarefa(),
+                    (CS_Processamento) mensagem.getTarefa().getLocalProcessamento(),
+                    mensagem.getTipo()
                 );
             }
         }
@@ -219,11 +272,6 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     @Override
     public List<CS_Comunicacao> getConexoesSaida () {
         return this.conexoesSaida;
-    }
-
-    @Override
-    public Integer getCargaTarefas () {
-        return (this.escalonador.getFilaTarefas().size() + this.filaTarefas.size());
     }
 
     @Override
@@ -251,17 +299,20 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         // atualiza metricas dos usuarios globais
         // enviar resultados
         final List<CentroServico> caminho = new ArrayList<>(Objects.requireNonNull(
-                CS_Processamento.getMenorCaminhoIndireto(this, (CS_Processamento) mensagem.getOrigem())
+            CS_Processamento.getMenorCaminhoIndireto(this, (CS_Processamento) mensagem.getOrigem())
         ));
         final Mensagem novaMensagem = new Mensagem(
-                this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR
+            this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR
         );
         // Obtem informações dinâmicas
         novaMensagem.setFilaEscravo(new ArrayList<>(this.filaTarefas));
         novaMensagem.getFilaEscravo().addAll(this.escalonador.getFilaTarefas());
         novaMensagem.setCaminho(caminho);
         final FutureEvent evtFut = new FutureEvent(
-                simulacao.getTime(this), FutureEvent.MENSAGEM, novaMensagem.getCaminho().remove(0), novaMensagem
+            simulacao.getTime(this),
+            FutureEvent.MENSAGEM,
+            novaMensagem.getCaminho().remove(0),
+            novaMensagem
         );
         // Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
@@ -284,7 +335,10 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         final TarefaVM        trf    = (TarefaVM) mensagem.getTarefa();
         final CS_VirtualMac   auxVM  = trf.getVM_enviada();
         final CS_MaquinaCloud auxMaq = auxVM.getMaquinaHospedeira();
-        System.out.println("Atendendo ACK de alocação da vm " + auxVM.getId() + " na máquina " + auxMaq.getId());
+        System.out.println("Atendendo ACK de alocação da vm "
+                           + auxVM.getId()
+                           + " na máquina "
+                           + auxMaq.getId());
         if (auxVM.getVmmResponsavel().equals(this)) {
             // se o VMM responsável da VM for este.. tratar o ack
             // primeiro encontrar o caminho pra máquina onde a vm está alocada
@@ -294,12 +348,15 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
             final ArrayList<CentroServico> caminho;
             if (index == -1) {
                 caminho = new ArrayList<>(Objects.requireNonNull(
-                        CS_Processamento.getMenorCaminhoIndiretoCloud(this, auxMaq)
+                    CS_Processamento.getMenorCaminhoIndiretoCloud(this, auxMaq)
                 ));
             } else {
                 caminho = new ArrayList<CentroServico>(this.caminhoEscravo.get(index));
             }
-            System.out.println(this.getId() + ": Caminho encontrado para a vm" + " com tamanho: " + caminho.size());
+            System.out.println(this.getId()
+                               + ": Caminho encontrado para a vm"
+                               + " com tamanho: "
+                               + caminho.size());
             this.determinarCaminhoVM(auxVM, caminho);
             System.out.println(auxVM.getId() + " Alocada");
             auxVM.setStatus(CS_VirtualMac.ALOCADA);
@@ -312,99 +369,40 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
             // passar adiante, encontrando antes o caminho intermediário para poder escalonar tarefas desse VMM tbm
             //  para a vm hierarquica
             System.out.println(
-                    this.getId() + ": VMM intermediário, definindo" + " caminho intermediário para " + auxVM.getId());
+                this.getId()
+                + ": VMM intermediário, definindo"
+                + " caminho intermediário para "
+                + auxVM.getId());
             if (this.escalonador.getEscravos().contains(auxVM)) {
-                final int                      index = this.alocadorVM.getEscravos().indexOf(auxMaq);
+                final int index =
+                    this.alocadorVM.getEscravos().indexOf(auxMaq);
                 final ArrayList<CentroServico> caminho;
                 if (index == -1) {
                     caminho = new ArrayList<>(Objects.requireNonNull(
-                            CS_Processamento.getMenorCaminhoIndiretoCloud(this, auxMaq)
+                        CS_Processamento.getMenorCaminhoIndiretoCloud(this, auxMaq)
                     ));
                 } else {
                     caminho = new ArrayList<CentroServico>(this.caminhoEscravo.get(index));
                 }
-                System.out.println("Caminho encontrado para a vm com tamanho:" + " " + caminho.size());
+                System.out.println("Caminho encontrado para a vm com tamanho:"
+                                   + " "
+                                   + caminho.size());
                 this.determinarCaminhoVM(auxVM, caminho);
             }
             final FutureEvent evt = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.MENSAGEM, mensagem.getCaminho().remove(0), mensagem
+                simulacao.getTime(this),
+                FutureEvent.MENSAGEM,
+                mensagem.getCaminho().remove(0),
+                mensagem
             );
             simulacao.addFutureEvent(evt);
         }
     }
 
-    private void determinarCaminhoVM (final CS_Processamento vm, final List<CentroServico> caminhoVM) {
-        final int indVM = this.escalonador.getEscravos().indexOf(vm);
-        System.out.println("indice da vm: " + indVM);
-        if (indVM >= this.caminhoVMs.size()) {
-            this.caminhoVMs.add(indVM, caminhoVM);
-        } else {
-            this.caminhoVMs.set(indVM, caminhoVM);
-        }
-        System.out.println("Lista atualizada de caminho para as vms:");
-        for (int i = 0; i < this.caminhoVMs.size(); i++) {
-            System.out.println(this.escalonador.getEscravos().get(i).getId());
-            System.out.println(this.caminhoVMs.get(i).toString());
-        }
-        this.escalonador.setCaminhoEscravo(this.caminhoVMs);
-        System.out.println("------------------------------");
-
-    }
-
     @Override
     public void executeAllocation () {
         final FutureEvent evtFut = new FutureEvent(
-                this.simulacao.getTime(this), FutureEvent.ALOCAR_VMS, this, null
-        );
-        // Event adicionado a lista de evntos futuros
-        this.simulacao.addFutureEvent(evtFut);
-    }
-
-    @Override
-    public void executeScheduling () {
-        System.out.println(this.getId() + " solicitando escalonamento");
-        final FutureEvent evtFut = new FutureEvent(
-                this.simulacao.getTime(this), FutureEvent.ESCALONAR, this, null
-        );
-        // Event adicionado a lista de evntos futuros
-        this.simulacao.addFutureEvent(evtFut);
-    }
-
-    @Override
-    public Set<PolicyCondition> getSchedulingConditions () {
-        return this.tipoEscalonamento;
-    }
-
-    @Override
-    public void setSchedulingConditions (final Set<PolicyCondition> newConditions) {
-        this.tipoEscalonamento = newConditions;
-    }
-
-    @Override
-    public void sendTask (final Tarefa task) {
-        // Gera evento para atender proximo cliente da lista
-        System.out.println(
-                "Tarefa:" + task.getIdentificador() + "escalonada para vm:" + task.getLocalProcessamento().getId());
-        final FutureEvent evtFut = new FutureEvent(
-                this.simulacao.getTime(this), FutureEvent.SAIDA, this, task
-        );
-        // Event adicionado a lista de evntos futuros
-        this.simulacao.addFutureEvent(evtFut);
-    }
-
-    @Override
-    public Tarefa cloneTask (final Tarefa task) {
-        final Tarefa tarefa = new Tarefa(task);
-        this.simulacao.addJob(tarefa);
-        return tarefa;
-    }
-
-    @Override
-    public void sendMessage (final Tarefa task, final CS_Processamento slave, final int messageType) {
-        final Mensagem msg = new Mensagem(this, messageType, task);
-        msg.setCaminho(this.escalonador.escalonarRota(slave));
-        final FutureEvent evtFut = new FutureEvent(
-                this.simulacao.getTime(this), FutureEvent.MENSAGEM, msg.getCaminho().remove(0), msg
+            this.simulacao.getTime(this), FutureEvent.ALOCAR_VMS, this, null
         );
         // Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
@@ -421,6 +419,57 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     }
 
     @Override
+    public void executeScheduling () {
+        System.out.println(this.getId() + " solicitando escalonamento");
+        final FutureEvent evtFut = new FutureEvent(
+            this.simulacao.getTime(this), FutureEvent.ESCALONAR, this, null
+        );
+        // Event adicionado a lista de evntos futuros
+        this.simulacao.addFutureEvent(evtFut);
+    }
+
+    @Override
+    public void setSchedulingConditions (final Set<PolicyCondition> newConditions) {
+        this.tipoEscalonamento = newConditions;
+    }
+
+    @Override
+    public void sendTask (final Tarefa task) {
+        // Gera evento para atender proximo cliente da lista
+        System.out.println(
+            "Tarefa:" + task.getIdentificador() + "escalonada para vm:" + task
+                .getLocalProcessamento()
+                .getId());
+        final FutureEvent evtFut = new FutureEvent(
+            this.simulacao.getTime(this), FutureEvent.SAIDA, this, task
+        );
+        // Event adicionado a lista de evntos futuros
+        this.simulacao.addFutureEvent(evtFut);
+    }
+
+    @Override
+    public Tarefa cloneTask (final Tarefa task) {
+        final Tarefa tarefa = new Tarefa(task);
+        this.simulacao.addJob(tarefa);
+        return tarefa;
+    }
+
+    @Override
+    public void sendMessage (
+        final Tarefa task,
+        final CS_Processamento slave,
+        final int messageType
+    ) {
+        final Mensagem msg = new Mensagem(this, messageType, task);
+        msg.setCaminho(this.escalonador.escalonarRota(slave));
+        final FutureEvent evtFut = new FutureEvent(
+            this.simulacao.getTime(this), FutureEvent.MENSAGEM, msg.getCaminho().remove(0), msg
+        );
+        // Event adicionado a lista de evntos futuros
+        this.simulacao.addFutureEvent(evtFut);
+    }
+
+    @Override
     public void freeScheduler () {
         this.escDisponivel = true;
     }
@@ -431,7 +480,8 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         System.out.println("------------------------------------------");
         final TarefaVM tarefa = new TarefaVM(vm.getVmmResponsavel(), vm, 300.0, 0.0);
         tarefa.setCaminho(vm.getCaminho());
-        final FutureEvent evtFut = new FutureEvent(this.simulacao.getTime(this), FutureEvent.SAIDA, this, tarefa);
+        final FutureEvent evtFut =
+            new FutureEvent(this.simulacao.getTime(this), FutureEvent.SAIDA, this, tarefa);
         // Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
     }
@@ -446,14 +496,6 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         this.simulacao = newSimulation;
     }
 
-    public CloudSchedulingPolicy getEscalonador () {
-        return this.escalonador;
-    }
-
-    public VmAllocationPolicy getAlocadorVM () {
-        return this.alocadorVM;
-    }
-
     @Override
     public void addConexoesEntrada (final CS_Link link) {
         this.conexoesEntrada.add(link);
@@ -462,6 +504,53 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     @Override
     public void addConexoesSaida (final CS_Link link) {
         this.conexoesSaida.add(link);
+    }
+
+    @Override
+    public void determinarCaminhos ()
+        throws LinkageError {
+        final var escravos = this.alocadorVM.getEscravos();
+        this.caminhoEscravo = new ArrayList<>(escravos.size());
+        // Busca pelo melhor caminho
+        for (int i = 0; i < escravos.size(); i++) {
+            this.caminhoEscravo.add(i, CS_Processamento.getMenorCaminho(this, escravos.get(i)));
+        }
+        // verifica se todos os escravos são alcansaveis
+        for (int i = 0; i < escravos.size(); i++) {
+            if (this.caminhoEscravo.get(i).isEmpty()) {
+                throw new LinkageError();
+            }
+        }
+
+        this.alocadorVM.setCaminhoEscravo(this.caminhoEscravo);
+    }
+
+    private void determinarCaminhoVM (
+        final CS_Processamento vm,
+        final List<CentroServico> caminhoVM
+    ) {
+        final int indVM = this.escalonador.getEscravos().indexOf(vm);
+        System.out.println("indice da vm: " + indVM);
+        if (indVM >= this.caminhoVMs.size()) {
+            this.caminhoVMs.add(indVM, caminhoVM);
+        } else {
+            this.caminhoVMs.set(indVM, caminhoVM);
+        }
+        System.out.println("Lista atualizada de caminho para as vms:");
+        for (int i = 0; i < this.caminhoVMs.size(); i++) {
+            System.out.println(this.escalonador.getEscravos().get(i).getId());
+            System.out.println(this.caminhoVMs.get(i).toString());
+        }
+        this.escalonador.setCaminhoEscravo(this.caminhoVMs);
+        System.out.println("------------------------------");
+    }
+
+    public CloudSchedulingPolicy getEscalonador () {
+        return this.escalonador;
+    }
+
+    public VmAllocationPolicy getAlocadorVM () {
+        return this.alocadorVM;
     }
 
     public void addConexoesSaida (final CS_Comunicacao Switch) {
@@ -480,24 +569,6 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         this.maquinasVirtuais.add(vm);
         this.alocadorVM.addVM(vm);
         this.escalonador.addEscravo(vm);
-    }
-
-    @Override
-    public void determinarCaminhos () throws LinkageError {
-        final var escravos = this.alocadorVM.getEscravos();
-        this.caminhoEscravo = new ArrayList<>(escravos.size());
-        // Busca pelo melhor caminho
-        for (int i = 0; i < escravos.size(); i++) {
-            this.caminhoEscravo.add(i, CS_Processamento.getMenorCaminho(this, escravos.get(i)));
-        }
-        // verifica se todos os escravos são alcansaveis
-        for (int i = 0; i < escravos.size(); i++) {
-            if (this.caminhoEscravo.get(i).isEmpty()) {
-                throw new LinkageError();
-            }
-        }
-
-        this.alocadorVM.setCaminhoEscravo(this.caminhoEscravo);
     }
 
     public void instanciarCaminhosVMs () {

@@ -11,8 +11,6 @@ public interface SchedulingMaster extends PolicyMaster {
 
     void executeScheduling ();
 
-    Set<PolicyCondition> getSchedulingConditions ();
-
     void setSchedulingConditions (Set<PolicyCondition> newConditions);
 
     void sendTask (Tarefa task);
