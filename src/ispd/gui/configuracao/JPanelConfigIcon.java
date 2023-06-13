@@ -1,6 +1,6 @@
 package ispd.gui.configuracao;
 
-import java.awt.Font;
+import ispd.gui.utils.Fonts.Tahoma;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.Locale;
@@ -25,7 +25,7 @@ import ispd.policy.PolicyManager;
 public class JPanelConfigIcon extends JPanel {
 
     private static final int            ROW_HEIGHT       = 20;
-    private static final Font           TAHOMA_FONT_BOLD = new Font("Tahoma", Font.BOLD, 12);
+
     private final        JLabel         jLabelIconName   = new JLabel("Configuration for the icon # 0");
     private final        JLabel         jLabelTitle      = makeTitleLabel();
     private final        JScrollPane    jScrollPane      = new JScrollPane();
@@ -71,7 +71,7 @@ public class JPanelConfigIcon extends JPanel {
 
     private static JLabel makeTitleLabel () {
         final JLabel label = new JLabel("Machine icon configuration");
-        label.setFont(JPanelConfigIcon.TAHOMA_FONT_BOLD);
+        label.setFont(Tahoma.BOLD_12);
         return label;
     }
 

@@ -1,5 +1,6 @@
 package ispd.gui.results;
 
+import ispd.gui.utils.Fonts.CourierNew;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
@@ -29,7 +30,7 @@ public class ResultsUsersPane extends JScrollPane {
         textArea.setEditable(false);
         textArea.setColumns(20);
         textArea.setRows(5);
-        textArea.setFont(ResultsDialog.COURIER_NEW_FONT_BOLD);
+        textArea.setFont(CourierNew.BOLD_14);
         textArea.setText(this.makeUsersResultText(queueNetwork));
     }
 

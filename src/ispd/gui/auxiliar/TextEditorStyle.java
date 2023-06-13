@@ -1,5 +1,6 @@
 package ispd.gui.auxiliar;
 
+import ispd.gui.utils.Fonts.Monospaced;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -46,7 +47,7 @@ import javax.swing.text.StyleConstants;
  */
 public class TextEditorStyle extends DefaultStyledDocument implements CaretListener {
 
-    private static final char                NEW_LINE                = '\n';
+    private static final char NEW_LINE = '\n';
     private static final char                OPEN_BRACKET            = '{';
     private static final char                CLOSE_BRACKET           = '}';
     private static final String              TAB_AS_SPACES           = "    ";
@@ -57,7 +58,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
             "('..')"
     };
     private static final String              NUMBER_MATCHER          = "\\b\\d+\\b";
-    private static final String[]            AUTOCOMPLETE_STRINGS    = {
+    private static final String[]  AUTOCOMPLETE_STRINGS = {
             "boolean", "break", "case", "class", "double", "else",
             "false", "final", "float", "for", "if", "instanceof", "int",
             "new", "null", "private", "protected", "public", "return",
@@ -73,8 +74,9 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
             "Mensagens.CANCELAR", "Mensagens.PARAR", "Mensagens.DEVOLVER",
             "Mensagens.DEVOLVER_COM_PREEMPCAO", "Mensagens.ATUALIZAR"
     };
-    private final        Element             rootElement             = this.getDefaultRootElement();
-    private final        String[]            keywords                = {
+
+    private final        Element   rootElement          = this.getDefaultRootElement();
+    private final        String[]  keywords             = {
             "\\bfor\\b",
             "\\bif\\b",
             "\\belse\\b",
@@ -109,9 +111,9 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
     private final        Color               stringStyle             = new Color(250, 125, 0);
     private final        Pattern             singleCommentDelim      = Pattern.compile("//");
     private final        Pattern             multiCommentDelimStart  = Pattern.compile("/\\*");
-    private final        Pattern             multiCommentDelimEnd    = Pattern.compile("\\*/");
-    private final        Font                font                    = new Font(Font.MONOSPACED, Font.BOLD, 12);
-    private final        JTextArea           lineCountBar            = this.makeLineCountBar();
+    private final        Pattern   multiCommentDelimEnd = Pattern.compile("\\*/");
+    private static final Font      font                 = Monospaced.BOLD_12;
+    private final        JTextArea lineCountBar         = this.makeLineCountBar();
     private final        JLabel              barAfterCursor          = makeBarAfterCursor();
     private final        JList<String>       autocompleteList        = this.makeAutoCompleteList();
     private final        JPopupMenu          autocompletePopup       = this.makeAutocompletePopup();

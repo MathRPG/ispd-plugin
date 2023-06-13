@@ -1,10 +1,10 @@
 package ispd.gui;
 
-import java.awt.Font;
+import ispd.gui.utils.ButtonBuilder;
+import ispd.gui.utils.Fonts.Tahoma;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.GroupLayout;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -12,18 +12,21 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.WindowConstants;
 
-import ispd.gui.utils.ButtonBuilder;
-
 public class PickModelTypeDialog extends JDialog {
 
-    public static final  int          GRID        = 0;
-    public static final  int          IAAS        = 1;
-    public static final  int          PAAS        = 2;
-    private static final Font         WINDOW_FONT = new Font("Tahoma", Font.PLAIN, 12);
-    private final        JRadioButton jRadioGrid;
-    private final        JRadioButton jRadioIaaS;
-    private final        JRadioButton jRadioPaaS;
-    private              int          choice      = 0;
+    public static final int GRID = 0;
+
+    public static final int IAAS = 1;
+
+    public static final int PAAS = 2;
+
+    private final JRadioButton jRadioGrid;
+
+    private final JRadioButton jRadioIaaS;
+
+    private final JRadioButton jRadioPaaS;
+
+    private int choice = 0;
 
     PickModelTypeDialog (final Frame owner, final boolean modal) {
         super(owner, modal);
@@ -35,16 +38,19 @@ public class PickModelTypeDialog extends JDialog {
         this.makeLayoutAndPack();
     }
 
-    private void initWindowProperties () {
-        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.setFont(PickModelTypeDialog.WINDOW_FONT);
-    }
-
-    private static JRadioButton configuredRadioButton (final String text, final ActionListener action) {
+    private static JRadioButton configuredRadioButton (
+        final String text,
+        final ActionListener action
+    ) {
         final var button = new JRadioButton();
         button.setText(text);
         button.addActionListener(action);
         return button;
+    }
+
+    private void initWindowProperties () {
+        this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        this.setFont(Tahoma.PLAIN_12);
     }
 
     private void gridButtonClicked (final ActionEvent evt) {
@@ -70,76 +76,77 @@ public class PickModelTypeDialog extends JDialog {
         pickModelType.setLayout(groupLayout);
 
         groupLayout.setHorizontalGroup(
-                groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                           .addGroup(
-                                   GroupLayout.Alignment.TRAILING,
-                                   groupLayout.createSequentialGroup()
-                                              .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                              .addComponent(ok)
-                                              .addGap(33, 33, 33)
-                           )
-                           .addGroup(groupLayout.createSequentialGroup()
-                                                .addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                     .addGroup(groupLayout.createSequentialGroup()
-                                                                                          .addGap(132, 132, 132)
-                                                                                          .addGroup(groupLayout
-                                                                                                            .createParallelGroup(
-                                                                                                                    GroupLayout.Alignment.LEADING)
-                                                                                                            .addComponent(
-                                                                                                                    this.jRadioGrid)
-                                                                                                            .addComponent(
-                                                                                                                    this.jRadioIaaS)
-                                                                                                            .addComponent(
-                                                                                                                    this.jRadioPaaS)))
-                                                                     .addGroup(groupLayout.createSequentialGroup()
-                                                                                          .addGap(22, 22, 22)
-                                                                                          .addComponent(title)))
-                                                .addContainerGap(114, Short.MAX_VALUE))
+            groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(
+                    GroupLayout.Alignment.TRAILING,
+                    groupLayout.createSequentialGroup()
+                        .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ok)
+                        .addGap(33, 33, 33)
+                )
+                .addGroup(groupLayout.createSequentialGroup()
+                              .addGroup(groupLayout
+                                            .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                            .addGroup(groupLayout.createSequentialGroup()
+                                                          .addGap(132, 132, 132)
+                                                          .addGroup(groupLayout
+                                                                        .createParallelGroup(
+                                                                            GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(
+                                                                            this.jRadioGrid)
+                                                                        .addComponent(
+                                                                            this.jRadioIaaS)
+                                                                        .addComponent(
+                                                                            this.jRadioPaaS)))
+                                            .addGroup(groupLayout.createSequentialGroup()
+                                                          .addGap(22, 22, 22)
+                                                          .addComponent(title)))
+                              .addContainerGap(114, Short.MAX_VALUE))
         );
 
         groupLayout.setVerticalGroup(
-                groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                           .addGroup(groupLayout.createSequentialGroup()
-                                                .addContainerGap(21, Short.MAX_VALUE)
-                                                .addComponent(title)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(this.jRadioGrid)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(this.jRadioIaaS)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(this.jRadioPaaS)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(ok)
-                                                .addContainerGap())
+            groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(groupLayout.createSequentialGroup()
+                              .addContainerGap(21, Short.MAX_VALUE)
+                              .addComponent(title)
+                              .addGap(18, 18, 18)
+                              .addComponent(this.jRadioGrid)
+                              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(this.jRadioIaaS)
+                              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(this.jRadioPaaS)
+                              .addGap(18, 18, 18)
+                              .addComponent(ok)
+                              .addContainerGap())
         );
 
         final var layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
 
         layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addGroup(layout.createSequentialGroup()
-                                      .addGap(0, 0, Short.MAX_VALUE)
-                                      .addComponent(
-                                              pickModelType,
-                                              GroupLayout.PREFERRED_SIZE,
-                                              GroupLayout.DEFAULT_SIZE,
-                                              GroupLayout.PREFERRED_SIZE
-                                      )
-                                      .addGap(0, 0, Short.MAX_VALUE))
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                              .addGap(0, 0, Short.MAX_VALUE)
+                              .addComponent(
+                                  pickModelType,
+                                  GroupLayout.PREFERRED_SIZE,
+                                  GroupLayout.DEFAULT_SIZE,
+                                  GroupLayout.PREFERRED_SIZE
+                              )
+                              .addGap(0, 0, Short.MAX_VALUE))
         );
 
         layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addGroup(layout.createSequentialGroup()
-                                      .addGap(0, 0, Short.MAX_VALUE)
-                                      .addComponent(
-                                              pickModelType,
-                                              GroupLayout.PREFERRED_SIZE,
-                                              GroupLayout.DEFAULT_SIZE,
-                                              GroupLayout.PREFERRED_SIZE
-                                      )
-                                      .addGap(0, 0, Short.MAX_VALUE))
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                              .addGap(0, 0, Short.MAX_VALUE)
+                              .addComponent(
+                                  pickModelType,
+                                  GroupLayout.PREFERRED_SIZE,
+                                  GroupLayout.DEFAULT_SIZE,
+                                  GroupLayout.PREFERRED_SIZE
+                              )
+                              .addGap(0, 0, Short.MAX_VALUE))
         );
 
         this.pack();

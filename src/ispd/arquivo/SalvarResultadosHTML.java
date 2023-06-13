@@ -1,5 +1,9 @@
 package ispd.arquivo;
 
+import ispd.gui.MainWindow;
+import ispd.gui.auxiliar.SimulationResultChartMaker;
+import ispd.motor.metricas.Metricas;
+import ispd.motor.metricas.MetricasGlobais;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -11,33 +15,102 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
 import javax.imageio.ImageIO;
-
-import ispd.gui.MainWindow;
-import ispd.gui.auxiliar.SimulationResultChartMaker;
-import ispd.motor.metricas.Metricas;
-import ispd.motor.metricas.MetricasGlobais;
 
 /**
  * Stores simulation results and exports them to a html file
  */
 public class SalvarResultadosHTML {
 
-    private static final double EFFICIENCY_GOOD      = 70.0;
-    private static final double EFFICIENCY_BAD       = 40.0;
-    private              String globalMetrics        = null;
-    private              String tasks                = null;
-    private              String table                = null;
-    private              String chartsText           = null;
-    private              BufferedImage[] chartImages = null;
+    private static final double EFFICIENCY_GOOD = 70.0;
+
+    private static final double EFFICIENCY_BAD = 40.0;
+
+    private String globalMetrics = null;
+
+    private String tasks = null;
+
+    private String table = null;
+
+    private String chartsText = null;
+
+    private BufferedImage[] chartImages = null;
+
+    private static String convertTableItemsToHtml (final Object[][] table) {
+        return Arrays.stream(table)
+            .map(SalvarResultadosHTML::convertItemToHtml)
+            .collect(Collectors.joining("\n"));
+    }
+
+    private static String convertItemToHtml (final Object[] item) {
+        return "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
+            .formatted(item[0], item[1], item[2], item[3]);
+    }
+
+    private static String makeEfficiencyDescriptionFromMetrics (final MetricasGlobais metrics) {
+        if (metrics.getEficiencia() > SalvarResultadosHTML.EFFICIENCY_GOOD) {
+            return getEfficiencyDescription("GOOD", "00ff00");
+        } else if (metrics.getEficiencia() > SalvarResultadosHTML.EFFICIENCY_BAD) {
+            return getEfficiencyDescription("MEDIA", "");
+        } else {
+            return getEfficiencyDescription("BAD", "ff0000");
+        }
+    }
+
+    private static String getEfficiencyDescription (final String text, final String color) {
+        final var sb = new StringBuilder("<li><strong>Efficiency %s</strong></li>".formatted(text));
+
+        if (!color.isEmpty()) {
+            sb.insert(
+                "<li>".length(),
+                "<span style=\"color:#%s;\">".formatted(color)
+            );
+        }
+
+        return sb.toString();
+    }
+
+    private static String makeImageTag (final int cont) {
+        return "<img alt=\"\" src=\"chart%d.png\" style=\"width: 600px; height: 300px;\" />\n".formatted(
+            cont);
+    }
+
+    private static void createDirIfNonexistent (final File dir)
+        throws IOException {
+        if (dir.exists()) {
+            return;
+        }
+
+        if (!dir.mkdir()) {
+            throw new IOException("Could not create directory");
+        }
+    }
+
+    private static void exportMissingImages (final File dir)
+        throws IOException {
+        for (final var nameAndExtension : new String[][] {
+            { "fundo_html", "jpg" },
+            { "Logo_iSPD_128", "png" },
+            { "Logo_UNESP", "png" },
+        }
+        ) {
+            final var file = nameAndExtension[0] + "." + nameAndExtension[1];
+            final var out  = new File(dir, file);
+
+            if (!out.exists()) {
+                final var img = ImageIO.read(Objects.requireNonNull(
+                    MainWindow.class.getResource("imagens/" + file)));
+                ImageIO.write(img, nameAndExtension[1], out);
+            }
+        }
+    }
 
     /**
      * Generates a table with the results of each service center
      *
      * @param table
-     *         Table with the following columns: <b>Label, Owner,
-     *         Processing performed, Communication performed</b>
+     *     Table with the following columns: <b>Label, Owner, Processing performed, Communication
+     *     performed</b>
      */
     public void setTabela (final Object[][] table) {
         this.table = """
@@ -60,22 +133,11 @@ public class SalvarResultadosHTML {
                              </table>""".formatted(convertTableItemsToHtml(table));
     }
 
-    private static String convertTableItemsToHtml (final Object[][] table) {
-        return Arrays.stream(table)
-                     .map(SalvarResultadosHTML::convertItemToHtml)
-                     .collect(Collectors.joining("\n"));
-    }
-
-    private static String convertItemToHtml (final Object[] item) {
-        return "<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>"
-                .formatted(item[0], item[1], item[2], item[3]);
-    }
-
     /**
      * Creates and stores internally a string with the global statistics.
      *
      * @param metrics
-     *         Global simulation metrics
+     *     Global simulation metrics
      */
     public void setMetricasGlobais (final MetricasGlobais metrics) {
         this.globalMetrics = """
@@ -89,39 +151,16 @@ public class SalvarResultadosHTML {
                              <li><strong>Cost Total Memory</strong> = %s</li>
                              <li><strong>Cost Total Disk</strong> = %s</li>
                              """.formatted(
-                metrics.getTempoSimulacao(),
-                metrics.getSatisfacaoMedia(),
-                metrics.getOciosidadeComputacao(),
-                metrics.getOciosidadeComunicacao(),
-                metrics.getEficiencia(),
-                makeEfficiencyDescriptionFromMetrics(metrics),
-                metrics.getCustoTotalProc(),
-                metrics.getCustoTotalMem(),
-                metrics.getCustoTotalDisco()
+            metrics.getTempoSimulacao(),
+            metrics.getSatisfacaoMedia(),
+            metrics.getOciosidadeComputacao(),
+            metrics.getOciosidadeComunicacao(),
+            metrics.getEficiencia(),
+            makeEfficiencyDescriptionFromMetrics(metrics),
+            metrics.getCustoTotalProc(),
+            metrics.getCustoTotalMem(),
+            metrics.getCustoTotalDisco()
         );
-    }
-
-    private static String makeEfficiencyDescriptionFromMetrics (final MetricasGlobais metrics) {
-        if (metrics.getEficiencia() > SalvarResultadosHTML.EFFICIENCY_GOOD) {
-            return getEfficiencyDescription("GOOD", "00ff00");
-        } else if (metrics.getEficiencia() > SalvarResultadosHTML.EFFICIENCY_BAD) {
-            return getEfficiencyDescription("MEDIA", "");
-        } else {
-            return getEfficiencyDescription("BAD", "ff0000");
-        }
-    }
-
-    private static String getEfficiencyDescription (final String text, final String color) {
-        final var sb = new StringBuilder("<li><strong>Efficiency %s</strong></li>".formatted(text));
-
-        if (!color.isEmpty()) {
-            sb.insert(
-                    "<li>".length(),
-                    "<span style=\"color:#%s;\">".formatted(color)
-            );
-        }
-
-        return sb.toString();
     }
 
     /**
@@ -142,35 +181,35 @@ public class SalvarResultadosHTML {
                      <li>Queue average time: %s seconds.</li>
                      <li>Processing average time: %s seconds.</li>
                      <li>System average time: %s seconds.</li></ul></li></ul></li></ul>"""
-                .formatted(
-                        commQueueAvgTime, commAvgTime,
-                        commQueueAvgTime + commAvgTime,
-                        procQueueAvgTime, procAvgTime,
-                        procQueueAvgTime + procAvgTime
-                );
+            .formatted(
+                commQueueAvgTime, commAvgTime,
+                commQueueAvgTime + commAvgTime,
+                procQueueAvgTime, procAvgTime,
+                procQueueAvgTime + procAvgTime
+            );
     }
 
     /**
      * This method save the simulation results in the specified directory.
      *
      * @param directory
-     *         the directory where the simulation results are saved.
+     *     the directory where the simulation results are saved.
      * @param charts
-     *         the simulation chart maker
+     *     the simulation chart maker
      */
     public void saveHtml (final File directory, final SimulationResultChartMaker charts) {
-        final var chartsImage = Stream
-                .of(
-                        charts.getProcessingBarChart(),
-                        charts.getProcessingPieChart(),
-                        charts.getCommunicationBarChart(),
-                        charts.getCommunicationPieChart(),
-                        charts.getComputingPowerPerMachineChart(),
-                        charts.getComputingPowerPerTaskChart(),
-                        charts.getComputingPowerPerUserChart()
-                ).filter(Objects::nonNull)
-                .map(chart -> chart.getChart().createBufferedImage(1200, 600))
-                .toArray(BufferedImage[]::new);
+        final var chartsImage = Stream.of(
+                charts.getProcessingBarChart(),
+                charts.getProcessingPieChart(),
+                charts.getCommunicationBarChart(),
+                charts.getCommunicationPieChart(),
+                charts.getComputingPowerPerMachineChart(),
+                charts.getComputingPowerPerTaskChart(),
+                charts.getComputingPowerPerUserChart()
+            )
+            .filter(Objects::nonNull)
+            .map(chart -> chart.getChart().createBufferedImage(1200, 600))
+            .toArray(BufferedImage[]::new);
 
         this.setCharts(chartsImage);
 
@@ -178,7 +217,9 @@ public class SalvarResultadosHTML {
             this.gerarHTML(directory);
         } catch (final IOException e) {
             throw new RuntimeException(
-                    "An error occurred to generate the HTML file containing the simulation results.", e);
+                "An error occurred to generate the HTML file containing the simulation results.",
+                e
+            );
         }
     }
 
@@ -186,31 +227,35 @@ public class SalvarResultadosHTML {
      * Stores charts' images and creates a html string connecting the files
      *
      * @param charts
-     *         Array with the images to be saved together with the html
+     *     Array with the images to be saved together with the html
      */
     public void setCharts (final BufferedImage[] charts) {
         this.chartImages = Arrays.stream(charts)
-                                 .filter(Objects::nonNull)
-                                 .toArray(BufferedImage[]::new);
+            .filter(Objects::nonNull)
+            .toArray(BufferedImage[]::new);
 
         this.chartsText = IntStream.range(0, this.chartImages.length)
-                                   .mapToObj(SalvarResultadosHTML::makeImageTag)
-                                   .collect(Collectors.joining("\n"));
+            .mapToObj(SalvarResultadosHTML::makeImageTag)
+            .collect(Collectors.joining("\n"));
     }
 
     /**
-     * Creates a directory with all necessary files to open the html containing
-     * the simulation results
+     * Creates a directory with all necessary files to open the html containing the simulation
+     * results
      *
      * @param dir
-     *         Directory to store the files
+     *     Directory to store the files
      */
-    public void gerarHTML (final File dir) throws IOException {
+    public void gerarHTML (final File dir)
+        throws IOException {
 
         createDirIfNonexistent(dir);
 
         try (
-                final var pw = new PrintWriter(new FileWriter(new File(dir, "result.html"), StandardCharsets.UTF_8))
+            final var pw = new PrintWriter(new FileWriter(
+                new File(dir, "result.html"),
+                StandardCharsets.UTF_8
+            ))
         ) {
             pw.print(this.generateHtml());
         }
@@ -220,20 +265,6 @@ public class SalvarResultadosHTML {
         }
 
         exportMissingImages(dir);
-    }
-
-    private static String makeImageTag (final int cont) {
-        return "<img alt=\"\" src=\"chart%d.png\" style=\"width: 600px; height: 300px;\" />\n".formatted(cont);
-    }
-
-    private static void createDirIfNonexistent (final File dir) throws IOException {
-        if (dir.exists()) {
-            return;
-        }
-
-        if (!dir.mkdir()) {
-            throw new IOException("Could not create directory");
-        }
     }
 
     /**
@@ -289,33 +320,16 @@ public class SalvarResultadosHTML {
                            <a href="http://gspd.dcce.ibilce.unesp.br/">GSPD</a></p>
                    </body>
                </html>""".formatted(
-                this.globalMetrics,
-                this.tasks,
-                this.table,
-                this.chartsText
+            this.globalMetrics,
+            this.tasks,
+            this.table,
+            this.chartsText
         );
     }
 
-    private void writeChartToFile (final File dir, final int i) throws IOException {
+    private void writeChartToFile (final File dir, final int i)
+        throws IOException {
         final var out = new File(dir, "chart%d.png".formatted(i));
         ImageIO.write(this.chartImages[i], "png", out);
-    }
-
-    private static void exportMissingImages (final File dir) throws IOException {
-        for (final var nameAndExtension : new String[][] {
-                { "fundo_html", "jpg" },
-                { "Logo_iSPD_128", "png" },
-                { "Logo_UNESP", "png" },
-                }
-        ) {
-            final var file = nameAndExtension[0] + "." + nameAndExtension[1];
-            final var out  = new File(dir, file);
-
-            if (!out.exists()) {
-                final var img = ImageIO.read(Objects.requireNonNull(
-                        MainWindow.class.getResource("imagens/" + file)));
-                ImageIO.write(img, nameAndExtension[1], out);
-            }
-        }
     }
 }

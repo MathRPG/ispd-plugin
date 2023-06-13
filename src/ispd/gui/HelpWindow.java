@@ -28,14 +28,13 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package ispd.gui;
 
+import ispd.gui.auxiliar.HtmlPane;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
 import java.net.URL;
-
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -45,26 +44,26 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
-
-import ispd.gui.auxiliar.HtmlPane;
+import org.jetbrains.annotations.Nullable;
 
 public class HelpWindow extends JFrame implements TreeSelectionListener {
 
-    private static final boolean     DEBUG            = false;
-    private static final Dimension   CONVENIENT_SIZE  = new Dimension(700, 400);
-    private static final int         DIVIDER_LOCATION = 200;
-    private final        JEditorPane htmlPane;
-    private final        JTree       tree;
-    private              URL         helpURL;
+    private static final Dimension CONVENIENT_SIZE = new Dimension(700, 400);
+
+    private static final int DIVIDER_LOCATION = 200;
+
+    private final JEditorPane htmlPane;
+
+    private final JTree tree;
+
+    private URL helpURL;
 
     public HelpWindow () {
         super();
         this.setTitle("Help");
         this.setMinimumSize(HelpWindow.CONVENIENT_SIZE);
         final var image =
-                Toolkit.getDefaultToolkit().getImage(
-                        this.getClass().getResource(
-                                "imagens/Logo_iSPD_25.png"));
+            Toolkit.getDefaultToolkit().getImage(this.getResource("imagens/Logo_iSPD_25.png"));
         this.setIconImage(image);
 
         //Create the nodes.
@@ -108,13 +107,34 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
         category.add(new DefaultMutableTreeNode(new BookInfo("Icons", "html/icones.html")));
     }
 
+    private static @Nullable URL getResource (final String s) {
+        return HelpWindow.class.getResource(s);
+    }
+
+    /**
+     * Required by TreeSelectionListener interface.
+     */
+    public void valueChanged (final TreeSelectionEvent e) {
+        final var node = (DefaultMutableTreeNode) this.tree.getLastSelectedPathComponent();
+
+        if (node == null) {
+            return;
+        }
+
+        final var nodeInfo = node.getUserObject();
+        if (node.isLeaf()) {
+            final var book = (BookInfo) nodeInfo;
+            this.displayURL(book.getBookURL());
+        } else {
+            this.displayURL(this.helpURL);
+        }
+    }
+
     private void initHelp () {
         final var s = "html/HelpStart.html";
-        this.helpURL = this.getClass().getResource(s);
+        this.helpURL = this.getResource(s);
         if (this.helpURL == null) {
             System.err.println("Couldn't open help file: " + s);
-        } else if (HelpWindow.DEBUG) {
-            System.out.println("Help URL is " + this.helpURL);
         }
         this.displayURL(this.helpURL);
     }
@@ -127,45 +147,20 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
             }
 
             this.htmlPane.setText("File Not Found");
-            if (HelpWindow.DEBUG) {
-                System.out.println("Attempted to display a null URL.");
-            }
-        } catch (final IOException e) {
+        } catch (final IOException ignored) {
             System.err.println("Attempted to read a bad URL: " + url);
-        }
-    }
-
-    /**
-     * Required by TreeSelectionListener interface.
-     */
-    public void valueChanged (final TreeSelectionEvent e) {
-        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) this.tree.getLastSelectedPathComponent();
-
-        if (node == null) {return;}
-
-        final Object nodeInfo = node.getUserObject();
-        if (node.isLeaf()) {
-            final var book = (BookInfo) nodeInfo;
-            this.displayURL(book.getBookURL());
-            if (HelpWindow.DEBUG) {
-                System.out.print(book.getBookURL() + ":  \n    ");
-            }
-        } else {
-            this.displayURL(this.helpURL);
-        }
-        if (HelpWindow.DEBUG) {
-            System.out.println(nodeInfo.toString());
         }
     }
 
     private static class BookInfo {
 
         private final String bookName;
-        private final URL    bookURL;
+
+        private final URL bookURL;
 
         private BookInfo (final String book, final String filename) {
             this.bookName = book;
-            this.bookURL  = this.getClass().getResource(filename);
+            this.bookURL  = getResource(filename);
             if (this.bookURL == null) {
                 System.err.println("Couldn't find the file: " + filename);
             }
@@ -176,7 +171,7 @@ public class HelpWindow extends JFrame implements TreeSelectionListener {
             return this.bookName;
         }
 
-         private URL getBookURL () {
+        private URL getBookURL () {
             return this.bookURL;
         }
     }

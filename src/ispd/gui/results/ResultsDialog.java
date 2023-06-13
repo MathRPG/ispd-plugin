@@ -1,67 +1,70 @@
 package ispd.gui.results;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Frame;
-import java.util.List;
-
-import javax.swing.JDialog;
-import javax.swing.JTabbedPane;
-
 import ispd.gui.auxiliar.SimulationResultChartMaker;
 import ispd.motor.filas.RedeDeFilas;
 import ispd.motor.filas.Tarefa;
 import ispd.motor.metricas.Metricas;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.util.List;
+import javax.swing.JDialog;
+import javax.swing.JTabbedPane;
 
 /**
- * A {@link ResultsDialog} class is used to display a window containing all
- * types of information from the performed simulation.
+ * A {@link ResultsDialog} class is used to display a window containing all types of information
+ * from the performed simulation.
  */
 public class ResultsDialog extends JDialog {
 
     public static final Dimension CHART_PREFERRED_SIZE = new Dimension(600, 400);
 
-    public static final Font COURIER_NEW_FONT_BOLD = new Font("Courier New", Font.BOLD, 14);
+    private final Metricas metrics;
 
-    private final Metricas                   metrics;
-    private final RedeDeFilas                queueNetwork;
-    private final List<Tarefa>               tasks;
+    private final RedeDeFilas queueNetwork;
+
+    private final List<Tarefa> tasks;
+
     private final SimulationResultChartMaker charts;
 
     /**
-     * Constructor which specifies the frame who is owner of this result dialog,
-     * the metrics, the queue network and the task list, these three last variables
-     * are used to construct the results to be displayed in this dialog.
+     * Constructor which specifies the frame who is owner of this result dialog, the metrics, the
+     * queue network and the task list, these three last variables are used to construct the results
+     * to be displayed in this dialog.
      *
      * @param owner
-     *         the owner
+     *     the owner
      * @param metrics
-     *         the metrics
+     *     the metrics
      * @param queueNetwork
-     *         the queue network
+     *     the queue network
      * @param tasks
-     *         the task list
+     *     the task list
      *
      * @throws NullPointerException
-     *         if metrics, queue network or task list are
-     *         {@code null}
+     *     if metrics, queue network or task list are {@code null}
      */
     public ResultsDialog (
-            final Frame owner, final Metricas metrics, final RedeDeFilas queueNetwork, final List<Tarefa> tasks
+        final Frame owner,
+        final Metricas metrics,
+        final RedeDeFilas queueNetwork,
+        final List<Tarefa> tasks
     ) {
         super(owner, true);
 
         if (metrics == null) {
-            throw new NullPointerException("metrics is null. It was not possible to show the results.");
+            throw new NullPointerException(
+                "metrics is null. It was not possible to show the results.");
         }
 
         if (queueNetwork == null) {
-            throw new NullPointerException("queue network is null. It was not possible to show the results.");
+            throw new NullPointerException(
+                "queue network is null. It was not possible to show the results.");
         }
 
         /* Ensure the task list is not null */
         if (tasks == null) {
-            throw new NullPointerException("task list is null. It was not possible to show the results.");
+            throw new NullPointerException(
+                "task list is null. It was not possible to show the results.");
         }
 
         this.metrics      = metrics;

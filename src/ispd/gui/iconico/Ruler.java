@@ -31,20 +31,15 @@
 
 package ispd.gui.iconico;
 
+import ispd.gui.utils.Fonts.SansSerif;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import javax.swing.JComponent;
 
 public class Ruler extends JComponent {
-
-    /**
-     * It represents the font used to mark the labels on the ruler.
-     */
-    private static final Font RULER_FONT = new Font("SansSerif", Font.PLAIN, 10);
 
     /**
      * It represents the background color.
@@ -106,7 +101,7 @@ public class Ruler extends JComponent {
         g.fillRect(drawHere.x, drawHere.y, drawHere.width, drawHere.height);
 
         // Set the color and font for marking the ruler's labels.
-        g.setFont(Ruler.RULER_FONT);
+        g.setFont(SansSerif.PLAIN_10);
         g.setColor(Color.BLACK);
 
         final var isHorizontal =

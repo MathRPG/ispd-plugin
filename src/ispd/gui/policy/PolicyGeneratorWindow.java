@@ -3,10 +3,12 @@ package ispd.gui.policy;
 import static ispd.gui.utils.ButtonBuilder.aButton;
 import static ispd.gui.utils.ButtonBuilder.basicButton;
 
+import ispd.gui.utils.Fonts.ComicSansMS;
+import ispd.gui.utils.Fonts.Tahoma;
+import ispd.gui.utils.Fonts.Verdana;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -53,21 +55,20 @@ import ispd.utils.NameValidator;
 
 public class PolicyGeneratorWindow extends JDialog {
 
-    private static final Font                 VERDANA_FONT_BOLD    = new Font("Verdana", Font.BOLD, 11);
     private static final Dimension            MAXIMUM_BUTTON_SIZE  = new Dimension(37, 50);
-    private static final Font                 COMIC_SANS_FONT      = new Font("Comic Sans MS", Font.PLAIN, 11);
+
     private static final Color                BLACK                = new Color(0, 0, 0);
     private static final int                  START                = 0;
     private static final int                  VARIABLE             = 1;
     private static final int                  OPERATOR             = 2;
     private static final int                  OPEN_BRACKET         = 3;
     private static final int                  CLOSE_BRACKET        = 4;
-    private static final Font                 COMIC_SANS_FONT_BOLD = new Font("Comic Sans MS", Font.BOLD, 12);
+
     private static final Color                FOREGROUND_RED       = new Color(204, 0, 0);
     private static final Dimension            MINIMUM_BUTTON_SIZE  = new Dimension(37, 23);
     private static final Color                BACKGROUND_WHITE     = new Color(255, 255, 255);
     private static final Dimension            PANEL_PREFERRED_SIZE = new Dimension(600, 350);
-    private static final Font                 TAHOMA_FONT_BOLD     = new Font("Tahoma", Font.BOLD, 12);
+
     private final        String               path;
     private final        LinkedList<String>   tFormula             = new SpacedPrintList();
     private final        LinkedList<String>   rFormula             = new SpacedPrintList();
@@ -162,22 +163,22 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPasso4 = new JPanel();
         this.jPanelPasso4.setBorder(
                 BorderFactory.createTitledBorder(
-                        BorderFactory.createLineBorder(PolicyGeneratorWindow.BLACK),
-                        this.translate("Advanced") + " - " + this.translate("Tasks distribution order"),
-                        TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                        PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD
+                    BorderFactory.createLineBorder(PolicyGeneratorWindow.BLACK),
+                    this.translate("Advanced") + " - " + this.translate("Tasks distribution order"),
+                    TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
+                    ComicSansMS.BOLD_12
                 )
         );
         this.jPanelPasso4.setPreferredSize(PolicyGeneratorWindow.PANEL_PREFERRED_SIZE);
 
         final JLabel jLabelP4Formula = new JLabel();
-        jLabelP4Formula.setFont(PolicyGeneratorWindow.COMIC_SANS_FONT);
+        jLabelP4Formula.setFont(ComicSansMS.PLAIN_11);
 
         jLabelP4Formula.setText(this.translate("Formula:"));
 
         this.jTextFieldP4Formula = new JTextField();
         this.jTextFieldP4Formula.setEditable(false);
-        this.jTextFieldP4Formula.setFont(PolicyGeneratorWindow.VERDANA_FONT_BOLD);
+        this.jTextFieldP4Formula.setFont(Verdana.BOLD_11);
         this.jTextFieldP4Formula.setText("Random");
 
         final JPanel jPanel1 = new JPanel();
@@ -603,19 +604,19 @@ public class PolicyGeneratorWindow extends JDialog {
                                                  this.translate("Advanced") + " - " +
                                                  this.translate("Resource aloccation order"),
                                                  TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                                                 PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD
+                                                 ComicSansMS.BOLD_12
                 ));
         this.jPanelPasso5.setPreferredSize(PolicyGeneratorWindow.PANEL_PREFERRED_SIZE);
 
         final JLabel jLabelP5Formula = new JLabel();
-        jLabelP5Formula.setFont(PolicyGeneratorWindow.COMIC_SANS_FONT);
+        jLabelP5Formula.setFont(ComicSansMS.PLAIN_11);
 
         jLabelP5Formula.setText(this.translate("Formula:"));
 
 
         this.jTextFieldP5Formula = new JTextField();
         this.jTextFieldP5Formula.setEditable(false);
-        this.jTextFieldP5Formula.setFont(PolicyGeneratorWindow.VERDANA_FONT_BOLD);
+        this.jTextFieldP5Formula.setFont(Verdana.BOLD_11);
         this.jTextFieldP5Formula.setText("Random");
 
         final JPanel jPanel4 = new JPanel();
@@ -1051,7 +1052,7 @@ public class PolicyGeneratorWindow extends JDialog {
                                                  this.translate("Simple") + " - " +
                                                  this.translate("Scheduling options"),
                                                  TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                                                 PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD
+                                                 ComicSansMS.BOLD_12
                 ));
 
         final JPanel jPanel7 = new JPanel();
@@ -1196,7 +1197,7 @@ public class PolicyGeneratorWindow extends JDialog {
                 BorderFactory.createTitledBorder(BorderFactory.createLineBorder(PolicyGeneratorWindow.BLACK),
                                                  this.translate("Restrictions"), TitledBorder.DEFAULT_JUSTIFICATION,
                                                  TitledBorder.DEFAULT_POSITION,
-                                                 PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD
+                                                 ComicSansMS.BOLD_12
                 ));
 
         final JSeparator jSeparatorP6 = new JSeparator();
@@ -1304,11 +1305,11 @@ public class PolicyGeneratorWindow extends JDialog {
                 BorderFactory.createTitledBorder(BorderFactory.createLineBorder(PolicyGeneratorWindow.BLACK),
                                                  this.translate("Finish"), TitledBorder.DEFAULT_JUSTIFICATION,
                                                  TitledBorder.DEFAULT_POSITION,
-                                                 PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD
+                                                 ComicSansMS.BOLD_12
                 ));
 
         this.jTextPaneP7Gramatica = new JTextPane();
-        this.jTextPaneP7Gramatica.setFont(PolicyGeneratorWindow.TAHOMA_FONT_BOLD);
+        this.jTextPaneP7Gramatica.setFont(Tahoma.BOLD_12);
 
         final JScrollPane jScrollPane3 = new JScrollPane();
         jScrollPane3.setViewportView(this.jTextPaneP7Gramatica);
@@ -1351,7 +1352,7 @@ public class PolicyGeneratorWindow extends JDialog {
         jPanelPassos.setBorder(new javax.swing.border.MatteBorder(null));
 
         final JLabel jLabelPassos = new JLabel();
-        jLabelPassos.setFont(PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD);
+        jLabelPassos.setFont(ComicSansMS.BOLD_12);
 
         jLabelPassos.setText("<html><b>" + this.translate("Steps") + "<br" + ">----------------</b></html>");
 
@@ -1507,7 +1508,7 @@ public class PolicyGeneratorWindow extends JDialog {
                 BorderFactory.createTitledBorder(BorderFactory.createLineBorder(PolicyGeneratorWindow.BLACK),
                                                  this.translate("Generator type"), TitledBorder.DEFAULT_JUSTIFICATION,
                                                  TitledBorder.DEFAULT_POSITION,
-                                                 PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD
+                                                 ComicSansMS.BOLD_12
                 ));
 
         this.jOpSimples = new JRadioButton();
@@ -1585,7 +1586,7 @@ public class PolicyGeneratorWindow extends JDialog {
                 BorderFactory.createTitledBorder(BorderFactory.createLineBorder(PolicyGeneratorWindow.BLACK),
                                                  this.translate("Enter the characteristics"),
                                                  TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                                                 PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD
+                                                 ComicSansMS.BOLD_12
                 ));
 
         final JLabel jLabelP2Informacao = new JLabel();
@@ -1808,11 +1809,11 @@ public class PolicyGeneratorWindow extends JDialog {
                 BorderFactory.createTitledBorder(BorderFactory.createLineBorder(PolicyGeneratorWindow.BLACK),
                                                  this.translate("Enter the name of the scheduler"),
                                                  TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                                                 PolicyGeneratorWindow.COMIC_SANS_FONT_BOLD
+                                                 ComicSansMS.BOLD_12
                 ));
 
         final JLabel jLabelP1NomeEsc = new JLabel();
-        jLabelP1NomeEsc.setFont(PolicyGeneratorWindow.COMIC_SANS_FONT);
+        jLabelP1NomeEsc.setFont(ComicSansMS.PLAIN_11);
         jLabelP1NomeEsc.setText(this.translate("Scheduler name"));
 
         this.jTextFieldP1NomeEsc = new JTextField();
@@ -1820,7 +1821,7 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jTextFieldP1NomeEsc.addKeyListener(new SchedulerNameKeyAdapter());
 
         final JLabel jLabelP1LocalArq = new JLabel();
-        jLabelP1LocalArq.setFont(PolicyGeneratorWindow.COMIC_SANS_FONT);
+        jLabelP1LocalArq.setFont(ComicSansMS.PLAIN_11);
         jLabelP1LocalArq.setText(this.translate("File"));
 
         this.jTextFieldP1LocalArq = new JTextField();

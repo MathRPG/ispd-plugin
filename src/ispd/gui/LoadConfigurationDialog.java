@@ -3,11 +3,20 @@ package ispd.gui;
 import static ispd.gui.utils.ButtonBuilder.aButton;
 import static ispd.gui.utils.ButtonBuilder.basicButton;
 
+import ispd.arquivo.xml.TraceXML;
+import ispd.gui.auxiliar.MultipleExtensionFileFilter;
+import ispd.gui.utils.Fonts.Tahoma;
+import ispd.motor.workload.WorkloadGenerator;
+import ispd.motor.workload.WorkloadGeneratorType;
+import ispd.motor.workload.impl.CollectionWorkloadGenerator;
+import ispd.motor.workload.impl.GlobalWorkloadGenerator;
+import ispd.motor.workload.impl.PerNodeWorkloadGenerator;
+import ispd.motor.workload.impl.TraceFileWorkloadGenerator;
+import ispd.utils.SequentialIntSupplier;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +29,6 @@ import java.util.Vector;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
@@ -44,81 +52,123 @@ import javax.swing.WindowConstants;
 import javax.swing.filechooser.FileView;
 import javax.swing.table.DefaultTableModel;
 
-import ispd.arquivo.xml.TraceXML;
-import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.motor.workload.WorkloadGenerator;
-import ispd.motor.workload.WorkloadGeneratorType;
-import ispd.motor.workload.impl.CollectionWorkloadGenerator;
-import ispd.motor.workload.impl.GlobalWorkloadGenerator;
-import ispd.motor.workload.impl.PerNodeWorkloadGenerator;
-import ispd.motor.workload.impl.TraceFileWorkloadGenerator;
-import ispd.utils.SequentialIntSupplier;
-
 public class LoadConfigurationDialog extends JDialog {
 
-    private static final Supplier<SpinnerModel>      UNSIGNED_MODEL        =
-            () -> new SpinnerNumberModel(0, 0, null, 1);
-    private static final Supplier<SpinnerModel>      PROBABILITY_MODEL     =
-            () -> new SpinnerNumberModel(0.0d, 0.0d, 1.0d, 0.1d);
-    private static final Supplier<SpinnerModel>      POSITIVE_REAL_MODEL   =
-            () -> new SpinnerNumberModel(0.0d, 0.0d, null, 0.1d);
-    private static final ActionListener              DO_NOTHING            = evt -> {
+    private static final Supplier<SpinnerModel> UNSIGNED_MODEL =
+        () -> new SpinnerNumberModel(0, 0, null, 1);
+
+    private static final Supplier<SpinnerModel> PROBABILITY_MODEL =
+        () -> new SpinnerNumberModel(0.0d, 0.0d, 1.0d, 0.1d);
+
+    private static final Supplier<SpinnerModel> POSITIVE_REAL_MODEL =
+        () -> new SpinnerNumberModel(0.0d, 0.0d, null, 0.1d);
+
+    private static final ActionListener DO_NOTHING = evt -> {
     };
-    private static final Dimension                   PREFERRED_BUTTON_SIZE = new Dimension(80, 30);
-    private static final Dimension                   PREFERRED_PANEL_SIZE  = new Dimension(500, 300);
-    private static final Font                        TAHOMA_FONT           = new Font("Tahoma", Font.PLAIN, 11);
-    private final        MultipleExtensionFileFilter traceFileFilter;
-    private final        MultipleExtensionFileFilter workloadFileFilter;
-    private final        Vector<String>              users;
-    private final        Vector<String>              schedulers;
-    private final        Vector<Vector>              tableRow              = new Vector<>(0);
-    private final        Vector<String>              tableColumn           = new Vector<>(7);
-    private final        ResourceBundle              translator;
-    private              File                        file                  = null;
-    private              JComboBox                   comboBoxSchedulers;
-    private              JComboBox                   comboBoxUsers;
-    private              JFileChooser                jFileExternalTrace;
-    private              JFileChooser                jOpenTrace;
-    private              JPanel                      jPanelConvertTrace;
-    private              JPanel                      jPanelForNode;
-    private              JPanel                      jPanelRandom;
-    private              JPanel                      jPanelPickTrace;
-    private              JPanel                      jPanelTrace;
-    private              JRadioButton                jRadioButtonConvTrace;
-    private              JRadioButton                jRadioButtonForNode;
-    private              JRadioButton                jRadioButtonRandom;
-    private              JRadioButton                jRadioButtonTraces;
-    private              JRadioButton                jRadioButtonWmsx;
-    private              JScrollPane                 jScrollPaneSelecionado;
-    private              JScrollPane                 jScrollPaneTabela;
-    private              JSpinner                    jSpinnerAverageComputacao;
-    private              JSpinner                    jSpinnerAverageComunicacao;
-    private              JSpinner                    jSpinnerMaxCompNo;
-    private              JSpinner                    jSpinnerMaxComputacao;
-    private              JSpinner                    jSpinnerMaxComuNo;
-    private              JSpinner                    jSpinnerMaxComunicacao;
-    private              JSpinner                    jSpinnerMinCompNo;
-    private              JSpinner                    jSpinnerMinComputacao;
-    private              JSpinner                    jSpinnerMinComuNo;
-    private              JSpinner                    jSpinnerMinComunicacao;
-    private              JSpinner                    jSpinnerNumTarefas;
-    private              JSpinner                    jSpinnerNumTarefasNo;
-    private              JSpinner                    jSpinnerProbabilityComputacao;
-    private              JSpinner                    jSpinnerProbabilityComunicacao;
-    private              JSpinner                    jSpinnerTimeOfArrival;
-    private              JTable                      jTable1;
-    private              JTextField                  jTextFieldCaminhoTrace;
-    private              JTextField                  jTextFieldCaminhoWMS;
-    private              JTextArea                   jTextNotifTrace;
-    private              JTextArea                   jTextNotification;
-    private              WorkloadGenerator           loadGenerator;
-    private              int                         indexTable            = 0;
-    private              int                         traceTaskNumber       = 0;
-    private              String                      traceType             = "";
+
+    private static final Dimension PREFERRED_BUTTON_SIZE = new Dimension(80, 30);
+
+    private static final Dimension PREFERRED_PANEL_SIZE = new Dimension(500, 300);
+
+    private final MultipleExtensionFileFilter traceFileFilter;
+
+    private final MultipleExtensionFileFilter workloadFileFilter;
+
+    private final Vector<String> users;
+
+    private final Vector<String> schedulers;
+
+    private final Vector<Vector> tableRow = new Vector<>(0);
+
+    private final Vector<String> tableColumn = new Vector<>(7);
+
+    private final ResourceBundle translator;
+
+    private File file = null;
+
+    private JComboBox comboBoxSchedulers;
+
+    private JComboBox comboBoxUsers;
+
+    private JFileChooser jFileExternalTrace;
+
+    private JFileChooser jOpenTrace;
+
+    private JPanel jPanelConvertTrace;
+
+    private JPanel jPanelForNode;
+
+    private JPanel jPanelRandom;
+
+    private JPanel jPanelPickTrace;
+
+    private JPanel jPanelTrace;
+
+    private JRadioButton jRadioButtonConvTrace;
+
+    private JRadioButton jRadioButtonForNode;
+
+    private JRadioButton jRadioButtonRandom;
+
+    private JRadioButton jRadioButtonTraces;
+
+    private JRadioButton jRadioButtonWmsx;
+
+    private JScrollPane jScrollPaneSelecionado;
+
+    private JScrollPane jScrollPaneTabela;
+
+    private JSpinner jSpinnerAverageComputacao;
+
+    private JSpinner jSpinnerAverageComunicacao;
+
+    private JSpinner jSpinnerMaxCompNo;
+
+    private JSpinner jSpinnerMaxComputacao;
+
+    private JSpinner jSpinnerMaxComuNo;
+
+    private JSpinner jSpinnerMaxComunicacao;
+
+    private JSpinner jSpinnerMinCompNo;
+
+    private JSpinner jSpinnerMinComputacao;
+
+    private JSpinner jSpinnerMinComuNo;
+
+    private JSpinner jSpinnerMinComunicacao;
+
+    private JSpinner jSpinnerNumTarefas;
+
+    private JSpinner jSpinnerNumTarefasNo;
+
+    private JSpinner jSpinnerProbabilityComputacao;
+
+    private JSpinner jSpinnerProbabilityComunicacao;
+
+    private JSpinner jSpinnerTimeOfArrival;
+
+    private JTable jTable1;
+
+    private JTextField jTextFieldCaminhoTrace;
+
+    private JTextField jTextFieldCaminhoWMS;
+
+    private JTextArea jTextNotifTrace;
+
+    private JTextArea jTextNotification;
+
+    private WorkloadGenerator loadGenerator;
+
+    private int indexTable = 0;
+
+    private int traceTaskNumber = 0;
+
+    private String traceType = "";
 
     LoadConfigurationDialog (
-            final Frame parent, final boolean modal, final Object[] users, final Object[] schedulers,
-            final WorkloadGenerator loadGenerator, final ResourceBundle translator
+        final Frame parent, final boolean modal, final Object[] users, final Object[] schedulers,
+        final WorkloadGenerator loadGenerator, final ResourceBundle translator
     ) {
         super(parent, modal);
 
@@ -145,9 +195,14 @@ public class LoadConfigurationDialog extends JDialog {
         this.tableColumn.add(this.translate("Maximum communication"));
         this.tableColumn.add(this.translate("Minimum communication"));
 
-        this.workloadFileFilter = new MultipleExtensionFileFilter("Workload Model of Sumulation", "wmsx", true);
+        this.workloadFileFilter =
+            new MultipleExtensionFileFilter("Workload Model of Sumulation", "wmsx", true);
         this.traceFileFilter    =
-                new MultipleExtensionFileFilter("External Trace Files", new String[] { "swf", "gwf" }, true);
+            new MultipleExtensionFileFilter(
+                "External Trace Files",
+                new String[] { "swf", "gwf" },
+                true
+            );
 
         this.initComponents();
         this.setValores(loadGenerator);
@@ -208,7 +263,6 @@ public class LoadConfigurationDialog extends JDialog {
 
         final var taskCount = new JLabel(this.translate("Number of tasks"));
 
-
         this.jSpinnerNumTarefas.setModel(LoadConfigurationDialog.UNSIGNED_MODEL.get());
 
         this.jSpinnerMinComputacao.setModel(LoadConfigurationDialog.POSITIVE_REAL_MODEL.get());
@@ -249,298 +303,312 @@ public class LoadConfigurationDialog extends JDialog {
 
         final GroupLayout jPanelRandomLayout = new GroupLayout(this.jPanelRandom);
         this.jPanelRandom.setLayout(jPanelRandomLayout);
-        jPanelRandomLayout.setHorizontalGroup(jPanelRandomLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                .addGroup(jPanelRandomLayout.createSequentialGroup()
-                                                                                            .addContainerGap().addGroup(
-                                                                                jPanelRandomLayout.createParallelGroup(
-                                                                                        GroupLayout.Alignment.LEADING,
-                                                                                        false
-                                                                                ).addComponent(
-                                                                                        taskCount,
-                                                                                        GroupLayout.Alignment.TRAILING,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        Short.MAX_VALUE
-                                                                                ).addComponent(
-                                                                                        computationalSize,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        Short.MAX_VALUE
-                                                                                ).addComponent(
-                                                                                        communicationSize,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        Short.MAX_VALUE
-                                                                                ).addComponent(
-                                                                                        arrivalTime,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        Short.MAX_VALUE
-                                                                                )).addGap(18, 18, 18).addGroup(
-                                                                                jPanelRandomLayout.createParallelGroup(
-                                                                                                          GroupLayout.Alignment.LEADING)
-                                                                                                  .addComponent(
-                                                                                                          this.jSpinnerNumTarefas,
-                                                                                                          GroupLayout.PREFERRED_SIZE,
-                                                                                                          61,
-                                                                                                          GroupLayout.PREFERRED_SIZE
-                                                                                                  ).addComponent(
-                                                                                                          this.jSpinnerTimeOfArrival)
-                                                                                                  .addComponent(
-                                                                                                          this.jSpinnerMinComunicacao)
-                                                                                                  .addComponent(
-                                                                                                          this.jSpinnerMinComputacao)
-                                                                                                  .addComponent(
-                                                                                                          minimumLabel,
-                                                                                                          GroupLayout.PREFERRED_SIZE,
-                                                                                                          0,
-                                                                                                          Short.MAX_VALUE
-                                                                                                  )).addPreferredGap(
-                                                                                LayoutStyle.ComponentPlacement.RELATED)
-                                                                                            .addGroup(jPanelRandomLayout
-                                                                                                              .createParallelGroup(
-                                                                                                                      GroupLayout.Alignment.LEADING)
-                                                                                                              .addGroup(
-                                                                                                                      jPanelRandomLayout
-                                                                                                                              .createSequentialGroup()
-                                                                                                                              .addGroup(
-                                                                                                                                      jPanelRandomLayout
-                                                                                                                                              .createParallelGroup(
-                                                                                                                                                      GroupLayout.Alignment.LEADING,
-                                                                                                                                                      false
-                                                                                                                                              )
-                                                                                                                                              .addComponent(
-                                                                                                                                                      this.jSpinnerAverageComunicacao)
-                                                                                                                                              .addComponent(
-                                                                                                                                                      this.jSpinnerAverageComputacao)
-                                                                                                                                              .addComponent(
-                                                                                                                                                      averageLabel,
-                                                                                                                                                      GroupLayout.PREFERRED_SIZE,
-                                                                                                                                                      62,
-                                                                                                                                                      GroupLayout.PREFERRED_SIZE
-                                                                                                                                              ))
-                                                                                                                              .addPreferredGap(
-                                                                                                                                      LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                              .addGroup(
-                                                                                                                                      jPanelRandomLayout
-                                                                                                                                              .createParallelGroup(
-                                                                                                                                                      GroupLayout.Alignment.LEADING,
-                                                                                                                                                      false
-                                                                                                                                              )
-                                                                                                                                              .addComponent(
-                                                                                                                                                      this.jSpinnerMaxComunicacao)
-                                                                                                                                              .addComponent(
-                                                                                                                                                      this.jSpinnerMaxComputacao)
-                                                                                                                                              .addComponent(
-                                                                                                                                                      maximumLabel,
-                                                                                                                                                      GroupLayout.PREFERRED_SIZE,
-                                                                                                                                                      56,
-                                                                                                                                                      GroupLayout.PREFERRED_SIZE
-                                                                                                                                              ))
-                                                                                                                              .addGap(
-                                                                                                                                      10,
-                                                                                                                                      10,
-                                                                                                                                      10
-                                                                                                                              )
-                                                                                                                              .addGroup(
-                                                                                                                                      jPanelRandomLayout
-                                                                                                                                              .createParallelGroup(
-                                                                                                                                                      GroupLayout.Alignment.LEADING,
-                                                                                                                                                      false
-                                                                                                                                              )
-                                                                                                                                              .addComponent(
-                                                                                                                                                      this.jSpinnerProbabilityComunicacao)
-                                                                                                                                              .addComponent(
-                                                                                                                                                      this.jSpinnerProbabilityComputacao,
-                                                                                                                                                      GroupLayout.Alignment.TRAILING
-                                                                                                                                              )
-                                                                                                                                              .addComponent(
-                                                                                                                                                      probability,
-                                                                                                                                                      GroupLayout.Alignment.TRAILING,
-                                                                                                                                                      GroupLayout.PREFERRED_SIZE,
-                                                                                                                                                      59,
-                                                                                                                                                      GroupLayout.PREFERRED_SIZE
-                                                                                                                                              ))
-                                                                                                                              .addPreferredGap(
-                                                                                                                                      LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                              .addGroup(
-                                                                                                                                      jPanelRandomLayout
-                                                                                                                                              .createParallelGroup(
-                                                                                                                                                      GroupLayout.Alignment.LEADING)
-                                                                                                                                              .addComponent(
-                                                                                                                                                      mFlops)
-                                                                                                                                              .addComponent(
-                                                                                                                                                      mBits)))
-                                                                                                              .addComponent(
-                                                                                                                      seconds))
-                                                                                            .addContainerGap(
-                                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                                    Short.MAX_VALUE
-                                                                                            )));
+        jPanelRandomLayout.setHorizontalGroup(jPanelRandomLayout
+                                                  .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                  .addGroup(jPanelRandomLayout
+                                                                .createSequentialGroup()
+                                                                .addContainerGap()
+                                                                .addGroup(
+                                                                    jPanelRandomLayout
+                                                                        .createParallelGroup(
+                                                                            GroupLayout.Alignment.LEADING,
+                                                                            false
+                                                                        )
+                                                                        .addComponent(
+                                                                            taskCount,
+                                                                            GroupLayout.Alignment.TRAILING,
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            Short.MAX_VALUE
+                                                                        )
+                                                                        .addComponent(
+                                                                            computationalSize,
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            Short.MAX_VALUE
+                                                                        )
+                                                                        .addComponent(
+                                                                            communicationSize,
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            Short.MAX_VALUE
+                                                                        )
+                                                                        .addComponent(
+                                                                            arrivalTime,
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            GroupLayout.DEFAULT_SIZE,
+                                                                            Short.MAX_VALUE
+                                                                        ))
+                                                                .addGap(18, 18, 18)
+                                                                .addGroup(
+                                                                    jPanelRandomLayout
+                                                                        .createParallelGroup(
+                                                                            GroupLayout.Alignment.LEADING)
+                                                                        .addComponent(
+                                                                            this.jSpinnerNumTarefas,
+                                                                            GroupLayout.PREFERRED_SIZE,
+                                                                            61,
+                                                                            GroupLayout.PREFERRED_SIZE
+                                                                        )
+                                                                        .addComponent(
+                                                                            this.jSpinnerTimeOfArrival)
+                                                                        .addComponent(
+                                                                            this.jSpinnerMinComunicacao)
+                                                                        .addComponent(
+                                                                            this.jSpinnerMinComputacao)
+                                                                        .addComponent(
+                                                                            minimumLabel,
+                                                                            GroupLayout.PREFERRED_SIZE,
+                                                                            0,
+                                                                            Short.MAX_VALUE
+                                                                        ))
+                                                                .addPreferredGap(
+                                                                    LayoutStyle.ComponentPlacement.RELATED)
+                                                                .addGroup(jPanelRandomLayout
+                                                                              .createParallelGroup(
+                                                                                  GroupLayout.Alignment.LEADING)
+                                                                              .addGroup(
+                                                                                  jPanelRandomLayout
+                                                                                      .createSequentialGroup()
+                                                                                      .addGroup(
+                                                                                          jPanelRandomLayout
+                                                                                              .createParallelGroup(
+                                                                                                  GroupLayout.Alignment.LEADING,
+                                                                                                  false
+                                                                                              )
+                                                                                              .addComponent(
+                                                                                                  this.jSpinnerAverageComunicacao)
+                                                                                              .addComponent(
+                                                                                                  this.jSpinnerAverageComputacao)
+                                                                                              .addComponent(
+                                                                                                  averageLabel,
+                                                                                                  GroupLayout.PREFERRED_SIZE,
+                                                                                                  62,
+                                                                                                  GroupLayout.PREFERRED_SIZE
+                                                                                              ))
+                                                                                      .addPreferredGap(
+                                                                                          LayoutStyle.ComponentPlacement.RELATED)
+                                                                                      .addGroup(
+                                                                                          jPanelRandomLayout
+                                                                                              .createParallelGroup(
+                                                                                                  GroupLayout.Alignment.LEADING,
+                                                                                                  false
+                                                                                              )
+                                                                                              .addComponent(
+                                                                                                  this.jSpinnerMaxComunicacao)
+                                                                                              .addComponent(
+                                                                                                  this.jSpinnerMaxComputacao)
+                                                                                              .addComponent(
+                                                                                                  maximumLabel,
+                                                                                                  GroupLayout.PREFERRED_SIZE,
+                                                                                                  56,
+                                                                                                  GroupLayout.PREFERRED_SIZE
+                                                                                              ))
+                                                                                      .addGap(
+                                                                                          10,
+                                                                                          10,
+                                                                                          10
+                                                                                      )
+                                                                                      .addGroup(
+                                                                                          jPanelRandomLayout
+                                                                                              .createParallelGroup(
+                                                                                                  GroupLayout.Alignment.LEADING,
+                                                                                                  false
+                                                                                              )
+                                                                                              .addComponent(
+                                                                                                  this.jSpinnerProbabilityComunicacao)
+                                                                                              .addComponent(
+                                                                                                  this.jSpinnerProbabilityComputacao,
+                                                                                                  GroupLayout.Alignment.TRAILING
+                                                                                              )
+                                                                                              .addComponent(
+                                                                                                  probability,
+                                                                                                  GroupLayout.Alignment.TRAILING,
+                                                                                                  GroupLayout.PREFERRED_SIZE,
+                                                                                                  59,
+                                                                                                  GroupLayout.PREFERRED_SIZE
+                                                                                              ))
+                                                                                      .addPreferredGap(
+                                                                                          LayoutStyle.ComponentPlacement.RELATED)
+                                                                                      .addGroup(
+                                                                                          jPanelRandomLayout
+                                                                                              .createParallelGroup(
+                                                                                                  GroupLayout.Alignment.LEADING)
+                                                                                              .addComponent(
+                                                                                                  mFlops)
+                                                                                              .addComponent(
+                                                                                                  mBits)))
+                                                                              .addComponent(
+                                                                                  seconds))
+                                                                .addContainerGap(
+                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                    Short.MAX_VALUE
+                                                                )));
 
-        jPanelRandomLayout.setVerticalGroup(jPanelRandomLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                              .addGroup(jPanelRandomLayout.createSequentialGroup()
-                                                                                          .addContainerGap().addGroup(
-                                                                              jPanelRandomLayout.createParallelGroup(
-                                                                                                        GroupLayout.Alignment.TRAILING)
-                                                                                                .addGroup(
-                                                                                                        jPanelRandomLayout
-                                                                                                                .createSequentialGroup()
-                                                                                                                .addGroup(
-                                                                                                                        jPanelRandomLayout
-                                                                                                                                .createParallelGroup(
-                                                                                                                                        GroupLayout.Alignment.BASELINE)
-                                                                                                                                .addComponent(
-                                                                                                                                        taskCount)
-                                                                                                                                .addComponent(
-                                                                                                                                        this.jSpinnerNumTarefas,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                ))
-                                                                                                                .addPreferredGap(
-                                                                                                                        LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                                                .addComponent(
-                                                                                                                        minimumLabel)
-                                                                                                                .addGap(
-                                                                                                                        15,
-                                                                                                                        15,
-                                                                                                                        15
-                                                                                                                )
-                                                                                                                .addGroup(
-                                                                                                                        jPanelRandomLayout
-                                                                                                                                .createParallelGroup(
-                                                                                                                                        GroupLayout.Alignment.BASELINE)
-                                                                                                                                .addComponent(
-                                                                                                                                        computationalSize)
-                                                                                                                                .addComponent(
-                                                                                                                                        this.jSpinnerMinComputacao,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                ))
-                                                                                                                .addPreferredGap(
-                                                                                                                        LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                                                .addGroup(
-                                                                                                                        jPanelRandomLayout
-                                                                                                                                .createParallelGroup(
-                                                                                                                                        GroupLayout.Alignment.BASELINE)
-                                                                                                                                .addComponent(
-                                                                                                                                        communicationSize)
-                                                                                                                                .addComponent(
-                                                                                                                                        this.jSpinnerMinComunicacao,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                )))
-                                                                                                .addGroup(
-                                                                                                        jPanelRandomLayout
-                                                                                                                .createParallelGroup(
-                                                                                                                        GroupLayout.Alignment.LEADING)
-                                                                                                                .addGroup(
-                                                                                                                        jPanelRandomLayout
-                                                                                                                                .createSequentialGroup()
-                                                                                                                                .addComponent(
-                                                                                                                                        maximumLabel)
-                                                                                                                                .addGap(
-                                                                                                                                        15,
-                                                                                                                                        15,
-                                                                                                                                        15
-                                                                                                                                )
-                                                                                                                                .addComponent(
-                                                                                                                                        this.jSpinnerMaxComputacao,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                )
-                                                                                                                                .addPreferredGap(
-                                                                                                                                        LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                                                                .addComponent(
-                                                                                                                                        this.jSpinnerMaxComunicacao,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                ))
-                                                                                                                .addGroup(
-                                                                                                                        jPanelRandomLayout
-                                                                                                                                .createSequentialGroup()
-                                                                                                                                .addComponent(
-                                                                                                                                        averageLabel)
-                                                                                                                                .addGap(
-                                                                                                                                        15,
-                                                                                                                                        15,
-                                                                                                                                        15
-                                                                                                                                )
-                                                                                                                                .addComponent(
-                                                                                                                                        this.jSpinnerAverageComputacao,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                )
-                                                                                                                                .addPreferredGap(
-                                                                                                                                        LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                                                                .addComponent(
-                                                                                                                                        this.jSpinnerAverageComunicacao,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                ))
-                                                                                                                .addGroup(
-                                                                                                                        jPanelRandomLayout
-                                                                                                                                .createSequentialGroup()
-                                                                                                                                .addComponent(
-                                                                                                                                        probability)
-                                                                                                                                .addGap(
-                                                                                                                                        15,
-                                                                                                                                        15,
-                                                                                                                                        15
-                                                                                                                                )
-                                                                                                                                .addGroup(
-                                                                                                                                        jPanelRandomLayout
-                                                                                                                                                .createParallelGroup(
-                                                                                                                                                        GroupLayout.Alignment.BASELINE)
-                                                                                                                                                .addComponent(
-                                                                                                                                                        this.jSpinnerProbabilityComputacao,
-                                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                                )
-                                                                                                                                                .addComponent(
-                                                                                                                                                        mFlops))
-                                                                                                                                .addPreferredGap(
-                                                                                                                                        LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                                                                .addGroup(
-                                                                                                                                        jPanelRandomLayout
-                                                                                                                                                .createParallelGroup(
-                                                                                                                                                        GroupLayout.Alignment.BASELINE)
-                                                                                                                                                .addComponent(
-                                                                                                                                                        this.jSpinnerProbabilityComunicacao,
-                                                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                                                )
-                                                                                                                                                .addComponent(
-                                                                                                                                                        mBits)))))
-                                                                                          .addGap(18, 18, 18).addGroup(
-                                                                              jPanelRandomLayout.createParallelGroup(
-                                                                                                        GroupLayout.Alignment.LEADING)
-                                                                                                .addGroup(
-                                                                                                        jPanelRandomLayout
-                                                                                                                .createParallelGroup(
-                                                                                                                        GroupLayout.Alignment.BASELINE)
-                                                                                                                .addComponent(
-                                                                                                                        arrivalTime)
-                                                                                                                .addComponent(
-                                                                                                                        this.jSpinnerTimeOfArrival,
-                                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                                ))
-                                                                                                .addComponent(seconds))
-                                                                                          .addContainerGap(
-                                                                                                  134,
-                                                                                                  Short.MAX_VALUE
-                                                                                          )));
+        jPanelRandomLayout.setVerticalGroup(jPanelRandomLayout
+                                                .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                .addGroup(jPanelRandomLayout.createSequentialGroup()
+                                                              .addContainerGap().addGroup(
+                                                        jPanelRandomLayout.createParallelGroup(
+                                                                GroupLayout.Alignment.TRAILING)
+                                                            .addGroup(
+                                                                jPanelRandomLayout
+                                                                    .createSequentialGroup()
+                                                                    .addGroup(
+                                                                        jPanelRandomLayout
+                                                                            .createParallelGroup(
+                                                                                GroupLayout.Alignment.BASELINE)
+                                                                            .addComponent(
+                                                                                taskCount)
+                                                                            .addComponent(
+                                                                                this.jSpinnerNumTarefas,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE
+                                                                            ))
+                                                                    .addPreferredGap(
+                                                                        LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                    .addComponent(
+                                                                        minimumLabel)
+                                                                    .addGap(
+                                                                        15,
+                                                                        15,
+                                                                        15
+                                                                    )
+                                                                    .addGroup(
+                                                                        jPanelRandomLayout
+                                                                            .createParallelGroup(
+                                                                                GroupLayout.Alignment.BASELINE)
+                                                                            .addComponent(
+                                                                                computationalSize)
+                                                                            .addComponent(
+                                                                                this.jSpinnerMinComputacao,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE
+                                                                            ))
+                                                                    .addPreferredGap(
+                                                                        LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                    .addGroup(
+                                                                        jPanelRandomLayout
+                                                                            .createParallelGroup(
+                                                                                GroupLayout.Alignment.BASELINE)
+                                                                            .addComponent(
+                                                                                communicationSize)
+                                                                            .addComponent(
+                                                                                this.jSpinnerMinComunicacao,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE
+                                                                            )))
+                                                            .addGroup(
+                                                                jPanelRandomLayout
+                                                                    .createParallelGroup(
+                                                                        GroupLayout.Alignment.LEADING)
+                                                                    .addGroup(
+                                                                        jPanelRandomLayout
+                                                                            .createSequentialGroup()
+                                                                            .addComponent(
+                                                                                maximumLabel)
+                                                                            .addGap(
+                                                                                15,
+                                                                                15,
+                                                                                15
+                                                                            )
+                                                                            .addComponent(
+                                                                                this.jSpinnerMaxComputacao,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE
+                                                                            )
+                                                                            .addPreferredGap(
+                                                                                LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                            .addComponent(
+                                                                                this.jSpinnerMaxComunicacao,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE
+                                                                            ))
+                                                                    .addGroup(
+                                                                        jPanelRandomLayout
+                                                                            .createSequentialGroup()
+                                                                            .addComponent(
+                                                                                averageLabel)
+                                                                            .addGap(
+                                                                                15,
+                                                                                15,
+                                                                                15
+                                                                            )
+                                                                            .addComponent(
+                                                                                this.jSpinnerAverageComputacao,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE
+                                                                            )
+                                                                            .addPreferredGap(
+                                                                                LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                            .addComponent(
+                                                                                this.jSpinnerAverageComunicacao,
+                                                                                GroupLayout.PREFERRED_SIZE,
+                                                                                GroupLayout.DEFAULT_SIZE,
+                                                                                GroupLayout.PREFERRED_SIZE
+                                                                            ))
+                                                                    .addGroup(
+                                                                        jPanelRandomLayout
+                                                                            .createSequentialGroup()
+                                                                            .addComponent(
+                                                                                probability)
+                                                                            .addGap(
+                                                                                15,
+                                                                                15,
+                                                                                15
+                                                                            )
+                                                                            .addGroup(
+                                                                                jPanelRandomLayout
+                                                                                    .createParallelGroup(
+                                                                                        GroupLayout.Alignment.BASELINE)
+                                                                                    .addComponent(
+                                                                                        this.jSpinnerProbabilityComputacao,
+                                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        GroupLayout.PREFERRED_SIZE
+                                                                                    )
+                                                                                    .addComponent(
+                                                                                        mFlops))
+                                                                            .addPreferredGap(
+                                                                                LayoutStyle.ComponentPlacement.UNRELATED)
+                                                                            .addGroup(
+                                                                                jPanelRandomLayout
+                                                                                    .createParallelGroup(
+                                                                                        GroupLayout.Alignment.BASELINE)
+                                                                                    .addComponent(
+                                                                                        this.jSpinnerProbabilityComunicacao,
+                                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                                        GroupLayout.PREFERRED_SIZE
+                                                                                    )
+                                                                                    .addComponent(
+                                                                                        mBits)))))
+                                                              .addGap(18, 18, 18).addGroup(
+                                                        jPanelRandomLayout.createParallelGroup(
+                                                                GroupLayout.Alignment.LEADING)
+                                                            .addGroup(
+                                                                jPanelRandomLayout
+                                                                    .createParallelGroup(
+                                                                        GroupLayout.Alignment.BASELINE)
+                                                                    .addComponent(
+                                                                        arrivalTime)
+                                                                    .addComponent(
+                                                                        this.jSpinnerTimeOfArrival,
+                                                                        GroupLayout.PREFERRED_SIZE,
+                                                                        GroupLayout.DEFAULT_SIZE,
+                                                                        GroupLayout.PREFERRED_SIZE
+                                                                    ))
+                                                            .addComponent(seconds))
+                                                              .addContainerGap(
+                                                                  134,
+                                                                  Short.MAX_VALUE
+                                                              )));
 
         this.jPanelForNode.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         this.jPanelForNode.setMaximumSize(null);
@@ -556,7 +624,6 @@ public class LoadConfigurationDialog extends JDialog {
         this.comboBoxSchedulers.setModel(new DefaultComboBoxModel(this.schedulers));
 
         final var numberOfTasks = new JLabel(this.translate("Number of tasks"));
-
 
         this.jSpinnerNumTarefasNo.setModel(LoadConfigurationDialog.UNSIGNED_MODEL.get());
 
@@ -586,266 +653,271 @@ public class LoadConfigurationDialog extends JDialog {
         final var jPanelForNodeLayout = new GroupLayout(this.jPanelForNode);
         this.jPanelForNode.setLayout(jPanelForNodeLayout);
 
-        jPanelForNodeLayout.setHorizontalGroup(jPanelForNodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                  .addGroup(jPanelForNodeLayout.createSequentialGroup()
-                                                                                               .addContainerGap()
-                                                                                               .addGroup(
-                                                                                                       jPanelForNodeLayout
-                                                                                                               .createParallelGroup(
-                                                                                                                       GroupLayout.Alignment.TRAILING,
-                                                                                                                       false
-                                                                                                               )
-                                                                                                               .addComponent(
-                                                                                                                       this.jScrollPaneTabela,
-                                                                                                                       GroupLayout.Alignment.LEADING,
-                                                                                                                       0,
-                                                                                                                       0,
-                                                                                                                       Short.MAX_VALUE
-                                                                                                               )
-                                                                                                               .addGroup(
-                                                                                                                       GroupLayout.Alignment.LEADING,
-                                                                                                                       jPanelForNodeLayout
-                                                                                                                               .createSequentialGroup()
-                                                                                                                               .addGroup(
-                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                               .createParallelGroup(
-                                                                                                                                                       GroupLayout.Alignment.LEADING)
-                                                                                                                                               .addGroup(
-                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                               .createSequentialGroup()
-                                                                                                                                                               .addGroup(
-                                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                                               .createParallelGroup(
-                                                                                                                                                                                       GroupLayout.Alignment.LEADING)
-                                                                                                                                                                               .addComponent(
-                                                                                                                                                                                       this.comboBoxUsers,
-                                                                                                                                                                                       0,
-                                                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                                                       Short.MAX_VALUE
-                                                                                                                                                                               )
-                                                                                                                                                                               .addComponent(
-                                                                                                                                                                                       userLabel))
-                                                                                                                                                               .addPreferredGap(
-                                                                                                                                                                       LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                                                               .addGroup(
-                                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                                               .createParallelGroup(
-                                                                                                                                                                                       GroupLayout.Alignment.LEADING)
-                                                                                                                                                                               .addComponent(
-                                                                                                                                                                                       this.comboBoxSchedulers,
-                                                                                                                                                                                       0,
-                                                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                                                       Short.MAX_VALUE
-                                                                                                                                                                               )
-                                                                                                                                                                               .addComponent(
-                                                                                                                                                                                       scheduler)))
-                                                                                                                                               .addComponent(
-                                                                                                                                                       tableAdd,
-                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                       Short.MAX_VALUE
-                                                                                                                                               ))
-                                                                                                                               .addGroup(
-                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                               .createParallelGroup(
-                                                                                                                                                       GroupLayout.Alignment.LEADING)
-                                                                                                                                               .addGroup(
-                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                               .createSequentialGroup()
-                                                                                                                                                               .addPreferredGap(
-                                                                                                                                                                       LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                                                               .addComponent(
-                                                                                                                                                                       numberOfTasks))
-                                                                                                                                               .addGroup(
-                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                               .createSequentialGroup()
-                                                                                                                                                               .addGap(
-                                                                                                                                                                       4,
-                                                                                                                                                                       4,
-                                                                                                                                                                       4
-                                                                                                                                                               )
-                                                                                                                                                               .addComponent(
-                                                                                                                                                                       this.jSpinnerNumTarefasNo))
-                                                                                                                                               .addGroup(
-                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                               .createSequentialGroup()
-                                                                                                                                                               .addPreferredGap(
-                                                                                                                                                                       LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                                                               .addComponent(
-                                                                                                                                                                       remove,
-                                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                                       Short.MAX_VALUE
-                                                                                                                                                               )))
-                                                                                                                               .addPreferredGap(
-                                                                                                                                       LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                               .addGroup(
-                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                               .createParallelGroup(
-                                                                                                                                                       GroupLayout.Alignment.LEADING,
-                                                                                                                                                       false
-                                                                                                                                               )
-                                                                                                                                               .addGroup(
-                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                               .createSequentialGroup()
-                                                                                                                                                               .addGroup(
-                                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                                               .createParallelGroup(
-                                                                                                                                                                                       GroupLayout.Alignment.LEADING)
-                                                                                                                                                                               .addComponent(
-                                                                                                                                                                                       maximum)
-                                                                                                                                                                               .addComponent(
-                                                                                                                                                                                       minimum))
-                                                                                                                                                               .addPreferredGap(
-                                                                                                                                                                       LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                                                               .addGroup(
-                                                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                                                               .createParallelGroup(
-                                                                                                                                                                                       GroupLayout.Alignment.LEADING)
-                                                                                                                                                                               .addComponent(
-                                                                                                                                                                                       this.jSpinnerMaxCompNo,
-                                                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                                                       87,
-                                                                                                                                                                                       Short.MAX_VALUE
-                                                                                                                                                                               )
-                                                                                                                                                                               .addComponent(
-                                                                                                                                                                                       this.jSpinnerMinCompNo)))
-                                                                                                                                               .addComponent(
-                                                                                                                                                       computational,
-                                                                                                                                                       GroupLayout.Alignment.TRAILING,
-                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                       Short.MAX_VALUE
-                                                                                                                                               ))
-                                                                                                                               .addPreferredGap(
-                                                                                                                                       LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                               .addGroup(
-                                                                                                                                       jPanelForNodeLayout
-                                                                                                                                               .createParallelGroup(
-                                                                                                                                                       GroupLayout.Alignment.LEADING)
-                                                                                                                                               .addComponent(
-                                                                                                                                                       this.jSpinnerMaxComuNo)
-                                                                                                                                               .addComponent(
-                                                                                                                                                       communication,
-                                                                                                                                                       GroupLayout.Alignment.TRAILING
-                                                                                                                                               )
-                                                                                                                                               .addComponent(
-                                                                                                                                                       this.jSpinnerMinComuNo))
-                                                                                                               ))
-                                                                                               .addContainerGap(
-                                                                                                       GroupLayout.DEFAULT_SIZE,
-                                                                                                       Short.MAX_VALUE
-                                                                                               )));
-
-        jPanelForNodeLayout.setVerticalGroup(jPanelForNodeLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                .addGroup(jPanelForNodeLayout.createSequentialGroup()
-                                                                                             .addContainerGap()
-                                                                                             .addGroup(
+        jPanelForNodeLayout.setHorizontalGroup(jPanelForNodeLayout
+                                                   .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                   .addGroup(jPanelForNodeLayout
+                                                                 .createSequentialGroup()
+                                                                 .addContainerGap()
+                                                                 .addGroup(
+                                                                     jPanelForNodeLayout
+                                                                         .createParallelGroup(
+                                                                             GroupLayout.Alignment.TRAILING,
+                                                                             false
+                                                                         )
+                                                                         .addComponent(
+                                                                             this.jScrollPaneTabela,
+                                                                             GroupLayout.Alignment.LEADING,
+                                                                             0,
+                                                                             0,
+                                                                             Short.MAX_VALUE
+                                                                         )
+                                                                         .addGroup(
+                                                                             GroupLayout.Alignment.LEADING,
+                                                                             jPanelForNodeLayout
+                                                                                 .createSequentialGroup()
+                                                                                 .addGroup(
+                                                                                     jPanelForNodeLayout
+                                                                                         .createParallelGroup(
+                                                                                             GroupLayout.Alignment.LEADING)
+                                                                                         .addGroup(
+                                                                                             jPanelForNodeLayout
+                                                                                                 .createSequentialGroup()
+                                                                                                 .addGroup(
                                                                                                      jPanelForNodeLayout
-                                                                                                             .createParallelGroup(
-                                                                                                                     GroupLayout.Alignment.BASELINE)
-                                                                                                             .addComponent(
-                                                                                                                     userLabel)
-                                                                                                             .addComponent(
-                                                                                                                     scheduler)
-                                                                                                             .addComponent(
-                                                                                                                     numberOfTasks)
-                                                                                                             .addComponent(
-                                                                                                                     communication)
-                                                                                                             .addComponent(
-                                                                                                                     computational))
-                                                                                             .addPreferredGap(
+                                                                                                         .createParallelGroup(
+                                                                                                             GroupLayout.Alignment.LEADING)
+                                                                                                         .addComponent(
+                                                                                                             this.comboBoxUsers,
+                                                                                                             0,
+                                                                                                             GroupLayout.DEFAULT_SIZE,
+                                                                                                             Short.MAX_VALUE
+                                                                                                         )
+                                                                                                         .addComponent(
+                                                                                                             userLabel))
+                                                                                                 .addPreferredGap(
                                                                                                      LayoutStyle.ComponentPlacement.RELATED)
-                                                                                             .addGroup(
+                                                                                                 .addGroup(
                                                                                                      jPanelForNodeLayout
-                                                                                                             .createParallelGroup(
-                                                                                                                     GroupLayout.Alignment.BASELINE)
-                                                                                                             .addComponent(
-                                                                                                                     this.comboBoxUsers,
-                                                                                                                     GroupLayout.PREFERRED_SIZE,
-                                                                                                                     25,
-                                                                                                                     GroupLayout.PREFERRED_SIZE
-                                                                                                             )
-                                                                                                             .addComponent(
-                                                                                                                     this.comboBoxSchedulers,
-                                                                                                                     GroupLayout.PREFERRED_SIZE,
-                                                                                                                     25,
-                                                                                                                     GroupLayout.PREFERRED_SIZE
-                                                                                                             )
-                                                                                                             .addComponent(
-                                                                                                                     this.jSpinnerNumTarefasNo,
-                                                                                                                     GroupLayout.PREFERRED_SIZE,
-                                                                                                                     29,
-                                                                                                                     GroupLayout.PREFERRED_SIZE
-                                                                                                             )
-                                                                                                             .addComponent(
-                                                                                                                     maximum)
-                                                                                                             .addComponent(
-                                                                                                                     this.jSpinnerMaxCompNo,
-                                                                                                                     GroupLayout.PREFERRED_SIZE,
-                                                                                                                     25,
-                                                                                                                     GroupLayout.PREFERRED_SIZE
-                                                                                                             )
-                                                                                                             .addComponent(
-                                                                                                                     this.jSpinnerMaxComuNo,
-                                                                                                                     GroupLayout.PREFERRED_SIZE,
-                                                                                                                     24,
-                                                                                                                     GroupLayout.PREFERRED_SIZE
-                                                                                                             ))
-                                                                                             .addPreferredGap(
+                                                                                                         .createParallelGroup(
+                                                                                                             GroupLayout.Alignment.LEADING)
+                                                                                                         .addComponent(
+                                                                                                             this.comboBoxSchedulers,
+                                                                                                             0,
+                                                                                                             GroupLayout.DEFAULT_SIZE,
+                                                                                                             Short.MAX_VALUE
+                                                                                                         )
+                                                                                                         .addComponent(
+                                                                                                             scheduler)))
+                                                                                         .addComponent(
+                                                                                             tableAdd,
+                                                                                             GroupLayout.DEFAULT_SIZE,
+                                                                                             GroupLayout.DEFAULT_SIZE,
+                                                                                             Short.MAX_VALUE
+                                                                                         ))
+                                                                                 .addGroup(
+                                                                                     jPanelForNodeLayout
+                                                                                         .createParallelGroup(
+                                                                                             GroupLayout.Alignment.LEADING)
+                                                                                         .addGroup(
+                                                                                             jPanelForNodeLayout
+                                                                                                 .createSequentialGroup()
+                                                                                                 .addPreferredGap(
                                                                                                      LayoutStyle.ComponentPlacement.RELATED)
-                                                                                             .addGroup(
-                                                                                                     jPanelForNodeLayout
-                                                                                                             .createParallelGroup(
-                                                                                                                     GroupLayout.Alignment.LEADING)
-                                                                                                             .addGroup(
-                                                                                                                     jPanelForNodeLayout
-                                                                                                                             .createSequentialGroup()
-                                                                                                                             .addGroup(
-                                                                                                                                     jPanelForNodeLayout
-                                                                                                                                             .createParallelGroup(
-                                                                                                                                                     GroupLayout.Alignment.BASELINE)
-                                                                                                                                             .addComponent(
-                                                                                                                                                     minimum)
-                                                                                                                                             .addComponent(
-                                                                                                                                                     this.jSpinnerMinCompNo,
-                                                                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                     23,
-                                                                                                                                                     Short.MAX_VALUE
-                                                                                                                                             )
-                                                                                                                                             .addComponent(
-                                                                                                                                                     this.jSpinnerMinComuNo,
-                                                                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                                                                     23,
-                                                                                                                                                     Short.MAX_VALUE
-                                                                                                                                             ))
-                                                                                                                             .addGap(
-                                                                                                                                     18,
-                                                                                                                                     18,
-                                                                                                                                     18
-                                                                                                                             ))
-                                                                                                             .addGroup(
-                                                                                                                     jPanelForNodeLayout
-                                                                                                                             .createSequentialGroup()
-                                                                                                                             .addGroup(
-                                                                                                                                     jPanelForNodeLayout
-                                                                                                                                             .createParallelGroup(
-                                                                                                                                                     GroupLayout.Alignment.BASELINE)
-                                                                                                                                             .addComponent(
-                                                                                                                                                     tableAdd)
-                                                                                                                                             .addComponent(
-                                                                                                                                                     remove))
-                                                                                                                             .addPreferredGap(
-                                                                                                                                     LayoutStyle.ComponentPlacement.RELATED,
-                                                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                                                     Short.MAX_VALUE
-                                                                                                                             )))
-                                                                                             .addComponent(
-                                                                                                     this.jScrollPaneTabela,
+                                                                                                 .addComponent(
+                                                                                                     numberOfTasks))
+                                                                                         .addGroup(
+                                                                                             jPanelForNodeLayout
+                                                                                                 .createSequentialGroup()
+                                                                                                 .addGap(
+                                                                                                     4,
+                                                                                                     4,
+                                                                                                     4
+                                                                                                 )
+                                                                                                 .addComponent(
+                                                                                                     this.jSpinnerNumTarefasNo))
+                                                                                         .addGroup(
+                                                                                             jPanelForNodeLayout
+                                                                                                 .createSequentialGroup()
+                                                                                                 .addPreferredGap(
+                                                                                                     LayoutStyle.ComponentPlacement.RELATED)
+                                                                                                 .addComponent(
+                                                                                                     remove,
                                                                                                      GroupLayout.DEFAULT_SIZE,
-                                                                                                     177,
+                                                                                                     GroupLayout.DEFAULT_SIZE,
                                                                                                      Short.MAX_VALUE
-                                                                                             ).addContainerGap()));
+                                                                                                 )))
+                                                                                 .addPreferredGap(
+                                                                                     LayoutStyle.ComponentPlacement.RELATED)
+                                                                                 .addGroup(
+                                                                                     jPanelForNodeLayout
+                                                                                         .createParallelGroup(
+                                                                                             GroupLayout.Alignment.LEADING,
+                                                                                             false
+                                                                                         )
+                                                                                         .addGroup(
+                                                                                             jPanelForNodeLayout
+                                                                                                 .createSequentialGroup()
+                                                                                                 .addGroup(
+                                                                                                     jPanelForNodeLayout
+                                                                                                         .createParallelGroup(
+                                                                                                             GroupLayout.Alignment.LEADING)
+                                                                                                         .addComponent(
+                                                                                                             maximum)
+                                                                                                         .addComponent(
+                                                                                                             minimum))
+                                                                                                 .addPreferredGap(
+                                                                                                     LayoutStyle.ComponentPlacement.RELATED)
+                                                                                                 .addGroup(
+                                                                                                     jPanelForNodeLayout
+                                                                                                         .createParallelGroup(
+                                                                                                             GroupLayout.Alignment.LEADING)
+                                                                                                         .addComponent(
+                                                                                                             this.jSpinnerMaxCompNo,
+                                                                                                             GroupLayout.DEFAULT_SIZE,
+                                                                                                             87,
+                                                                                                             Short.MAX_VALUE
+                                                                                                         )
+                                                                                                         .addComponent(
+                                                                                                             this.jSpinnerMinCompNo)))
+                                                                                         .addComponent(
+                                                                                             computational,
+                                                                                             GroupLayout.Alignment.TRAILING,
+                                                                                             GroupLayout.DEFAULT_SIZE,
+                                                                                             GroupLayout.DEFAULT_SIZE,
+                                                                                             Short.MAX_VALUE
+                                                                                         ))
+                                                                                 .addPreferredGap(
+                                                                                     LayoutStyle.ComponentPlacement.RELATED)
+                                                                                 .addGroup(
+                                                                                     jPanelForNodeLayout
+                                                                                         .createParallelGroup(
+                                                                                             GroupLayout.Alignment.LEADING)
+                                                                                         .addComponent(
+                                                                                             this.jSpinnerMaxComuNo)
+                                                                                         .addComponent(
+                                                                                             communication,
+                                                                                             GroupLayout.Alignment.TRAILING
+                                                                                         )
+                                                                                         .addComponent(
+                                                                                             this.jSpinnerMinComuNo))
+                                                                         ))
+                                                                 .addContainerGap(
+                                                                     GroupLayout.DEFAULT_SIZE,
+                                                                     Short.MAX_VALUE
+                                                                 )));
+
+        jPanelForNodeLayout.setVerticalGroup(jPanelForNodeLayout
+                                                 .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                 .addGroup(jPanelForNodeLayout
+                                                               .createSequentialGroup()
+                                                               .addContainerGap()
+                                                               .addGroup(
+                                                                   jPanelForNodeLayout
+                                                                       .createParallelGroup(
+                                                                           GroupLayout.Alignment.BASELINE)
+                                                                       .addComponent(
+                                                                           userLabel)
+                                                                       .addComponent(
+                                                                           scheduler)
+                                                                       .addComponent(
+                                                                           numberOfTasks)
+                                                                       .addComponent(
+                                                                           communication)
+                                                                       .addComponent(
+                                                                           computational))
+                                                               .addPreferredGap(
+                                                                   LayoutStyle.ComponentPlacement.RELATED)
+                                                               .addGroup(
+                                                                   jPanelForNodeLayout
+                                                                       .createParallelGroup(
+                                                                           GroupLayout.Alignment.BASELINE)
+                                                                       .addComponent(
+                                                                           this.comboBoxUsers,
+                                                                           GroupLayout.PREFERRED_SIZE,
+                                                                           25,
+                                                                           GroupLayout.PREFERRED_SIZE
+                                                                       )
+                                                                       .addComponent(
+                                                                           this.comboBoxSchedulers,
+                                                                           GroupLayout.PREFERRED_SIZE,
+                                                                           25,
+                                                                           GroupLayout.PREFERRED_SIZE
+                                                                       )
+                                                                       .addComponent(
+                                                                           this.jSpinnerNumTarefasNo,
+                                                                           GroupLayout.PREFERRED_SIZE,
+                                                                           29,
+                                                                           GroupLayout.PREFERRED_SIZE
+                                                                       )
+                                                                       .addComponent(
+                                                                           maximum)
+                                                                       .addComponent(
+                                                                           this.jSpinnerMaxCompNo,
+                                                                           GroupLayout.PREFERRED_SIZE,
+                                                                           25,
+                                                                           GroupLayout.PREFERRED_SIZE
+                                                                       )
+                                                                       .addComponent(
+                                                                           this.jSpinnerMaxComuNo,
+                                                                           GroupLayout.PREFERRED_SIZE,
+                                                                           24,
+                                                                           GroupLayout.PREFERRED_SIZE
+                                                                       ))
+                                                               .addPreferredGap(
+                                                                   LayoutStyle.ComponentPlacement.RELATED)
+                                                               .addGroup(
+                                                                   jPanelForNodeLayout
+                                                                       .createParallelGroup(
+                                                                           GroupLayout.Alignment.LEADING)
+                                                                       .addGroup(
+                                                                           jPanelForNodeLayout
+                                                                               .createSequentialGroup()
+                                                                               .addGroup(
+                                                                                   jPanelForNodeLayout
+                                                                                       .createParallelGroup(
+                                                                                           GroupLayout.Alignment.BASELINE)
+                                                                                       .addComponent(
+                                                                                           minimum)
+                                                                                       .addComponent(
+                                                                                           this.jSpinnerMinCompNo,
+                                                                                           GroupLayout.DEFAULT_SIZE,
+                                                                                           23,
+                                                                                           Short.MAX_VALUE
+                                                                                       )
+                                                                                       .addComponent(
+                                                                                           this.jSpinnerMinComuNo,
+                                                                                           GroupLayout.DEFAULT_SIZE,
+                                                                                           23,
+                                                                                           Short.MAX_VALUE
+                                                                                       ))
+                                                                               .addGap(
+                                                                                   18,
+                                                                                   18,
+                                                                                   18
+                                                                               ))
+                                                                       .addGroup(
+                                                                           jPanelForNodeLayout
+                                                                               .createSequentialGroup()
+                                                                               .addGroup(
+                                                                                   jPanelForNodeLayout
+                                                                                       .createParallelGroup(
+                                                                                           GroupLayout.Alignment.BASELINE)
+                                                                                       .addComponent(
+                                                                                           tableAdd)
+                                                                                       .addComponent(
+                                                                                           remove))
+                                                                               .addPreferredGap(
+                                                                                   LayoutStyle.ComponentPlacement.RELATED,
+                                                                                   GroupLayout.DEFAULT_SIZE,
+                                                                                   Short.MAX_VALUE
+                                                                               )))
+                                                               .addComponent(
+                                                                   this.jScrollPaneTabela,
+                                                                   GroupLayout.DEFAULT_SIZE,
+                                                                   177,
+                                                                   Short.MAX_VALUE
+                                                               )
+                                                               .addContainerGap()));
 
         this.jPanelTrace.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
 
@@ -854,100 +926,108 @@ public class LoadConfigurationDialog extends JDialog {
         this.jRadioButtonWmsx.addActionListener(this::jRadioButtonwmsxActionPerformed);
 
         this.jRadioButtonConvTrace.setText(
-                this.translate("Convert an " + "external" + " trace file to " + "iSPD" + " trace format"));
+            this.translate("Convert an "
+                           + "external"
+                           + " trace file to "
+                           + "iSPD"
+                           + " trace format"));
 
         this.jRadioButtonConvTrace.addActionListener(this::jRadioButtonConvTraceActionPerformed);
 
         final var optionSelect = new JLabel(this.translate("Select the desired option"));
 
         final var next =
-                basicButton("%s >>".formatted(this.translate("Next")), this::onNextClick);
+            basicButton("%s >>".formatted(this.translate("Next")), this::onNextClick);
 
         final GroupLayout jPanelTraceLayout = new GroupLayout(this.jPanelTrace);
         this.jPanelTrace.setLayout(jPanelTraceLayout);
 
-        jPanelTraceLayout.setHorizontalGroup(jPanelTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                              .addGroup(jPanelTraceLayout.createSequentialGroup()
-                                                                                         .addGroup(jPanelTraceLayout
-                                                                                                           .createParallelGroup(
-                                                                                                                   GroupLayout.Alignment.LEADING)
-                                                                                                           .addGroup(
-                                                                                                                   jPanelTraceLayout
-                                                                                                                           .createSequentialGroup()
-                                                                                                                           .addGroup(
-                                                                                                                                   jPanelTraceLayout
-                                                                                                                                           .createParallelGroup(
-                                                                                                                                                   GroupLayout.Alignment.LEADING)
-                                                                                                                                           .addGroup(
-                                                                                                                                                   jPanelTraceLayout
-                                                                                                                                                           .createSequentialGroup()
-                                                                                                                                                           .addGap(
-                                                                                                                                                                   29,
-                                                                                                                                                                   29,
-                                                                                                                                                                   29
-                                                                                                                                                           )
-                                                                                                                                                           .addComponent(
-                                                                                                                                                                   optionSelect))
-                                                                                                                                           .addGroup(
-                                                                                                                                                   jPanelTraceLayout
-                                                                                                                                                           .createSequentialGroup()
-                                                                                                                                                           .addGap(
-                                                                                                                                                                   61,
-                                                                                                                                                                   61,
-                                                                                                                                                                   61
-                                                                                                                                                           )
-                                                                                                                                                           .addGroup(
-                                                                                                                                                                   jPanelTraceLayout
-                                                                                                                                                                           .createParallelGroup(
-                                                                                                                                                                                   GroupLayout.Alignment.LEADING)
-                                                                                                                                                                           .addComponent(
-                                                                                                                                                                                   this.jRadioButtonConvTrace)
-                                                                                                                                                                           .addComponent(
-                                                                                                                                                                                   this.jRadioButtonWmsx))))
-                                                                                                                           .addGap(
-                                                                                                                                   0,
-                                                                                                                                   48,
-                                                                                                                                   Short.MAX_VALUE
-                                                                                                                           ))
-                                                                                                           .addGroup(
-                                                                                                                   GroupLayout.Alignment.TRAILING,
-                                                                                                                   jPanelTraceLayout
-                                                                                                                           .createSequentialGroup()
-                                                                                                                           .addContainerGap(
-                                                                                                                                   422,
-                                                                                                                                   Short.MAX_VALUE
-                                                                                                                           )
-                                                                                                                           .addComponent(
-                                                                                                                                   next)
-                                                                                                           ))
-                                                                                         .addContainerGap()));
+        jPanelTraceLayout.setHorizontalGroup(jPanelTraceLayout
+                                                 .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                 .addGroup(jPanelTraceLayout.createSequentialGroup()
+                                                               .addGroup(jPanelTraceLayout
+                                                                             .createParallelGroup(
+                                                                                 GroupLayout.Alignment.LEADING)
+                                                                             .addGroup(
+                                                                                 jPanelTraceLayout
+                                                                                     .createSequentialGroup()
+                                                                                     .addGroup(
+                                                                                         jPanelTraceLayout
+                                                                                             .createParallelGroup(
+                                                                                                 GroupLayout.Alignment.LEADING)
+                                                                                             .addGroup(
+                                                                                                 jPanelTraceLayout
+                                                                                                     .createSequentialGroup()
+                                                                                                     .addGap(
+                                                                                                         29,
+                                                                                                         29,
+                                                                                                         29
+                                                                                                     )
+                                                                                                     .addComponent(
+                                                                                                         optionSelect))
+                                                                                             .addGroup(
+                                                                                                 jPanelTraceLayout
+                                                                                                     .createSequentialGroup()
+                                                                                                     .addGap(
+                                                                                                         61,
+                                                                                                         61,
+                                                                                                         61
+                                                                                                     )
+                                                                                                     .addGroup(
+                                                                                                         jPanelTraceLayout
+                                                                                                             .createParallelGroup(
+                                                                                                                 GroupLayout.Alignment.LEADING)
+                                                                                                             .addComponent(
+                                                                                                                 this.jRadioButtonConvTrace)
+                                                                                                             .addComponent(
+                                                                                                                 this.jRadioButtonWmsx))))
+                                                                                     .addGap(
+                                                                                         0,
+                                                                                         48,
+                                                                                         Short.MAX_VALUE
+                                                                                     ))
+                                                                             .addGroup(
+                                                                                 GroupLayout.Alignment.TRAILING,
+                                                                                 jPanelTraceLayout
+                                                                                     .createSequentialGroup()
+                                                                                     .addContainerGap(
+                                                                                         422,
+                                                                                         Short.MAX_VALUE
+                                                                                     )
+                                                                                     .addComponent(
+                                                                                         next)
+                                                                             ))
+                                                               .addContainerGap()));
 
-        jPanelTraceLayout.setVerticalGroup(jPanelTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                            .addGroup(jPanelTraceLayout.createSequentialGroup()
-                                                                                       .addGap(24, 24, 24)
-                                                                                       .addComponent(optionSelect)
-                                                                                       .addGap(62, 62, 62).addComponent(
-                                                                            this.jRadioButtonWmsx).addGap(18, 18, 18)
-                                                                                       .addComponent(
-                                                                                               this.jRadioButtonConvTrace)
-                                                                                       .addPreferredGap(
-                                                                                               LayoutStyle.ComponentPlacement.RELATED,
-                                                                                               66, Short.MAX_VALUE
-                                                                                       ).addComponent(next)
-                                                                                       .addGap(44, 44, 44)));
+        jPanelTraceLayout.setVerticalGroup(jPanelTraceLayout
+                                               .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                               .addGroup(jPanelTraceLayout.createSequentialGroup()
+                                                             .addGap(24, 24, 24)
+                                                             .addComponent(optionSelect)
+                                                             .addGap(62, 62, 62).addComponent(
+                                                       this.jRadioButtonWmsx).addGap(18, 18, 18)
+                                                             .addComponent(
+                                                                 this.jRadioButtonConvTrace)
+                                                             .addPreferredGap(
+                                                                 LayoutStyle.ComponentPlacement.RELATED,
+                                                                 66,
+                                                                 Short.MAX_VALUE
+                                                             ).addComponent(next)
+                                                             .addGap(44, 44, 44)));
 
         this.jPanelConvertTrace.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         this.jPanelConvertTrace.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
 
-        final var externalSelect = new JLabel(this.translate("Select a external format trace file to convert:"));
+        final var externalSelect =
+            new JLabel(this.translate("Select a external format trace file to convert:"));
 
         final var openExternal =
-                basicButton(this.translate("Open"), this::onOpenExternalClicked);
+            basicButton(this.translate("Open"), this::onOpenExternalClicked);
 
         final var notifications = new JLabel(this.translate("Notifications"));
 
         final var convertExternal =
-                basicButton(this.translate("Convert"), this::onConvertExternalClicked);
+            basicButton(this.translate("Convert"), this::onConvertExternalClicked);
 
         this.jTextFieldCaminhoTrace.addActionListener(LoadConfigurationDialog.DO_NOTHING);
 
@@ -957,56 +1037,70 @@ public class LoadConfigurationDialog extends JDialog {
         jScrollPane2.setViewportView(this.jTextNotifTrace);
 
         final var previous = basicButton(
-                "<< %s".formatted(this.translate("Previous")),
-                this::onPreviousClick
+            "<< %s".formatted(this.translate("Previous")),
+            this::onPreviousClick
         );
 
         final GroupLayout jPanelConvertTraceLayout = new GroupLayout(this.jPanelConvertTrace);
         this.jPanelConvertTrace.setLayout(jPanelConvertTraceLayout);
         jPanelConvertTraceLayout.setHorizontalGroup(
-                jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                        jPanelConvertTraceLayout.createSequentialGroup().addContainerGap().addGroup(
-                                                        jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                                                .addComponent(jScrollPane2,
-                                                                                              GroupLayout.DEFAULT_SIZE, 474,
-                                                                                              Short.MAX_VALUE
-                                                                                ).addComponent(externalSelect)
-                                                                                .addComponent(notifications).addGroup(
-                                                                                        jPanelConvertTraceLayout.createSequentialGroup()
-                                                                                                                .addComponent(openExternal, GroupLayout.PREFERRED_SIZE,
-                                                                                                                              78, GroupLayout.PREFERRED_SIZE
-                                                                                                                )
-                                                                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                .addComponent(this.jTextFieldCaminhoTrace,
-                                                                                                                              GroupLayout.DEFAULT_SIZE, 295,
-                                                                                                                              Short.MAX_VALUE
-                                                                                                                )
-                                                                                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                                .addComponent(convertExternal))
-                                                                                .addComponent(
-                                                                                        previous,
-                                                                                        GroupLayout.Alignment.TRAILING
-                                                                                ))
-                                                .addContainerGap()));
+            jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                jPanelConvertTraceLayout.createSequentialGroup().addContainerGap().addGroup(
+                        jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                            .addComponent(
+                                jScrollPane2,
+                                GroupLayout.DEFAULT_SIZE,
+                                474,
+                                Short.MAX_VALUE
+                            ).addComponent(externalSelect)
+                            .addComponent(notifications).addGroup(
+                                jPanelConvertTraceLayout
+                                    .createSequentialGroup()
+                                    .addComponent(
+                                        openExternal,
+                                        GroupLayout.PREFERRED_SIZE,
+                                        78,
+                                        GroupLayout.PREFERRED_SIZE
+                                    )
+                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(
+                                        this.jTextFieldCaminhoTrace,
+                                        GroupLayout.DEFAULT_SIZE,
+                                        295,
+                                        Short.MAX_VALUE
+                                    )
+                                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(convertExternal))
+                            .addComponent(
+                                previous,
+                                GroupLayout.Alignment.TRAILING
+                            ))
+                    .addContainerGap()));
         jPanelConvertTraceLayout.setVerticalGroup(
-                jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                        jPanelConvertTraceLayout.createSequentialGroup().addContainerGap().addComponent(externalSelect)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED).addGroup(
-                                                        jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                                                .addComponent(openExternal)
-                                                                                .addComponent(
-                                                                                        this.jTextFieldCaminhoTrace,
-                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                ).addComponent(convertExternal))
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(notifications)
-                                                .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 142,
-                                                              GroupLayout.PREFERRED_SIZE
-                                                ).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(previous).addGap(65, 65, 65)));
+            jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                jPanelConvertTraceLayout
+                    .createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(externalSelect)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(
+                        jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(openExternal)
+                            .addComponent(
+                                this.jTextFieldCaminhoTrace,
+                                GroupLayout.PREFERRED_SIZE,
+                                GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.PREFERRED_SIZE
+                            ).addComponent(convertExternal))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(notifications)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jScrollPane2, GroupLayout.PREFERRED_SIZE, 142,
+                                  GroupLayout.PREFERRED_SIZE
+                    )
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(previous)
+                    .addGap(65, 65, 65)));
 
         this.jOpenTrace.setAcceptAllFileFilterUsed(false);
         this.jOpenTrace.setFileFilter(this.workloadFileFilter);
@@ -1020,15 +1114,15 @@ public class LoadConfigurationDialog extends JDialog {
         final var jLabel21 = new JLabel(this.translate("Notifications"));
 
         this.jTextNotification.setColumns(20);
-        this.jTextNotification.setFont(LoadConfigurationDialog.TAHOMA_FONT);
+        this.jTextNotification.setFont(Tahoma.PLAIN_11);
         this.jTextNotification.setRows(5);
         this.jTextNotification.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
         jScrollPane1.setViewportView(this.jTextNotification);
 
         final var previous2 = basicButton(
-                "<< %s".formatted(this.translate("Previous")),
-                this::onPrevious2Click
+            "<< %s".formatted(this.translate("Previous")),
+            this::onPrevious2Click
         );
 
         final var openWmsx = basicButton(this.translate("Open"), this::onOpenWmsxClick);
@@ -1037,45 +1131,55 @@ public class LoadConfigurationDialog extends JDialog {
         this.jPanelPickTrace.setLayout(jPanelSelecionaTraceLayout);
 
         jPanelSelecionaTraceLayout.setHorizontalGroup(
-                jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                        jPanelSelecionaTraceLayout.createSequentialGroup().addContainerGap().addGroup(
-                                jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                          .addComponent(jLabel20)
-                                                          .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 476,
-                                                                        Short.MAX_VALUE
-                                                          )
-                                                          .addComponent(previous2, GroupLayout.Alignment.TRAILING)
-                                                          .addComponent(jLabel21).addGroup(
-                                                                  jPanelSelecionaTraceLayout.createSequentialGroup()
-                                                                                            .addComponent(
-                                                                                                    openWmsx,
-                                                                                                    GroupLayout.PREFERRED_SIZE,
-                                                                                                    71,
-                                                                                                    GroupLayout.PREFERRED_SIZE
-                                                                                            ).addPreferredGap(
-                                                                                                    LayoutStyle.ComponentPlacement.RELATED)
-                                                                                            .addComponent(this.jTextFieldCaminhoWMS,
-                                                                                                          GroupLayout.DEFAULT_SIZE, 403,
-                                                                                                          Short.MAX_VALUE
-                                                                                            ))).addContainerGap()));
+            jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                jPanelSelecionaTraceLayout.createSequentialGroup().addContainerGap().addGroup(
+                    jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel20)
+                        .addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 476,
+                                      Short.MAX_VALUE
+                        )
+                        .addComponent(previous2, GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel21).addGroup(
+                            jPanelSelecionaTraceLayout.createSequentialGroup()
+                                .addComponent(
+                                    openWmsx,
+                                    GroupLayout.PREFERRED_SIZE,
+                                    71,
+                                    GroupLayout.PREFERRED_SIZE
+                                ).addPreferredGap(
+                                    LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(
+                                    this.jTextFieldCaminhoWMS,
+                                    GroupLayout.DEFAULT_SIZE,
+                                    403,
+                                    Short.MAX_VALUE
+                                ))).addContainerGap()));
         jPanelSelecionaTraceLayout.setVerticalGroup(
-                jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                        jPanelSelecionaTraceLayout.createSequentialGroup().addGap(12, 12, 12).addComponent(jLabel20)
-                                                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED).addGroup(
-                                                          jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                                                    .addComponent(openWmsx)
-                                                                                    .addComponent(
-                                                                                            this.jTextFieldCaminhoWMS,
-                                                                                            GroupLayout.PREFERRED_SIZE,
-                                                                                            GroupLayout.DEFAULT_SIZE,
-                                                                                            GroupLayout.PREFERRED_SIZE
-                                                                                    )).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                                  .addComponent(jLabel21)
-                                                  .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                  .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 147,
-                                                                GroupLayout.PREFERRED_SIZE
-                                                  ).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                  .addComponent(previous2).addContainerGap(31, Short.MAX_VALUE)));
+            jPanelSelecionaTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
+                jPanelSelecionaTraceLayout
+                    .createSequentialGroup()
+                    .addGap(12, 12, 12)
+                    .addComponent(jLabel20)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(
+                        jPanelSelecionaTraceLayout
+                            .createParallelGroup(GroupLayout.Alignment.BASELINE)
+                            .addComponent(openWmsx)
+                            .addComponent(
+                                this.jTextFieldCaminhoWMS,
+                                GroupLayout.PREFERRED_SIZE,
+                                GroupLayout.DEFAULT_SIZE,
+                                GroupLayout.PREFERRED_SIZE
+                            ))
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jLabel21)
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 147,
+                                  GroupLayout.PREFERRED_SIZE
+                    )
+                    .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(previous2)
+                    .addContainerGap(31, Short.MAX_VALUE)));
 
         this.jFileExternalTrace.setAcceptAllFileFilterUsed(false);
         this.jFileExternalTrace.setFileFilter(this.traceFileFilter);
@@ -1086,8 +1190,8 @@ public class LoadConfigurationDialog extends JDialog {
         this.setResizable(false);
 
         jPanelModo.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(0, 0, 0)),
-                this.translate("Insertion mode for the workloads")
+            BorderFactory.createLineBorder(new Color(0, 0, 0)),
+            this.translate("Insertion mode for the workloads")
         ));
         jPanelModo.setMaximumSize(new Dimension(500, 60));
         jPanelModo.setMinimumSize(new Dimension(500, 60));
@@ -1107,40 +1211,56 @@ public class LoadConfigurationDialog extends JDialog {
         final GroupLayout jPanelModoLayout = new GroupLayout(jPanelModo);
         jPanelModo.setLayout(jPanelModoLayout);
 
-        jPanelModoLayout.setHorizontalGroup(jPanelModoLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                            .addGroup(jPanelModoLayout.createSequentialGroup()
-                                                                                      .addGap(62, 62, 62).addComponent(
-                                                                            this.jRadioButtonRandom).addGap(37, 37, 37)
-                                                                                      .addComponent(
-                                                                                              this.jRadioButtonForNode,
-                                                                                              GroupLayout.PREFERRED_SIZE,
-                                                                                              126,
-                                                                                              GroupLayout.PREFERRED_SIZE
-                                                                                      ).addGap(31, 31, 31).addComponent(
-                                                                            this.jRadioButtonTraces,
-                                                                            GroupLayout.PREFERRED_SIZE, 72,
-                                                                            GroupLayout.PREFERRED_SIZE
-                                                                    ).addContainerGap(
-                                                                            GroupLayout.DEFAULT_SIZE,
-                                                                            Short.MAX_VALUE
-                                                                    )));
+        jPanelModoLayout.setHorizontalGroup(jPanelModoLayout
+                                                .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                .addGroup(jPanelModoLayout.createSequentialGroup()
+                                                              .addGap(62, 62, 62).addComponent(
+                                                        this.jRadioButtonRandom).addGap(37, 37, 37)
+                                                              .addComponent(
+                                                                  this.jRadioButtonForNode,
+                                                                  GroupLayout.PREFERRED_SIZE,
+                                                                  126,
+                                                                  GroupLayout.PREFERRED_SIZE
+                                                              ).addGap(31, 31, 31).addComponent(
+                                                        this.jRadioButtonTraces,
+                                                        GroupLayout.PREFERRED_SIZE, 72,
+                                                        GroupLayout.PREFERRED_SIZE
+                                                    ).addContainerGap(
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        Short.MAX_VALUE
+                                                    )));
 
-        jPanelModoLayout.setVerticalGroup(jPanelModoLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                jPanelModoLayout.createSequentialGroup().addContainerGap().addGroup(
-                        jPanelModoLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                        .addComponent(this.jRadioButtonRandom)
-                                        .addComponent(this.jRadioButtonTraces, GroupLayout.PREFERRED_SIZE, 25,
-                                                      GroupLayout.PREFERRED_SIZE
-                                        ).addComponent(this.jRadioButtonForNode)).addGap(9, 9, 9)));
+        jPanelModoLayout.setVerticalGroup(jPanelModoLayout
+                                              .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                              .addGroup(
+                                                  jPanelModoLayout
+                                                      .createSequentialGroup()
+                                                      .addContainerGap()
+                                                      .addGroup(
+                                                          jPanelModoLayout
+                                                              .createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                              .addComponent(this.jRadioButtonRandom)
+                                                              .addComponent(
+                                                                  this.jRadioButtonTraces,
+                                                                  GroupLayout.PREFERRED_SIZE,
+                                                                  25,
+                                                                  GroupLayout.PREFERRED_SIZE
+                                                              )
+                                                              .addComponent(this.jRadioButtonForNode))
+                                                      .addGap(9, 9, 9)));
 
         this.jScrollPaneSelecionado.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
 
         final GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
-                jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 498, Short.MAX_VALUE));
+            jPanel1Layout
+                .createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGap(0, 498, Short.MAX_VALUE));
         jPanel1Layout.setVerticalGroup(
-                jPanel1Layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 309, Short.MAX_VALUE));
+            jPanel1Layout
+                .createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGap(0, 309, Short.MAX_VALUE));
 
         this.jScrollPaneSelecionado.setViewportView(jPanel1);
 
@@ -1151,7 +1271,7 @@ public class LoadConfigurationDialog extends JDialog {
      * Load properties from load generator into window components.
      *
      * @param loadGenerator
-     *         The load generator.
+     *     The load generator.
      */
     private void setValores (final WorkloadGenerator loadGenerator) {
         if (loadGenerator == null) {
@@ -1193,9 +1313,9 @@ public class LoadConfigurationDialog extends JDialog {
                                                File %s
                                                \t- File format: %s
                                                \t- File has a workload of %d tasks""".formatted(
-                        this.file.getName(),
-                        this.traceType,
-                        this.traceTaskNumber
+                    this.file.getName(),
+                    this.traceType,
+                    this.traceTaskNumber
                 ));
                 this.setTipo(WorkloadGeneratorType.TRACE);
             }
@@ -1233,7 +1353,6 @@ public class LoadConfigurationDialog extends JDialog {
             this.jTextFieldCaminhoTrace.setText("");
             this.jTextNotifTrace.setText("");
             this.traceTaskNumber = 0;
-
         } else if (this.jRadioButtonConvTrace.isSelected()) {
             this.jRadioButtonConvTrace.setSelected(true);
             this.jRadioButtonWmsx.setSelected(false);
@@ -1255,7 +1374,8 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onNextClick (final ActionEvent evt) {
-        final JPanel panel = this.jRadioButtonWmsx.isSelected() ? this.jPanelPickTrace : this.jPanelConvertTrace;
+        final JPanel panel =
+            this.jRadioButtonWmsx.isSelected() ? this.jPanelPickTrace : this.jPanelConvertTrace;
         this.jScrollPaneSelecionado.setViewportView(panel);
     }
 
@@ -1272,7 +1392,6 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onConvertExternalClicked (final ActionEvent evt) {
-
 
         try {
             final TraceXML interpret = new TraceXML(this.jTextFieldCaminhoTrace.getText());
@@ -1334,55 +1453,82 @@ public class LoadConfigurationDialog extends JDialog {
 
     private void makeLayoutAndPack (final Component panel) {
         final var ok = aButton(this.translate("OK"), this::onOkClick)
-                .withPreferredSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE)
-                .build();
+            .withPreferredSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE)
+            .build();
 
         final var cancel = aButton(this.translate("Cancel"), this::onCancelClick)
-                .withSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE).build();
+            .withSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE).build();
 
         final var layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
 
-        layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                layout.createSequentialGroup().addContainerGap().addGroup(
-                              layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
-                                            layout.createSequentialGroup().addGap(150, 150, 150)
-                                                  .addComponent(cancel, GroupLayout.PREFERRED_SIZE, 120,
-                                                                GroupLayout.PREFERRED_SIZE
-                                                  )
-                                                  .addGap(28, 28, 28)
-                                                  .addComponent(ok, GroupLayout.PREFERRED_SIZE, 124,
-                                                                GroupLayout.PREFERRED_SIZE
-                                                  ))
-                                    .addComponent(this.jScrollPaneSelecionado, GroupLayout.DEFAULT_SIZE,
-                                                  GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE
-                                    )
-                                    .addComponent(panel, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
-                                                  Short.MAX_VALUE
-                                    ))
-                      .addContainerGap()));
+        layout.setHorizontalGroup(layout
+                                      .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                      .addGroup(
+                                          layout.createSequentialGroup().addContainerGap().addGroup(
+                                                  layout
+                                                      .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                                      .addGroup(
+                                                          layout
+                                                              .createSequentialGroup()
+                                                              .addGap(150, 150, 150)
+                                                              .addComponent(
+                                                                  cancel,
+                                                                  GroupLayout.PREFERRED_SIZE,
+                                                                  120,
+                                                                  GroupLayout.PREFERRED_SIZE
+                                                              )
+                                                              .addGap(28, 28, 28)
+                                                              .addComponent(
+                                                                  ok,
+                                                                  GroupLayout.PREFERRED_SIZE,
+                                                                  124,
+                                                                  GroupLayout.PREFERRED_SIZE
+                                                              ))
+                                                      .addComponent(
+                                                          this.jScrollPaneSelecionado,
+                                                          GroupLayout.DEFAULT_SIZE,
+                                                          GroupLayout.DEFAULT_SIZE,
+                                                          Short.MAX_VALUE
+                                                      )
+                                                      .addComponent(
+                                                          panel,
+                                                          GroupLayout.DEFAULT_SIZE,
+                                                          GroupLayout.DEFAULT_SIZE,
+                                                          Short.MAX_VALUE
+                                                      ))
+                                              .addContainerGap()));
 
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                      .addGroup(
-                                              GroupLayout.Alignment.TRAILING,
-                                              layout.createSequentialGroup().addContainerGap()
-                                                    .addComponent(panel, GroupLayout.DEFAULT_SIZE,
-                                                                  GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE
-                                                    ).addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                    .addComponent(this.jScrollPaneSelecionado,
-                                                                  GroupLayout.PREFERRED_SIZE, 311,
+                                    .addGroup(
+                                        GroupLayout.Alignment.TRAILING,
+                                        layout
+                                            .createSequentialGroup()
+                                            .addContainerGap()
+                                            .addComponent(panel, GroupLayout.DEFAULT_SIZE,
+                                                          GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE
+                                            )
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(this.jScrollPaneSelecionado,
+                                                          GroupLayout.PREFERRED_SIZE, 311,
+                                                          GroupLayout.PREFERRED_SIZE
+                                            )
+                                            .addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addGroup(
+                                                layout
+                                                    .createParallelGroup(GroupLayout.Alignment.BASELINE)
+                                                    .addComponent(
+                                                        cancel,
+                                                        GroupLayout.PREFERRED_SIZE,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        GroupLayout.PREFERRED_SIZE
+                                                    )
+                                                    .addComponent(ok, GroupLayout.PREFERRED_SIZE,
+                                                                  GroupLayout.DEFAULT_SIZE,
                                                                   GroupLayout.PREFERRED_SIZE
-                                                    ).addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-                                                    .addGroup(
-                                                            layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                                                  .addComponent(cancel, GroupLayout.PREFERRED_SIZE,
-                                                                                GroupLayout.DEFAULT_SIZE,
-                                                                                GroupLayout.PREFERRED_SIZE
-                                                                  ).addComponent(ok, GroupLayout.PREFERRED_SIZE,
-                                                                                 GroupLayout.DEFAULT_SIZE,
-                                                                                 GroupLayout.PREFERRED_SIZE
-                                                                  )).addContainerGap()
-                                      ));
+                                                    ))
+                                            .addContainerGap()
+                                    ));
 
         this.pack();
     }
@@ -1391,7 +1537,7 @@ public class LoadConfigurationDialog extends JDialog {
      * Shows window and selects the needed radio button based on the given type.
      *
      * @param type
-     *         Type selected by user
+     *     Type selected by user
      */
     private void setTipo (final WorkloadGeneratorType type) {
         switch (type) {
@@ -1430,26 +1576,42 @@ public class LoadConfigurationDialog extends JDialog {
                 final double probComun = (double) this.jSpinnerProbabilityComunicacao.getValue();
                 final var    timeArriv = (int) this.jSpinnerTimeOfArrival.getValue();
                 this.loadGenerator =
-                        new GlobalWorkloadGenerator(taskCount, minComp, maxComp, aveComp, probComp, minComun, maxComun,
-                                                    aveComun, probComun, timeArriv
-                        );
+                    new GlobalWorkloadGenerator(
+                        taskCount,
+                        minComp,
+                        maxComp,
+                        aveComp,
+                        probComp,
+                        minComun,
+                        maxComun,
+                        aveComun,
+                        probComun,
+                        timeArriv
+                    );
             } catch (final Exception ex) {
-                Logger.getLogger(LoadConfigurationDialog.class.getName()).log(Level.SEVERE, null, ex);
+                Logger
+                    .getLogger(LoadConfigurationDialog.class.getName())
+                    .log(Level.SEVERE, null, ex);
             }
         } else if (this.jRadioButtonForNode.isSelected()) {
             try {
-                final List<WorkloadGenerator> configuracaoNo = new ArrayList<>(this.tableRow.size());
-                final var                     idSupplier     = new SequentialIntSupplier();
+                final List<WorkloadGenerator> configuracaoNo =
+                    new ArrayList<>(this.tableRow.size());
+                final var idSupplier = new SequentialIntSupplier();
                 for (final List item : this.tableRow) {
                     configuracaoNo.add(PerNodeWorkloadGenerator.fromTableRow(item, idSupplier));
                 }
-                this.loadGenerator = new CollectionWorkloadGenerator(WorkloadGeneratorType.PER_NODE, configuracaoNo);
+                this.loadGenerator =
+                    new CollectionWorkloadGenerator(WorkloadGeneratorType.PER_NODE, configuracaoNo);
             } catch (final Exception ex) {
-                Logger.getLogger(LoadConfigurationDialog.class.getName()).log(Level.SEVERE, null, ex);
+                Logger
+                    .getLogger(LoadConfigurationDialog.class.getName())
+                    .log(Level.SEVERE, null, ex);
             }
         } else if (this.jRadioButtonTraces.isSelected()) {
             //configura a carga apartir do arquivo aberto..
-            this.loadGenerator = new TraceFileWorkloadGenerator(this.file, this.traceTaskNumber, this.traceType);
+            this.loadGenerator =
+                new TraceFileWorkloadGenerator(this.file, this.traceTaskNumber, this.traceType);
         }
         this.setVisible(false);
     }
@@ -1470,6 +1632,17 @@ public class LoadConfigurationDialog extends JDialog {
 
         static final char FILE_EXTENSION_SEPARATOR = '.';
 
+        private static String getFileExtension (final File file) {
+            final var s = file.getName();
+            final int i = s.lastIndexOf(SomeFileView.FILE_EXTENSION_SEPARATOR);
+
+            if (i <= 0 || i >= s.length() - 1) {
+                return null;
+            }
+
+            return s.substring(i + 1).toLowerCase();
+        }
+
         @Override
         public Icon getIcon (final File filePath) {
             if (!"wmsx".equals(getFileExtension(filePath))) {
@@ -1483,17 +1656,6 @@ public class LoadConfigurationDialog extends JDialog {
             }
 
             return new ImageIcon(url);
-        }
-
-        private static String getFileExtension (final File file) {
-            final var s = file.getName();
-            final int i = s.lastIndexOf(SomeFileView.FILE_EXTENSION_SEPARATOR);
-
-            if (i <= 0 || i >= s.length() - 1) {
-                return null;
-            }
-
-            return s.substring(i + 1).toLowerCase();
         }
     }
 }
