@@ -6,6 +6,7 @@ public enum SimulationMode {
     GRAPHICAL((byte) 2, "graphical");
 
     public final byte   asInt;
+
     public final String xmlName;
 
     SimulationMode (final byte i, final String xmlName) {

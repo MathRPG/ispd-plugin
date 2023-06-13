@@ -22,23 +22,23 @@ import java.util.regex.Pattern;
  */
 public class TraceXML {
 
-    private static final char    FILE_PATH_DELIMITER    = File.separatorChar;
+    private static final char FILE_PATH_DELIMITER = File.separatorChar;
 
-    private static final char    FILE_EXT_DELIMITER     = '.';
+    private static final char FILE_EXT_DELIMITER = '.';
 
-    private static final Pattern TABS                   = Pattern.compile("\t");
+    private static final Pattern TABS = Pattern.compile("\t");
 
-    private static final Pattern WHITE_SPACE            = Pattern.compile("\\s\\s++");
+    private static final Pattern WHITE_SPACE = Pattern.compile("\\s\\s++");
 
-    private static final int     NON_TASK_RELATED_LINES = 7;
+    private static final int NON_TASK_RELATED_LINES = 7;
 
-    private final        String  path;
+    private final String path;
 
-    private              String  type;
+    private String type;
 
-    private              String  output;
+    private String output;
 
-    private              int     taskCount              = 0;
+    private int taskCount = 0;
 
     public TraceXML (final String path) {
         this.path = path;

@@ -1,51 +1,69 @@
 package ispd.arquivo.xml.utils;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-
+import ispd.motor.random.TwoStageUniform;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import ispd.motor.random.TwoStageUniform;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 /**
- * Utility class to add convenience methods to manipulate XML Element objects.
- * It functions as a wrapper, outsourcing method calls to the inner object.
+ * Utility class to add convenience methods to manipulate XML Element objects. It functions as a
+ * wrapper, outsourcing method calls to the inner object.
  */
 public class WrappedElement {
 
     private final Element element;
 
     /**
-     * Create a {@link TwoStageUniform} from this instance's {@link #sizes()}
-     * inner elements. The filtering predicate is to determine what kind of
-     * size is to be mapped, and the mapping function is to convert the first
-     * valid element found into a {@link TwoStageUniform}.
+     * Construct an instance to wrap the given {@link Element}.
+     *
+     * @param element
+     *     {@link Element} to be wrapped
+     */
+    public WrappedElement (final Element element) {
+        this.element = element;
+    }
+
+    /**
+     * @param nl
+     *     {@link NodeList} to be converted.
+     *
+     * @return convert given {@link NodeList} into a {@link Stream} of {@code WrappedElement}s
+     */
+    public static Stream<WrappedElement> nodeListToWrappedElementStream (final NodeList nl) {
+        return IntStream
+            .range(0, nl.getLength())
+            .mapToObj(nl::item)
+            .map(Element.class::cast)
+            .map(WrappedElement::new);
+    }
+
+    /**
+     * Create a {@link TwoStageUniform} from this instance's {@link #sizes()} inner elements. The
+     * filtering predicate is to determine what kind of size is to be mapped, and the mapping
+     * function is to convert the first valid element found into a {@link TwoStageUniform}.
      *
      * @param filteringPredicate
-     *         filter to select what type of inner element
-     *         must be converted; for instance,
-     *         {@link #isComputingType()}
+     *     filter to select what type of inner element must be converted; for instance,
+     *     {@link #isComputingType()}
      * @param mappingFunction
-     *         function to construct an instance of
-     *         {@link TwoStageUniform} from the first valid
-     *         inner element found; for
-     *         instance, {@link #toTwoStageUniform()}
+     *     function to construct an instance of {@link TwoStageUniform} from the first valid inner
+     *     element found; for instance, {@link #toTwoStageUniform()}
      *
-     * @return constructed {@link TwoStageUniform} from the first valid inner
-     *         element in this instance's {@link #sizes()} inner elements.
+     * @return constructed {@link TwoStageUniform} from the first valid inner element in this
+     * instance's {@link #sizes()} inner elements.
      */
     public TwoStageUniform makeTwoStageFromInnerSizes (
-            final Predicate<? super WrappedElement> filteringPredicate,
-            final Function<? super WrappedElement, TwoStageUniform> mappingFunction
+        final Predicate<? super WrappedElement> filteringPredicate,
+        final Function<? super WrappedElement, TwoStageUniform> mappingFunction
     ) {
         return this.sizes()
-                   .filter(filteringPredicate)
-                   .findFirst()
-                   .map(mappingFunction)
-                   .orElseGet(TwoStageUniform::new);
+            .filter(filteringPredicate)
+            .findFirst()
+            .map(mappingFunction)
+            .orElseGet(TwoStageUniform::new);
     }
 
     /**
@@ -59,40 +77,17 @@ public class WrappedElement {
         return nodeListToWrappedElementStream(this.getElementsByTagName(tag));
     }
 
-    /**
-     * @param nl
-     *         {@link NodeList} to be converted.
-     *
-     * @return convert given {@link NodeList} into a {@link Stream} of {@code
-     *         WrappedElement}s
-     */
-    public static Stream<WrappedElement> nodeListToWrappedElementStream (final NodeList nl) {
-        return IntStream.range(0, nl.getLength()).mapToObj(nl::item).map(Element.class::cast).map(WrappedElement::new);
-    }
-
     private NodeList getElementsByTagName (final String s) {
         return this.element.getElementsByTagName(s);
     }
 
     /**
-     * Construct an instance to wrap the given {@link Element}.
+     * Construct a {@link TwoStageUniform} from this instance, with the values acquired from
+     * {@link #minimum()}, {@link #maximum()} and {@link #average()};
+     * {@link TwoStageUniform#firstIntervalProbability() probability} is set to {@code 0}.
      *
-     * @param element
-     *         {@link Element} to be wrapped
-     */
-    public WrappedElement (final Element element) {
-        this.element = element;
-    }
-
-    /**
-     * Construct a {@link TwoStageUniform} from this instance, with the values
-     * acquired from {@link #minimum()}, {@link #maximum()} and
-     * {@link #average()}; {@link TwoStageUniform#firstIntervalProbability()
-     * probability} is set to {@code 0}.
-     *
-     * @return {@link TwoStageUniform} with a minimum, maximum, and average
-     *         values as the respective tags in this instance, and {@code 0} for
-     *         probability.
+     * @return {@link TwoStageUniform} with a minimum, maximum, and average values as the respective
+     * tags in this instance, and {@code 0} for probability.
      *
      * @see ispd.arquivo.exportador.Exportador
      */
@@ -101,12 +96,11 @@ public class WrappedElement {
     }
 
     /**
-     * Construct a {@link TwoStageUniform} from this instance (to act as a
-     * single stage uniform distribution), with the values acquired from
-     * {@link #minimum()} and {@link #maximum()}.
+     * Construct a {@link TwoStageUniform} from this instance (to act as a single stage uniform
+     * distribution), with the values acquired from {@link #minimum()} and {@link #maximum()}.
      *
-     * @return {@link TwoStageUniform} with a minimum and maximum values as the
-     *         respective tags in this element.
+     * @return {@link TwoStageUniform} with a minimum and maximum values as the respective tags in
+     * this element.
      *
      * @see TwoStageUniform#TwoStageUniform(double, double)
      */
@@ -115,15 +109,19 @@ public class WrappedElement {
     }
 
     /**
-     * Construct a {@link TwoStageUniform} from this instance, with the values
-     * acquired from {@link #minimum()}, {@link #maximum()},
-     * {@link #average()} and {@link #probability()}.
+     * Construct a {@link TwoStageUniform} from this instance, with the values acquired from
+     * {@link #minimum()}, {@link #maximum()}, {@link #average()} and {@link #probability()}.
      *
-     * @return {@link TwoStageUniform} with a minimum, maximum, average and
-     *         probability values as the respective tags in this element.
+     * @return {@link TwoStageUniform} with a minimum, maximum, average and probability values as
+     * the respective tags in this element.
      */
     public TwoStageUniform toTwoStageUniform () {
-        return new TwoStageUniform(this.minimum(), this.average(), this.maximum(), this.probability());
+        return new TwoStageUniform(
+            this.minimum(),
+            this.average(),
+            this.maximum(),
+            this.probability()
+        );
     }
 
     /**
@@ -410,8 +408,8 @@ public class WrappedElement {
     }
 
     /**
-     * @return inner element with tag "characteristic", containing processing
-     *         and storage information
+     * @return inner element with tag "characteristic", containing processing and storage
+     * information
      */
     public WrappedElement characteristics () {
         return this.firstTagElement("characteristic");
@@ -460,8 +458,7 @@ public class WrappedElement {
     }
 
     /**
-     * @return whether this element's "type" attribute contains the value
-     *         "computing"
+     * @return whether this element's "type" attribute contains the value "computing"
      */
     public boolean isComputingType () {
         return "computing".equals(this.type());
@@ -475,8 +472,7 @@ public class WrappedElement {
     }
 
     /**
-     * @return whether this element's "type" attribute contains the value
-     *         "communication"
+     * @return whether this element's "type" attribute contains the value "communication"
      */
     public boolean isCommunicationType () {
         return "communication".equals(this.type());

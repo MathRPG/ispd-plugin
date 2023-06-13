@@ -9,8 +9,7 @@ import ispd.gui.iconico.grade.Link;
 import ispd.gui.iconico.grade.Machine;
 
 /**
- * Utility class with static methods to build grid items for the gui, from
- * {@link WrappedElement}s
+ * Utility class with static methods to build grid items for the gui, from {@link WrappedElement}s
  *
  * @see IconicModelBuilder
  * @see WrappedElement
@@ -20,10 +19,13 @@ public enum IconBuilder {
     ;
 
     /**
-     * @return link icon from given element, with given origination and
-     *         destination
+     * @return link icon from given element, with given origination and destination
      */
-    public static Link aLink (final WrappedElement e, final Vertex origination, final Vertex destination) {
+    public static Link aLink (
+        final WrappedElement e,
+        final Vertex origination,
+        final Vertex destination
+    ) {
         final var link = new Link(origination, destination, e.iconId().local(), e.globalIconId());
 
         link.setSelected(false);
@@ -42,7 +44,8 @@ public enum IconBuilder {
     public static Cluster aCluster (final WrappedElement e) {
         final var info = IconInfo.fromElement(e);
 
-        final var cluster = new Cluster(info.x(), info.y(), info.localId(), info.globalId(), e.power());
+        final var cluster =
+            new Cluster(info.x(), info.y(), info.localId(), info.globalId(), e.power());
 
         cluster.getId().setName(e.id());
         cluster.setComputationalPower(e.power());
@@ -58,7 +61,10 @@ public enum IconBuilder {
         return cluster;
     }
 
-    private static void setProcessingCenterCharacteristics (final GridItem item, final WrappedElement e) {
+    private static void setProcessingCenterCharacteristics (
+        final GridItem item,
+        final WrappedElement e
+    ) {
         if (!e.hasCharacteristicAttribute()) {
             return;
         }
@@ -80,7 +86,6 @@ public enum IconBuilder {
             cluster.setCostPerProcessing(co.costProcessing());
             cluster.setCostPerMemory(co.costMemory());
             cluster.setCostPerDisk(co.costDisk());
-
         } else if (item instanceof final Machine machine) {
             machine.setComputationalPower(characteristic.processor().power());
             machine.setCoreCount(characteristic.processor().number());
@@ -121,7 +126,8 @@ public enum IconBuilder {
     public static Machine aMachine (final WrappedElement m) {
         final var info = IconInfo.fromElement(m);
 
-        final var machine = new Machine(info.x(), info.y(), info.localId(), info.globalId(), m.energy());
+        final var machine =
+            new Machine(info.x(), info.y(), info.localId(), info.globalId(), m.energy());
 
         machine.getId().setName(m.id());
         machine.setComputationalPower(m.power());
@@ -134,7 +140,7 @@ public enum IconBuilder {
     /**
      * Simple record to contain information in common between all icon objects
      */
-    private record IconInfo( int x, int y, int globalId, int localId ) {
+    private record IconInfo(int x, int y, int globalId, int localId) {
 
         private static IconInfo fromElement (final WrappedElement e) {
             final var position = e.position();
