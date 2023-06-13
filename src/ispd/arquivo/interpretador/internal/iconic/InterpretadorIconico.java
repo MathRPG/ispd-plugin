@@ -1,46 +1,43 @@
 package ispd.arquivo.interpretador.internal.iconic;
 
 import java.io.File;
-
+import java.io.FileInputStream;
 import javax.swing.JOptionPane;
-
 
 public class InterpretadorIconico {
 
-    Interpretador parser;
+    private Interpretador parser = null;
 
-    public InterpretadorIconico () {
-
-    }
-
-    public boolean leArquivo (File arquivo) {
-
+    public boolean leArquivo (final File arquivo) {
         try {
             try {
-                parser = new Interpretador(new java.io.FileInputStream(arquivo));
-                parser.verbose = false;
-                parser.printv("Modo verbose ligado");
-                parser.Modelo();
-            } catch (ParseException e) {
-                parser.erroEncontrado = true;
-                JOptionPane.showOptionDialog(null, "Foram encontrados os seguintes erros:\n" + e.getMessage(),
-                                             "Erros Encontrados", JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE,
-                                             null, null, null
+                this.parser = new Interpretador(new FileInputStream(arquivo));
+                this.parser.setVerbose(false);
+                this.parser.printv("Modo verbose ligado");
+                this.parser.Modelo();
+            } catch (final ParseException e) {
+                this.parser.setErroEncontrado(true);
+                JOptionPane.showOptionDialog(
+                    null,
+                    "Foram encontrados os seguintes erros:\n" + e.getMessage(),
+                    "Erros Encontrados",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    null
                 );
-                return parser.erroEncontrado;
+                return this.parser.isErroEncontrado();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
-            return parser.erroEncontrado;
+            return this.parser.isErroEncontrado();
         }
 
-        return parser.erroEncontrado;
+        return this.parser.isErroEncontrado();
     }
-
 
     public void escreveArquivo () {
-        parser.escreveArquivo();
+        this.parser.escreveArquivo();
     }
-
-
 }
