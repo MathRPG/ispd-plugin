@@ -1,15 +1,16 @@
 package ispd.policy;
 
-import java.util.List;
-
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
+import java.util.List;
 
 public abstract class Policy <T extends PolicyMaster> {
 
-    protected T                      mestre         = null;
-    protected List<List>             caminhoEscravo = null;
-    protected List<CS_Processamento> escravos       = null;
+    protected T mestre = null;
+
+    protected List<List> caminhoEscravo = null;
+
+    protected List<CS_Processamento> escravos = null;
 
     public abstract void iniciar ();
 

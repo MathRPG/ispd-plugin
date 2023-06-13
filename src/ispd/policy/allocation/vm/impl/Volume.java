@@ -1,10 +1,5 @@
 package ispd.policy.allocation.vm.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import ispd.annotations.Policy;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
@@ -14,17 +9,25 @@ import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
 import ispd.policy.allocation.vm.VmAllocationPolicy;
 import ispd.policy.allocation.vm.impl.util.ComparaRequisitos;
 import ispd.policy.allocation.vm.impl.util.ComparaVolume;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Policy
 public class Volume extends VmAllocationPolicy {
 
-    private final Comparator<CS_VirtualMac> comparaReq    = new ComparaRequisitos();
-    private final ComparaVolume             comparaRec    = new ComparaVolume();
-    private       boolean                   fit           = false;
-    private       int                       maqIndex      = 0;
-    private       List<CS_VirtualMac>       VMsOrdenadas  = null;
-    private       List<CS_Processamento>    MaqsOrdenadas = null;
+    private final Comparator<CS_VirtualMac> comparaReq = new ComparaRequisitos();
 
+    private final ComparaVolume comparaRec = new ComparaVolume();
+
+    private boolean fit = false;
+
+    private int maqIndex = 0;
+
+    private List<CS_VirtualMac> VMsOrdenadas = null;
+
+    private List<CS_Processamento> MaqsOrdenadas = null;
 
     public Volume () {
         this.maquinasVirtuais = new ArrayList<>();
@@ -49,16 +52,6 @@ public class Volume extends VmAllocationPolicy {
     }
 
     @Override
-    public CS_VirtualMac escalonarVM () {
-        return this.VMsOrdenadas.remove(0);
-    }
-
-    private void atualizarVolume () {
-        this.MaqsOrdenadas.sort((Comparator) this.comparaRec);
-        Collections.reverse(this.infoMaquinas);
-    }
-
-    @Override
     public List<CentroServico> escalonarRota (final CentroServico destino) {
         final int index = this.escravos.indexOf(destino);
         return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
@@ -78,7 +71,9 @@ public class Volume extends VmAllocationPolicy {
                     // escalona o recurso
                     if (auxMaq instanceof CS_VMM) {
 
-                        System.out.println(auxMaq.getId() + " é um VMM, a VM " + "será redirecionada");
+                        System.out.println(auxMaq.getId()
+                                           + " é um VMM, a VM "
+                                           + "será redirecionada");
                         auxVM.setCaminho(this.escalonarRota(auxMaq));
                         // salvando uma lista de VMMs intermediarios no caminho da vm e seus respectivos caminhos
                         System.out.println(auxVM.getId() + " enviada para " + auxMaq.getId());
@@ -101,10 +96,17 @@ public class Volume extends VmAllocationPolicy {
                         final int procVM = auxVM.getProcessadoresDisponiveis();
                         System.out.println("ProcVM: " + procVM);
 
-                        if ((memoriaNecessaria <= memoriaMaq && discoNecessario <= discoMaq && procVM <= maqProc)) {
+                        if ((
+                            memoriaNecessaria <= memoriaMaq
+                            && discoNecessario <= discoMaq
+                            && procVM <= maqProc
+                        )) {
                             maq.setMemoriaDisponivel(memoriaMaq - memoriaNecessaria);
                             System.out.println("Realizando o controle de recurso:");
-                            System.out.println("memoria atual da maq: " + (memoriaMaq - memoriaNecessaria));
+                            System.out.println("memoria atual da maq: " + (
+                                memoriaMaq
+                                - memoriaNecessaria
+                            ));
                             maq.setDiscoDisponivel(discoMaq - discoNecessario);
                             System.out.println("disco atual maq: " + (discoMaq - discoNecessario));
                             maq.setProcessadoresDisponiveis(maqProc - procVM);
@@ -116,7 +118,6 @@ public class Volume extends VmAllocationPolicy {
                             System.out.println("---------------------------------------");
                             this.atualizarVolume();
                             break;
-
                         } else {
                             num_escravos--;
                         }
@@ -131,7 +132,6 @@ public class Volume extends VmAllocationPolicy {
                 }
             }
         }
-
     }
 
     @Override
@@ -142,5 +142,14 @@ public class Volume extends VmAllocationPolicy {
             return this.escravos.get(this.maqIndex);
         }
     }
-}
 
+    @Override
+    public CS_VirtualMac escalonarVM () {
+        return this.VMsOrdenadas.remove(0);
+    }
+
+    private void atualizarVolume () {
+        this.MaqsOrdenadas.sort((Comparator) this.comparaRec);
+        Collections.reverse(this.infoMaquinas);
+    }
+}

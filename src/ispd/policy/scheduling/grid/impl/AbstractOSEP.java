@@ -1,22 +1,23 @@
 package ispd.policy.scheduling.grid.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.policy.PolicyConditions;
 import ispd.policy.scheduling.grid.GridSchedulingPolicy;
 import ispd.policy.scheduling.grid.impl.util.SlaveControl;
 import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public abstract class AbstractOSEP <T extends UserProcessingControl> extends GridSchedulingPolicy {
 
-    private static final double                              REFRESH_TIME  = 15.0;
-    protected final      Map<CS_Processamento, SlaveControl> slaveControls = new HashMap<>();
-    protected final      Map<String, T>                      userControls  = new HashMap<>();
+    private static final double REFRESH_TIME = 15.0;
+
+    protected final Map<CS_Processamento, SlaveControl> slaveControls = new HashMap<>();
+
+    protected final Map<String, T> userControls = new HashMap<>();
 
     public AbstractOSEP () {
         this.tarefas     = new ArrayList<>();

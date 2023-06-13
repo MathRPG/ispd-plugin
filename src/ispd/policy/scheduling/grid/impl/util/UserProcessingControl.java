@@ -1,48 +1,55 @@
 package ispd.policy.scheduling.grid.impl.util;
 
-import java.util.Collection;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-
 import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.policy.scheduling.grid.GridMaster;
+import java.util.Collection;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 import jdk.jfr.Percentage;
 import jdk.jfr.Unsigned;
 
 public class UserProcessingControl {
 
     private final String userId;
+
     @Unsigned
-    private final long   ownedMachinesCount;
+    private final long ownedMachinesCount;
+
     @Unsigned
     private final double ownedMachinesProcessingPower;
-    @Unsigned
-    private       int    taskDemand          = 0;
-    @Unsigned
-    private       int    usedMachineCount    = 0;
-    @Unsigned
-    private       double usedProcessingPower = 0.0;
 
-    public UserProcessingControl (final String userId, final Collection<? extends CS_Processamento> systemMachines) {
+    @Unsigned
+    private int taskDemand = 0;
+
+    @Unsigned
+    private int usedMachineCount = 0;
+
+    @Unsigned
+    private double usedProcessingPower = 0.0;
+
+    public UserProcessingControl (
+        final String userId,
+        final Collection<? extends CS_Processamento> systemMachines
+    ) {
         this.userId = userId;
 
         this.ownedMachinesProcessingPower = this
-                .ownedNonMasterMachinesIn(systemMachines)
-                .mapToDouble(CS_Processamento::getPoderComputacional)
-                .sum();
+            .ownedNonMasterMachinesIn(systemMachines)
+            .mapToDouble(CS_Processamento::getPoderComputacional)
+            .sum();
 
         this.ownedMachinesCount = systemMachines.stream()
-                                                .filter(this::hasMachine)
-                                                .toList().size();
+            .filter(this::hasMachine)
+            .toList().size();
     }
 
     protected Stream<? extends CS_Processamento> ownedNonMasterMachinesIn (
-            final Collection<? extends CS_Processamento> systemMachines
+        final Collection<? extends CS_Processamento> systemMachines
     ) {
         return systemMachines.stream()
-                             .filter(this::hasMachine)
-                             .filter(Predicate.not(GridMaster.class::isInstance));
+            .filter(this::hasMachine)
+            .filter(Predicate.not(GridMaster.class::isInstance));
     }
 
     private boolean hasMachine (final CS_Processamento machine) {

@@ -8,7 +8,9 @@ public class ComparaVolume extends MachineComparator<CS_MaquinaCloud> {
 
     protected int calculateMachineValue (final CS_MaquinaCloud m) {
         return ComparaVolume.VOLUME * (
-                m.getProcessadoresDisponiveis() * (int) m.getMemoriaDisponivel() * (int) m.getDiscoDisponivel()
+            m.getProcessadoresDisponiveis()
+            * (int) m.getMemoriaDisponivel()
+            * (int) m.getDiscoDisponivel()
         );
     }
 }

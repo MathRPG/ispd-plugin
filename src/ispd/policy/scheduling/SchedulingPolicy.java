@@ -1,17 +1,18 @@
 package ispd.policy.scheduling;
 
-import java.util.List;
-
 import ispd.motor.filas.Mensagem;
 import ispd.motor.filas.Tarefa;
 import ispd.motor.metricas.MetricasUsuarios;
 import ispd.policy.Policy;
+import java.util.List;
 
 public abstract class SchedulingPolicy <T extends SchedulingMaster> extends Policy<T> {
 
-    protected List<Tarefa>     tarefas         = null;
+    protected List<Tarefa> tarefas = null;
+
     protected MetricasUsuarios metricaUsuarios = null;
-    protected List<List>       filaEscravo     = null;
+
+    protected List<List> filaEscravo = null;
 
     public abstract Tarefa escalonarTarefa ();
 

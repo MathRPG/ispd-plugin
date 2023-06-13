@@ -1,10 +1,5 @@
 package ispd.policy.allocation.vm.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
 import ispd.annotations.Policy;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
@@ -12,6 +7,10 @@ import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
 import ispd.motor.filas.servidores.implementacao.CS_VMM;
 import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
 import ispd.policy.allocation.vm.VmAllocationPolicy;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 @Policy
 public class RoundRobin extends VmAllocationPolicy {
@@ -40,14 +39,41 @@ public class RoundRobin extends VmAllocationPolicy {
         this.escalonar();
     }
 
+    @Override
+    public List<CentroServico> escalonarRota (final CentroServico destino) {
+        final int index = this.escravos.indexOf(destino);
+        return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
+    }
+
+    @Override
+    public void escalonar () {
+        while (!(this.maquinasVirtuais.isEmpty())) {
+            System.out.println("------------------------------------------");
+            this.findMachineForTask(this.escalonarVM());
+        }
+    }
+
+    @Override
+    public CS_Processamento escalonarRecurso () {
+        if (!this.physicalMachine.hasNext()) {
+            this.physicalMachine = this.escravos.listIterator(0);
+        }
+        return this.physicalMachine.next();
+    }
+
+    @Override
+    public CS_VirtualMac escalonarVM () {
+        return this.maquinasVirtuais.remove(0);
+    }
+
     private void test () {
         if (this.maquinasVirtuais.isEmpty()) {
             System.out.println("sem vms setadas");
         }
         System.out.println("Lista de VMs");
         this.maquinasVirtuais.stream()
-                             .map(CS_Processamento::getId)
-                             .forEach(System.out::println);
+            .map(CS_Processamento::getId)
+            .forEach(System.out::println);
     }
 
     private void findMachineForTask (final CS_VirtualMac vm) {
@@ -99,17 +125,12 @@ public class RoundRobin extends VmAllocationPolicy {
             vm.setMaquinaHospedeira((CS_MaquinaCloud) resource);
             vm.setCaminho(this.escalonarRota(resource));
             System.out.printf(
-                    "%s enviada para %s%n", vm.getId(), resource.getId());
+                "%s enviada para %s%n", vm.getId(), resource.getId());
             this.mestre.sendVm(vm);
             System.out.println("---------------------------------------");
 
             return;
         }
-    }
-
-    @Override
-    public CS_VirtualMac escalonarVM () {
-        return this.maquinasVirtuais.remove(0);
     }
 
     private void rejectVm (final CS_VirtualMac auxVm) {
@@ -121,35 +142,13 @@ public class RoundRobin extends VmAllocationPolicy {
     }
 
     private void redirectVm (
-            final CS_VirtualMac vm, final CS_Processamento resource
+        final CS_VirtualMac vm, final CS_Processamento resource
     ) {
         System.out.printf(
-                "%s é um VMM, a VM será redirecionada%n", resource.getId());
+            "%s é um VMM, a VM será redirecionada%n", resource.getId());
         vm.setCaminho(this.escalonarRota(resource));
         System.out.printf("%s enviada para %s%n", vm.getId(), resource.getId());
         this.mestre.sendVm(vm);
         System.out.println("---------------------------------------");
-    }
-
-    @Override
-    public List<CentroServico> escalonarRota (final CentroServico destino) {
-        final int index = this.escravos.indexOf(destino);
-        return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
-    }
-
-    @Override
-    public void escalonar () {
-        while (!(this.maquinasVirtuais.isEmpty())) {
-            System.out.println("------------------------------------------");
-            this.findMachineForTask(this.escalonarVM());
-        }
-    }
-
-    @Override
-    public CS_Processamento escalonarRecurso () {
-        if (!this.physicalMachine.hasNext()) {
-            this.physicalMachine = this.escravos.listIterator(0);
-        }
-        return this.physicalMachine.next();
     }
 }

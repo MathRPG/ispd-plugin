@@ -21,6 +21,7 @@ import ispd.gui.policy.GridSchedulingPolicyManagementWindow;
 import ispd.gui.policy.PolicyGeneratorWindow;
 import ispd.gui.policy.VmAllocationPolicyManagementWindow;
 import ispd.gui.utils.ButtonBuilder;
+import ispd.utils.constants.FileExtensions;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.HeadlessException;
@@ -1507,7 +1508,7 @@ public class MainWindow extends JFrame implements KeyListener {
     private void jMenuItemGridSimActionPerformed (final ActionEvent evt) {
         this.configureFileFilterAndChooser(
             "Java Source Files (. java)",
-            new String[] { ".java" },
+            new String[] { FileExtensions.JAVA },
             true
         );
 
@@ -1647,7 +1648,7 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void jMenuItemToGridSimActionPerformed (final ActionEvent evt) {
-        this.exportToFileType("Java Source Files (. java)", ".java");
+        this.exportToFileType("Java Source Files (. java)", FileExtensions.JAVA);
     }
 
     private File getFileWithExtension (final String ext) {

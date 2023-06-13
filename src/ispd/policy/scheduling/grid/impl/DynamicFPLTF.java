@@ -1,8 +1,5 @@
 package ispd.policy.scheduling.grid.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ispd.annotations.Policy;
 import ispd.motor.Mensagens;
 import ispd.motor.filas.Tarefa;
@@ -10,12 +7,15 @@ import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.motor.filas.servidores.implementacao.CS_Maquina;
 import ispd.policy.scheduling.grid.GridSchedulingPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 @Policy
 public class DynamicFPLTF extends GridSchedulingPolicy {
 
     private List<Double> tempoTornaDisponivel = null;
-    private Tarefa       tarefaSelecionada    = null;
+
+    private Tarefa tarefaSelecionada = null;
 
     public DynamicFPLTF () {
         this.tarefas     = new ArrayList<>();
@@ -47,13 +47,35 @@ public class DynamicFPLTF extends GridSchedulingPolicy {
             final int              index = this.escravos.indexOf(rec);
             final double           custo = rec.tempoProcessar(trf.getTamProcessamento());
             this.tempoTornaDisponivel.set(
-                    index,
-                    this.tempoTornaDisponivel.get(index) + custo
+                index,
+                this.tempoTornaDisponivel.get(index) + custo
             );
             trf.setLocalProcessamento(rec);
             trf.setCaminho(this.escalonarRota(rec));
             this.mestre.sendTask(trf);
         }
+    }
+
+    @Override
+    public CS_Processamento escalonarRecurso () {
+        int index = 0;
+        double menorTempo = this.escravos.get(index).tempoProcessar(
+            this.tarefaSelecionada.getTamProcessamento());
+        for (int i = 1; i < this.escravos.size(); i++) {
+            final double tempoEscravoI = this.escravos.get(i).tempoProcessar(
+                this.tarefaSelecionada.getTamProcessamento());
+            if (this.tempoTornaDisponivel.get(index) + menorTempo
+                > this.tempoTornaDisponivel.get(i) + tempoEscravoI) {
+                menorTempo = tempoEscravoI;
+                index      = i;
+            }
+        }
+        return this.escravos.get(index);
+    }
+
+    @Override
+    public Double getTempoAtualizar () {
+        return 60.0;
     }
 
     @Override
@@ -67,11 +89,11 @@ public class DynamicFPLTF extends GridSchedulingPolicy {
         final int index = this.escravos.indexOf(tarefa.getLocalProcessamento());
         if (index != -1) {
             final double custo =
-                    this.escravos.get(index).tempoProcessar(tarefa.getTamProcessamento());
+                this.escravos.get(index).tempoProcessar(tarefa.getTamProcessamento());
             if (this.tempoTornaDisponivel.get(index) - custo > 0) {
                 this.tempoTornaDisponivel.set(
-                        index,
-                        this.tempoTornaDisponivel.get(index) - custo
+                    index,
+                    this.tempoTornaDisponivel.get(index) - custo
                 );
             }
         }
@@ -81,11 +103,11 @@ public class DynamicFPLTF extends GridSchedulingPolicy {
                 for (int j = 0; j < this.filaEscravo.get(i).size(); j++) {
                     final Tarefa trf = (Tarefa) this.filaEscravo.get(i).get(j);
                     final double custo =
-                            escravo.tempoProcessar(trf.getTamProcessamento());
+                        escravo.tempoProcessar(trf.getTamProcessamento());
                     if (this.tempoTornaDisponivel.get(i) - custo > 0) {
                         this.tempoTornaDisponivel.set(
-                                i,
-                                this.tempoTornaDisponivel.get(i) - custo
+                            i,
+                            this.tempoTornaDisponivel.get(i) - custo
                         );
                     }
                     this.mestre.sendMessage(trf, escravo,
@@ -103,31 +125,10 @@ public class DynamicFPLTF extends GridSchedulingPolicy {
             this.metricaUsuarios.incTarefasSubmetidas(tarefa);
         }
         int k = 0;
-        while (k < this.tarefas.size() && this.tarefas.get(k).getTamProcessamento() > tarefa.getTamProcessamento()) {
+        while (k < this.tarefas.size()
+               && this.tarefas.get(k).getTamProcessamento() > tarefa.getTamProcessamento()) {
             k++;
         }
         this.tarefas.add(k, tarefa);
-    }
-
-    @Override
-    public CS_Processamento escalonarRecurso () {
-        int index = 0;
-        double menorTempo = this.escravos.get(index).tempoProcessar(
-                this.tarefaSelecionada.getTamProcessamento());
-        for (int i = 1; i < this.escravos.size(); i++) {
-            final double tempoEscravoI = this.escravos.get(i).tempoProcessar(
-                    this.tarefaSelecionada.getTamProcessamento());
-            if (this.tempoTornaDisponivel.get(index) + menorTempo
-                > this.tempoTornaDisponivel.get(i) + tempoEscravoI) {
-                menorTempo = tempoEscravoI;
-                index      = i;
-            }
-        }
-        return this.escravos.get(index);
-    }
-
-    @Override
-    public Double getTempoAtualizar () {
-        return 60.0;
     }
 }

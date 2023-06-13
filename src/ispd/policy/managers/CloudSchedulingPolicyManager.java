@@ -1,20 +1,23 @@
 package ispd.policy.managers;
 
-import java.io.File;
-import java.util.List;
-
 import ispd.arquivo.xml.ConfiguracaoISPD;
 import ispd.policy.PolicyManager;
+import java.io.File;
+import java.util.List;
 
 /**
  * Manages storing, retrieving and compiling cloud scheduling policies
  */
 public class CloudSchedulingPolicyManager extends FilePolicyManager {
 
-    public static final  List<String> NATIVE_POLICIES = List.of(PolicyManager.NO_POLICY, "RoundRobin");
-    private static final String       CLOUD_DIR_PATH  = String.join(File.separator, "policies", "scheduling", "cloud");
-    private static final File         CLOUD_DIRECTORY =
-            new File(ConfiguracaoISPD.DIRETORIO_ISPD, CloudSchedulingPolicyManager.CLOUD_DIR_PATH);
+    public static final List<String> NATIVE_POLICIES =
+        List.of(PolicyManager.NO_POLICY, "RoundRobin");
+
+    private static final String CLOUD_DIR_PATH =
+        String.join(File.separator, "policies", "scheduling", "cloud");
+
+    private static final File CLOUD_DIRECTORY =
+        new File(ConfiguracaoISPD.DIRETORIO_ISPD, CloudSchedulingPolicyManager.CLOUD_DIR_PATH);
 
     @Override
     public File directory () {

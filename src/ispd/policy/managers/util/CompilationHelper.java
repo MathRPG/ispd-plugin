@@ -1,5 +1,6 @@
 package ispd.policy.managers.util;
 
+import ispd.policy.managers.FilePolicyManager;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -8,16 +9,15 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import javax.tools.Tool;
 import javax.tools.ToolProvider;
 
-import ispd.policy.managers.FilePolicyManager;
-
 public class CompilationHelper {
 
-    private final Optional<Tool> compiler = Optional.ofNullable(ToolProvider.getSystemJavaCompiler());
-    private final File           target;
+    private final Optional<Tool> compiler =
+        Optional.ofNullable(ToolProvider.getSystemJavaCompiler());
+
+    private final File target;
 
     public CompilationHelper (final File target) {
         this.target = target;
@@ -25,8 +25,8 @@ public class CompilationHelper {
 
     public String compile () {
         return this.compiler
-                .map(this::compileWithSystemTool)
-                .orElseGet(this::tryCompileWithJavac);
+            .map(this::compileWithSystemTool)
+            .orElseGet(this::tryCompileWithJavac);
     }
 
     private String compileWithSystemTool (final Tool tool) {
@@ -45,14 +45,15 @@ public class CompilationHelper {
         }
     }
 
-    private String compileWithJavac () throws IOException {
+    private String compileWithJavac ()
+        throws IOException {
         final var command = "javac %s".formatted(this.target.getPath());
         final var process = Runtime.getRuntime().exec(command);
 
         try (
-                final var err = new BufferedReader(
-                        new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8)
-                )
+            final var err = new BufferedReader(
+                new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8)
+            )
         ) {
             return err.lines().collect(Collectors.joining("\n"));
         }

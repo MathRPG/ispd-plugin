@@ -8,7 +8,9 @@ public class ComparaRequisitos extends MachineComparator<CS_VirtualMac> {
 
     protected int calculateMachineValue (final CS_VirtualMac m) {
         return ComparaRequisitos.MULTIPLIER * (
-                m.getProcessadoresDisponiveis() + (int) m.getMemoriaDisponivel() + (int) m.getDiscoDisponivel()
+            m.getProcessadoresDisponiveis()
+            + (int) m.getMemoriaDisponivel()
+            + (int) m.getDiscoDisponivel()
         );
     }
 }

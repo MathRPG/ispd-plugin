@@ -6,6 +6,7 @@ import ispd.gui.auxiliar.TextEditorStyle;
 import ispd.gui.utils.ButtonBuilder;
 import ispd.policy.PolicyManager;
 import ispd.utils.NameValidator;
+import ispd.utils.constants.FileExtensions;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Toolkit;
@@ -105,7 +106,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private static String policyNameFromFile (final File file) {
         final var fullName = file.getName();
-        return fullName.substring(0, fullName.length() - ".java".length());
+        return fullName.substring(0, fullName.length() - FileExtensions.JAVA.length());
     }
 
     private static JMenuBar makeMenuBarWith (final JMenu... menus) {
@@ -138,7 +139,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var chooser = new JFileChooser();
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setFileFilter(new MultipleExtensionFileFilter(
-            this.translate("Java Source Files (. java)"), ".java", true
+            this.translate("Java Source Files (. java)"), FileExtensions.JAVA, true
         ));
         return chooser;
     }
