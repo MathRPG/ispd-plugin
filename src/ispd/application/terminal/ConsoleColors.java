@@ -1,7 +1,5 @@
 package ispd.application.terminal;
 
-import org.bouncycastle.util.Strings;
-
 /**
  * Provides and enumeration of constants used to manipulate the colors of text and background, when
  * displayed in a terminal window.
@@ -36,6 +34,10 @@ public enum ConsoleColors {
         this.commandSequence = ConsoleColors.COMMAND_TEMPLATE.formatted(command);
     }
 
+    public static String surroundGreen (final String s) {
+        return ConsoleColors.GREEN.surround(s);
+    }
+
     @Override
     public String toString () {
         return this.commandSequence;
@@ -43,9 +45,5 @@ public enum ConsoleColors {
 
     private String surround (final String s) {
         return this + s + ConsoleColors.RESET;
-    }
-
-    public static String surroundGreen(final String s) {
-        return ConsoleColors.GREEN.surround(s);
     }
 }
