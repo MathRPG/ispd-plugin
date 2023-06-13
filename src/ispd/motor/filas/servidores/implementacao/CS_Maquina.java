@@ -331,7 +331,6 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         this.getMetrica().incSegundosDeProcessamento(tempoProc);
         //Incrementa porcentagem da tarefa processada
         mensagem.getTarefa().setMflopsProcessado(mflopsProcessados);
-        mensagem.getTarefa().incMflopsDesperdicados(mflopsProcessados);
     }
 
     @Override
@@ -407,11 +406,12 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
             //Incrementa o tempo de processamento
             this.getMetrica().incSegundosDeProcessamento(tempoProc);
             //Incrementa procentagem da tarefa processada
-            final double numCP = ((int) (mflopsProcessados / mensagem.getTarefa().getCheckPoint())) *
-                                 mensagem.getTarefa().getCheckPoint();
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+            final double numCP = ((int) (mflopsProcessados / 0.0)) *
+                                 0.0;
             mensagem.getTarefa().setMflopsProcessado(numCP);
             //Incrementa desperdicio
-            mensagem.getTarefa().incMflopsDesperdicados(mflopsProcessados - numCP);
             this.tarefaEmExecucao.remove(mensagem.getTarefa());
         }
         if (remover) {
@@ -460,9 +460,10 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
                 //Incrementa o tempo de processamento
                 this.getMetrica().incSegundosDeProcessamento(tempoProc);
                 //Incrementa procentagem da tarefa processada
-                final double numCP = ((int) (mflopsProcessados / tar.getCheckPoint())) * tar.getCheckPoint();
+                // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+                // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+                final double numCP = ((int) (mflopsProcessados / 0.0)) * 0.0;
                 tar.setMflopsProcessado(numCP);
-                tar.incMflopsDesperdicados(mflopsProcessados - numCP);
                 if (this.erroRecuperavel) {
                     //Reiniciar atendimento da tarefa
                     tar.iniciarEsperaProcessamento(simulacao.getTime(this));

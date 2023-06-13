@@ -307,14 +307,6 @@ public class Tarefa implements Client {
         this.mflopsProcessado = mflopsProcessado;
     }
 
-    public void incMflopsDesperdicados (final double mflopsDesperdicados) {
-    }
-
-    public double getCheckPoint () {
-        // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
-        return 0.0;
-    }
-
     public double getArquivoEnvio () {
         return this.arquivoEnvio;
     }

@@ -1,33 +1,36 @@
 package ispd.motor.filas;
 
+import ispd.motor.filas.servidores.CS_Processamento;
+import ispd.motor.filas.servidores.CentroServico;
 import java.util.ArrayList;
 import java.util.List;
 
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-
 public class Mensagem implements Client {
 
-    private final int                 tipo;
-    private final CentroServico       origem;
-    private final double              tamComunicacao;
-    private       Tarefa              tarefa;
-    private       List<CentroServico> caminho;
-    private       List<Tarefa>        filaEscravo;
-    private       List<Tarefa>        processadorEscravo;
+    private static final double DEFAULT_COMMUNICATION_SIZE = 0.011_444_091_796_875;
+
+    private final int tipo;
+
+    private final CentroServico origem;
+
+    private final double tamComunicacao;
+
+    private Tarefa tarefa = null;
+
+    private List<CentroServico> caminho = null;
+
+    private List<Tarefa> filaEscravo = null;
+
+    private List<Tarefa> processadorEscravo = null;
 
     public Mensagem (final CS_Processamento origem, final int tipo) {
-        this.origem         = origem;
-        this.tipo           = tipo;
-        this.tamComunicacao = 0.011444091796875;
+        this(origem, Mensagem.DEFAULT_COMMUNICATION_SIZE, tipo);
     }
 
     public Mensagem (final CS_Processamento origem, final int tipo, final Tarefa tarefa) {
-        this.origem         = origem;
-        this.tipo           = tipo;
-        this.tamComunicacao = 0.011444091796875;
-        this.tarefa         = tarefa;
-        this.caminho        = new ArrayList<CentroServico>();
+        this(origem, tipo);
+        this.tarefa  = tarefa;
+        this.caminho = new ArrayList<>();
     }
 
     public Mensagem (final CS_Processamento origem, final double tamComunicacao, final int tipo) {

@@ -215,7 +215,6 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
         this.getMetrica().incSegundosDeProcessamento(tempoProc);
         //Incrementa procentagem da tarefa processada
         mensagem.getTarefa().setMflopsProcessado(mflopsProcessados);
-        mensagem.getTarefa().incMflopsDesperdicados(mflopsProcessados);
     }
 
     @Override
@@ -301,12 +300,13 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
             //Incrementa o tempo de processamento
             this.getMetrica().incSegundosDeProcessamento(tempoProc);
             //Incrementa procentagem da tarefa processada
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
             final double numCP =
-                    ((int) (mflopsProcessados / mensagem.getTarefa().getCheckPoint())) *
-                    mensagem.getTarefa().getCheckPoint();
+                ((int) (mflopsProcessados / 0.0)) *
+                0.0;
             mensagem.getTarefa().setMflopsProcessado(numCP);
             //Incrementa desperdicio
-            mensagem.getTarefa().incMflopsDesperdicados(mflopsProcessados - numCP);
         }
 
         if (temp1 || temp2) {

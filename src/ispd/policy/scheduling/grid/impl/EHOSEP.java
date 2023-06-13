@@ -87,8 +87,10 @@ public class EHOSEP extends AbstractHOSEP<UserEnergyControl> {
         final var processingSize =
                 (currTime - taskStartTime) * machine.getPoderComputacional();
 
-        if (preemptedTask.getCheckPoint() > 0.0) {
-            return processingSize % preemptedTask.getCheckPoint();
+        // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+        if (0.0 > 0.0) {
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+            return processingSize % 0.0;
         } else {
             return processingSize;
         }

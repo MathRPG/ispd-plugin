@@ -325,8 +325,10 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
             //Incrementa o tempo de processamento
             this.getMetrica().incSegundosDeProcessamento(tempoProc);
             //Incrementa procentagem da tarefa processada
-            final int numCP = (int) (mflopsProcessados / mensagem.getTarefa().getCheckPoint());
-            mensagem.getTarefa().setMflopsProcessado(numCP * mensagem.getTarefa().getCheckPoint());
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+            final int numCP = (int) (mflopsProcessados / 0.0);
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+            mensagem.getTarefa().setMflopsProcessado(numCP * 0.0);
             this.tarefaEmExecucao.remove(mensagem.getTarefa());
         }
         if (remover) {
@@ -375,8 +377,10 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 //Incrementa o tempo de processamento
                 this.getMetrica().incSegundosDeProcessamento(tempoProc);
                 //Incrementa procentagem da tarefa processada
-                final int numCP = (int) (mflopsProcessados / tar.getCheckPoint());
-                tar.setMflopsProcessado(numCP * tar.getCheckPoint());
+                // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+                final int numCP = (int) (mflopsProcessados / 0.0);
+                // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+                tar.setMflopsProcessado(numCP * 0.0);
                 if (this.erroRecuperavel) {
                     //Reiniciar atendimento da tarefa
                     tar.iniciarEsperaProcessamento(simulacao.getTime(this));

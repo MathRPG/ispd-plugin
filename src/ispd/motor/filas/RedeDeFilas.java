@@ -1,97 +1,97 @@
 package ispd.motor.filas;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import ispd.motor.filas.servidores.CS_Comunicacao;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.implementacao.CS_Internet;
 import ispd.motor.filas.servidores.implementacao.CS_Maquina;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
- * Possui listas de todos os icones presentes no modelo utilizado para buscas e
- * para o motor de simulação
+ * Possui listas de todos os icones presentes no modelo utilizado para buscas e para o motor de
+ * simulação
  */
 public class RedeDeFilas {
 
     /**
      * Lista dos limites de consumo, em porcentagem, de cada usuário
      */
-    private final Map<String, Double>    limiteConsumo;
+    private final Map<String, Double> limiteConsumo;
+
     /**
-     * Todos os mestres existentes no sistema incluindo o front-node dos
-     * clusters
+     * Todos os mestres existentes no sistema incluindo o front-node dos clusters
      */
     private final List<CS_Processamento> mestres;
+
     /**
      * Todas as máquinas que não são mestres
      */
-    private final List<CS_Maquina>       maquinas;
+    private final List<CS_Maquina> maquinas;
+
     /**
      * Todas as conexões
      */
-    private final List<CS_Comunicacao>   links;
+    private final List<CS_Comunicacao> links;
+
     /**
      * Todos icones de internet do modelo
      */
-    private final List<CS_Internet>      internets;
+    private final List<CS_Internet> internets;
+
     /**
      * Mantem lista dos usuarios da rede de filas
      */
-    private       List<String>           usuarios;
+    private List<String> usuarios = null;
 
     /**
-     * Constructor which specifies the model of architecture's network of queue
-     * used for metric searches and by simulation engine. It is specified the
-     * masters, the machines, the links and the internets.
+     * Constructor which specifies the model of architecture's network of queue used for metric
+     * searches and by simulation engine. It is specified the masters, the machines, the links and
+     * the internets.
      * <p><br />
      * Using this constructor the power limit for each user is not specified.
      * <strong>Note</strong> that when it is said that the power limit is not
-     * specified this does not mean that the power limit for all users is set
-     * as default to 0.
+     * specified this does not mean that the power limit for all users is set as default to 0.
      *
      * @param masterList
-     *         the master list
+     *     the master list
      * @param machineList
-     *         the machine list
+     *     the machine list
      * @param linkList
-     *         the link list
+     *     the link list
      * @param internetList
-     *         the internet list
+     *     the internet list
      *
-     * @see #RedeDeFilas(List, List, List, List, Map)
-     *         for specify the power limit for each user
+     * @see #RedeDeFilas(List, List, List, List, Map) for specify the power limit for each user
      */
     public RedeDeFilas (
-            final List<CS_Processamento> masterList, final List<CS_Maquina> machineList,
-            final List<CS_Comunicacao> linkList, final List<CS_Internet> internetList
+        final List<CS_Processamento> masterList, final List<CS_Maquina> machineList,
+        final List<CS_Comunicacao> linkList, final List<CS_Internet> internetList
     ) {
         this(masterList, machineList, linkList, internetList, new HashMap<>());
     }
 
     /**
-     * Constructor which specifies the model of architecture's network of queue
-     * used for metric searches and by simulation engine. It is specified the
-     * masters, the machines, the links, the internets and the power limit for
-     * each user.
+     * Constructor which specifies the model of architecture's network of queue used for metric
+     * searches and by simulation engine. It is specified the masters, the machines, the links, the
+     * internets and the power limit for each user.
      *
      * @param masterList
-     *         the master list
+     *     the master list
      * @param machineList
-     *         the machine list
+     *     the machine list
      * @param linkList
-     *         the link list
+     *     the link list
      * @param internetList
-     *         the internet list
+     *     the internet list
      * @param powerLimitMap
-     *         the power limit map, specifying the power limit
-     *         for each user in the simulation.
+     *     the power limit map, specifying the power limit for each user in the simulation.
      */
     public RedeDeFilas (
-            final List<CS_Processamento> masterList, final List<CS_Maquina> machineList,
-            final List<CS_Comunicacao> linkList, final List<CS_Internet> internetList,
-            final Map<String, Double> powerLimitMap
+        final List<CS_Processamento> masterList, final List<CS_Maquina> machineList,
+        final List<CS_Comunicacao> linkList, final List<CS_Internet> internetList,
+        final Map<String, Double> powerLimitMap
     ) {
         this.mestres       = masterList;
         this.maquinas      = machineList;
@@ -102,9 +102,7 @@ public class RedeDeFilas {
 
     public double averageComputationalPower () {
         return this.maquinas.stream()
-                            .mapToDouble(CS_Processamento::getPoderComputacional)
-                            .average()
-                            .orElse(0.0);
+            .collect(Collectors.averagingDouble(CS_Processamento::getPoderComputacional));
     }
 
     public List<CS_Internet> getInternets () {
