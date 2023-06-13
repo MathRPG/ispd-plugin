@@ -63,7 +63,7 @@ public class Interpretador {
 
     private InterpretadorTokenManager token_source;
 
-    private Token token;
+    private Token token = new Token();
 
     private Token jj_nt = null;
 
@@ -144,9 +144,9 @@ public class Interpretador {
 
     private String metodosPrivate = "";
 
-    private int jj_ntk;
+    private int jj_ntk = -1;
 
-    private int jj_gen;
+    private int jj_gen = 0;
 
     private int jj_kind = -1;
 
@@ -154,22 +154,12 @@ public class Interpretador {
      * Constructor with InputStream.
      */
     public Interpretador (final InputStream stream) {
-        this(stream, null);
-    }
-
-    /**
-     * Constructor with InputStream and supplied encoding
-     */
-    private Interpretador (final InputStream stream, final String encoding) {
         try {
-            this.jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1);
+            this.jj_input_stream = new SimpleCharStream(stream);
         } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
         this.token_source = new InterpretadorTokenManager(this.jj_input_stream);
-        this.token        = new Token();
-        this.jj_ntk       = -1;
-        this.jj_gen       = 0;
         for (var i = 0; i < 15; i++) {
             this.jj_la1[i] = -1;
         }
@@ -1186,18 +1176,18 @@ public class Interpretador {
                 this.jj_la1[10] = this.jj_gen;
         }
         switch ((this.jj_ntk == -1) ? this.jj_ntk() : this.jj_ntk) {
-            case InterpretadorConstants.tTamComp:
-            case InterpretadorConstants.tTamComu:
-            case InterpretadorConstants.tNumTarSub:
-            case InterpretadorConstants.tNumTarConc:
-            case InterpretadorConstants.tPoderUser:
-            case InterpretadorConstants.tTempSubm:
-            case InterpretadorConstants.rPodeProc:
-            case InterpretadorConstants.rLinkComu:
-            case InterpretadorConstants.rtamCompTar:
-            case InterpretadorConstants.rtamComuTar:
-            case InterpretadorConstants.numTarExec:
-            case InterpretadorConstants.mflopProce:
+            case InterpretadorConstants.numTarExec,
+                InterpretadorConstants.mflopProce,
+                InterpretadorConstants.tTamComu,
+                InterpretadorConstants.tNumTarSub,
+                InterpretadorConstants.tNumTarConc,
+                InterpretadorConstants.tPoderUser,
+                InterpretadorConstants.tTempSubm,
+                InterpretadorConstants.rPodeProc,
+                InterpretadorConstants.rLinkComu,
+                InterpretadorConstants.tTamComp,
+                InterpretadorConstants.rtamCompTar,
+                InterpretadorConstants.rtamComuTar:
                 this.variavel(tarefa);
                 break;
             case 52:
