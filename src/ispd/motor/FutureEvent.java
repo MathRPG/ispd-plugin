@@ -8,37 +8,62 @@ import ispd.motor.filas.servidores.CentroServico;
  */
 public class FutureEvent implements Comparable<FutureEvent> {
 
-    public static final int CHEGADA        = 1;
-    public static final int ATENDIMENTO    = 2;
-    public static final int SAIDA          = 3;
-    public static final int ESCALONAR      = 4;
-    public static final int MENSAGEM       = 5;
+    public static final int CHEGADA = 1;
+
+    public static final int ATENDIMENTO = 2;
+
+    public static final int SAIDA = 3;
+
+    public static final int ESCALONAR = 4;
+
+    public static final int MENSAGEM = 5;
+
     public static final int SAIDA_MENSAGEM = 6;
-    public static final int ALOCAR_VMS     = 7;
 
+    public static final int ALOCAR_VMS = 7;
 
-    private final Double        creationTime;
-    private final int           eventType;
+    private final double creationTime;
+
+    private final int eventType;
+
     private final CentroServico resource;
-    private final Client        client;
+
+    private final Client client;
 
     /**
      * Criacao de novo evento
      *
      * @param time
-     *         tempo do relógio em que foi criada
+     *     tempo do relógio em que foi criada
      * @param eventType
-     *         tipo do evento criado
+     *     tipo do evento criado
      * @param resource
-     *         servidor que executará o evento
+     *     servidor que executará o evento
      * @param client
-     *         cliente do evento
+     *     cliente do evento
      */
-    public FutureEvent (final double time, final int eventType, final CentroServico resource, final Client client) {
+    public FutureEvent (
+        final double time,
+        final int eventType,
+        final CentroServico resource,
+        final Client client
+    ) {
         this.creationTime = time;
         this.resource     = resource;
         this.eventType    = eventType;
         this.client       = client;
+    }
+
+    /**
+     * Comparação necessaria para utilizar PriorityQueue
+     *
+     * @param o
+     *     evento que será comparado
+     *
+     * @return 0 se valores iguais, um menor que 0 se "o" inferior, e maior que 0 se "o" for maior.
+     */
+    public int compareTo (final FutureEvent o) {
+        return Double.compare(this.creationTime, o.creationTime);
     }
 
     /**
@@ -68,19 +93,7 @@ public class FutureEvent implements Comparable<FutureEvent> {
         return this.client;
     }
 
-    public Double getCreationTime () {
+    public double getCreationTime () {
         return this.creationTime;
-    }
-
-    /**
-     * Comparação necessaria para utilizar PriorityQueue
-     *
-     * @param o
-     *         evento que será comparado
-     *
-     * @return 0 se valores iguais, um menor que 0 se "o" inferior, e maior que 0 se "o" for maior.
-     */
-    public int compareTo (final FutureEvent o) {
-        return this.creationTime.compareTo(o.creationTime);
     }
 }

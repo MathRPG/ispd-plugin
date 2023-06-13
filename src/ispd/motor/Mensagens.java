@@ -5,12 +5,19 @@ import ispd.motor.filas.Mensagem;
 public interface Mensagens {
 
     int CANCELAR               = 1;
+
     int PARAR                  = 2;
+
     int DEVOLVER               = 3;
+
     int DEVOLVER_COM_PREEMPCAO = 4;
+
     int ATUALIZAR              = 5;
+
     int RESULTADO_ATUALIZAR    = 6;
+
     int FALHAR                 = 7;
+
     int ALOCAR_ACK             = 8;
 
     void atenderCancelamento (Simulation simulacao, Mensagem mensagem);

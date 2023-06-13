@@ -1,7 +1,8 @@
 package ispd.motor;
 
-import org.w3c.dom.Document;
-
+import ispd.arquivo.interpretador.internal.iconic.InterpretadorIconico;
+import ispd.arquivo.interpretador.internal.simulable.InterpretadorSimulavel;
+import ispd.arquivo.xml.IconicoXML;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -12,29 +13,30 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import ispd.arquivo.interpretador.internal.iconic.InterpretadorIconico;
-import ispd.arquivo.interpretador.internal.simulable.InterpretadorSimulavel;
-import ispd.arquivo.xml.IconicoXML;
+import org.w3c.dom.Document;
 
 /**
  * Classe de conexão entre interface de usuario e motor de simulação
  */
 public abstract class ProgressoSimulacao {
 
+    public abstract void incProgresso (int n);
+
+    public abstract void print (String text, Color cor);
+
     /**
-     * Escreve os arquivos com os modelos icônicos e simuláveis, e realiza a
-     * analise e validação dos mesmos
+     * Escreve os arquivos com os modelos icônicos e simuláveis, e realiza a analise e validação dos
+     * mesmos
      *
      * @param iconicModel
-     *         Texto contendo o modelo icônico que será analisado
+     *     Texto contendo o modelo icônico que será analisado
      */
     public void AnalisarModelos (final String iconicModel) {
-        final File file = new File("modeloiconico");
+        final var file = new File("modeloiconico");
 
         this.doTask("Writing iconic model.", () -> this.writeIconicModel(iconicModel, file));
 
-        final InterpretadorIconico parser = new InterpretadorIconico();
+        final var parser = new InterpretadorIconico();
 
         this.doTask("Interpreting iconic model.", () -> parser.leArquivo(file));
 
@@ -52,8 +54,8 @@ public abstract class ProgressoSimulacao {
 
     private void writeIconicModel (final String model, final File file) {
         try (
-                final FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8);
-                final PrintWriter pw = new PrintWriter(fw, true)
+            final var fw = new FileWriter(file, StandardCharsets.UTF_8);
+            final var pw = new PrintWriter(fw, true)
         ) {
             pw.print(model);
         } catch (final IOException ex) {
@@ -62,10 +64,10 @@ public abstract class ProgressoSimulacao {
     }
 
     private void interpretSimulationModel () {
-        final InterpretadorSimulavel parser2 = new InterpretadorSimulavel();
-        final PrintStream            stdout  = System.out;
+        final var parser = new InterpretadorSimulavel();
+        final var stdout = System.out;
         System.setOut(new PrintStream(new ByteArrayOutputStream()));
-        parser2.leArquivo(new File("modelosimulavel"));
+        parser.leArquivo(new File("modelosimulavel"));
         System.setOut(stdout);
     }
 
@@ -73,8 +75,6 @@ public abstract class ProgressoSimulacao {
         this.print(text);
         this.print(" -> ");
     }
-
-    public abstract void incProgresso (int n);
 
     public void println (final String text, final Color cor) {
         this.print(text, cor);
@@ -85,9 +85,10 @@ public abstract class ProgressoSimulacao {
         this.print(text, Color.black);
     }
 
-    public abstract void print (String text, Color cor);
-
-    public void validarInicioSimulacao (final Document model) throws IllegalArgumentException {
+    /**
+     * @throws IllegalArgumentException
+     */
+    public void validarInicioSimulacao (final Document model) {
         this.printTaskName("Verifying configuration of the icons.");
 
         if (null == model) {

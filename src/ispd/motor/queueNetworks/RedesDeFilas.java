@@ -7,36 +7,36 @@ import java.util.List;
 public class RedesDeFilas {
 
     private final List<Integer>             escalonadores;
+
     private final HashSet<CentrosDeServico> centroDeServicos;
+
     private       int                       numCS;
+
     private       int[][]                   matrizRF;
+
     private       int                       tam_mat;
 
-    //+------------------------------------------Inicio dos metodos da
-    // classe------------------------------------------+
-/* OBSERVACAO: os metodos dessa classe sao analogos aos metodos da classe
-CentroDeServico, soh que eles
-funcionam em outra instancia (nivel). Aqui, funcionam para a rede de filas
-toda, ou seja, eh necessario determinar
-(pelo id) o centro de servico que se deseja trabalhar. Jah na classe
-CentroDeServico, o centro de servico nao
-precisa ser determinado (pelo id), pois isso jah eh feito chamando o metodo
-pro objeto (da classe CentroDeServico)
-que esta em questao. Nao serao feitos comentarios nos metodos desta classe,
-pois ou o codigo pode ser facilmente
-entendido (desde que se tenha conhecimento do projeto) ou os comentarios
-feitos na classe CentroDeServico podem, por
-si, ajudar no entendimento do codigos daqui. 
-*/
-//+-------------------------------------------------Metodo
-// construtor----------------------------------------------+
+    /* OBSERVACAO: os metodos dessa classe sao analogos aos metodos da classe
+    CentroDeServico, soh que eles
+    funcionam em outra instancia (nivel). Aqui, funcionam para a rede de filas
+    toda, ou seja, eh necessario determinar
+    (pelo id) o centro de servico que se deseja trabalhar. Jah na classe
+    CentroDeServico, o centro de servico nao
+    precisa ser determinado (pelo id), pois isso jah eh feito chamando o metodo
+    pro objeto (da classe CentroDeServico)
+    que esta em questao. Nao serao feitos comentarios nos metodos desta classe,
+    pois ou o codigo pode ser facilmente
+    entendido (desde que se tenha conhecimento do projeto) ou os comentarios
+    feitos na classe CentroDeServico podem, por
+    si, ajudar no entendimento do codigos daqui.
+    */
     public RedesDeFilas () {
         this.numCS            = 0;
         this.escalonadores    = new ArrayList<>();
         this.centroDeServicos = new HashSet<>();
     }
-//+----------------------------Metodos que adicionam um centro de servico a
-// rede de filas----------------------------+
+    //+----------------------------Metodos que adicionam um centro de servico a
+    // rede de filas----------------------------+
     /* EXPLICACAO SOBRE A DIFERENCA DO NUMERO DE PARAMETROS ENTRE O METODO
     adicionaCentroServico
 	DA CLASSE RedesDeFilas E O CONSTRUTOR DA CLASSE CentrosDeServico:
@@ -62,13 +62,19 @@ si, ajudar no entendimento do codigos daqui.
                 // Se for maquina
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ, vetEscravos);
                 this.centroDeServicos.add(CS);
-                System.out.printf("|\tCS (tipo0) ID: %2d adicionado                    |\n", this.numCS);
+                System.out.printf(
+                    "|\tCS (tipo0) ID: %2d adicionado                    |\n",
+                    this.numCS
+                );
             }
             case 1 -> {
                 System.out.printf("\n nMaxServ = %d\n", nMaxServ);
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ, vetEscravos);
                 this.centroDeServicos.add(CS);
-                System.out.printf("|\tCS ID (tip 1): %2d adicionado                    |\n", this.numCS);
+                System.out.printf(
+                    "|\tCS ID (tip 1): %2d adicionado                    |\n",
+                    this.numCS
+                );
             }
         }
         System.out.printf("|\tCS ID: %2d adicionado                    |\n", this.numCS);
@@ -83,7 +89,10 @@ si, ajudar no entendimento do codigos daqui.
             case 1 -> {
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ);
                 this.centroDeServicos.add(CS);
-                System.out.printf("|\tCS ID (tp 1): %2d adicionado                    |\n", this.numCS);
+                System.out.printf(
+                    "|\tCS ID (tp 1): %2d adicionado                    |\n",
+                    this.numCS
+                );
             }
             case 2 -> {
                 final CentrosDeServico CS = new CentrosDeServico(this.numCS, nMaxServ);
