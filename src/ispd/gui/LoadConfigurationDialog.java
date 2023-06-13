@@ -13,6 +13,7 @@ import ispd.motor.workload.impl.GlobalWorkloadGenerator;
 import ispd.motor.workload.impl.PerNodeWorkloadGenerator;
 import ispd.motor.workload.impl.TraceFileWorkloadGenerator;
 import ispd.utils.SequentialIntSupplier;
+import ispd.utils.constants.FileExtensions;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -1423,7 +1424,7 @@ public class LoadConfigurationDialog extends JDialog {
     private void onOpenWmsxClick (final ActionEvent evt) {
         this.workloadFileFilter.setDescricao(this.translate("Workload Model of Simulation"));
 
-        this.workloadFileFilter.setExtensao(".wmsx");
+        this.workloadFileFilter.setExtensao(FileExtensions.WORKLOAD_MODEL);
         this.jOpenTrace.setAcceptAllFileFilterUsed(false);
         final int returnVal = this.jOpenTrace.showOpenDialog(this);
 

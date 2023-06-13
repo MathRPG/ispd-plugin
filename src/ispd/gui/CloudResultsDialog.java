@@ -18,6 +18,7 @@ import ispd.motor.metricas.MetricasCusto;
 import ispd.motor.metricas.MetricasGlobais;
 import ispd.motor.metricas.MetricasProcessamento;
 import ispd.motor.metricas.MetricasUsuarios;
+import ispd.utils.constants.FileExtensions;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -1337,14 +1338,15 @@ public class CloudResultsDialog extends JDialog {
 
     private void jButtonSalvarTracesActionPerformed (final ActionEvent evt) {
         final var filtro =
-            new MultipleExtensionFileFilter("Workload Model of Simulation", ".wmsx", true);
+            new MultipleExtensionFileFilter("Workload Model of Simulation",
+                                            FileExtensions.WORKLOAD_MODEL, true);
         final var jFileChooser = new JFileChooser();
         jFileChooser.setFileFilter(filtro);
         final var returnVal = jFileChooser.showSaveDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             var file = jFileChooser.getSelectedFile();
-            if (!file.getName().endsWith(".wmsx")) {
-                file = new File(file + ".wmsx");
+            if (!file.getName().endsWith(FileExtensions.WORKLOAD_MODEL)) {
+                file = new File(file + FileExtensions.WORKLOAD_MODEL);
             }
             TaskTraceSerializer.outputTaskTraceToFile(this.tarefas, file);
         }

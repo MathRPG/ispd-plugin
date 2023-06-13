@@ -1,6 +1,7 @@
 package ispd.gui.results;
 
 import ispd.gui.utils.Fonts.CourierNew;
+import ispd.utils.constants.FileExtensions;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -195,7 +196,7 @@ public class ResultsGlobalPane extends JScrollPane {
      */
     private ActionListener makeSaveTracesAction () {
         return (e) -> {
-            final var extension    = ".wmsx";
+            final var extension    = FileExtensions.WORKLOAD_MODEL;
             final var fileChooser  = new JFileChooser();
             final var stateChooser = fileChooser.showSaveDialog(this);
 

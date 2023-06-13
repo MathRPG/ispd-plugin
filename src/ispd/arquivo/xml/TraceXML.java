@@ -2,6 +2,7 @@ package ispd.arquivo.xml;
 
 import ispd.arquivo.interpretador.cargas.TaskTraceSerializer;
 import ispd.motor.filas.Tarefa;
+import ispd.utils.constants.FileExtensions;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -44,7 +45,7 @@ public class TraceXML {
 
         final var split = splitAtLast(path, TraceXML.FILE_EXT_DELIMITER);
 
-        this.output = split[0] + ".wmsx";
+        this.output = split[0] + FileExtensions.WORKLOAD_MODEL;
         this.type   = split[1].toUpperCase();
     }
 

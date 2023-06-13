@@ -21,6 +21,7 @@ import ispd.gui.policy.GridSchedulingPolicyManagementWindow;
 import ispd.gui.policy.PolicyGeneratorWindow;
 import ispd.gui.policy.VmAllocationPolicyManagementWindow;
 import ispd.gui.utils.ButtonBuilder;
+import ispd.utils.FileUtils;
 import ispd.utils.constants.FileExtensions;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -83,15 +84,16 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private static final int DRAWING_AREA_START_SIZE = 1500;
 
-    private static final char FILE_EXTENSION_SEPARATOR = '.';
-
     private static final int LOADING_SCREEN_WIDTH = 200;
 
     private static final int LOADING_SCREEN_HEIGHT = 100;
 
-    private static final String[] ISPD_FILE_EXTENSIONS = { ".imsx" };
+    private static final String[] ISPD_FILE_EXTENSIONS = { FileExtensions.ICONIC_MODEL };
 
-    private static final String[] ALL_FILE_EXTENSIONS = { ".imsx", ".wmsx" };
+    private static final String[] ALL_FILE_EXTENSIONS = {
+        FileExtensions.ICONIC_MODEL,
+        FileExtensions.WORKLOAD_MODEL
+    };
 
     private static final Locale LOCALE_EN_US = new Locale("en", "US");
 
@@ -347,7 +349,7 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private static boolean hasValidIspdFileExtension (final File file) {
-        return file.getName().endsWith(".imsx");
+        return file.getName().endsWith(FileExtensions.ICONIC_MODEL);
     }
 
     private static void jButtonInjectFaultsActionPerformed (final ActionEvent evt) {
@@ -1445,14 +1447,14 @@ public class MainWindow extends JFrame implements KeyListener {
 
         this.configureFileFilterAndChooser(
             "Iconic Model of Simulation",
-            new String[] { ".imsx" },
+            new String[] { FileExtensions.ICONIC_MODEL },
             false
         );
         if (this.jFileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
             return;
         }
 
-        final var file = this.getFileWithExtension(".imsx");
+        final var file = this.getFileWithExtension(FileExtensions.ICONIC_MODEL);
         this.saveDrawingAreaToFile(file);
         this.openEditing(file);
     }
@@ -1897,7 +1899,7 @@ public class MainWindow extends JFrame implements KeyListener {
     private static class IspdFileView extends FileView {
 
         private static ImageIcon getIconForFileExtension (final File file) {
-            final var ext = getFileExtension(file);
+            final var ext = FileUtils.fileExtensionOf(file);
 
             if (ext.isEmpty() || !isIspdFileExtension(ext)) {
                 return null;
@@ -1912,22 +1914,8 @@ public class MainWindow extends JFrame implements KeyListener {
             return new ImageIcon(imgURL);
         }
 
-        private static String getFileExtension (final File file) {
-            final var fileName = file.getName();
-            final int i        = fileName.lastIndexOf(MainWindow.FILE_EXTENSION_SEPARATOR);
-
-            /* Must avoid 'extension only' files such as .gitignore
-             * Also invalid are files that end with a '.'
-             */
-            if ((i <= 0) || (i >= (fileName.length() - 1))) {
-                return "";
-            }
-
-            return fileName.substring(i + 1).toLowerCase();
-        }
-
         private static boolean isIspdFileExtension (final String ext) {
-            return "ims".equals(ext) || "imsx".equals(ext);
+            return "ims".equals(ext) || FileExtensions.ICONIC_MODEL.equals(ext);
         }
 
         @Override
