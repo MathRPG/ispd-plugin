@@ -57,6 +57,8 @@ public class DesenhoGrade extends DrawingArea {
 
     public static final Image RED_ICON = getImage("imagens/vermelho.png");
 
+    public static final int INITIAL_SIZE = 1500;
+
     private static final Color ALMOST_WHITE = new Color(220, 220, 220);
 
     private static final int SOME_OFFSET = 50;
@@ -101,7 +103,11 @@ public class DesenhoGrade extends DrawingArea {
 
     private HashSet<VirtualMachine> virtualMachines = null;
 
-    public DesenhoGrade (final int w, final int h) {
+    public DesenhoGrade () {
+        this(INITIAL_SIZE, INITIAL_SIZE);
+    }
+
+    private DesenhoGrade (final int w, final int h) {
         super(true, true, true, false);
         this.setSize(w, h);
 

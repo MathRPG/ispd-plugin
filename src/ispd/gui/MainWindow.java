@@ -82,8 +82,6 @@ import org.xml.sax.SAXException;
 
 public class MainWindow extends JFrame implements KeyListener {
 
-    private static final int DRAWING_AREA_START_SIZE = 1500;
-
     private static final int LOADING_SCREEN_WIDTH = 200;
 
     private static final int LOADING_SCREEN_HEIGHT = 100;
@@ -354,13 +352,6 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private static void jButtonInjectFaultsActionPerformed (final ActionEvent evt) {
         new PickSimulationFaultsDialog().setVisible(true);
-    }
-
-    private static DesenhoGrade emptyDrawingArea () {
-        return new DesenhoGrade(
-            MainWindow.DRAWING_AREA_START_SIZE,
-            MainWindow.DRAWING_AREA_START_SIZE
-        );
     }
 
     @Override
@@ -1039,7 +1030,7 @@ public class MainWindow extends JFrame implements KeyListener {
         final var classPickWindow = new PickModelTypeDialog(this, true);
         this.showSubWindow(classPickWindow);
 
-        this.drawingArea = emptyDrawingArea();
+        this.drawingArea = new DesenhoGrade();
         this.updateGuiWithOpenFile("New model opened", null);
         this.modificar();
         this.onModelTypeChange(classPickWindow);
@@ -1122,7 +1113,7 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void startNewDrawing (final Document doc) {
-        this.drawingArea = emptyDrawingArea();
+        this.drawingArea = new DesenhoGrade();
         this.drawingArea.setGrid(doc);
     }
 
@@ -1564,8 +1555,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
         interpreter.interpreta(file);
 
-        final int gridSize = Math.max(interpreter.getW(), MainWindow.DRAWING_AREA_START_SIZE);
-        this.drawingArea = new DesenhoGrade(gridSize, gridSize);
+        this.drawingArea = new DesenhoGrade();
         this.drawingArea.setGrid(interpreter.getDescricao());
         this.updateGuiWithOpenFile("model opened", null);
         this.modificar();
