@@ -3783,6 +3783,7 @@ public class SimGrid {
         private boolean internet;
 
         private Route () {
+            super();
             this.net      = 0;
             this.src      = "";
             this.dst      = "";
