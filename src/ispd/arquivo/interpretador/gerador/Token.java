@@ -88,13 +88,6 @@ public class Token implements Serializable {
     }
 
     /**
-     * Returns a new Token object.
-     */
-    public static Token newToken (final int ofKind, final String image) {
-        return new Token(ofKind, image);
-    }
-
-    /**
      * Returns the image.
      */
     @Override

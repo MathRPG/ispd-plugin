@@ -1,5 +1,7 @@
 package ispd.arquivo.interpretador.gerador;
 
+import java.io.IOException;
+
 /**
  * Token Manager.
  */
@@ -171,10 +173,6 @@ public final class InterpretadorTokenManager {
      * Constructor.
      */
     public InterpretadorTokenManager (final SimpleCharStream stream) {
-        if (SimpleCharStream.staticFlag) {
-            throw new Error(
-                "ERROR: Cannot use a static CharStream class with a non-static lexical analyzer.");
-        }
         this.input_stream = stream;
     }
 
@@ -367,7 +365,7 @@ public final class InterpretadorTokenManager {
     private int jjMoveStringLiteralDfa1_0 (final long active0) {
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(0, active0);
             return 1;
         }
@@ -433,7 +431,7 @@ public final class InterpretadorTokenManager {
         }
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(1, active0);
             return 2;
         }
@@ -480,7 +478,7 @@ public final class InterpretadorTokenManager {
         }
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(2, active0);
             return 3;
         }
@@ -555,7 +553,7 @@ public final class InterpretadorTokenManager {
         }
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(3, active0);
             return 4;
         }
@@ -632,7 +630,7 @@ public final class InterpretadorTokenManager {
         }
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(4, active0);
             return 5;
         }
@@ -683,7 +681,7 @@ public final class InterpretadorTokenManager {
         }
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(5, active0);
             return 6;
         }
@@ -726,7 +724,7 @@ public final class InterpretadorTokenManager {
         }
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(6, active0);
             return 7;
         }
@@ -769,7 +767,7 @@ public final class InterpretadorTokenManager {
         }
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(7, active0);
             return 8;
         }
@@ -799,7 +797,7 @@ public final class InterpretadorTokenManager {
         }
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             this.jjStopStringLiteralDfa_0(8, active0);
             return 9;
         }
@@ -816,7 +814,7 @@ public final class InterpretadorTokenManager {
         this.jjmatchedPos  = pos;
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             return pos + 1;
         }
         return this.jjMoveNfa_0(state, pos + 1);
@@ -1007,7 +1005,7 @@ public final class InterpretadorTokenManager {
             }
             try {
                 this.curChar = this.input_stream.readChar();
-            } catch (final java.io.IOException e) {
+            } catch (final IOException e) {
                 return curPos;
             }
         }
@@ -1039,13 +1037,10 @@ public final class InterpretadorTokenManager {
                     }
                 } while (i != startsAt);
             } else if (this.curChar < 128) {
-                final var l = 1L << (this.curChar & 077);
                 do {
                     --i;
                 } while (i != startsAt);
             } else {
-                final var i2 = (this.curChar & 0xff) >> 6;
-                final var l2 = 1L << (this.curChar & 077);
                 do {
                     --i;
                 } while (i != startsAt);
@@ -1061,7 +1056,7 @@ public final class InterpretadorTokenManager {
             }
             try {
                 this.curChar = this.input_stream.readChar();
-            } catch (final java.io.IOException e) {
+            } catch (final IOException e) {
                 return curPos;
             }
         }
@@ -1077,7 +1072,7 @@ public final class InterpretadorTokenManager {
     private int jjMoveStringLiteralDfa1_1 (final long active0) {
         try {
             this.curChar = this.input_stream.readChar();
-        } catch (final java.io.IOException e) {
+        } catch (final IOException e) {
             return 1;
         }
         if (this.curChar == 47) {
@@ -1092,7 +1087,7 @@ public final class InterpretadorTokenManager {
 
     private void ReInitRounds () {
         this.jjround = 0x80000001;
-        for (int i = 11; i > 0; ) {
+        for (var i = 11; i > 0; ) {
             i--;
             this.jjrounds[i] = 0x80000000;
         }
@@ -1105,7 +1100,7 @@ public final class InterpretadorTokenManager {
         final var beginColumn   = this.input_stream.getBeginColumn();
         final var endLine       = this.input_stream.getEndLine();
         final var endColumn     = this.input_stream.getEndColumn();
-        final var t             = Token.newToken(this.jjmatchedKind, curTokenImage);
+        final var t             = new Token(this.jjmatchedKind, curTokenImage);
 
         t.beginLine   = beginLine;
         t.endLine     = endLine;
@@ -1123,12 +1118,11 @@ public final class InterpretadorTokenManager {
         var   curPos       = 0;
 
         while (true) {
-            final Token matchedToken;
             try {
                 this.curChar = this.input_stream.BeginToken();
-            } catch (final java.io.IOException e) {
-                this.jjmatchedKind        = 0;
-                matchedToken              = this.jjFillToken();
+            } catch (final IOException ignored) {
+                this.jjmatchedKind = 0;
+                final var matchedToken = this.jjFillToken();
                 matchedToken.specialToken = specialToken;
                 return matchedToken;
             }
@@ -1143,7 +1137,7 @@ public final class InterpretadorTokenManager {
                         while (this.curChar <= 32 && (0x100000600L & (1L << this.curChar)) != 0L) {
                             this.curChar = this.input_stream.BeginToken();
                         }
-                    } catch (final java.io.IOException e1) {
+                    } catch (final IOException e1) {
                         continue;
                     }
                     this.jjmatchedKind = 0x7fffffff;
@@ -1180,7 +1174,7 @@ public final class InterpretadorTokenManager {
                             )
                         )
                     ) != 0L) {
-                    matchedToken              = this.jjFillToken();
+                    final var matchedToken = this.jjFillToken();
                     matchedToken.specialToken = specialToken;
                     if (InterpretadorTokenManager.jjnewLexState[this.jjmatchedKind] != -1) {
                         this.curLexState =
@@ -1192,20 +1186,20 @@ public final class InterpretadorTokenManager {
                             InterpretadorTokenManager.jjtoSpecial[this.jjmatchedKind >> 6] & (
                                 1L << (
                                     this.jjmatchedKind
-                                    & 077
+                                    & 0b111111
                                 )
                             )
                         ) != 0L) {
-                        matchedToken = this.jjFillToken();
+                        final var matchedToken = this.jjFillToken();
                         if (specialToken == null) {
                             specialToken = matchedToken;
                         } else {
                             matchedToken.specialToken = specialToken;
                             specialToken              = (specialToken.next = matchedToken);
                         }
-                        this.SkipLexicalActions(matchedToken);
+                        this.SkipLexicalActions();
                     } else {
-                        this.SkipLexicalActions(null);
+                        this.SkipLexicalActions();
                     }
                     if (InterpretadorTokenManager.jjnewLexState[this.jjmatchedKind] != -1) {
                         this.curLexState =
@@ -1221,7 +1215,7 @@ public final class InterpretadorTokenManager {
             try {
                 this.input_stream.readChar();
                 this.input_stream.backup(1);
-            } catch (final java.io.IOException e1) {
+            } catch (final IOException ignored) {
                 EOFSeen     = true;
                 error_after = curPos <= 1 ? "" : this.input_stream.GetImage();
                 if (this.curChar == '\n' || this.curChar == '\r') {
@@ -1239,11 +1233,9 @@ public final class InterpretadorTokenManager {
         }
     }
 
-    private void SkipLexicalActions (final Token matchedToken) {
+    private void SkipLexicalActions () {
         if (this.jjmatchedKind == 50) {
-            this.image.append(this.input_stream.GetSuffix(this.jjimageLen + (
-                this.jjmatchedPos + 1
-            )));
+            this.image.append(this.input_stream.GetSuffix(this.jjimageLen + this.jjmatchedPos + 1));
             this.addErro("Erro na linha "
                          + this.input_stream.getEndLine()
                          + ". Caracter "
@@ -1253,11 +1245,13 @@ public final class InterpretadorTokenManager {
     }
 
     private void jjCheckNAdd (final int state) {
-        if (this.jjrounds[state] != this.jjround) {
-            this.jjstateSet[this.jjnewStateCnt] = state;
-            this.jjnewStateCnt++;
-            this.jjrounds[state] = this.jjround;
+        if (this.jjrounds[state] == this.jjround) {
+            return;
         }
+
+        this.jjstateSet[this.jjnewStateCnt] = state;
+        this.jjnewStateCnt++;
+        this.jjrounds[state] = this.jjround;
     }
 
     private void jjCheckNAddTwoStates (final int state1, final int state2) {

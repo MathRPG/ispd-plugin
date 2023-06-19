@@ -2,6 +2,7 @@ package ispd.arquivo.interpretador.gerador;
 
 import ispd.utils.StringUtils;
 import java.io.Serial;
+import java.text.MessageFormat;
 
 /**
  * Token Manager Error.
@@ -46,15 +47,21 @@ public class TokenMgrError extends Error {
         final boolean EOFSeen,
         final int errorLine,
         final int errorColumn,
-        final String errorAfter,
+        final CharSequence errorAfter,
         final char curChar
     ) {
-        return "Lexical error at line " + errorLine + ", column " + errorColumn + ".  Encountered: "
-               + (
-                   EOFSeen
-                   ? "<EOF> "
-                   : "\"" + StringUtils.escapeCharacter(curChar) + "\" (" + (int) curChar + "), "
-               )
-               + "after : \"" + StringUtils.escapeString(errorAfter) + "\"";
+        return MessageFormat.format(
+            "Lexical error at line {0}, column {1}.  Encountered: {2} after : \"{3}\"",
+            errorLine,
+            errorColumn,
+            getStringForCurrentChar(EOFSeen, curChar),
+            StringUtils.escapeString(errorAfter)
+        );
+    }
+
+    private static String getStringForCurrentChar (final boolean EOFSeen, final char curChar) {
+        return EOFSeen
+               ? "<EOF>"
+               : "\"%s\" (%d),".formatted(StringUtils.escapeCharacter(curChar), (int) curChar);
     }
 }

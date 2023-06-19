@@ -19,12 +19,6 @@ public class ParseException extends Exception {
     @Serial private static final long serialVersionUID = 1L;
 
     /**
-     * This is a reference to the "tokenImage" array of the generated parser within which the parse
-     * error occurred.  This array is defined in the generated ...Constants interface.
-     */
-    public String[] tokenImage = null;
-
-    /**
      * This constructor is used by the method "generateParseException" in the generated parser.
      * Calling this constructor generates a new object of this type with the fields "currentToken",
      * "expectedTokenSequences", and "tokenImage" set.
@@ -35,7 +29,6 @@ public class ParseException extends Exception {
         final String[] tokenImageVal
     ) {
         super(initialise(currentTokenVal, expectedTokenSequencesVal, tokenImageVal));
-        this.tokenImage = tokenImageVal;
     }
 
     /**
@@ -68,7 +61,7 @@ public class ParseException extends Exception {
         final String[] tokenImage
     ) {
         final var eol      = System.getProperty("line.separator", "\n");
-        final var expected = new StringBuffer();
+        final var expected = new StringBuilder();
         var       maxSize  = 0;
         for (final int[] seq : expectedTokenSequences) {
             final var length = seq.length;

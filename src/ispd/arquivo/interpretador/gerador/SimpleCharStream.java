@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -14,12 +13,9 @@ import java.nio.charset.StandardCharsets;
 
 public final class SimpleCharStream {
 
-    /**
-     * Whether parser is static.
-     */
-    public static final boolean staticFlag = false;
-
     private static final int BUFFER_SIZE = 4096;
+
+    private final Reader inputStream;
 
     /**
      * Position in buffer.
@@ -38,15 +34,11 @@ public final class SimpleCharStream {
 
     private boolean prevCharIsLF = false;
 
-    private Reader inputStream;
-
     private char[] buffer = new char[SimpleCharStream.BUFFER_SIZE];
 
     private int maxNextCharInd = 0;
 
     private int inBuf = 0;
-
-    private int tabSize = 8;
 
     private int bufferSize = SimpleCharStream.BUFFER_SIZE;
 
@@ -57,19 +49,14 @@ public final class SimpleCharStream {
     /**
      * Constructor.
      */
-    public SimpleCharStream (final InputStream inputStream)
-        throws UnsupportedEncodingException {
+    public SimpleCharStream (final InputStream inputStream) {
         this.inputStream = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
     }
 
-    private void setTabSize (final int i) {
-        this.tabSize = i;
-    }
-
     private void ExpandBuff (final boolean wrapAround) {
-        final char[] newbuffer    = new char[this.bufferSize + 2048];
-        final int[]  newbufline   = new int[this.bufferSize + 2048];
-        final int[]  newbufcolumn = new int[this.bufferSize + 2048];
+        final var newbuffer    = new char[this.bufferSize + 2048];
+        final var newbufline   = new int[this.bufferSize + 2048];
+        final var newbufcolumn = new int[this.bufferSize + 2048];
 
         try {
             if (wrapAround) {
@@ -140,8 +127,7 @@ public final class SimpleCharStream {
         this.tokenBegin = 0;
     }
 
-    private void FillBuff ()
-        throws IOException {
+    private void FillBuff () throws IOException {
         if (this.maxNextCharInd == this.available) {
             if (this.available == this.bufferSize) {
                 if (this.tokenBegin > 2048) {
@@ -161,8 +147,8 @@ public final class SimpleCharStream {
             }
         }
 
-        final int i;
         try {
+            final int i;
             if ((
                     i = this.inputStream.read(
                         this.buffer,
@@ -187,10 +173,9 @@ public final class SimpleCharStream {
     /**
      * Start.
      */
-    public char BeginToken ()
-        throws IOException {
+    public char BeginToken () throws IOException {
         this.tokenBegin = -1;
-        final char c = this.readChar();
+        final var c = this.readChar();
         this.tokenBegin = this.bufpos;
 
         return c;
@@ -212,18 +197,13 @@ public final class SimpleCharStream {
         }
 
         switch (c) {
-            case '\r':
-                this.prevCharIsCR = true;
-                break;
-            case '\n':
-                this.prevCharIsLF = true;
-                break;
-            case '\t':
+            case '\r' -> this.prevCharIsCR = true;
+            case '\n' -> this.prevCharIsLF = true;
+            case '\t' -> {
                 this.column--;
-                this.column += (this.tabSize - (this.column % this.tabSize));
-                break;
-            default:
-                break;
+                final var tabSize = 8;
+                this.column += (tabSize - (this.column % tabSize));
+            }
         }
 
         this.bufline[this.bufpos]   = this.line;
@@ -233,8 +213,7 @@ public final class SimpleCharStream {
     /**
      * Read a character.
      */
-    public char readChar ()
-        throws IOException {
+    public char readChar () throws IOException {
         if (this.inBuf > 0) {
             --this.inBuf;
 
@@ -251,7 +230,7 @@ public final class SimpleCharStream {
             this.FillBuff();
         }
 
-        final char c = this.buffer[this.bufpos];
+        final var c = this.buffer[this.bufpos];
 
         this.UpdateLineColumn(c);
         return c;
@@ -289,7 +268,6 @@ public final class SimpleCharStream {
      * Backup a number of characters.
      */
     public void backup (final int amount) {
-
         this.inBuf += amount;
         if ((this.bufpos -= amount) < 0) {
             this.bufpos += this.bufferSize;
@@ -312,7 +290,7 @@ public final class SimpleCharStream {
      * Get the suffix.
      */
     public char[] GetSuffix (final int len) {
-        final char[] ret = new char[len];
+        final var ret = new char[len];
 
         if ((this.bufpos + 1) >= len) {
             System.arraycopy(this.buffer, this.bufpos - len + 1, ret, 0, len);

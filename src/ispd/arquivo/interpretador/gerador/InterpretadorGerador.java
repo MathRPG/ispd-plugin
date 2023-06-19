@@ -13,16 +13,16 @@ import javax.swing.JOptionPane;
  */
 public class InterpretadorGerador {
 
-    private final InputStream istream;
+    private final InputStream inputStream;
 
     private Interpretador parser = null;
 
     /**
-     * @param codigo
+     * @param code
      *     Texto com código do gerador de escalonadores
      */
-    public InterpretadorGerador (final String codigo) {
-        this.istream = new ByteArrayInputStream(codigo.getBytes(StandardCharsets.UTF_8));
+    public InterpretadorGerador (final String code) {
+        this.inputStream = new ByteArrayInputStream(code.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -32,13 +32,10 @@ public class InterpretadorGerador {
      */
     public boolean executarParse () {
         try {
-            this.parser = new Interpretador(this.istream);
-            this.parser.setVerbose(false);
-            this.parser.printv("Modo verbose ligado");
+            this.parser = new Interpretador(this.inputStream);
             this.parser.Escalonador();
             return this.parser.isErroEncontrado();
         } catch (final ParseException ex) {
-            this.parser.setErroEncontrado(true);
             JOptionPane.showMessageDialog(
                 null,
                 "Foram encontrados os seguintes erros:\n" + ex.getMessage(),
@@ -46,7 +43,7 @@ public class InterpretadorGerador {
                 JOptionPane.ERROR_MESSAGE
             );
             Logger.getLogger(InterpretadorGerador.class.getName()).log(Level.SEVERE, null, ex);
-            return this.parser.isErroEncontrado();
+            return true;
         }
     }
 

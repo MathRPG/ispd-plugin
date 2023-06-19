@@ -201,11 +201,6 @@ public interface InterpretadorConstants {
     int nome = 38;
 
     /**
-     * Lexical state.
-     */
-    int DEFAULT = 0;
-
-    /**
      * Literal token values.
      */
     String[] tokenImage = {
