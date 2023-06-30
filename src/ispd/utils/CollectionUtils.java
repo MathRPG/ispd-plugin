@@ -10,6 +10,6 @@ public enum CollectionUtils {
     public static <T> List<T> filledList (final T fillValue, final long count) {
         return Stream.generate(() -> fillValue)
             .limit(count)
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()); // TODO: Check mutability
     }
 }
