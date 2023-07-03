@@ -37,30 +37,29 @@ public class VirtualMachine {
     private String VMM;
 
     /**
-     * Constructor of  which specifies
-     * the id, owner, VMM, core count, allocated memory,
-     * allocated disk and the running operating system.
+     * Constructor of  which specifies the id, owner, VMM, core count, allocated memory, allocated
+     * disk and the running operating system.
      *
      * @param id
-     *         the id
+     *     the id
      * @param owner
-     *         the owner
+     *     the owner
      * @param VMM
-     *         the VMM
+     *     the VMM
      * @param coreCount
-     *         the core count in the chip
+     *     the core count in the chip
      * @param allocatedMemory
-     *         the allocated memory in
-     *         <em>gigabytes (GB)</em>.
+     *     the allocated memory in
+     *     <em>gigabytes (GB)</em>.
      * @param allocatedDisk
-     *         the allocated disk in
-     *         <em>gigabytes (GB)</em>.
+     *     the allocated disk in
+     *     <em>gigabytes (GB)</em>.
      * @param operatingSystem
-     *         the running operating system
+     *     the running operating system
      */
     public VirtualMachine (
-            final String id, final String owner, final String VMM, final int coreCount,
-            final double allocatedMemory, final double allocatedDisk, final String operatingSystem
+        final String id, final String owner, final String VMM, final int coreCount,
+        final double allocatedMemory, final double allocatedDisk, final String operatingSystem
     ) {
         this.name            = id;
         this.owner           = owner;
@@ -84,7 +83,7 @@ public class VirtualMachine {
      * It sets the core count.
      *
      * @param coreCount
-     *         the core count to be set
+     *     the core count to be set
      */
     public void setCoreCount (final int coreCount) {
         this.coreCount = coreCount;
@@ -103,7 +102,7 @@ public class VirtualMachine {
      * It sets the allocated memory.
      *
      * @param allocatedMemory
-     *         the allocated memory
+     *     the allocated memory
      */
     public void setAllocatedMemory (final double allocatedMemory) {
         this.allocatedMemory = allocatedMemory;
@@ -122,7 +121,7 @@ public class VirtualMachine {
      * It sets the allocated disk.
      *
      * @param allocatedDisk
-     *         the allocated disk
+     *     the allocated disk
      */
     public void setAllocatedDisk (final double allocatedDisk) {
         this.allocatedDisk = allocatedDisk;
@@ -141,7 +140,7 @@ public class VirtualMachine {
      * It sets the name
      *
      * @param name
-     *         the name to be set
+     *     the name to be set
      */
     public void setName (final String name) {
         this.name = name;
@@ -160,7 +159,7 @@ public class VirtualMachine {
      * It sets the owner.
      *
      * @param owner
-     *         the owner to be set
+     *     the owner to be set
      */
     public void setOwner (final String owner) {
         this.owner = owner;
@@ -179,8 +178,7 @@ public class VirtualMachine {
      * It sets the running operating system
      *
      * @param operatingSystem
-     *         the running operating system
-     *         to be set
+     *     the running operating system to be set
      */
     public void setOperatingSystem (final String operatingSystem) {
         this.operatingSystem = operatingSystem;
@@ -199,7 +197,7 @@ public class VirtualMachine {
      * It sets the VMM.
      *
      * @param VMM
-     *         the VMM to be set
+     *     the VMM to be set
      */
     public void setVMM (final String VMM) {
         this.VMM = VMM;

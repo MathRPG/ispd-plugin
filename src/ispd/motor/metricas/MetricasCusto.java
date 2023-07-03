@@ -4,16 +4,19 @@ import java.io.Serializable;
 
 public class MetricasCusto implements Serializable {
 
-    private final String id; // id da máquina virtual que se está calculando as métricas
-    private       double custoProc;
-    private       double custoMem;
-    private       double custoDisco;
+    /**
+     * id da máquina virtual que se está calculando as métricas
+     */
+    private final String id;
+
+    private double custoProc = 0;
+
+    private double custoMem = 0;
+
+    private double custoDisco = 0;
 
     public MetricasCusto (final String id) {
-        this.id         = id;
-        this.custoProc  = 0;
-        this.custoMem   = 0;
-        this.custoDisco = 0;
+        this.id = id;
     }
 
     public String getId () {

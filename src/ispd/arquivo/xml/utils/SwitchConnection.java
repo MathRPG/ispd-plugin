@@ -25,7 +25,10 @@ public enum SwitchConnection {
         connectSwitchToServiceCenter(theSwitch, master);
     }
 
-    private static void connectSwitchToServiceCenter (final CS_Switch theSwitch, final CentroServico serviceCenter) {
+    private static void connectSwitchToServiceCenter (
+        final CS_Switch theSwitch,
+        final CentroServico serviceCenter
+    ) {
         theSwitch.addConexoesEntrada(serviceCenter);
         theSwitch.addConexoesSaida(serviceCenter);
     }

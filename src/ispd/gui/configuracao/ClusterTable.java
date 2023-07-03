@@ -1,37 +1,32 @@
 package ispd.gui.configuracao;
 
+import ispd.gui.iconico.grade.Cluster;
+import ispd.policy.managers.GridSchedulingPolicyManager;
 import java.util.ResourceBundle;
-
 import javax.swing.JComboBox;
 import javax.swing.table.AbstractTableModel;
 
-import ispd.gui.iconico.grade.Cluster;
-import ispd.policy.managers.GridSchedulingPolicyManager;
-
 public class ClusterTable extends AbstractTableModel {
 
-    private static final int               ROW_COUNT    = 12;
-    private static final int               COLUMN_COUNT = 2;
-    private static final int               TYPE         = 0;
-    private static final int               VALUE        = 1;
-    private final        JComboBox<Object> schedulers   =
-            new JComboBox<>(GridSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new));
-    private final        JComboBox<Object> users        = new JComboBox<>();
-    private              Cluster           cluster      = null;
-    private              ResourceBundle    words;
+    private static final int ROW_COUNT = 12;
+
+    private static final int COLUMN_COUNT = 2;
+
+    private static final int TYPE = 0;
+
+    private static final int VALUE = 1;
+
+    private final JComboBox<Object> schedulers =
+        new JComboBox<>(GridSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new));
+
+    private final JComboBox<Object> users = new JComboBox<>();
+
+    private Cluster cluster = null;
+
+    private ResourceBundle words;
 
     ClusterTable (final ResourceBundle words) {
         this.words = words;
-    }
-
-    void setCluster (final Cluster cluster, final Iterable<?> users) {
-        this.cluster = cluster;
-        this.schedulers.setSelectedItem(this.cluster.getSchedulingAlgorithm());
-        this.users.removeAllItems();
-        for (final var o : users) {
-            this.users.addItem(o);
-        }
-        this.users.setSelectedItem(cluster.getOwner());
     }
 
     @Override
@@ -45,14 +40,14 @@ public class ClusterTable extends AbstractTableModel {
     }
 
     /**
-     * Return {@code Object} (either a String, Integer, Double, Boolean, or
-     * JComboBox) in table at (rowIndex, columnIndex). Throws {@code
-     * IndexOutOfBoundsException} if either index is invalid.
+     * Return {@code Object} (either a String, Integer, Double, Boolean, or JComboBox) in table at
+     * (rowIndex, columnIndex). Throws {@code IndexOutOfBoundsException} if either index is
+     * invalid.
      *
      * @param rowIndex
-     *         Row to get value from.
+     *     Row to get value from.
      * @param columnIndex
-     *         Column to get value from.
+     *     Column to get value from.
      *
      * @return Object in table at specified row and column.
      */
@@ -105,24 +100,6 @@ public class ClusterTable extends AbstractTableModel {
         }
     }
 
-    private String getColumnTypeName (final int rowIndex) {
-        return switch (rowIndex) {
-            case TableRows.LABEL -> this.words.getString("Label");
-            case TableRows.OWNER -> this.words.getString("Owner");
-            case TableRows.NODES -> this.words.getString("Number of nodes");
-            case TableRows.PROCESSORS -> this.words.getString("Computing power");
-            case TableRows.RAM -> "Primary Storage";
-            case TableRows.HARD_DISK -> "Secondary Storage";
-            case TableRows.CORES -> "Cores";
-            case TableRows.BANDWIDTH -> this.words.getString("Bandwidth");
-            case TableRows.LATENCY -> this.words.getString("Latency");
-            case TableRows.MASTER -> this.words.getString("Master");
-            case TableRows.SCHEDULER -> this.words.getString("Scheduling algorithm");
-            case TableRows.ENERGY -> "Energy consumption Per Node";
-            default -> null;
-        };
-    }
-
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
@@ -156,10 +133,38 @@ public class ClusterTable extends AbstractTableModel {
             case TableRows.ENERGY -> this.cluster.setEnergyConsumption(Double.valueOf(aValue.toString()));
             case TableRows.MASTER -> this.cluster.setMaster(Boolean.valueOf(aValue.toString()));
             case TableRows.SCHEDULER -> this.cluster.setSchedulingAlgorithm(
-                    this.schedulers.getSelectedItem().toString());
+                this.schedulers.getSelectedItem().toString());
         }
 
         this.fireTableCellUpdated(rowIndex, ClusterTable.VALUE);
+    }
+
+    void setCluster (final Cluster cluster, final Iterable<?> users) {
+        this.cluster = cluster;
+        this.schedulers.setSelectedItem(this.cluster.getSchedulingAlgorithm());
+        this.users.removeAllItems();
+        for (final var o : users) {
+            this.users.addItem(o);
+        }
+        this.users.setSelectedItem(cluster.getOwner());
+    }
+
+    private String getColumnTypeName (final int rowIndex) {
+        return switch (rowIndex) {
+            case TableRows.LABEL -> this.words.getString("Label");
+            case TableRows.OWNER -> this.words.getString("Owner");
+            case TableRows.NODES -> this.words.getString("Number of nodes");
+            case TableRows.PROCESSORS -> this.words.getString("Computing power");
+            case TableRows.RAM -> "Primary Storage";
+            case TableRows.HARD_DISK -> "Secondary Storage";
+            case TableRows.CORES -> "Cores";
+            case TableRows.BANDWIDTH -> this.words.getString("Bandwidth");
+            case TableRows.LATENCY -> this.words.getString("Latency");
+            case TableRows.MASTER -> this.words.getString("Master");
+            case TableRows.SCHEDULER -> this.words.getString("Scheduling algorithm");
+            case TableRows.ENERGY -> "Energy consumption Per Node";
+            default -> null;
+        };
     }
 
     public JComboBox<Object> getEscalonadores () {
@@ -173,17 +178,28 @@ public class ClusterTable extends AbstractTableModel {
 
     private static class TableRows {
 
-        private static final int LABEL      = 0;
-        private static final int OWNER      = 1;
-        private static final int NODES      = 2;
+        private static final int LABEL = 0;
+
+        private static final int OWNER = 1;
+
+        private static final int NODES = 2;
+
         private static final int PROCESSORS = 3;
-        private static final int CORES      = 4;
-        private static final int RAM        = 5;
-        private static final int HARD_DISK  = 6;
-        private static final int BANDWIDTH  = 7;
-        private static final int LATENCY    = 8;
-        private static final int MASTER     = 9;
-        private static final int SCHEDULER  = 10;
-        private static final int ENERGY     = 11;
+
+        private static final int CORES = 4;
+
+        private static final int RAM = 5;
+
+        private static final int HARD_DISK = 6;
+
+        private static final int BANDWIDTH = 7;
+
+        private static final int LATENCY = 8;
+
+        private static final int MASTER = 9;
+
+        private static final int SCHEDULER = 10;
+
+        private static final int ENERGY = 11;
     }
 }

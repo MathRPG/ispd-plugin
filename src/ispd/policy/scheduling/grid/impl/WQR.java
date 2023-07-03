@@ -1,22 +1,24 @@
 package ispd.policy.scheduling.grid.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ispd.annotations.Policy;
 import ispd.motor.Mensagens;
 import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.policy.scheduling.grid.GridSchedulingPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 @Policy
 public class WQR extends GridSchedulingPolicy {
 
-    private Tarefa       ultimaTarefaConcluida = null;
-    private List<Tarefa> tarefaEnviada         = null;
-    private int          servidoresOcupados    = 0;
-    private int          cont                  = 0;
+    private Tarefa ultimaTarefaConcluida = null;
+
+    private List<Tarefa> tarefaEnviada = null;
+
+    private int servidoresOcupados = 0;
+
+    private int cont = 0;
 
     public WQR () {
         this.tarefas  = new ArrayList<>();
@@ -46,7 +48,10 @@ public class WQR extends GridSchedulingPolicy {
             if (trf != null) {
                 if (this.tarefaEnviada.get(this.escravos.indexOf(rec)) != null) {
                     this.mestre.sendMessage(
-                            this.tarefaEnviada.get(this.escravos.indexOf(rec)), rec, Mensagens.CANCELAR);
+                        this.tarefaEnviada.get(this.escravos.indexOf(rec)),
+                        rec,
+                        Mensagens.CANCELAR
+                    );
                 } else {
                     this.servidoresOcupados++;
                 }
@@ -59,7 +64,10 @@ public class WQR extends GridSchedulingPolicy {
                 sair = true;
             }
         }
-        if (this.servidoresOcupados > 0 && this.servidoresOcupados < this.escravos.size() && this.tarefas.isEmpty() &&
+        if (this.servidoresOcupados > 0
+            && this.servidoresOcupados < this.escravos.size()
+            && this.tarefas.isEmpty()
+            &&
             !sair) {
             for (final Tarefa tar : this.tarefaEnviada) {
                 if (tar != null && tar.getOrigem().equals(this.mestre)) {
@@ -68,6 +76,27 @@ public class WQR extends GridSchedulingPolicy {
                 }
             }
         }
+    }
+
+    @Override
+    public CS_Processamento escalonarRecurso () {
+        final int index =
+            this.tarefaEnviada.indexOf(this.ultimaTarefaConcluida);
+        if (this.ultimaTarefaConcluida != null && index != -1) {
+            return this.escravos.get(index);
+        } else {
+            for (int i = 0; i < this.tarefaEnviada.size(); i++) {
+                if (this.tarefaEnviada.get(i) == null) {
+                    return this.escravos.get(i);
+                }
+            }
+        }
+        for (int i = 0; i < this.tarefaEnviada.size(); i++) {
+            if (this.tarefaEnviada.get(i) != null && this.tarefaEnviada.get(i).isCopy()) {
+                return this.escravos.get(i);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -117,26 +146,4 @@ public class WQR extends GridSchedulingPolicy {
             this.mestre.executeScheduling();
         }
     }
-
-    @Override
-    public CS_Processamento escalonarRecurso () {
-        final int index =
-                this.tarefaEnviada.indexOf(this.ultimaTarefaConcluida);
-        if (this.ultimaTarefaConcluida != null && index != -1) {
-            return this.escravos.get(index);
-        } else {
-            for (int i = 0; i < this.tarefaEnviada.size(); i++) {
-                if (this.tarefaEnviada.get(i) == null) {
-                    return this.escravos.get(i);
-                }
-            }
-        }
-        for (int i = 0; i < this.tarefaEnviada.size(); i++) {
-            if (this.tarefaEnviada.get(i) != null && this.tarefaEnviada.get(i).isCopy()) {
-                return this.escravos.get(i);
-            }
-        }
-        return null;
-    }
-
 }

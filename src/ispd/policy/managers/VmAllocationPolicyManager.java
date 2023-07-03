@@ -1,10 +1,9 @@
 package ispd.policy.managers;
 
-import java.io.File;
-import java.util.List;
-
 import ispd.arquivo.xml.ConfiguracaoISPD;
 import ispd.policy.PolicyManager;
+import java.io.File;
+import java.util.List;
 
 /**
  * Manages storing, retrieving and compiling allocation policies
@@ -14,16 +13,19 @@ public class VmAllocationPolicyManager extends FilePolicyManager {
     /**
      * Allocation policies available by default
      */
-    public static final  List<String> NATIVE_POLICIES = List.of(
-            PolicyManager.NO_POLICY,
-            "RoundRobin",
-            "FirstFit",
-            "FirstFitDecreasing",
-            "Volume"
+    public static final List<String> NATIVE_POLICIES = List.of(
+        PolicyManager.NO_POLICY,
+        "RoundRobin",
+        "FirstFit",
+        "FirstFitDecreasing",
+        "Volume"
     );
-    private static final String       VM_DIR_PATH     = String.join(File.separator, "policies", "allocation", "vm");
-    private static final File         VM_DIRECTORY    =
-            new File(ConfiguracaoISPD.DIRETORIO_ISPD, VmAllocationPolicyManager.VM_DIR_PATH);
+
+    private static final String VM_DIR_PATH =
+        String.join(File.separator, "policies", "allocation", "vm");
+
+    private static final File VM_DIRECTORY =
+        new File(ConfiguracaoISPD.DIRETORIO_ISPD, VmAllocationPolicyManager.VM_DIR_PATH);
 
     @Override
     public File directory () {

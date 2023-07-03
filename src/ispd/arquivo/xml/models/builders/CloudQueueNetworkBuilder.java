@@ -1,10 +1,5 @@
 package ispd.arquivo.xml.models.builders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import ispd.arquivo.xml.utils.SwitchConnection;
 import ispd.arquivo.xml.utils.UserPowerLimit;
 import ispd.arquivo.xml.utils.WrappedDocument;
@@ -19,10 +14,14 @@ import ispd.motor.filas.servidores.implementacao.CS_Switch;
 import ispd.motor.filas.servidores.implementacao.CS_VMM;
 import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
 import ispd.policy.scheduling.cloud.CloudSchedulingPolicy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Class to build a cloud queue network from a model in a {@link WrappedDocument}. The usage is the same as in
- * {@link QueueNetworkBuilder}.
+ * Class to build a cloud queue network from a model in a {@link WrappedDocument}. The usage is the
+ * same as in {@link QueueNetworkBuilder}.
  *
  * @see ispd.arquivo.xml.IconicoXML
  * @see QueueNetworkBuilder
@@ -32,21 +31,26 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
     /**
      * Overridden from superclass to support {@link CS_MaquinaCloud}s.
      */
-    private final Map<CentroServico, List<CS_MaquinaCloud>> clusterSlaves         = new HashMap<>();
-    private final List<CS_MaquinaCloud>                     cloudMachines         = new ArrayList<>();
-    private final List<CS_VirtualMac>                       virtualMachines       = new ArrayList<>();
-    private final List<CS_Processamento>                    virtualMachineMasters = new ArrayList<>();
+    private final Map<CentroServico, List<CS_MaquinaCloud>> clusterSlaves = new HashMap<>();
+
+    private final List<CS_MaquinaCloud> cloudMachines = new ArrayList<>();
+
+    private final List<CS_VirtualMac> virtualMachines = new ArrayList<>();
+
+    private final List<CS_Processamento> virtualMachineMasters = new ArrayList<>();
 
     /**
-     * Parse the required {@link CentroServico}s and {@link CS_VirtualMac}s from the given {@link WrappedDocument}.
+     * Parse the required {@link CentroServico}s and {@link CS_VirtualMac}s from the given
+     * {@link WrappedDocument}.
      *
      * @param doc
-     *         The {@link WrappedDocument} to be processed. Must contain a valid <b>cloud</b> model.
+     *     The {@link WrappedDocument} to be processed. Must contain a valid <b>cloud</b> model.
      *
-     * @return The called instance itself, so the call can be chained into a {@link #build()} if so desired.
+     * @return The called instance itself, so the call can be chained into a {@link #build()} if so
+     * desired.
      *
      * @throws IllegalStateException
-     *         If this instance was already used to parse a {@link WrappedDocument}.
+     *     If this instance was already used to parse a {@link WrappedDocument}.
      */
     @Override
     public QueueNetworkBuilder parseDocument (final WrappedDocument doc) {
@@ -55,29 +59,12 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
         return this;
     }
 
-    private void processVirtualMachineElement (final WrappedElement e) {
-        final var virtualMachine = ServiceCenterBuilder.aVirtualMachine(e);
-
-        final var masterId = e.vmm();
-
-        this.virtualMachineMasters.stream()
-                                  .filter(cs -> cs.getId().equals(masterId))
-                                  .map(CS_VMM.class::cast)
-                                  .forEach(master -> {
-                                      virtualMachine.addVMM(master);
-                                      master.addVM(virtualMachine);
-                                  });
-
-        this.virtualMachines.add(virtualMachine);
-    }
-
     /**
-     * Process the represented cluster in {@link WrappedElement} very
-     * similarly to the superclass, but adapted to take into account cloud
-     * machines and virtual machines.
+     * Process the represented cluster in {@link WrappedElement} very similarly to the superclass,
+     * but adapted to take into account cloud machines and virtual machines.
      *
      * @param e
-     *         {@link WrappedElement} representing a cluster.
+     *     {@link WrappedElement} representing a cluster.
      */
     @Override
     protected void processClusterElement (final WrappedElement e) {
@@ -132,15 +119,15 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
     }
 
     /**
-     * Build and process the cloud machine represented by the {@link WrappedElement} {@code e}. Since the machine may
-     * or may not be a master, it can be added to either the collection of {@link #virtualMachineMasters} or
-     * {@link #cloudMachines}.
+     * Build and process the cloud machine represented by the {@link WrappedElement} {@code e}.
+     * Since the machine may or may not be a master, it can be added to either the collection of
+     * {@link #virtualMachineMasters} or {@link #cloudMachines}.
      *
      * @param e
-     *         {@link WrappedElement} representing a {@link CS_Processamento}.
+     *     {@link WrappedElement} representing a {@link CS_Processamento}.
      *
-     * @return The interpreted {@link CS_Processamento} from the given {@link WrappedElement}. May either be a
-     *         {@link CS_VMM} or a {@link CS_MaquinaCloud}.
+     * @return The interpreted {@link CS_Processamento} from the given {@link WrappedElement}. May
+     * either be a {@link CS_VMM} or a {@link CS_MaquinaCloud}.
      */
     @Override
     protected CS_Processamento makeAndAddMachine (final WrappedElement e) {
@@ -167,12 +154,15 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
      * </ul>
      *
      * @param master
-     *         the <b>master</b> {@link CS_Processamento}.
+     *     the <b>master</b> {@link CS_Processamento}.
      * @param slave
-     *         <b>slave</b> {@link CentroServico}.
+     *     <b>slave</b> {@link CentroServico}.
      */
     @Override
-    protected void addSlavesToProcessingCenter (final CS_Processamento master, final CentroServico slave) {
+    protected void addSlavesToProcessingCenter (
+        final CS_Processamento master,
+        final CentroServico slave
+    ) {
         final var theMaster = (CS_VMM) master;
         if (slave instanceof CS_Processamento proc) {
             theMaster.addEscravo(proc);
@@ -188,32 +178,48 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
     }
 
     /**
-     * Differently from the overridden method, iterates over {@link CS_VMM}s
-     * and updates {@link CloudSchedulingPolicy}.
+     * Differently from the overridden method, iterates over {@link CS_VMM}s and updates
+     * {@link CloudSchedulingPolicy}.
      *
      * @param helper
-     *         {@link UserPowerLimit} with the power limit information.
+     *     {@link UserPowerLimit} with the power limit information.
      */
     @Override
     protected void setSchedulersUserMetrics (final UserPowerLimit helper) {
         this.virtualMachineMasters.stream()
-                                  .map(CS_VMM.class::cast)
-                                  .map(CS_VMM::getEscalonador)
-                                  .forEach(helper::setSchedulerUserMetrics);
+            .map(CS_VMM.class::cast)
+            .map(CS_VMM::getEscalonador)
+            .forEach(helper::setSchedulerUserMetrics);
     }
 
     /**
-     * Constructs a {@link RedeDeFilasCloud}. <b>It does not take power limit
-     * information into account.</b>
+     * Constructs a {@link RedeDeFilasCloud}. <b>It does not take power limit information into
+     * account.</b>
      *
      * @return initialized {@link RedeDeFilasCloud}.
      */
     @Override
     protected RedeDeFilas initQueueNetwork () {
         return new RedeDeFilasCloud(
-                this.virtualMachineMasters,
-                this.cloudMachines, this.virtualMachines,
-                this.links, this.internets
+            this.virtualMachineMasters,
+            this.cloudMachines, this.virtualMachines,
+            this.links, this.internets
         );
+    }
+
+    private void processVirtualMachineElement (final WrappedElement e) {
+        final var virtualMachine = ServiceCenterBuilder.aVirtualMachine(e);
+
+        final var masterId = e.vmm();
+
+        this.virtualMachineMasters.stream()
+            .filter(cs -> cs.getId().equals(masterId))
+            .map(CS_VMM.class::cast)
+            .forEach(master -> {
+                virtualMachine.addVMM(master);
+                master.addVM(virtualMachine);
+            });
+
+        this.virtualMachines.add(virtualMachine);
     }
 }

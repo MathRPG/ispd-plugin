@@ -1,8 +1,5 @@
 package ispd.motor;
 
-import java.awt.Color;
-import java.util.List;
-
 import ispd.motor.filas.Client;
 import ispd.motor.filas.RedeDeFilas;
 import ispd.motor.filas.RedeDeFilasCloud;
@@ -14,49 +11,66 @@ import ispd.motor.filas.servidores.implementacao.CS_Mestre;
 import ispd.motor.filas.servidores.implementacao.CS_VMM;
 import ispd.motor.metricas.Metricas;
 import ispd.policy.PolicyMaster;
+import java.awt.Color;
+import java.util.List;
 
 public abstract class Simulation {
 
-    private final List<Tarefa>       jobs;
-    private final ProgressoSimulacao window;
-    private       RedeDeFilas        queueNetwork      = null;
-    private       RedeDeFilasCloud   cloudQueueNetwork = null;
+    private final List<Tarefa> jobs;
 
-    protected Simulation (final ProgressoSimulacao window, final RedeDeFilas queueNetwork, final List<Tarefa> jobs) {
+    private final ProgressoSimulacao window;
+
+    private RedeDeFilas queueNetwork = null;
+
+    private RedeDeFilasCloud cloudQueueNetwork = null;
+
+    protected Simulation (
+        final ProgressoSimulacao window,
+        final RedeDeFilas queueNetwork,
+        final List<Tarefa> jobs
+    ) {
         this.jobs         = jobs;
         this.queueNetwork = queueNetwork;
         this.window       = window;
     }
 
     protected Simulation (
-            final ProgressoSimulacao window, final RedeDeFilasCloud cloudQueueNetwork, final List<Tarefa> jobs
+        final ProgressoSimulacao window,
+        final RedeDeFilasCloud cloudQueueNetwork,
+        final List<Tarefa> jobs
     ) {
         this.jobs              = jobs;
         this.cloudQueueNetwork = cloudQueueNetwork;
         this.window            = window;
     }
 
+    public abstract void simulate ();
+
+    public abstract void addFutureEvent (FutureEvent ev);
+
+    public abstract boolean removeFutureEvent (
+        int eventType,
+        CentroServico eventServer,
+        Client eventClient
+    );
+
+    public abstract double getTime (Object origin);
+
     public ProgressoSimulacao getWindow () {
         return this.window;
     }
 
-    RedeDeFilasCloud getCloudQueueNetwork () {
+    protected RedeDeFilasCloud getCloudQueueNetwork () {
         return this.cloudQueueNetwork;
     }
 
-    public RedeDeFilas getQueueNetwork () {
+    protected RedeDeFilas getQueueNetwork () {
         return this.queueNetwork;
     }
 
     List<Tarefa> getJobs () {
         return this.jobs;
     }
-
-    public abstract void simulate ();
-
-    public abstract void addFutureEvent (FutureEvent ev);
-
-    public abstract boolean removeFutureEvent (int eventType, CentroServico eventServer, Client eventClient);
 
     public void addJob (final Tarefa job) {
         this.jobs.add(job);
@@ -72,7 +86,10 @@ public abstract class Simulation {
         for (final CS_Processamento genericMaster : this.cloudQueueNetwork.getMestres()) {
             final CS_VMM master = (CS_VMM) genericMaster;
             System.out.printf(
-                    "VMM %s iniciando o alocador %s%n", genericMaster.getId(), master.getAlocadorVM().toString());
+                "VMM %s iniciando o alocador %s%n",
+                genericMaster.getId(),
+                master.getAlocadorVM().toString()
+            );
             master.getAlocadorVM().iniciar();
         }
     }
@@ -81,7 +98,10 @@ public abstract class Simulation {
         for (final CS_Processamento genericMaster : this.cloudQueueNetwork.getMestres()) {
             final CS_VMM master = (CS_VMM) genericMaster;
             System.out.printf(
-                    "VMM %s iniciando escalonador %s%n", genericMaster.getId(), master.getEscalonador().toString());
+                "VMM %s iniciando escalonador %s%n",
+                genericMaster.getId(),
+                master.getEscalonador().toString()
+            );
             master.getEscalonador().iniciar();
             master.instanciarCaminhosVMs();
         }
@@ -121,8 +141,6 @@ public abstract class Simulation {
 
         return metric;
     }
-
-    public abstract double getTime (Object origin);
 
     public Metricas getCloudMetrics () {
         this.window.print("Getting Results.");

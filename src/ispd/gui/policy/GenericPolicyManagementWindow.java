@@ -1,5 +1,12 @@
 package ispd.gui.policy;
 
+import ispd.arquivo.interpretador.gerador.InterpretadorGerador;
+import ispd.gui.auxiliar.MultipleExtensionFileFilter;
+import ispd.gui.auxiliar.TextEditorStyle;
+import ispd.gui.utils.ButtonBuilder;
+import ispd.policy.PolicyManager;
+import ispd.utils.NameValidator;
+import ispd.utils.constants.FileExtensions;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Toolkit;
@@ -17,7 +24,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
-
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
@@ -47,35 +53,38 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 
-import ispd.arquivo.interpretador.gerador.InterpretadorGerador;
-import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.gui.auxiliar.TextEditorStyle;
-import ispd.gui.utils.ButtonBuilder;
-import ispd.policy.PolicyManager;
-import ispd.utils.ValidaValores;
-
 public abstract class GenericPolicyManagementWindow extends JFrame {
 
-    private static final String                 ICON_IMAGE_PATH       = String.join(
-            File.separator, "..", "imagens", "Logo_iSPD_25.png"
+    private static final String ICON_IMAGE_PATH = String.join(
+        File.separator, "..", "imagens", "Logo_iSPD_25.png"
     );
-    private final        NonThrowingUndoManager undoManager           = new NonThrowingUndoManager();
-    private final        PolicyManager          manager;
-    private final        ResourceBundle         words                 =
-            ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
-    private final        JFileChooser           fileChooser           = this.configuredFileChooser();
-    private final        JList<String>          policyList            = this.makePolicyList();
-    private final        JTextPane              textPane              = disabledTextPane();
-    private final        TextEditorStyle        textEditor            = new TextEditorStyle();
-    private              Optional<String>       currentlyOpenFileName = Optional.empty();
-    private              boolean                hasPendingChanges     = false;
+
+    private final NonThrowingUndoManager undoManager = new NonThrowingUndoManager();
+
+    private final PolicyManager manager;
+
+    private final ResourceBundle words =
+        ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
+
+    private final JFileChooser fileChooser =
+        this.configuredFileChooser();
+
+    private final JList<String> policyList = this.makePolicyList();
+
+    private final JTextPane textPane = disabledTextPane();
+
+    private final TextEditorStyle textEditor = new TextEditorStyle();
+
+    private Optional<String> currentlyOpenFileName = Optional.empty();
+
+    private boolean hasPendingChanges = false;
 
     protected GenericPolicyManagementWindow (final PolicyManager manager) {
         this.addWindowListener(new CancelableCloseWindowAdapter());
         this.setAlwaysOnTop(true);
         this.setFocusable(false);
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getResource(
-                GenericPolicyManagementWindow.ICON_IMAGE_PATH
+            GenericPolicyManagementWindow.ICON_IMAGE_PATH
         )));
 
         this.configureMenuBar();
@@ -97,7 +106,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private static String policyNameFromFile (final File file) {
         final var fullName = file.getName();
-        return fullName.substring(0, fullName.length() - ".java".length());
+        return fullName.substring(0, fullName.length() - FileExtensions.JAVA_SOURCE.length());
     }
 
     private static JMenuBar makeMenuBarWith (final JMenu... menus) {
@@ -109,6 +118,14 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
         return menuBar;
     }
+
+    protected abstract String getButtonOpenTooltip ();
+
+    protected abstract String getButtonNewTooltip ();
+
+    protected abstract String getPolicyListTitle ();
+
+    protected abstract String getWindowTitle ();
 
     private void configureTextEditor () {
         this.textEditor.configurarTextComponent(this.textPane);
@@ -122,7 +139,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var chooser = new JFileChooser();
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setFileFilter(new MultipleExtensionFileFilter(
-                this.translate("Java Source Files (. java)"), ".java", true
+            this.translate("Java Source Files (. java)"), FileExtensions.JAVA_SOURCE, true
         ));
         return chooser;
     }
@@ -133,64 +150,60 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private void configureMenuBar () {
         this.setJMenuBar(makeMenuBarWith(
-                this.makeMenu(
-                        "File",
-                        this.makeMenuItem("New",
-                                          "/ispd/gui/imagens/insert-object_1.png",
-                                          this::onNew, KeyEvent.VK_N,
-                                          this.getButtonNewTooltip()
-                        ),
-                        this.makeMenuItem("Open",
-                                          "/ispd/gui/imagens/document-open.png",
-                                          evt1 -> this.runCancelableAction(this::openFile), KeyEvent.VK_O,
-                                          this.getButtonOpenTooltip()
-                        ),
-                        this.makeMenuItem("Save",
-                                          "/ispd/gui/imagens/document-save_1.png",
-                                          this::onSave, KeyEvent.VK_S,
-                                          "Save the open file"
-                        ),
-                        this.makeMenuItem("Import",
-                                          "/ispd/gui/imagens/document-import.png",
-                                          evt -> this.runCancelableAction(this::importFile), KeyEvent.VK_I
-                        )
+            this.makeMenu(
+                "File",
+                this.makeMenuItem("New",
+                                  "/ispd/gui/imagens/insert-object_1.png",
+                                  this::onNew, KeyEvent.VK_N,
+                                  this.getButtonNewTooltip()
                 ),
-                this.makeMenu(
-                        "Edit",
-                        this.makeMenuItem("Undo",
-                                          "/ispd/gui/imagens/edit-undo.png",
-                                          this.undoManager::undo, KeyEvent.VK_Z
-                        ),
-                        this.makeMenuItem("Redo",
-                                          "/ispd/gui/imagens/edit-redo.png",
-                                          this.undoManager::redo, KeyEvent.VK_Y
-                        ),
-                        new JPopupMenu.Separator(),
-                        this.makeMenuItem("Cut",
-                                          "/ispd/gui/imagens/edit-cut.png",
-                                          e -> this.textPane.cut(), KeyEvent.VK_X
-                        ),
-                        this.makeMenuItem("Copy",
-                                          "/ispd/gui/imagens/edit-copy.png",
-                                          e -> this.textPane.copy(), KeyEvent.VK_C
-                        ),
-                        this.makeMenuItem("Paste",
-                                          "/ispd/gui/imagens/edit-paste.png",
-                                          e -> this.textPane.paste(), KeyEvent.VK_P
-                        ),
-                        new JPopupMenu.Separator(),
-                        this.makeMenuItem(
-                                "Delete",
-                                "/ispd/gui/imagens/edit-delete.png",
-                                this::onDelete
-                        )
+                this.makeMenuItem("Open",
+                                  "/ispd/gui/imagens/document-open.png",
+                                  evt1 -> this.runCancelableAction(this::openFile), KeyEvent.VK_O,
+                                  this.getButtonOpenTooltip()
+                ),
+                this.makeMenuItem("Save",
+                                  "/ispd/gui/imagens/document-save_1.png",
+                                  this::onSave, KeyEvent.VK_S,
+                                  "Save the open file"
+                ),
+                this.makeMenuItem("Import",
+                                  "/ispd/gui/imagens/document-import.png",
+                                  evt -> this.runCancelableAction(this::importFile), KeyEvent.VK_I
                 )
+            ),
+            this.makeMenu(
+                "Edit",
+                this.makeMenuItem("Undo",
+                                  "/ispd/gui/imagens/edit-undo.png",
+                                  this.undoManager::undo, KeyEvent.VK_Z
+                ),
+                this.makeMenuItem("Redo",
+                                  "/ispd/gui/imagens/edit-redo.png",
+                                  this.undoManager::redo, KeyEvent.VK_Y
+                ),
+                new JPopupMenu.Separator(),
+                this.makeMenuItem("Cut",
+                                  "/ispd/gui/imagens/edit-cut.png",
+                                  e -> this.textPane.cut(), KeyEvent.VK_X
+                ),
+                this.makeMenuItem("Copy",
+                                  "/ispd/gui/imagens/edit-copy.png",
+                                  e -> this.textPane.copy(), KeyEvent.VK_C
+                ),
+                this.makeMenuItem("Paste",
+                                  "/ispd/gui/imagens/edit-paste.png",
+                                  e -> this.textPane.paste(), KeyEvent.VK_P
+                ),
+                new JPopupMenu.Separator(),
+                this.makeMenuItem(
+                    "Delete",
+                    "/ispd/gui/imagens/edit-delete.png",
+                    this::onDelete
+                )
+            )
         ));
     }
-
-    protected abstract String getButtonOpenTooltip ();
-
-    protected abstract String getButtonNewTooltip ();
 
     private JScrollPane makeEditorScrollPane () {
         final var scrollPane = new JScrollPane(this.textPane);
@@ -209,17 +222,15 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     private JList<String> makePolicyList () {
         final var list = new JList<String>();
         list.setBorder(BorderFactory.createTitledBorder(
-                null,
-                this.translate(this.getPolicyListTitle()),
-                TitledBorder.CENTER,
-                TitledBorder.DEFAULT_POSITION
+            null,
+            this.translate(this.getPolicyListTitle()),
+            TitledBorder.CENTER,
+            TitledBorder.DEFAULT_POSITION
         ));
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.addMouseListener(new PolicyListMouseAdapter());
         return list;
     }
-
-    protected abstract String getPolicyListTitle ();
 
     private void makeLayout () {
         final var toolBar         = this.makeToolBar();
@@ -231,77 +242,79 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         this.getContentPane().setLayout(layout);
 
         layout.setHorizontalGroup(layout
-                                          .createParallelGroup(GroupLayout.Alignment.LEADING)
-                                          .addGroup(layout
-                                                            .createSequentialGroup()
-                                                            .addGroup(layout
-                                                                              .createParallelGroup(
-                                                                                      GroupLayout.Alignment.LEADING)
-                                                                              .addGroup(layout
-                                                                                                .createSequentialGroup()
-                                                                                                .addComponent(
-                                                                                                        policyListPanel,
-                                                                                                        GroupLayout.PREFERRED_SIZE,
-                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                        GroupLayout.PREFERRED_SIZE
-                                                                                                )
-                                                                                                .addPreferredGap(
-                                                                                                        LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                .addComponent(
-                                                                                                        textEditorPanel,
-                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                                                        Short.MAX_VALUE
-                                                                                                ))
-                                                                              .addGroup(
-                                                                                      GroupLayout.Alignment.TRAILING,
-                                                                                      layout
-                                                                                              .createSequentialGroup()
-                                                                                              .addContainerGap(
-                                                                                                      904,
-                                                                                                      Short.MAX_VALUE
-                                                                                              )
-                                                                                              .addComponent(
-                                                                                                      caretPosLabel)
-                                                                              )
-                                                                              .addComponent(toolBar,
-                                                                                            GroupLayout.DEFAULT_SIZE,
-                                                                                            904, Short.MAX_VALUE
-                                                                              ))
-                                                            .addContainerGap()));
+                                      .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                      .addGroup(layout
+                                                    .createSequentialGroup()
+                                                    .addGroup(layout
+                                                                  .createParallelGroup(
+                                                                      GroupLayout.Alignment.LEADING)
+                                                                  .addGroup(layout
+                                                                                .createSequentialGroup()
+                                                                                .addComponent(
+                                                                                    policyListPanel,
+                                                                                    GroupLayout.PREFERRED_SIZE,
+                                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                                    GroupLayout.PREFERRED_SIZE
+                                                                                )
+                                                                                .addPreferredGap(
+                                                                                    LayoutStyle.ComponentPlacement.RELATED)
+                                                                                .addComponent(
+                                                                                    textEditorPanel,
+                                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                                    Short.MAX_VALUE
+                                                                                ))
+                                                                  .addGroup(
+                                                                      GroupLayout.Alignment.TRAILING,
+                                                                      layout
+                                                                          .createSequentialGroup()
+                                                                          .addContainerGap(
+                                                                              904,
+                                                                              Short.MAX_VALUE
+                                                                          )
+                                                                          .addComponent(
+                                                                              caretPosLabel)
+                                                                  )
+                                                                  .addComponent(
+                                                                      toolBar,
+                                                                      GroupLayout.DEFAULT_SIZE,
+                                                                      904,
+                                                                      Short.MAX_VALUE
+                                                                  ))
+                                                    .addContainerGap()));
 
         layout.setVerticalGroup(layout
-                                        .createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout
-                                                          .createSequentialGroup()
-                                                          .addComponent(
-                                                                  toolBar,
-                                                                  GroupLayout.PREFERRED_SIZE,
-                                                                  GroupLayout.DEFAULT_SIZE,
-                                                                  GroupLayout.PREFERRED_SIZE
-                                                          )
-                                                          .addGap(2, 2, 2)
-                                                          .addGroup(layout
-                                                                            .createParallelGroup(
-                                                                                    GroupLayout.Alignment.LEADING)
-                                                                            .addComponent(
-                                                                                    caretPosLabel,
-                                                                                    GroupLayout.Alignment.TRAILING
-                                                                            )
-                                                                            .addComponent(
-                                                                                    policyListPanel,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    Short.MAX_VALUE
-                                                                            )
-                                                                            .addComponent(
-                                                                                    textEditorPanel,
-                                                                                    GroupLayout.Alignment.TRAILING,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    GroupLayout.DEFAULT_SIZE,
-                                                                                    Short.MAX_VALUE
-                                                                            ))
-                                                          .addContainerGap()));
+                                    .createParallelGroup(GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout
+                                                  .createSequentialGroup()
+                                                  .addComponent(
+                                                      toolBar,
+                                                      GroupLayout.PREFERRED_SIZE,
+                                                      GroupLayout.DEFAULT_SIZE,
+                                                      GroupLayout.PREFERRED_SIZE
+                                                  )
+                                                  .addGap(2, 2, 2)
+                                                  .addGroup(layout
+                                                                .createParallelGroup(
+                                                                    GroupLayout.Alignment.LEADING)
+                                                                .addComponent(
+                                                                    caretPosLabel,
+                                                                    GroupLayout.Alignment.TRAILING
+                                                                )
+                                                                .addComponent(
+                                                                    policyListPanel,
+                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                    Short.MAX_VALUE
+                                                                )
+                                                                .addComponent(
+                                                                    textEditorPanel,
+                                                                    GroupLayout.Alignment.TRAILING,
+                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                    GroupLayout.DEFAULT_SIZE,
+                                                                    Short.MAX_VALUE
+                                                                ))
+                                                  .addContainerGap()));
     }
 
     private JPanel makeEditorPanel () {
@@ -310,20 +323,23 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var layout      = new GroupLayout(editorPanel);
 
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout
-                                                          .createSequentialGroup()
-                                                          .addContainerGap()
-                                                          .addComponent(editorPane,
-                                                                        GroupLayout.DEFAULT_SIZE, 734, Short.MAX_VALUE
-                                                          )
-                                                          .addContainerGap()));
+                                      .addGroup(layout
+                                                    .createSequentialGroup()
+                                                    .addContainerGap()
+                                                    .addComponent(
+                                                        editorPane,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        734,
+                                                        Short.MAX_VALUE
+                                                    )
+                                                    .addContainerGap()));
 
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                      .addGroup(layout
-                                                        .createSequentialGroup()
-                                                        .addContainerGap()
-                                                        .addComponent(editorPane)
-                                                        .addContainerGap())
+                                    .addGroup(layout
+                                                  .createSequentialGroup()
+                                                  .addContainerGap()
+                                                  .addComponent(editorPane)
+                                                  .addContainerGap())
         );
 
         editorPanel.setLayout(layout);
@@ -337,22 +353,25 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var layout          = new GroupLayout(policyListPanel);
 
         layout.setHorizontalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout
-                                                          .createSequentialGroup()
-                                                          .addContainerGap()
-                                                          .addComponent(policyListScrollPane,
-                                                                        GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE
-                                                          )
-                                                          .addContainerGap()));
+                                      .addGroup(layout
+                                                    .createSequentialGroup()
+                                                    .addContainerGap()
+                                                    .addComponent(
+                                                        policyListScrollPane,
+                                                        GroupLayout.DEFAULT_SIZE,
+                                                        120,
+                                                        Short.MAX_VALUE
+                                                    )
+                                                    .addContainerGap()));
 
         layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                      .addGroup(GroupLayout.Alignment.TRAILING, layout
-                                              .createSequentialGroup()
-                                              .addContainerGap()
-                                              .addComponent(policyListScrollPane,
-                                                            GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE
-                                              )
-                                              .addContainerGap())
+                                    .addGroup(GroupLayout.Alignment.TRAILING, layout
+                                        .createSequentialGroup()
+                                        .addContainerGap()
+                                        .addComponent(policyListScrollPane,
+                                                      GroupLayout.DEFAULT_SIZE, 506, Short.MAX_VALUE
+                                        )
+                                        .addContainerGap())
         );
 
         policyListPanel.setLayout(layout);
@@ -371,29 +390,39 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private JMenuItem makeMenuItem (
-            final String itemName, final String imagePath, final ActionListener action, final int acceleratorKey,
-            final String toolTip
+        final String itemName,
+        final String imagePath,
+        final ActionListener action,
+        final int acceleratorKey,
+        final String toolTip
     ) {
         final var item = this.makeMenuItem(
-                itemName, imagePath,
-                action, acceleratorKey
+            itemName, imagePath,
+            action, acceleratorKey
         );
         item.setToolTipText(this.translate(toolTip));
         return item;
     }
 
     private JMenuItem makeMenuItem (
-            final String itemName, final String imagePath, final ActionListener action, final int acceleratorKey
+        final String itemName,
+        final String imagePath,
+        final ActionListener action,
+        final int acceleratorKey
     ) {
         final var item = this.makeMenuItem(itemName, imagePath, action);
         item.setAccelerator(KeyStroke.getKeyStroke(
-                acceleratorKey,
-                InputEvent.CTRL_DOWN_MASK
+            acceleratorKey,
+            InputEvent.CTRL_DOWN_MASK
         ));
         return item;
     }
 
-    private JMenuItem makeMenuItem (final String itemName, final String imagePath, final ActionListener action) {
+    private JMenuItem makeMenuItem (
+        final String itemName,
+        final String imagePath,
+        final ActionListener action
+    ) {
         final var item = new JMenuItem();
         item.setIcon(new ImageIcon(this.getResource(imagePath)));
         item.setText(this.translate(itemName));
@@ -406,29 +435,33 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         tb.setRollover(true);
 
         tb.add(this.makeButton(
-                "/ispd/gui/imagens/insert-object.png",
-                this.getButtonNewTooltip(), this::onNew
+            "/ispd/gui/imagens/insert-object.png",
+            this.getButtonNewTooltip(), this::onNew
         ));
 
         tb.add(this.makeButton(
-                "/ispd/gui/imagens/document-save.png",
-                "Save the open file", this::onSave
+            "/ispd/gui/imagens/document-save.png",
+            "Save the open file", this::onSave
         ));
 
         tb.add(this.makeButton(
-                "/ispd/gui/imagens/system-run.png",
-                "Compile", this::onCompile
+            "/ispd/gui/imagens/system-run.png",
+            "Compile", this::onCompile
         ));
 
         return tb;
     }
 
-    private JButton makeButton (final String iconPath, final String helpText, final ActionListener action) {
+    private JButton makeButton (
+        final String iconPath,
+        final String helpText,
+        final ActionListener action
+    ) {
         return ButtonBuilder.aButton(new ImageIcon(this.getResource(iconPath)), action)
-                            .withToolTip(this.translate(helpText))
-                            .withCenterBottomTextPosition()
-                            .nonFocusable()
-                            .build();
+            .withToolTip(this.translate(helpText))
+            .withCenterBottomTextPosition()
+            .nonFocusable()
+            .build();
     }
 
     private URL getResource (final String name) {
@@ -441,33 +474,33 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private void makeNewPolicy () {
         final var options = Map.<String, Runnable>of(
-                "Code Editing", this::newPolicyFromCode,
-                "Policy Generator", this::newPolicyFromGenerator
+            "Code Editing", this::newPolicyFromCode,
+            "Policy Generator", this::newPolicyFromGenerator
         );
 
         final var result = (String) JOptionPane.showInputDialog(
-                this,
-                "Create the policy with:",
-                null,
-                JOptionPane.INFORMATION_MESSAGE,
-                null,
-                options.keySet().toArray(String[]::new),
-                null
+            this,
+            "Create the policy with:",
+            null,
+            JOptionPane.INFORMATION_MESSAGE,
+            null,
+            options.keySet().toArray(String[]::new),
+            null
         );
 
         Optional.ofNullable(result)
-                .map(options::get)
-                .ifPresent(Runnable::run);
+            .map(options::get)
+            .ifPresent(Runnable::run);
     }
 
     private void newPolicyFromCode () {
         final var name = JOptionPane.showInputDialog(
-                this, "Enter the name of the policy"
+            this, "Enter the name of the policy"
         );
 
         Optional.ofNullable(name)
-                .filter(ValidaValores::isValidClassName)
-                .ifPresent(this::openNewPolicyInEditor);
+            .filter(NameValidator::isValidClassName)
+            .ifPresent(this::openNewPolicyInEditor);
     }
 
     private void openNewPolicyInEditor (final String name) {
@@ -488,11 +521,11 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private Optional<InterpretadorGerador> getGeneratedPolicy () {
         final var dialog = new PolicyGeneratorWindow(
-                this,
-                true,
-                this.manager.directory().getAbsolutePath(),
-                this.words,
-                this.manager
+            this,
+            true,
+            this.manager.directory().getAbsolutePath(),
+            this.words,
+            this.manager
         );
 
         dialog.setLocationRelativeTo(this);
@@ -505,13 +538,18 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var errors = this.manager.compilar(fileName);
 
         if (errors != null) {
-            JOptionPane.showMessageDialog(this, errors, "Errors during compilation", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                this,
+                errors,
+                "Errors during compilation",
+                JOptionPane.ERROR_MESSAGE
+            );
         } else {
             JOptionPane.showMessageDialog(
-                    this,
-                    """
-                    Policy %s
-                    Compiled Successfully""".formatted(this.currentlyOpenFileName.get())
+                this,
+                """
+                Policy %s
+                Compiled Successfully""".formatted(this.currentlyOpenFileName.get())
             );
         }
 
@@ -554,8 +592,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private void updateTitle () {
         this.currentlyOpenFileName.ifPresentOrElse(
-                this::updateTitleWithFileName,
-                this::updateTitleWithNoFile
+            this::updateTitleWithFileName,
+            this::updateTitleWithNoFile
         );
     }
 
@@ -569,8 +607,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
                                   : " ";
 
         this.setTitle("%s.java%s- %s".formatted(
-                fileName, afterFileName,
-                this.getTranslatedWindowTitle()
+            fileName, afterFileName,
+            this.getTranslatedWindowTitle()
         ));
     }
 
@@ -587,8 +625,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     private void onDelete (final ActionEvent evt) {
         if (this.policyList.isSelectionEmpty()) {
             JOptionPane.showMessageDialog(
-                    this,
-                    "A policy should be selected"
+                this,
+                "A policy should be selected"
             );
             return;
         }
@@ -596,13 +634,13 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var selected = this.policyList.getSelectedValue();
 
         final int choice = JOptionPane.showConfirmDialog(
-                this,
-                """
-                Are you sure want delete this policy:
-                %s""".formatted(selected),
-                null,
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
+            this,
+            """
+            Are you sure want delete this policy:
+            %s""".formatted(selected),
+            null,
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
         );
 
         if (choice != JOptionPane.YES_OPTION) {
@@ -634,7 +672,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private void runCancelableAction (final Runnable action) {
-        final var choice = this.hasPendingChanges ? this.askAboutPendingChanges() : JOptionPane.YES_OPTION;
+        final var choice =
+            this.hasPendingChanges ? this.askAboutPendingChanges() : JOptionPane.YES_OPTION;
         switch (choice) {
             case JOptionPane.CANCEL_OPTION, JOptionPane.CLOSED_OPTION:
                 return;
@@ -661,7 +700,12 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private void importFile (final File f) {
         if (!this.manager.importJavaPolicy(f)) {
-            JOptionPane.showMessageDialog(this, "Could not import policy", "Error!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(
+                this,
+                "Could not import policy",
+                "Error!",
+                JOptionPane.ERROR_MESSAGE
+            );
             return;
         }
 
@@ -681,11 +725,11 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private void configureFileChooser (
-            final boolean showTopBorder, final File startDirectory
+        final boolean showTopBorder, final File startDirectory
     ) {
         ((BorderLayout) this.fileChooser.getLayout())
-                .getLayoutComponent(BorderLayout.NORTH)
-                .setVisible(showTopBorder);
+            .getLayoutComponent(BorderLayout.NORTH)
+            .setVisible(showTopBorder);
 
         this.fileChooser.getComponent(0).setVisible(showTopBorder);
         this.fileChooser.setCurrentDirectory(startDirectory);
@@ -697,11 +741,11 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private int askAboutPendingChanges () {
         final int choice = JOptionPane.showConfirmDialog(
-                this,
-                "%s %s.java".formatted(
-                        this.translate("Do you want to save changes to"),
-                        this.currentlyOpenFileName.get()
-                )
+            this,
+            "%s %s.java".formatted(
+                this.translate("Do you want to save changes to"),
+                this.currentlyOpenFileName.get()
+            )
         );
 
         if (choice == JOptionPane.YES_OPTION) {
@@ -713,8 +757,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private void savePendingChanges () {
         this.manager.escrever(
-                this.currentlyOpenFileName.get(),
-                this.textPane.getText()
+            this.currentlyOpenFileName.get(),
+            this.textPane.getText()
         );
         this.setAsNoPendingChanges();
     }
@@ -737,8 +781,6 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     public PolicyManager getManager () {
         return this.manager;
     }
-
-    protected abstract String getWindowTitle ();
 
     private static class NonThrowingUndoManager extends UndoManager {
 
@@ -796,6 +838,10 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private class PolicyListMouseAdapter extends MouseAdapter {
 
+        private static boolean isDoubleClick (final MouseEvent evt) {
+            return evt.getClickCount() == 2;
+        }
+
         @Override
         public void mouseClicked (final MouseEvent e) {
             if (!isDoubleClick(e)) {
@@ -803,11 +849,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
             }
 
             GenericPolicyManagementWindow.this.runCancelableAction(
-                    GenericPolicyManagementWindow.this::openSelectedPolicy);
-        }
-
-        private static boolean isDoubleClick (final MouseEvent evt) {
-            return evt.getClickCount() == 2;
+                GenericPolicyManagementWindow.this::openSelectedPolicy);
         }
     }
 }

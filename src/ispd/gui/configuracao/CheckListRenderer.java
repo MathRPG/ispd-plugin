@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
@@ -13,9 +12,11 @@ import javax.swing.ListSelectionModel;
 
 public class CheckListRenderer extends DefaultListSelectionModel implements ListCellRenderer {
 
-    private static final Color     BACKGROUND = null;
-    private final        JCheckBox checkBox;
-    private final        Color     selectionBackground;
+    private static final Color BACKGROUND = null;
+
+    private final JCheckBox checkBox;
+
+    private final Color selectionBackground;
 
     public CheckListRenderer (final JList<?> list) {
         this.checkBox            = new JCheckBox();
@@ -32,7 +33,11 @@ public class CheckListRenderer extends DefaultListSelectionModel implements List
 
     @Override
     public Component getListCellRendererComponent (
-            final JList list, final Object value, final int index, final boolean isSelected, final boolean hasFocus
+        final JList list,
+        final Object value,
+        final int index,
+        final boolean isSelected,
+        final boolean hasFocus
     ) {
         this.checkBox.setSelected(isSelected);
         if (isSelected) {

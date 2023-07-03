@@ -1,10 +1,5 @@
 package ispd.policy.scheduling.grid.impl;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
 import ispd.annotations.Policy;
 import ispd.motor.Mensagens;
 import ispd.motor.filas.Mensagem;
@@ -12,14 +7,21 @@ import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.policy.scheduling.grid.impl.util.PreemptionEntry;
 import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Policy
 public class OSEP extends AbstractOSEP<UserProcessingControl> {
 
-    private final List<Tarefa>          tasksInWaiting    = new ArrayList<>();
+    private final List<Tarefa> tasksInWaiting = new ArrayList<>();
+
     private final List<PreemptionEntry> preemptionEntries = new ArrayList<>();
-    private       Tarefa                selectedTask      = null;
-    private       int                   slaveCount        = 0;
+
+    private Tarefa selectedTask = null;
+
+    private int slaveCount = 0;
 
     @Override
     public void escalonar () {
@@ -53,7 +55,7 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
             this.tasksInWaiting.add(task);
 
             final var t2 =
-                    this.slaveControls.get(resource).firstTaskInProcessing();
+                this.slaveControls.get(resource).firstTaskInProcessing();
             this.preemptionEntries.add(new PreemptionEntry(t2, task));
 
             sc.setAsBlocked();
@@ -110,7 +112,10 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
             for (int i = 0; i < this.escravos.size(); i++) {
                 final var s  = this.escravos.get(i);
                 final var sc = this.slaveControls.get(s);
-                if (sc.isOccupied() && sc.firstTaskInProcessing().getProprietario().equals(usermax)) {
+                if (sc.isOccupied() && sc
+                    .firstTaskInProcessing()
+                    .getProprietario()
+                    .equals(usermax)) {
                     index = i;
                     break;
                 }
@@ -121,9 +126,9 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
         if (index != -1) {
             final CS_Processamento cs_processamento = this.escravos.get(index);
             this.mestre.sendMessage(
-                    this.slaveControls.get(cs_processamento).firstTaskInProcessing(),
-                    cs_processamento,
-                    Mensagens.DEVOLVER_COM_PREEMPCAO
+                this.slaveControls.get(cs_processamento).firstTaskInProcessing(),
+                cs_processamento,
+                Mensagens.DEVOLVER_COM_PREEMPCAO
             );
             return cs_processamento;
         }
@@ -134,38 +139,10 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
     @Override
     public Tarefa escalonarTarefa () {
         return this.getBestUserForSomeTask()
-                   .flatMap(this::findAnyTaskOf)
-                   .map(this::popTaskFromQueue)
-                   .or(this::firstAvailableTask)
-                   .orElse(null);
-    }
-
-    private Optional<UserProcessingControl> getBestUserForSomeTask () {
-        return this.userControls.values().stream()
-                                .filter(this::isUserEligibleForTask)
-                                .max(Comparator
-                                             .comparingLong(UserProcessingControl::excessMachines));
-    }
-
-    private Optional<Tarefa> findAnyTaskOf (final UserProcessingControl uc) {
-        return this.tarefas.stream()
-                           .filter(uc::isOwnerOf)
-                           .findAny();
-    }
-
-    private Tarefa popTaskFromQueue (final Tarefa task) {
-        this.tarefas.remove(task);
-        return task;
-    }
-
-    private Optional<Tarefa> firstAvailableTask () {
-        return this.tarefas.stream()
-                           .findFirst()
-                           .map(this::popTaskFromQueue);
-    }
-
-    private boolean isUserEligibleForTask (final UserProcessingControl user) {
-        return user.hasExcessMachines() && user.isEligibleForTask();
+            .flatMap(this::findAnyTaskOf)
+            .map(this::popTaskFromQueue)
+            .or(this::firstAvailableTask)
+            .orElse(null);
     }
 
     @Override
@@ -183,7 +160,7 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
         super.resultadoAtualizar(mensagem);
 
         this.slaveControls.get((CS_Processamento) mensagem.getOrigem())
-                          .setTasksInProcessing(mensagem.getProcessadorEscravo());
+            .setTasksInProcessing(mensagem.getProcessadorEscravo());
 
         this.slaveCount++;
 
@@ -231,7 +208,10 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
         int indexControle = -1;
         for (j = 0; j < this.preemptionEntries.size(); j++) {
             if (this.preemptionEntries.get(j).preemptedTaskId() == tarefa.getIdentificador() &&
-                this.preemptionEntries.get(j).preemptedTaskUser().equals(tarefa.getProprietario())) {
+                this.preemptionEntries
+                    .get(j)
+                    .preemptedTaskUser()
+                    .equals(tarefa.getProprietario())) {
                 indexControle = j;
                 break;
             }
@@ -241,7 +221,9 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
 
         for (int i = 0; i < this.tasksInWaiting.size(); i++) {
             if (this.tasksInWaiting.get(i).getProprietario().equals(pe.scheduledTaskUser()) &&
-                this.tasksInWaiting.get(i).getIdentificador() == this.preemptionEntries.get(j).scheduledTaskId()) {
+                this.tasksInWaiting.get(i).getIdentificador() == this.preemptionEntries
+                    .get(j)
+                    .scheduledTaskId()) {
 
                 this.mestre.sendTask(this.tasksInWaiting.get(i));
 
@@ -257,5 +239,33 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
                 break;
             }
         }
+    }
+
+    private Optional<UserProcessingControl> getBestUserForSomeTask () {
+        return this.userControls.values().stream()
+            .filter(this::isUserEligibleForTask)
+            .max(Comparator
+                     .comparingLong(UserProcessingControl::excessMachines));
+    }
+
+    private Optional<Tarefa> findAnyTaskOf (final UserProcessingControl uc) {
+        return this.tarefas.stream()
+            .filter(uc::isOwnerOf)
+            .findAny();
+    }
+
+    private Tarefa popTaskFromQueue (final Tarefa task) {
+        this.tarefas.remove(task);
+        return task;
+    }
+
+    private Optional<Tarefa> firstAvailableTask () {
+        return this.tarefas.stream()
+            .findFirst()
+            .map(this::popTaskFromQueue);
+    }
+
+    private boolean isUserEligibleForTask (final UserProcessingControl user) {
+        return user.hasExcessMachines() && user.isEligibleForTask();
     }
 }

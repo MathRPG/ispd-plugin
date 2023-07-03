@@ -1,12 +1,12 @@
 package ispd.gui;
 
+import ispd.arquivo.xml.ConfiguracaoISPD;
 import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.text.DecimalFormat;
-
 import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JCheckBox;
@@ -20,23 +20,33 @@ import javax.swing.WindowConstants;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 
-import ispd.arquivo.xml.ConfiguracaoISPD;
-
 public class SettingsDialog extends JDialog {
 
-    private final ConfiguracaoISPD    config;
-    private       JCheckBox           jCheckBoxBarChartProcessing;
-    private       JCheckBox           jCheckBoxPieChartCommunication;
-    private       JCheckBox           jCheckBoxTimeChartMachine;
-    private       JCheckBox           jCheckBoxTimeChartTask;
-    private       JCheckBox           jCheckBoxTimeChartUser;
-    private       JLabel              jLabelNumSim;
-    private       JLabel              jLabelThread;
-    private       JRadioButton        jRadioButtonDefault;
-    private       JRadioButton        jRadioButtonGraphical;
-    private       JRadioButton        jRadioButtonOptimistic;
-    private       JFormattedTextField jTextFieldNumSim;
-    private       JFormattedTextField jTextFieldThread;
+    private final ConfiguracaoISPD config;
+
+    private JCheckBox jCheckBoxBarChartProcessing;
+
+    private JCheckBox jCheckBoxPieChartCommunication;
+
+    private JCheckBox jCheckBoxTimeChartMachine;
+
+    private JCheckBox jCheckBoxTimeChartTask;
+
+    private JCheckBox jCheckBoxTimeChartUser;
+
+    private JLabel jLabelNumSim;
+
+    private JLabel jLabelThread;
+
+    private JRadioButton jRadioButtonDefault;
+
+    private JRadioButton jRadioButtonGraphical;
+
+    private JRadioButton jRadioButtonOptimistic;
+
+    private JFormattedTextField jTextFieldNumSim;
+
+    private JFormattedTextField jTextFieldThread;
 
     public SettingsDialog (final Frame parent, final boolean modal, final ConfiguracaoISPD config) {
         super(parent, modal);
@@ -79,7 +89,7 @@ public class SettingsDialog extends JDialog {
 
         final JPanel jPanelSimulation = new JPanel();
         jPanelSimulation.setBorder(BorderFactory.createTitledBorder(
-                "Simulation"));
+            "Simulation"));
 
         this.jRadioButtonDefault.setSelected(true);
         this.jRadioButtonDefault.setText("Default");
@@ -97,124 +107,125 @@ public class SettingsDialog extends JDialog {
         this.jLabelNumSim.setHorizontalAlignment(SwingConstants.CENTER);
         this.jLabelNumSim.setText("Number of simulations");
 
-        this.jTextFieldThread.setBackground(new Color(238, 238, 238));
+        final var background = new Color(238, 238, 238);
+        this.jTextFieldThread.setBackground(background);
         this.jTextFieldThread.setBorder(null);
         this.jTextFieldThread.setFormatterFactory(
-                new DefaultFormatterFactory(new NumberFormatter(new DecimalFormat("#0"))));
+            new DefaultFormatterFactory(new NumberFormatter(new DecimalFormat("#0"))));
         this.jTextFieldThread.setHorizontalAlignment(SwingConstants.CENTER);
         this.jTextFieldThread.setText("1");
         this.jTextFieldThread.addActionListener(this::jTextFieldThreadActionPerformed);
         this.jTextFieldThread.addFocusListener(new SomeFocusAdapter());
 
-        this.jTextFieldNumSim.setBackground(new Color(238, 238, 238));
+        this.jTextFieldNumSim.setBackground(background);
         this.jTextFieldNumSim.setBorder(null);
         this.jTextFieldNumSim.setFormatterFactory(
-                new DefaultFormatterFactory(new NumberFormatter(new DecimalFormat("#0"))));
+            new DefaultFormatterFactory(new NumberFormatter(new DecimalFormat("#0"))));
         this.jTextFieldNumSim.setHorizontalAlignment(SwingConstants.CENTER);
         this.jTextFieldNumSim.setText("1");
         this.jTextFieldNumSim.addActionListener(this::jTextFieldNumSimActionPerformed);
         this.jTextFieldNumSim.addFocusListener(new SomeOtherFocusAdapter());
 
         final GroupLayout jPanelSimulationLayout =
-                new GroupLayout(jPanelSimulation);
+            new GroupLayout(jPanelSimulation);
         jPanelSimulation.setLayout(jPanelSimulationLayout);
         jPanelSimulationLayout.setHorizontalGroup(
-                jPanelSimulationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                      .addGroup(jPanelSimulationLayout.createSequentialGroup()
-                                                                      .addContainerGap()
-                                                                      .addGroup(jPanelSimulationLayout
-                                                                                        .createParallelGroup(
-                                                                                                GroupLayout.Alignment.LEADING)
-                                                                                        .addGroup(jPanelSimulationLayout
-                                                                                                          .createSequentialGroup()
-                                                                                                          .addComponent(
-                                                                                                                  this.jRadioButtonDefault)
-                                                                                                          .addPreferredGap(
-                                                                                                                  javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                                          .addComponent(
-                                                                                                                  this.jRadioButtonOptimistic)
-                                                                                                          .addPreferredGap(
-                                                                                                                  javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                                                          .addComponent(
-                                                                                                                  this.jRadioButtonGraphical))
-                                                                                        .addGroup(jPanelSimulationLayout
-                                                                                                          .createSequentialGroup()
-                                                                                                          .addGroup(
-                                                                                                                  jPanelSimulationLayout
-                                                                                                                          .createParallelGroup(
-                                                                                                                                  GroupLayout.Alignment.TRAILING,
-                                                                                                                                  false
-                                                                                                                          )
-                                                                                                                          .addComponent(
-                                                                                                                                  this.jLabelThread,
-                                                                                                                                  GroupLayout.DEFAULT_SIZE,
-                                                                                                                                  GroupLayout.DEFAULT_SIZE,
-                                                                                                                                  Short.MAX_VALUE
-                                                                                                                          )
-                                                                                                                          .addComponent(
-                                                                                                                                  this.jLabelNumSim,
-                                                                                                                                  GroupLayout.DEFAULT_SIZE,
-                                                                                                                                  178,
-                                                                                                                                  Short.MAX_VALUE
-                                                                                                                          ))
-                                                                                                          .addPreferredGap(
-                                                                                                                  javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                                                          .addGroup(
-                                                                                                                  jPanelSimulationLayout
-                                                                                                                          .createParallelGroup(
-                                                                                                                                  GroupLayout.Alignment.LEADING)
-                                                                                                                          .addComponent(
-                                                                                                                                  this.jTextFieldThread,
-                                                                                                                                  GroupLayout.PREFERRED_SIZE,
-                                                                                                                                  75,
-                                                                                                                                  GroupLayout.PREFERRED_SIZE
-                                                                                                                          )
-                                                                                                                          .addComponent(
-                                                                                                                                  this.jTextFieldNumSim,
-                                                                                                                                  GroupLayout.PREFERRED_SIZE,
-                                                                                                                                  75,
-                                                                                                                                  GroupLayout.PREFERRED_SIZE
-                                                                                                                          ))))
-                                                                      .addContainerGap(12, Short.MAX_VALUE))
+            jPanelSimulationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelSimulationLayout.createSequentialGroup()
+                              .addContainerGap()
+                              .addGroup(jPanelSimulationLayout
+                                            .createParallelGroup(
+                                                GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanelSimulationLayout
+                                                          .createSequentialGroup()
+                                                          .addComponent(
+                                                              this.jRadioButtonDefault)
+                                                          .addPreferredGap(
+                                                              javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                          .addComponent(
+                                                              this.jRadioButtonOptimistic)
+                                                          .addPreferredGap(
+                                                              javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                          .addComponent(
+                                                              this.jRadioButtonGraphical))
+                                            .addGroup(jPanelSimulationLayout
+                                                          .createSequentialGroup()
+                                                          .addGroup(
+                                                              jPanelSimulationLayout
+                                                                  .createParallelGroup(
+                                                                      GroupLayout.Alignment.TRAILING,
+                                                                      false
+                                                                  )
+                                                                  .addComponent(
+                                                                      this.jLabelThread,
+                                                                      GroupLayout.DEFAULT_SIZE,
+                                                                      GroupLayout.DEFAULT_SIZE,
+                                                                      Short.MAX_VALUE
+                                                                  )
+                                                                  .addComponent(
+                                                                      this.jLabelNumSim,
+                                                                      GroupLayout.DEFAULT_SIZE,
+                                                                      178,
+                                                                      Short.MAX_VALUE
+                                                                  ))
+                                                          .addPreferredGap(
+                                                              javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                          .addGroup(
+                                                              jPanelSimulationLayout
+                                                                  .createParallelGroup(
+                                                                      GroupLayout.Alignment.LEADING)
+                                                                  .addComponent(
+                                                                      this.jTextFieldThread,
+                                                                      GroupLayout.PREFERRED_SIZE,
+                                                                      75,
+                                                                      GroupLayout.PREFERRED_SIZE
+                                                                  )
+                                                                  .addComponent(
+                                                                      this.jTextFieldNumSim,
+                                                                      GroupLayout.PREFERRED_SIZE,
+                                                                      75,
+                                                                      GroupLayout.PREFERRED_SIZE
+                                                                  ))))
+                              .addContainerGap(12, Short.MAX_VALUE))
         );
         jPanelSimulationLayout.setVerticalGroup(
-                jPanelSimulationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                      .addGroup(jPanelSimulationLayout.createSequentialGroup()
-                                                                      .addContainerGap()
-                                                                      .addGroup(jPanelSimulationLayout
-                                                                                        .createParallelGroup(
-                                                                                                GroupLayout.Alignment.BASELINE)
-                                                                                        .addComponent(
-                                                                                                this.jRadioButtonDefault)
-                                                                                        .addComponent(
-                                                                                                this.jRadioButtonOptimistic)
-                                                                                        .addComponent(
-                                                                                                this.jRadioButtonGraphical))
-                                                                      .addPreferredGap(
-                                                                              javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                      .addGroup(jPanelSimulationLayout
-                                                                                        .createParallelGroup(
-                                                                                                GroupLayout.Alignment.LEADING)
-                                                                                        .addComponent(this.jLabelThread)
-                                                                                        .addComponent(
-                                                                                                this.jTextFieldThread,
-                                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                                15,
-                                                                                                GroupLayout.PREFERRED_SIZE
-                                                                                        ))
-                                                                      .addPreferredGap(
-                                                                              javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                      .addGroup(jPanelSimulationLayout
-                                                                                        .createParallelGroup(
-                                                                                                GroupLayout.Alignment.BASELINE)
-                                                                                        .addComponent(this.jLabelNumSim)
-                                                                                        .addComponent(
-                                                                                                this.jTextFieldNumSim,
-                                                                                                GroupLayout.PREFERRED_SIZE,
-                                                                                                15,
-                                                                                                GroupLayout.PREFERRED_SIZE
-                                                                                        ))
-                                                                      .addContainerGap())
+            jPanelSimulationLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelSimulationLayout.createSequentialGroup()
+                              .addContainerGap()
+                              .addGroup(jPanelSimulationLayout
+                                            .createParallelGroup(
+                                                GroupLayout.Alignment.BASELINE)
+                                            .addComponent(
+                                                this.jRadioButtonDefault)
+                                            .addComponent(
+                                                this.jRadioButtonOptimistic)
+                                            .addComponent(
+                                                this.jRadioButtonGraphical))
+                              .addPreferredGap(
+                                  javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                              .addGroup(jPanelSimulationLayout
+                                            .createParallelGroup(
+                                                GroupLayout.Alignment.LEADING)
+                                            .addComponent(this.jLabelThread)
+                                            .addComponent(
+                                                this.jTextFieldThread,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                15,
+                                                GroupLayout.PREFERRED_SIZE
+                                            ))
+                              .addPreferredGap(
+                                  javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addGroup(jPanelSimulationLayout
+                                            .createParallelGroup(
+                                                GroupLayout.Alignment.BASELINE)
+                                            .addComponent(this.jLabelNumSim)
+                                            .addComponent(
+                                                this.jTextFieldNumSim,
+                                                GroupLayout.PREFERRED_SIZE,
+                                                15,
+                                                GroupLayout.PREFERRED_SIZE
+                                            ))
+                              .addContainerGap())
         );
 
         jPanelResults.setBorder(BorderFactory.createTitledBorder("Results"));
@@ -240,105 +251,107 @@ public class SettingsDialog extends JDialog {
         final GroupLayout jPanelResultsLayout = new GroupLayout(jPanelResults);
         jPanelResults.setLayout(jPanelResultsLayout);
         jPanelResultsLayout.setHorizontalGroup(
-                jPanelResultsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                   .addGroup(jPanelResultsLayout.createSequentialGroup()
-                                                                .addContainerGap()
-                                                                .addGroup(jPanelResultsLayout.createParallelGroup(
-                                                                                                     GroupLayout.Alignment.LEADING, false)
-                                                                                             .addComponent(
-                                                                                                     this.jCheckBoxTimeChartUser,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     Short.MAX_VALUE
-                                                                                             )
-                                                                                             .addComponent(
-                                                                                                     this.jCheckBoxPieChartCommunication,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     Short.MAX_VALUE
-                                                                                             )
-                                                                                             .addComponent(
-                                                                                                     this.jCheckBoxBarChartProcessing,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     Short.MAX_VALUE
-                                                                                             )
-                                                                                             .addComponent(
-                                                                                                     this.jCheckBoxTimeChartMachine,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     Short.MAX_VALUE
-                                                                                             )
-                                                                                             .addComponent(
-                                                                                                     this.jCheckBoxTimeChartTask,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     GroupLayout.DEFAULT_SIZE,
-                                                                                                     Short.MAX_VALUE
-                                                                                             ))
-                                                                .addContainerGap(158, Short.MAX_VALUE))
+            jPanelResultsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelResultsLayout.createSequentialGroup()
+                              .addContainerGap()
+                              .addGroup(jPanelResultsLayout.createParallelGroup(
+                                      GroupLayout.Alignment.LEADING,
+                                      false
+                                  )
+                                            .addComponent(
+                                                this.jCheckBoxTimeChartUser,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE
+                                            )
+                                            .addComponent(
+                                                this.jCheckBoxPieChartCommunication,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE
+                                            )
+                                            .addComponent(
+                                                this.jCheckBoxBarChartProcessing,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE
+                                            )
+                                            .addComponent(
+                                                this.jCheckBoxTimeChartMachine,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE
+                                            )
+                                            .addComponent(
+                                                this.jCheckBoxTimeChartTask,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE
+                                            ))
+                              .addContainerGap(158, Short.MAX_VALUE))
         );
         jPanelResultsLayout.setVerticalGroup(
-                jPanelResultsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                   .addGroup(jPanelResultsLayout.createSequentialGroup()
-                                                                .addContainerGap()
-                                                                .addComponent(this.jCheckBoxBarChartProcessing)
-                                                                .addPreferredGap(
-                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(this.jCheckBoxPieChartCommunication)
-                                                                .addPreferredGap(
-                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(this.jCheckBoxTimeChartUser)
-                                                                .addPreferredGap(
-                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(this.jCheckBoxTimeChartMachine)
-                                                                .addPreferredGap(
-                                                                        javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(this.jCheckBoxTimeChartTask)
-                                                                .addContainerGap(
-                                                                        GroupLayout.DEFAULT_SIZE,
-                                                                        Short.MAX_VALUE
-                                                                ))
+            jPanelResultsLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(jPanelResultsLayout.createSequentialGroup()
+                              .addContainerGap()
+                              .addComponent(this.jCheckBoxBarChartProcessing)
+                              .addPreferredGap(
+                                  javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(this.jCheckBoxPieChartCommunication)
+                              .addPreferredGap(
+                                  javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(this.jCheckBoxTimeChartUser)
+                              .addPreferredGap(
+                                  javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(this.jCheckBoxTimeChartMachine)
+                              .addPreferredGap(
+                                  javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(this.jCheckBoxTimeChartTask)
+                              .addContainerGap(
+                                  GroupLayout.DEFAULT_SIZE,
+                                  Short.MAX_VALUE
+                              ))
         );
 
         final GroupLayout layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addGroup(layout.createSequentialGroup()
-                                      .addContainerGap()
-                                      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                      .addComponent(
-                                                              jPanelSimulation,
-                                                              GroupLayout.DEFAULT_SIZE,
-                                                              GroupLayout.DEFAULT_SIZE,
-                                                              Short.MAX_VALUE
-                                                      )
-                                                      .addComponent(
-                                                              jPanelResults,
-                                                              GroupLayout.DEFAULT_SIZE,
-                                                              GroupLayout.DEFAULT_SIZE,
-                                                              Short.MAX_VALUE
-                                                      ))
-                                      .addContainerGap())
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                              .addContainerGap()
+                              .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                            .addComponent(
+                                                jPanelSimulation,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE
+                                            )
+                                            .addComponent(
+                                                jPanelResults,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE
+                                            ))
+                              .addContainerGap())
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addGroup(layout.createSequentialGroup()
-                                      .addContainerGap()
-                                      .addComponent(
-                                              jPanelSimulation,
-                                              GroupLayout.PREFERRED_SIZE,
-                                              GroupLayout.DEFAULT_SIZE,
-                                              GroupLayout.PREFERRED_SIZE
-                                      )
-                                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                      .addComponent(
-                                              jPanelResults,
-                                              GroupLayout.DEFAULT_SIZE,
-                                              GroupLayout.DEFAULT_SIZE,
-                                              Short.MAX_VALUE
-                                      )
-                                      .addContainerGap())
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                              .addContainerGap()
+                              .addComponent(
+                                  jPanelSimulation,
+                                  GroupLayout.PREFERRED_SIZE,
+                                  GroupLayout.DEFAULT_SIZE,
+                                  GroupLayout.PREFERRED_SIZE
+                              )
+                              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(
+                                  jPanelResults,
+                                  GroupLayout.DEFAULT_SIZE,
+                                  GroupLayout.DEFAULT_SIZE,
+                                  Short.MAX_VALUE
+                              )
+                              .addContainerGap())
         );
 
         this.pack();
@@ -431,15 +444,17 @@ public class SettingsDialog extends JDialog {
 
     private class SomeFocusAdapter extends FocusAdapter {
 
-        public void focusLost (final FocusEvent evt) {
-            SettingsDialog.this.jTextFieldThreadFocusLost(evt);
+        @Override
+        public void focusLost (final FocusEvent e) {
+            SettingsDialog.this.jTextFieldThreadFocusLost(e);
         }
     }
 
     private class SomeOtherFocusAdapter extends FocusAdapter {
 
-        public void focusLost (final FocusEvent evt) {
-            SettingsDialog.this.jTextFieldNumSimFocusLost(evt);
+        @Override
+        public void focusLost (final FocusEvent e) {
+            SettingsDialog.this.jTextFieldNumSimFocusLost(e);
         }
     }
 }

@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Vector;
-
 import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -29,17 +28,26 @@ import javax.swing.table.DefaultTableModel;
  */
 public class UserConfigurationDialog extends JDialog {
 
-    private static final Dimension           BUTTON_PREFERRED_SIZE = new Dimension(45, 45);
-    private final        ResourceBundle      translator;
-    private final        Vector<Vector>      users;
-    private final        Vector<String>      profiles;
-    private final        Set<? super String> userSet;
-    private              JScrollPane         jScrollPane1;
-    private              JTable              table;
+    private static final Dimension BUTTON_PREFERRED_SIZE = new Dimension(45, 45);
+
+    private final ResourceBundle translator;
+
+    private final Vector<Vector> users;
+
+    private final Vector<String> profiles;
+
+    private final Set<? super String> userSet;
+
+    private JScrollPane jScrollPane1;
+
+    private JTable table;
 
     public UserConfigurationDialog (
-            final Frame parent, final boolean modal, final Set<? super String> users, final ResourceBundle translator,
-            final Map<String, Double> profiles
+        final Frame parent,
+        final boolean modal,
+        final Set<? super String> users,
+        final ResourceBundle translator,
+        final Map<String, Double> profiles
     ) {
         super(parent, modal);
 
@@ -56,7 +64,7 @@ public class UserConfigurationDialog extends JDialog {
             this.users.add(userAndDouble);
         }
 
-        this.userSet    = users;
+        this.userSet = users;
         this.translator = translator;
         this.initComponents();
     }
@@ -70,18 +78,20 @@ public class UserConfigurationDialog extends JDialog {
         final JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
         toolbar.add(aButton(this.translate("Add"), this::onAddClick)
-                            .nonFocusable()
-                            .withIcon(new ImageIcon(this.getResource("/ispd/gui/imagens/insert-object.png")))
-                            .withSize(UserConfigurationDialog.BUTTON_PREFERRED_SIZE)
-                            .withCenterBottomTextPosition()
-                            .build());
+                        .nonFocusable()
+                        .withIcon(new ImageIcon(this.getResource(
+                            "/ispd/gui/imagens/insert-object.png")))
+                        .withSize(UserConfigurationDialog.BUTTON_PREFERRED_SIZE)
+                        .withCenterBottomTextPosition()
+                        .build());
 
         toolbar.add(aButton(this.translate("Remove"), this::onRemoveClick)
-                            .nonFocusable()
-                            .withIcon(new ImageIcon(this.getResource("/ispd/gui/imagens/window-close.png")))
-                            .withSize(UserConfigurationDialog.BUTTON_PREFERRED_SIZE)
-                            .withCenterBottomTextPosition()
-                            .build());
+                        .nonFocusable()
+                        .withIcon(new ImageIcon(this.getResource(
+                            "/ispd/gui/imagens/window-close.png")))
+                        .withSize(UserConfigurationDialog.BUTTON_PREFERRED_SIZE)
+                        .withCenterBottomTextPosition()
+                        .build());
 
         final var jButtonOk = basicButton(this.translate("OK"), (e) -> this.setVisible(false));
 
@@ -94,50 +104,52 @@ public class UserConfigurationDialog extends JDialog {
         final var layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addGroup(layout.createSequentialGroup()
-                                      .addContainerGap()
-                                      .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                      .addComponent(this.jScrollPane1,
-                                                                    GroupLayout.PREFERRED_SIZE, 0
-                                                              , Short.MAX_VALUE
-                                                      )
-                                                      .addComponent(toolbar,
-                                                                    GroupLayout.Alignment.TRAILING,
-                                                                    GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE,
-                                                                    Short.MAX_VALUE
-                                                      )
-                                                      .addGroup(
-                                                              GroupLayout.Alignment.TRAILING,
-                                                              layout.createSequentialGroup()
-                                                                    .addGap(0, 145, Short.MAX_VALUE)
-                                                                    .addComponent(jButtonOk,
-                                                                                  GroupLayout.PREFERRED_SIZE, 72,
-                                                                                  GroupLayout.PREFERRED_SIZE
-                                                                    )
-                                                                    .addGap(145, 145, 145)
-                                                      ))
-                                      .addContainerGap())
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                              .addContainerGap()
+                              .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                                            .addComponent(this.jScrollPane1,
+                                                          GroupLayout.PREFERRED_SIZE, 0
+                                                , Short.MAX_VALUE
+                                            )
+                                            .addComponent(
+                                                toolbar,
+                                                GroupLayout.Alignment.TRAILING,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                GroupLayout.DEFAULT_SIZE,
+                                                Short.MAX_VALUE
+                                            )
+                                            .addGroup(
+                                                GroupLayout.Alignment.TRAILING,
+                                                layout.createSequentialGroup()
+                                                    .addGap(0, 145, Short.MAX_VALUE)
+                                                    .addComponent(jButtonOk,
+                                                                  GroupLayout.PREFERRED_SIZE, 72,
+                                                                  GroupLayout.PREFERRED_SIZE
+                                                    )
+                                                    .addGap(145, 145, 145)
+                                            ))
+                              .addContainerGap())
         );
 
         layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                      .addGroup(layout.createSequentialGroup()
-                                      .addGap(4, 4, 4)
-                                      .addComponent(
-                                              toolbar,
-                                              GroupLayout.PREFERRED_SIZE,
-                                              GroupLayout.DEFAULT_SIZE,
-                                              GroupLayout.PREFERRED_SIZE
-                                      )
-                                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                      .addComponent(this.jScrollPane1,
-                                                    GroupLayout.DEFAULT_SIZE,
-                                                    213, Short.MAX_VALUE
-                                      )
-                                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                      .addComponent(jButtonOk)
-                                      .addContainerGap())
+            layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                              .addGap(4, 4, 4)
+                              .addComponent(
+                                  toolbar,
+                                  GroupLayout.PREFERRED_SIZE,
+                                  GroupLayout.DEFAULT_SIZE,
+                                  GroupLayout.PREFERRED_SIZE
+                              )
+                              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(this.jScrollPane1,
+                                            GroupLayout.DEFAULT_SIZE,
+                                            213, Short.MAX_VALUE
+                              )
+                              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                              .addComponent(jButtonOk)
+                              .addContainerGap())
         );
 
         this.pack();
@@ -149,16 +161,15 @@ public class UserConfigurationDialog extends JDialog {
 
     private void onAddClick (final ActionEvent evt) {
         final String add = JOptionPane.showInputDialog(
-                this,
-                this.translate("Enter the name"),
-                this.translate("Add"),
-                JOptionPane.QUESTION_MESSAGE
+            this,
+            this.translate("Enter the name"),
+            this.translate("Add"),
+            JOptionPane.QUESTION_MESSAGE
         );
 
-
         final Double result = Double.parseDouble(JOptionPane.showInputDialog(
-                this,
-                "Enter user power comsumption limit"
+            this,
+            "Enter user power comsumption limit"
         ));
 
         if (!this.userSet.contains(add) && !add.isEmpty()) {
@@ -183,12 +194,12 @@ public class UserConfigurationDialog extends JDialog {
 
         final var profile = this.table.getValueAt(this.table.getSelectedRow(), 0).toString();
         final int choice = JOptionPane.showConfirmDialog(
-                this,
-                "%s%s".formatted(this.translate(
-                        "Are you sure want delete this user:"), profile),
-                null,
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
+            this,
+            "%s%s".formatted(this.translate(
+                "Are you sure want delete this user:"), profile),
+            null,
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.WARNING_MESSAGE
         );
 
         if (choice != JOptionPane.YES_OPTION) {
@@ -212,8 +223,8 @@ public class UserConfigurationDialog extends JDialog {
         final HashMap<String, Double> ret = new HashMap<>(0);
         for (final List userList : this.users) {
             ret.put(
-                    userList.get(0).toString(),
-                    Double.parseDouble(userList.get(1).toString())
+                userList.get(0).toString(),
+                Double.parseDouble(userList.get(1).toString())
             );
         }
         return ret;

@@ -1,11 +1,5 @@
 package ispd.arquivo.xml.models.builders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import ispd.arquivo.xml.models.IconicModel;
 import ispd.arquivo.xml.utils.WrappedDocument;
 import ispd.arquivo.xml.utils.WrappedElement;
@@ -14,15 +8,22 @@ import ispd.gui.iconico.Vertex;
 import ispd.gui.iconico.grade.GridItem;
 import ispd.gui.iconico.grade.Link;
 import ispd.gui.iconico.grade.Machine;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
- * Builds iconic models from a {@link WrappedDocument} representing the system.
- * Instantiate and call {@link #build()}
+ * Builds iconic models from a {@link WrappedDocument} representing the system. Instantiate and call
+ * {@link #build()}
  */
 public class IconicModelBuilder {
 
-    private final List<Vertex> vertices      = new ArrayList<>();
-    private final List<Edge> edges           = new ArrayList<>();
+    private final List<Vertex> vertices = new ArrayList<>();
+
+    private final List<Edge> edges = new ArrayList<>();
+
     private final Map<Integer, Object> icons = new HashMap<>();
 
     public IconicModelBuilder (final WrappedDocument doc) {
@@ -31,6 +32,13 @@ public class IconicModelBuilder {
         doc.machines().forEach(this::processMachineElement);
         doc.masters().forEach(this::setMasterCharacteristics);
         doc.links().forEach(this::processLinkElement);
+    }
+
+    private static void connectLinkAndVertices (
+        final GridItem link, final GridItem origination, final GridItem destination
+    ) {
+        origination.getOutboundConnections().add(link);
+        destination.getInboundConnections().add(link);
     }
 
     private void processClusterElement (final WrappedElement e) {
@@ -64,12 +72,12 @@ public class IconicModelBuilder {
         master.setMaster(true);
 
         final var slaves = elem.slaves()
-                               .map(WrappedElement::id)
-                               .map(Integer::parseInt)
-                               .map(this.icons::get)
-                               .filter(Objects::nonNull)
-                               .map(GridItem.class::cast)
-                               .toList();
+            .map(WrappedElement::id)
+            .map(Integer::parseInt)
+            .map(this.icons::get)
+            .filter(Objects::nonNull)
+            .map(GridItem.class::cast)
+            .toList();
 
         master.setSlaves(slaves);
     }
@@ -91,13 +99,6 @@ public class IconicModelBuilder {
 
     private Vertex getVertex (final int e) {
         return (Vertex) this.icons.get(e);
-    }
-
-    private static void connectLinkAndVertices (
-            final GridItem link, final GridItem origination, final GridItem destination
-    ) {
-        origination.getOutboundConnections().add(link);
-        destination.getInboundConnections().add(link);
     }
 
     public IconicModel build () {

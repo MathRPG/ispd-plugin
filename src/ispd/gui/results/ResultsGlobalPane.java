@@ -1,5 +1,7 @@
 package ispd.gui.results;
 
+import ispd.gui.utils.Fonts.CourierNew;
+import ispd.utils.constants.FileExtensions;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -73,7 +75,7 @@ public class ResultsGlobalPane extends JScrollPane {
         textArea.setEditable(false);
         textArea.setColumns(20);
         textArea.setRows(5);
-        textArea.setFont(ResultsDialog.COURIER_NEW_FONT_BOLD);
+        textArea.setFont(CourierNew.BOLD_14);
         textArea.setText(this.makeGlobalResultsText(metrics.getMetricasGlobais()));
     }
 
@@ -194,7 +196,7 @@ public class ResultsGlobalPane extends JScrollPane {
      */
     private ActionListener makeSaveTracesAction () {
         return (e) -> {
-            final var extension    = ".wmsx";
+            final var extension    = FileExtensions.WORKLOAD_MODEL;
             final var fileChooser  = new JFileChooser();
             final var stateChooser = fileChooser.showSaveDialog(this);
 

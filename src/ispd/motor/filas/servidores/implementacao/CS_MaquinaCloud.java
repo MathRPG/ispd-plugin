@@ -1,8 +1,5 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ispd.motor.FutureEvent;
 import ispd.motor.Mensagens;
 import ispd.motor.Simulation;
@@ -13,46 +10,62 @@ import ispd.motor.filas.servidores.CS_Comunicacao;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.motor.metricas.MetricasAlocacao;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vertice {
 
-    public static final int LIGADO    = 1;
     public static final int DESLIGADO = 2;
 
-    private final List<CS_Comunicacao>   conexoesEntrada;
-    private final List<CS_Comunicacao>   conexoesSaida;
-    private final List<Tarefa>           filaTarefas;
-    private final List<Tarefa>           tarefaEmExecucao; // Dados dinamicos
-    private final List<Double>           falhas      = new ArrayList<>();
-    private final List<Double>           recuperacao = new ArrayList<>();
-    private final List<CS_VirtualMac>    VMs;
-    private       List<CS_Processamento> mestres;
-    private       List<List>             caminhoMestre;
-    private       int                    processadoresDisponiveis;
-    private       boolean                erroRecuperavel;
-    private       boolean                falha       = false;
-    private       double                 memoriaDisponivel;
-    private       double                 discoDisponivel;
-    private       double                 custoProc;
-    private       double                 custoMemoria;
-    private       double                 custoDisco;
-    private       double                 custoTotalDisco;
-    private       double                 custoTotalMemoria;
-    private       double                 custoTotalProc;
-    private       int                    status;
-    private       MetricasAlocacao       metricaAloc;
+    private final List<CS_Comunicacao> conexoesEntrada = new ArrayList<>();
+
+    private final List<CS_Comunicacao> conexoesSaida = new ArrayList<>();
+
+    private final List<Tarefa> filaTarefas = new ArrayList<>();
+
+    private final List<Tarefa> tarefaEmExecucao;
+
+    private final List<Double> recuperacao = new ArrayList<>();
+
+    private final List<CS_VirtualMac> VMs = new ArrayList<>();
+
+    private final List<CS_Processamento> mestres = new ArrayList<>();
+
+    private List<List> caminhoMestre = null;
+
+    private int processadoresDisponiveis;
+
+    private double memoriaDisponivel;
+
+    private double discoDisponivel;
+
+    private final double custoProc;
+
+    private final double custoMemoria;
+
+    private final double custoDisco;
+
+    private double custoTotalDisco = 0.0;
+
+    private double custoTotalMemoria = 0.0;
+
+    private double custoTotalProc = 0.0;
+
+    private MetricasAlocacao metricaAloc = null;
 
     public CS_MaquinaCloud (
-            final String id, final String proprietario, final double PoderComputacional, final int numeroProcessadores,
-            final double Ocupacao, final double memoria, final double disco, final double custoProc,
-            final double custoMem, final double custoDisco
+        final String id,
+        final String proprietario,
+        final double PoderComputacional,
+        final int numeroProcessadores,
+        final double Ocupacao,
+        final double memoria,
+        final double disco,
+        final double custoProc,
+        final double custoMem,
+        final double custoDisco
     ) {
         super(id, proprietario, PoderComputacional, numeroProcessadores, Ocupacao, 0);
-        this.conexoesEntrada          = new ArrayList<>();
-        this.conexoesSaida            = new ArrayList<>();
-        this.filaTarefas              = new ArrayList<>();
-        this.mestres                  = new ArrayList<>();
-        this.VMs                      = new ArrayList<>();
         this.metricaAloc              = new MetricasAlocacao(id);
         this.processadoresDisponiveis = numeroProcessadores;
         this.tarefaEmExecucao         = new ArrayList<>(numeroProcessadores);
@@ -61,37 +74,29 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         this.custoProc                = custoProc;
         this.custoMemoria             = custoMem;
         this.custoDisco               = custoDisco;
-        this.custoTotalProc           = 0;
-        this.custoTotalMemoria        = 0;
-        this.custoTotalDisco          = 0;
-        this.status                   = ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud.DESLIGADO;
-
-
     }
 
     public CS_MaquinaCloud (
-            final String id, final String proprietario, final double PoderComputacional, final int numeroProcessadores,
-            final double memoria, final double disco, final double custoProc, final double custoMem,
-            final double custoDisco, final double Ocupacao, final int numeroMaquina
+        final String id,
+        final String proprietario,
+        final double PoderComputacional,
+        final int numeroProcessadores,
+        final double memoria,
+        final double disco,
+        final double custoProc,
+        final double custoMem,
+        final double custoDisco,
+        final double Ocupacao,
+        final int numeroMaquina
     ) {
         super(id, proprietario, PoderComputacional, numeroProcessadores, Ocupacao, numeroMaquina);
-        this.conexoesEntrada          = new ArrayList<>();
-        this.conexoesSaida            = new ArrayList<>();
-        this.filaTarefas              = new ArrayList<>();
-        this.mestres                  = new ArrayList<>();
-        this.VMs                      = new ArrayList<>();
         this.processadoresDisponiveis = numeroProcessadores;
         this.memoriaDisponivel        = memoria;
         this.discoDisponivel          = disco;
         this.custoProc                = custoProc;
         this.custoMemoria             = custoMem;
         this.custoDisco               = custoDisco;
-        this.custoTotalProc           = 0;
-        this.custoTotalMemoria        = 0;
-        this.custoTotalDisco          = 0;
         this.tarefaEmExecucao         = new ArrayList<>(numeroProcessadores);
-        this.status                   = ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud.DESLIGADO;
-
     }
 
     @Override
@@ -104,21 +109,23 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 if (this.VMs.contains(vm)) {
                     System.out.println("Cliente duplicado!");
                 } else {
-                    System.out.println(vm.getId() + " enviada para evento de atendimento nesta máquina");
+                    System.out.println(vm.getId()
+                                       + " enviada para evento de atendimento nesta máquina");
                     System.out.println("----------------------------------------------");
                     final FutureEvent evtFut = new FutureEvent(
-                            simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente
+                        simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente
                     );
                     simulacao.addFutureEvent(evtFut);
                 }
             } else {
-                System.out.println(vm.getId() + " encaminhada para seu destino, esta máquina é intermediária");
+                System.out.println(vm.getId()
+                                   + " encaminhada para seu destino, esta máquina é intermediária");
                 System.out.println("----------------------------------------------");
                 final FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this),
-                        FutureEvent.CHEGADA,
-                        cliente.getCaminho().remove(0),
-                        cliente
+                    simulacao.getTime(this),
+                    FutureEvent.CHEGADA,
+                    cliente.getCaminho().remove(0),
+                    cliente
                 );
                 simulacao.addFutureEvent(evtFut);
             }
@@ -131,15 +138,18 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                                    " sendo enviada para execução na vm " + vm.getId());
                 System.out.println("----------------------------------------------");
                 final FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this), FutureEvent.CHEGADA, vm, cliente
+                    simulacao.getTime(this), FutureEvent.CHEGADA, vm, cliente
                 );
                 simulacao.addFutureEvent(evtFut);
             } else {
                 System.out.println(
-                        this.getId() + ": Tarefa " + cliente.getIdentificador() + " sendo encaminhada para próximo CS");
+                    this.getId()
+                    + ": Tarefa "
+                    + cliente.getIdentificador()
+                    + " sendo encaminhada para próximo CS");
                 System.out.println("----------------------------------------------");
                 final FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this), FutureEvent.SAIDA, this, cliente
+                    simulacao.getTime(this), FutureEvent.SAIDA, this, cliente
                 );
                 simulacao.addFutureEvent(evtFut);
             }
@@ -153,15 +163,17 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         System.out.println("--------------------------------------------------");
         System.out.println("atendimento da vm:" + vm.getId() + "na maquina:" + this.getId());
         this.addVM(vm); //incluir a VM na lista de VMs
-        metricaAloc.incVMsAlocadas();
+        this.metricaAloc.incVMsAlocadas();
         //Setar o caminho da vm para o VMM e o caminho do ACK da mensagem >>>
         final CS_VMM   vmm   = vm.getVmmResponsavel();
         final int      index = this.mestres.indexOf(vmm);
         final Mensagem msg   = new Mensagem(this, Mensagens.ALOCAR_ACK, cliente);
 
         if (index == -1) {
-            final ArrayList<CentroServico> caminhoVMM = new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
-            final ArrayList<CentroServico> caminhoMsg = new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
+            final ArrayList<CentroServico> caminhoVMM =
+                new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
+            final ArrayList<CentroServico> caminhoMsg =
+                new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
 
             System.out.println("Imprimindo caminho para o mestre:");
             for (final CentroServico cs : caminhoVMM) {
@@ -171,8 +183,10 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
             vm.setCaminhoVMM(caminhoVMM);
             msg.setCaminho(caminhoMsg);
         } else {
-            final ArrayList<CentroServico> caminhoVMM = new ArrayList<CentroServico>(this.caminhoMestre.get(index));
-            final ArrayList<CentroServico> caminhoMsg = new ArrayList<CentroServico>(this.caminhoMestre.get(index));
+            final ArrayList<CentroServico> caminhoVMM =
+                new ArrayList<CentroServico>(this.caminhoMestre.get(index));
+            final ArrayList<CentroServico> caminhoMsg =
+                new ArrayList<CentroServico>(this.caminhoMestre.get(index));
 
             System.out.println("Imprimindo caminho para o mestre:");
             for (final CentroServico cs : caminhoVMM) {
@@ -183,12 +197,15 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         }
 
         //enviar mensagem de ACK para o VMM
-        final FutureEvent NovoEvt = new FutureEvent(simulacao.getTime(this), FutureEvent.MENSAGEM, this, msg);
+        final FutureEvent NovoEvt =
+            new FutureEvent(simulacao.getTime(this), FutureEvent.MENSAGEM, this, msg);
         simulacao.addFutureEvent(NovoEvt);
 
         //Gerenciamento de custos
-        this.custoTotalProc    = this.custoTotalProc + (vm.getProcessadoresDisponiveis() * this.custoProc);
-        this.custoTotalMemoria = this.custoTotalMemoria + (vm.getMemoriaDisponivel() * this.custoMemoria);
+        this.custoTotalProc    =
+            this.custoTotalProc + (vm.getProcessadoresDisponiveis() * this.custoProc);
+        this.custoTotalMemoria =
+            this.custoTotalMemoria + (vm.getMemoriaDisponivel() * this.custoMemoria);
         this.custoTotalDisco   = this.custoTotalDisco + (vm.getDiscoDisponivel() * this.custoDisco);
         //setar o poder de processamento da VM.
         vm.setPoderProcessamentoPorNucleo(this.getPoderComputacional());
@@ -207,21 +224,35 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         if (mensagem != null) {
             if (mensagem.getTipo() == Mensagens.ATUALIZAR) {
                 this.atenderAtualizacao(simulacao, mensagem);
-            } else if (mensagem.getTipo() == Mensagens.ALOCAR_ACK) { //a máquina é só um intermediário
+            } else if (mensagem.getTipo()
+                       == Mensagens.ALOCAR_ACK) { //a máquina é só um intermediário
                 //esse tipo de mensagem só é atendido por um VMM
                 this.atenderAckAlocacao(simulacao, mensagem);
-
-            } else if (mensagem.getTarefa() != null && mensagem.getTarefa().getLocalProcessamento().equals(this)) {
+            } else if (mensagem.getTarefa() != null && mensagem
+                .getTarefa()
+                .getLocalProcessamento()
+                .equals(this)) {
                 switch (mensagem.getTipo()) {
                     case ispd.motor.Mensagens.PARAR -> this.atenderParada(simulacao, mensagem);
-                    case ispd.motor.Mensagens.CANCELAR -> this.atenderCancelamento(simulacao, mensagem);
-                    case ispd.motor.Mensagens.DEVOLVER -> this.atenderDevolucao(simulacao, mensagem);
+                    case ispd.motor.Mensagens.CANCELAR -> this.atenderCancelamento(
+                        simulacao,
+                        mensagem
+                    );
+                    case ispd.motor.Mensagens.DEVOLVER -> this.atenderDevolucao(
+                        simulacao,
+                        mensagem
+                    );
                     case ispd.motor.Mensagens.DEVOLVER_COM_PREEMPCAO -> this.atenderDevolucaoPreemptiva(
-                            simulacao, mensagem);
+                        simulacao, mensagem);
                     case ispd.motor.Mensagens.FALHAR -> this.atenderFalha(simulacao, mensagem);
                 }
             }
         }
+    }
+
+    @Override
+    public List<CS_Comunicacao> getConexoesSaida () {
+        return this.conexoesSaida;
     }
 
     @Override
@@ -238,7 +269,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
+                    simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
@@ -268,7 +299,12 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut =
-                        new FutureEvent(simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente);
+                    new FutureEvent(
+                        simulacao.getTime(this),
+                        FutureEvent.ATENDIMENTO,
+                        this,
+                        proxCliente
+                    );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
@@ -291,7 +327,10 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         final boolean remover = this.filaTarefas.remove(mensagem.getTarefa());
         if (remover) {
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, mensagem.getTarefa().getOrigem(), mensagem.getTarefa()
+                simulacao.getTime(this),
+                FutureEvent.CHEGADA,
+                mensagem.getTarefa().getOrigem(),
+                mensagem.getTarefa()
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -313,7 +352,12 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut =
-                        new FutureEvent(simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente);
+                    new FutureEvent(
+                        simulacao.getTime(this),
+                        FutureEvent.ATENDIMENTO,
+                        this,
+                        proxCliente
+                    );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
@@ -325,13 +369,18 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
             //Incrementa o tempo de processamento
             this.getMetrica().incSegundosDeProcessamento(tempoProc);
             //Incrementa procentagem da tarefa processada
-            final int numCP = (int) (mflopsProcessados / mensagem.getTarefa().getCheckPoint());
-            mensagem.getTarefa().setMflopsProcessado(numCP * mensagem.getTarefa().getCheckPoint());
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+            final int numCP = (int) (mflopsProcessados / 0.0);
+            // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+            mensagem.getTarefa().setMflopsProcessado(numCP * 0.0);
             this.tarefaEmExecucao.remove(mensagem.getTarefa());
         }
         if (remover) {
             final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, mensagem.getTarefa().getOrigem(), mensagem.getTarefa()
+                simulacao.getTime(this),
+                FutureEvent.CHEGADA,
+                mensagem.getTarefa().getOrigem(),
+                mensagem.getTarefa()
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -341,16 +390,20 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
     @Override
     public void atenderAtualizacao (final Simulation simulacao, final Mensagem mensagem) {
         //enviar resultados
-        final int                 index   = this.mestres.indexOf(mensagem.getOrigem());
-        final List<CentroServico> caminho = new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
+        final int index = this.mestres.indexOf(mensagem.getOrigem());
+        final List<CentroServico> caminho =
+            new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
         final Mensagem novaMensagem =
-                new Mensagem(this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR);
+            new Mensagem(this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR);
         //Obtem informações dinâmicas
         novaMensagem.setProcessadorEscravo(new ArrayList<>(this.tarefaEmExecucao));
         novaMensagem.setFilaEscravo(new ArrayList<>(this.filaTarefas));
         novaMensagem.setCaminho(caminho);
         final FutureEvent evtFut = new FutureEvent(
-                simulacao.getTime(this), FutureEvent.MENSAGEM, novaMensagem.getCaminho().remove(0), novaMensagem
+            simulacao.getTime(this),
+            FutureEvent.MENSAGEM,
+            novaMensagem.getCaminho().remove(0),
+            novaMensagem
         );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
@@ -366,7 +419,6 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         final double tempoRec = this.recuperacao.remove(0);
         for (final Tarefa tar : this.tarefaEmExecucao) {
             if (tar.getEstado() == Tarefa.PROCESSANDO) {
-                this.falha = true;
                 final double inicioAtendimento = tar.parar(simulacao.getTime(this));
                 final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
                 final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
@@ -375,15 +427,17 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 //Incrementa o tempo de processamento
                 this.getMetrica().incSegundosDeProcessamento(tempoProc);
                 //Incrementa procentagem da tarefa processada
-                final int numCP = (int) (mflopsProcessados / tar.getCheckPoint());
-                tar.setMflopsProcessado(numCP * tar.getCheckPoint());
-                if (this.erroRecuperavel) {
+                // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+                final int numCP = (int) (mflopsProcessados / 0.0);
+                // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
+                tar.setMflopsProcessado(numCP * 0.0);
+                if (false) {
                     //Reiniciar atendimento da tarefa
                     tar.iniciarEsperaProcessamento(simulacao.getTime(this));
                     //cria evento para iniciar o atendimento imediatamente
                     final FutureEvent novoEvt = new FutureEvent(
-                            simulacao.getTime(this) + tempoRec,
-                            FutureEvent.ATENDIMENTO, this, tar
+                        simulacao.getTime(this) + tempoRec,
+                        FutureEvent.ATENDIMENTO, this, tar
                     );
                     simulacao.addFutureEvent(novoEvt);
                 } else {
@@ -391,10 +445,8 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 }
             }
         }
-        if (!this.erroRecuperavel) {
-            this.processadoresDisponiveis += this.tarefaEmExecucao.size();
-            this.filaTarefas.clear();
-        }
+        this.processadoresDisponiveis += this.tarefaEmExecucao.size();
+        this.filaTarefas.clear();
         this.tarefaEmExecucao.clear();
     }
 
@@ -405,45 +457,28 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         System.out.println("--------------------------------------");
         System.out.println("Encaminhando ACK de alocação para " + mensagem.getOrigem().getId());
         final FutureEvent evt = new FutureEvent(
-                simulacao.getTime(this), FutureEvent.MENSAGEM, mensagem.getCaminho().remove(0), mensagem
+            simulacao.getTime(this), FutureEvent.MENSAGEM, mensagem.getCaminho().remove(0), mensagem
         );
         simulacao.addFutureEvent(evt);
     }
 
     @Override
-    public List<CS_Comunicacao> getConexoesSaida () {
-        return this.conexoesSaida;
-    }
-
-    @Override
-    public Integer getCargaTarefas () {
-        if (this.falha) {
-            return -100;
-        } else {
-            return (this.filaTarefas.size() + this.tarefaEmExecucao.size());
-        }
-    }
-
-    public void addVM (final CS_VirtualMac vm) {
-        this.VMs.add(vm);
-    }
-
-    public MetricasAlocacao getMetricaAloc () {
-        return this.metricaAloc;
-    }
-
-    @Override
-    public void determinarCaminhos () throws LinkageError {
+    public void determinarCaminhos ()
+        throws LinkageError {
         //Instancia objetos
         this.caminhoMestre = new ArrayList<>(this.mestres.size());
         System.out.println(
-                "maquina " + this.getId() + " determinando caminhos para " + this.mestres.size() + " mestres");
+            "maquina "
+            + this.getId()
+            + " determinando caminhos para "
+            + this.mestres.size()
+            + " mestres");
 
         //Busca pelos caminhos
         for (int i = 0; i < this.mestres.size(); i++) {
             this.caminhoMestre.add(i, getMenorCaminhoCloud(
-                    this,
-                    this.mestres.get(i)
+                this,
+                this.mestres.get(i)
             ));
         }
 
@@ -455,22 +490,22 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         }
     }
 
-    public void addFalha (final Double tFalha, final double tRec, final boolean recuperavel) {
-        this.falhas.add(tFalha);
-        this.recuperacao.add(tRec);
-        this.erroRecuperavel = recuperavel;
+    @Override
+    public void addConexoesEntrada (final CS_Link conexao) {
+        this.conexoesEntrada.add(conexao);
     }
 
-    public int getStatus () {
-        return this.status;
+    @Override
+    public void addConexoesSaida (final CS_Link conexao) {
+        this.conexoesSaida.add(conexao);
     }
 
-    public void setStatus (final int status) {
-        this.status = status;
+    private void addVM (final CS_VirtualMac vm) {
+        this.VMs.add(vm);
     }
 
-    public List<List> getCaminhoMestre () {
-        return this.caminhoMestre;
+    public MetricasAlocacao getMetricaAloc () {
+        return this.metricaAloc;
     }
 
     public double getMemoriaDisponivel () {
@@ -497,60 +532,6 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         this.processadoresDisponiveis = processadoresDisponiveis;
     }
 
-    public double getCustoProc () {
-        return this.custoProc;
-    }
-
-    public void setCustoProc (final double custoProc) {
-        this.custoProc = custoProc;
-    }
-
-    public double getCustoMemoria () {
-        return this.custoMemoria;
-    }
-
-    public void setCustoMemoria (final double custoMemoria) {
-        this.custoMemoria = custoMemoria;
-    }
-
-    public double getCustoDisco () {
-        return this.custoDisco;
-    }
-
-    public void setCustoDisco (final double custoDisco) {
-        this.custoDisco = custoDisco;
-    }
-
-    public double getCustoTotalDisco () {
-        return this.custoTotalDisco;
-    }
-
-    public double getCustoTotalMemoria () {
-        return this.custoTotalMemoria;
-    }
-
-    public double getCustoTotalProc () {
-        return this.custoTotalProc;
-    }
-
-    @Override
-    public void addConexoesEntrada (final CS_Link conexao) {
-        this.conexoesEntrada.add(conexao);
-    }
-
-    @Override
-    public void addConexoesSaida (final CS_Link conexao) {
-        this.conexoesSaida.add(conexao);
-    }
-
-    public List<CS_Processamento> getMestres () {
-        return this.mestres;
-    }
-
-    public void setMestres (final List<CS_Processamento> mestres) {
-        this.mestres = mestres;
-    }
-
     public void addConexoesEntrada (final CS_Switch conexao) {
         this.conexoesEntrada.add(conexao);
     }
@@ -563,19 +544,24 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         this.mestres.add(mestre);
     }
 
-    public void removeVM (final CS_VirtualMac vm) {
-        this.VMs.remove(vm);
-    }
-
     public void desligar (final Simulation simulacao) {
         for (final CS_VirtualMac vm : this.VMs) {
             vm.setStatus(CS_VirtualMac.DESTRUIDA);
             vm.setTempoDeExec(simulacao.getTime(this));
-            vm.getMetricaCusto().setCustoDisco(this.custoDisco * vm.getDiscoDisponivel() * (vm.getTempoDeExec() / 60));
+            vm
+                .getMetricaCusto()
+                .setCustoDisco(this.custoDisco * vm.getDiscoDisponivel() * (
+                    vm.getTempoDeExec()
+                    / 60
+                ));
             vm.getMetricaCusto()
-              .setCustoMem(this.custoMemoria * (vm.getMemoriaDisponivel() / 1024) * (vm.getTempoDeExec() / 60));
+                .setCustoMem(this.custoMemoria
+                             * (vm.getMemoriaDisponivel() / 1024)
+                             * (vm.getTempoDeExec() / 60));
             vm.getMetricaCusto()
-              .setCustoProc(this.custoProc * vm.getProcessadoresDisponiveis() * (vm.getTempoDeExec() / 60));
+                .setCustoProc(this.custoProc
+                              * vm.getProcessadoresDisponiveis()
+                              * (vm.getTempoDeExec() / 60));
         }
     }
 }

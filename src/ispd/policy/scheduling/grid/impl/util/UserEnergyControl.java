@@ -1,56 +1,35 @@
 package ispd.policy.scheduling.grid.impl.util;
 
-import java.util.Collection;
-
 import ispd.motor.filas.servidores.CS_Processamento;
+import java.util.Collection;
 
 public class UserEnergyControl extends UserProcessingControl {
 
     private final double energyEfficiencyRatioAgainstSystem;
+
     private final double energyConsumptionLimit;
+
     private final double ownedMachinesEnergyConsumption;
-    private       double currentEnergyConsumption = 0.0;
+
+    private double currentEnergyConsumption = 0.0;
 
     public UserEnergyControl (
-            final String userId,
-            final Collection<? extends CS_Processamento> systemMachines,
-            final double energyConsPercentage
+        final String userId,
+        final Collection<? extends CS_Processamento> systemMachines,
+        final double energyConsPercentage
     ) {
         super(userId, systemMachines);
 
         this.ownedMachinesEnergyConsumption = this
-                .ownedNonMasterMachinesIn(systemMachines)
-                .mapToDouble(CS_Processamento::getConsumoEnergia)
-                .sum();
+            .ownedNonMasterMachinesIn(systemMachines)
+            .mapToDouble(CS_Processamento::getConsumoEnergia)
+            .sum();
 
         this.energyConsumptionLimit =
-                this.calculateEnergyConsumptionLimit(energyConsPercentage);
+            this.calculateEnergyConsumptionLimit(energyConsPercentage);
 
         this.energyEfficiencyRatioAgainstSystem =
-                this.calculateEnergyEfficiencyRatioAgainst(systemMachines);
-    }
-
-    private double calculateEnergyConsumptionLimit (final double energyConsPercentage) {
-        return this.ownedMachinesEnergyConsumption * energyConsPercentage / 100;
-    }
-
-    private double calculateEnergyEfficiencyRatioAgainst (
-            final Collection<? extends CS_Processamento> machines
-    ) {
-        final var sysComputationPower = machines.stream()
-                                                .mapToDouble(CS_Processamento::getPoderComputacional)
-                                                .sum();
-
-        final var sysEnergyConsumption = machines.stream()
-                                                 .mapToDouble(CS_Processamento::getConsumoEnergia)
-                                                 .sum();
-
-        final var sysEnergyEff = sysComputationPower / sysEnergyConsumption;
-        return sysEnergyEff / this.energyEfficiency();
-    }
-
-    private double energyEfficiency () {
-        return this.getOwnedMachinesProcessingPower() / this.ownedMachinesEnergyConsumption;
+            this.calculateEnergyEfficiencyRatioAgainst(systemMachines);
     }
 
     @Override
@@ -69,6 +48,29 @@ public class UserEnergyControl extends UserProcessingControl {
     public void startTaskFrom (final CS_Processamento machine) {
         super.startTaskFrom(machine);
         this.increaseEnergyConsumption(machine.getConsumoEnergia());
+    }
+
+    private double calculateEnergyConsumptionLimit (final double energyConsPercentage) {
+        return this.ownedMachinesEnergyConsumption * energyConsPercentage / 100;
+    }
+
+    private double calculateEnergyEfficiencyRatioAgainst (
+        final Collection<? extends CS_Processamento> machines
+    ) {
+        final var sysComputationPower = machines.stream()
+            .mapToDouble(CS_Processamento::getPoderComputacional)
+            .sum();
+
+        final var sysEnergyConsumption = machines.stream()
+            .mapToDouble(CS_Processamento::getConsumoEnergia)
+            .sum();
+
+        final var sysEnergyEff = sysComputationPower / sysEnergyConsumption;
+        return sysEnergyEff / this.energyEfficiency();
+    }
+
+    private double energyEfficiency () {
+        return this.getOwnedMachinesProcessingPower() / this.ownedMachinesEnergyConsumption;
     }
 
     private void increaseEnergyConsumption (final double amount) {
@@ -92,7 +94,8 @@ public class UserEnergyControl extends UserProcessingControl {
     }
 
     public boolean canUseMachineWithoutExceedingEnergyLimit (final CS_Processamento machine) {
-        return this.currentEnergyConsumption + machine.getConsumoEnergia() <= this.energyConsumptionLimit;
+        return this.currentEnergyConsumption + machine.getConsumoEnergia()
+               <= this.energyConsumptionLimit;
     }
 
     public double getOwnedMachinesEnergyConsumption () {

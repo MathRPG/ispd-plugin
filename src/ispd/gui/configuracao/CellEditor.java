@@ -1,7 +1,6 @@
 package ispd.gui.configuracao;
 
 import java.awt.Component;
-
 import javax.swing.AbstractCellEditor;
 import javax.swing.JComponent;
 import javax.swing.JTable;
@@ -18,15 +17,19 @@ public class CellEditor extends AbstractCellEditor implements TableCellEditor, T
 
     @Override
     public Component getTableCellEditorComponent (
-            final JTable table, final Object value, final boolean isSelected, final int row, final int column
+        final JTable table,
+        final Object value,
+        final boolean isSelected,
+        final int row,
+        final int column
     ) {
         return this.item;
     }
 
     @Override
     public Component getTableCellRendererComponent (
-            final JTable table, final Object value, final boolean isSelected, final boolean hasFocus,
-            final int row, final int column
+        final JTable table, final Object value, final boolean isSelected, final boolean hasFocus,
+        final int row, final int column
     ) {
         return this.item;
     }

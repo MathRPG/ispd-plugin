@@ -18,15 +18,15 @@ public class GridItemIdentifier {
     private String name;
 
     /**
-     * Constructor of {@link GridItemIdentifier} which
-     * specifies the local, global and name identifiers.
+     * Constructor of {@link GridItemIdentifier} which specifies the local, global and name
+     * identifiers.
      *
      * @param localId
-     *         the local identifier
+     *     the local identifier
      * @param globalId
-     *         the global identifier
+     *     the global identifier
      * @param name
-     *         the name identifier
+     *     the name identifier
      */
     public GridItemIdentifier (final int localId, final int globalId, final String name) {
         this.localId  = localId;
@@ -47,7 +47,7 @@ public class GridItemIdentifier {
      * It sets the local identifier
      *
      * @param localId
-     *         the local identifier to be set
+     *     the local identifier to be set
      */
     public void setLocalId (final Integer localId) {
         this.localId = localId;
@@ -66,7 +66,7 @@ public class GridItemIdentifier {
      * It sets the global identifier
      *
      * @param globalId
-     *         the global identifier to be set
+     *     the global identifier to be set
      */
     public void setGlobalId (final Integer globalId) {
         this.globalId = globalId;
@@ -85,7 +85,7 @@ public class GridItemIdentifier {
      * It sets the name
      *
      * @param name
-     *         the name to be set
+     *     the name to be set
      */
     public void setName (final String name) {
         this.name = name;

@@ -3,8 +3,7 @@ package ispd.gui.iconico;
 import java.awt.Toolkit;
 
 /**
- * {@link RulerUnit} is an enumeration that stores the available
- * ruler units.
+ * {@link RulerUnit} is an enumeration that stores the available ruler units.
  */
 public enum RulerUnit {
     CENTIMETERS("cm") {
@@ -54,8 +53,7 @@ public enum RulerUnit {
     private static final int INCH = Toolkit.getDefaultToolkit().getScreenResolution();
 
     /**
-     * It stores the unit symbol. Every symbol must be
-     * in English and singular form.
+     * It stores the unit symbol. Every symbol must be in English and singular form.
      */
     private final String symbol;
 
@@ -63,7 +61,7 @@ public enum RulerUnit {
      * Constructor which specifies the unit symbol.
      *
      * @param symbol
-     *         the symbol
+     *     the symbol
      */
     RulerUnit (final String symbol) {
         this.symbol = symbol;
@@ -84,13 +82,11 @@ public enum RulerUnit {
     public abstract int getIncrement ();
 
     /**
-     * It returns the next unit described after this one.
-     * Further, if it does not have any unit described
-     * after this one, then the <em>topmost (or the first)</em>
-     * unit is returned, instead.
+     * It returns the next unit described after this one. Further, if it does not have any unit
+     * described after this one, then the <em>topmost (or the first)</em> unit is returned,
+     * instead.
      * <p>
-     * An example of such method operation is given below,
-     * first suppose the units is described as
+     * An example of such method operation is given below, first suppose the units is described as
      * <ul>
      *     <li>CENTIMETERS</li>
      *     <li>INCHES</li>

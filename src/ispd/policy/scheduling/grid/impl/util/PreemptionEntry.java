@@ -3,7 +3,7 @@ package ispd.policy.scheduling.grid.impl.util;
 import ispd.motor.filas.Tarefa;
 
 public record PreemptionEntry(
-        String preemptedTaskUser, int preemptedTaskId, String scheduledTaskUser, int scheduledTaskId
+    String preemptedTaskUser, int preemptedTaskId, String scheduledTaskUser, int scheduledTaskId
 ) {
 
     public PreemptionEntry (final Tarefa preempted, final Tarefa scheduled) {
@@ -13,10 +13,12 @@ public record PreemptionEntry(
     }
 
     public boolean willPreemptTask (final Tarefa task) {
-        return this.preemptedTaskId == task.getIdentificador() && this.preemptedTaskUser.equals(task.getProprietario());
+        return this.preemptedTaskId == task.getIdentificador()
+               && this.preemptedTaskUser.equals(task.getProprietario());
     }
 
     public boolean willScheduleTask (final Tarefa task) {
-        return this.scheduledTaskId == task.getIdentificador() && this.scheduledTaskUser.equals(task.getProprietario());
+        return this.scheduledTaskId == task.getIdentificador()
+               && this.scheduledTaskUser.equals(task.getProprietario());
     }
 }

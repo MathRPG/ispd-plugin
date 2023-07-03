@@ -1,7 +1,6 @@
 package ispd.gui.configuracao;
 
 import java.util.HashMap;
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;

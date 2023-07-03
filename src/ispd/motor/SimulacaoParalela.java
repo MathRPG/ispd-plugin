@@ -1,14 +1,5 @@
 package ispd.motor;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.PriorityBlockingQueue;
-
 import ispd.motor.filas.Client;
 import ispd.motor.filas.Mensagem;
 import ispd.motor.filas.RedeDeFilas;
@@ -18,26 +9,33 @@ import ispd.motor.filas.servidores.CentroServico;
 import ispd.motor.filas.servidores.implementacao.CS_Maquina;
 import ispd.motor.filas.servidores.implementacao.CS_Mestre;
 import ispd.policy.PolicyMaster;
+import java.awt.Color;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class SimulacaoParalela extends Simulation {
 
-    private final int                                                    numThreads;
-    private final List<CentroServico>                                    recursos;
+    private final int numThreads;
+
+    private final List<CentroServico> recursos;
+
     private final Map<CentroServico, PriorityBlockingQueue<FutureEvent>> threadFilaEventos;
-    private final HashMap<CentroServico, ThreadTrabalhador>              threadTrabalhador;
-    private       ExecutorService                                        threadPool;
+
+    private final HashMap<CentroServico, ThreadTrabalhador> threadTrabalhador;
+
+    private ExecutorService threadPool;
 
     /**
-     * @param window
-     * @param queueNetwork
-     * @param jobs
-     * @param numThreads
-     *
      * @throws IllegalArgumentException
      */
     public SimulacaoParalela (
-            final ProgressoSimulacao window, final RedeDeFilas queueNetwork, final List<Tarefa> jobs,
-            final int numThreads
+        final ProgressoSimulacao window, final RedeDeFilas queueNetwork, final List<Tarefa> jobs,
+        final int numThreads
     ) {
         super(window, queueNetwork, jobs);
         this.threadPool = Executors.newFixedThreadPool(numThreads);
@@ -67,9 +65,15 @@ public class SimulacaoParalela extends Simulation {
         this.numThreads = numThreads;
         if (this.getQueueNetwork() == null) {
             throw new IllegalArgumentException("The model has no icons.");
-        } else if (this.getQueueNetwork().getMestres() == null || this.getQueueNetwork().getMestres().isEmpty()) {
+        } else if (this.getQueueNetwork().getMestres() == null || this
+            .getQueueNetwork()
+            .getMestres()
+            .isEmpty()) {
             throw new IllegalArgumentException("The model has no Masters.");
-        } else if (this.getQueueNetwork().getLinks() == null || this.getQueueNetwork().getLinks().isEmpty()) {
+        } else if (this.getQueueNetwork().getLinks() == null || this
+            .getQueueNetwork()
+            .getLinks()
+            .isEmpty()) {
             window.println("The model has no Networks.", Color.orange);
         }
         if (jobs == null || jobs.isEmpty()) {
@@ -98,7 +102,8 @@ public class SimulacaoParalela extends Simulation {
         while (!fim) {
             fim = true;
             for (final CentroServico rec : this.recursos) {
-                if (!this.threadFilaEventos.get(rec).isEmpty() && !this.threadTrabalhador.get(rec).executando) {
+                if (!this.threadFilaEventos.get(rec).isEmpty()
+                    && !this.threadTrabalhador.get(rec).executando) {
                     this.threadTrabalhador.get(rec).executando = true;
                     this.threadPool.execute(this.threadTrabalhador.get(rec));
                     fim = false;
@@ -125,7 +130,11 @@ public class SimulacaoParalela extends Simulation {
     }
 
     @Override
-    public boolean removeFutureEvent (final int eventType, final CentroServico eventServer, final Client eventClient) {
+    public boolean removeFutureEvent (
+        final int eventType,
+        final CentroServico eventServer,
+        final Client eventClient
+    ) {
         //remover evento de saida do cliente do servidor
         for (final var ev : this.threadFilaEventos.get(eventServer)) {
             if (ev.getType() == eventType
@@ -147,14 +156,16 @@ public class SimulacaoParalela extends Simulation {
             //Encontra menor caminho entre o mestre e seus escravos
             this.threadPool.execute(new determinarCaminho(mst));
         }
-        if (this.getQueueNetwork().getMaquinas() == null || this.getQueueNetwork().getMaquinas().isEmpty()) {
+        if (this.getQueueNetwork().getMaquinas() == null || this
+            .getQueueNetwork()
+            .getMaquinas()
+            .isEmpty()) {
             this.getWindow().println("The model has no processing slaves.", Color.orange);
         } else {
             for (final CS_Maquina maq : this.getQueueNetwork().getMaquinas()) {
                 //Encontra menor caminho entre o escravo e seu mestre
                 this.threadPool.execute(new determinarCaminho(maq));
             }
-
         }
         this.threadPool.shutdown();
         while (!this.threadPool.isTerminated()) {
@@ -193,13 +204,60 @@ public class SimulacaoParalela extends Simulation {
     private class ThreadTrabalhador implements Runnable {
 
         private final CentroServico recurso;
-        private final Simulation    simulacao;
-        private       double        relogioLocal = 0.0;
-        private       boolean       executando   = false;
+
+        private final Simulation simulacao;
+
+        private double relogioLocal = 0.0;
+
+        private boolean executando = false;
 
         private ThreadTrabalhador (final CentroServico rec, final Simulation sim) {
             this.recurso   = rec;
             this.simulacao = sim;
+        }
+
+        @Override
+        public void run () {
+            // bloqueia este trabalhador
+            synchronized (this) {
+                while (!SimulacaoParalela.this.threadFilaEventos.get(this.recurso).isEmpty()) {
+                    // Verificando ocorencia de erro
+                    final FutureEvent eventoAtual =
+                        SimulacaoParalela.this.threadFilaEventos.get(this.recurso).poll();
+                    if (eventoAtual.getCreationTime() > this.relogioLocal) {
+                        this.relogioLocal = eventoAtual.getCreationTime();
+                    }
+                    switch (eventoAtual.getType()) {
+                        case FutureEvent.CHEGADA:
+                            eventoAtual.getServidor()
+                                .chegadaDeCliente(this.simulacao, (Tarefa) eventoAtual.getClient());
+                            break;
+                        case FutureEvent.ATENDIMENTO:
+                            eventoAtual
+                                .getServidor()
+                                .atendimento(this.simulacao, (Tarefa) eventoAtual.getClient());
+                            break;
+                        case FutureEvent.SAIDA:
+                            eventoAtual
+                                .getServidor()
+                                .saidaDeCliente(this.simulacao, (Tarefa) eventoAtual.getClient());
+                            break;
+                        case FutureEvent.ESCALONAR:
+                            eventoAtual
+                                .getServidor()
+                                .requisicao(this.simulacao, null, FutureEvent.ESCALONAR);
+                            break;
+                        default:
+                            eventoAtual.getServidor().requisicao(
+                                this.simulacao,
+                                (Mensagem) eventoAtual.getClient(),
+                                eventoAtual.getType()
+                            );
+                            break;
+                    }
+                }
+                this.executando = false;
+            }
         }
 
         public double getRelogioLocal () {
@@ -220,41 +278,6 @@ public class SimulacaoParalela extends Simulation {
 
         public CentroServico getRecurso () {
             return this.recurso;
-        }
-
-        @Override
-        public void run () {
-            // bloqueia este trabalhador
-            synchronized (this) {
-                while (!SimulacaoParalela.this.threadFilaEventos.get(this.recurso).isEmpty()) {
-                    // Verificando ocorencia de erro
-                    final FutureEvent eventoAtual = SimulacaoParalela.this.threadFilaEventos.get(this.recurso).poll();
-                    if (eventoAtual.getCreationTime() > this.relogioLocal) {
-                        this.relogioLocal = eventoAtual.getCreationTime();
-                    }
-                    switch (eventoAtual.getType()) {
-                        case FutureEvent.CHEGADA:
-                            eventoAtual.getServidor()
-                                       .chegadaDeCliente(this.simulacao, (Tarefa) eventoAtual.getClient());
-                            break;
-                        case FutureEvent.ATENDIMENTO:
-                            eventoAtual.getServidor().atendimento(this.simulacao, (Tarefa) eventoAtual.getClient());
-                            break;
-                        case FutureEvent.SAIDA:
-                            eventoAtual.getServidor().saidaDeCliente(this.simulacao, (Tarefa) eventoAtual.getClient());
-                            break;
-                        case FutureEvent.ESCALONAR:
-                            eventoAtual.getServidor().requisicao(this.simulacao, null, FutureEvent.ESCALONAR);
-                            break;
-                        default:
-                            eventoAtual.getServidor().requisicao(
-                                    this.simulacao, (Mensagem) eventoAtual.getClient(), eventoAtual.getType()
-                            );
-                            break;
-                    }
-                }
-                this.executando = false;
-            }
         }
     }
 
@@ -280,39 +303,52 @@ public class SimulacaoParalela extends Simulation {
             synchronized (this) {
                 while (!SimulacaoParalela.this.threadFilaEventos.get(this.getRecurso()).isEmpty()) {
                     if ((Double) this.item[2] <
-                        SimulacaoParalela.this.threadFilaEventos.get(this.getRecurso()).peek().getCreationTime()) {
+                        SimulacaoParalela.this.threadFilaEventos
+                            .get(this.getRecurso())
+                            .peek()
+                            .getCreationTime()) {
                         final CS_Mestre mestre = (CS_Mestre) this.item[0];
                         for (final CS_Processamento maq :
-                                mestre.getEscalonador().getEscravos()) {
+                            mestre.getEscalonador().getEscravos()) {
                             mestre.atualizar(maq, (Double) this.item[2]);
                         }
                         this.item[2] =
-                                (Double) this.item[2] + (Double) this.item[1];
+                            (Double) this.item[2] + (Double) this.item[1];
                     }
                     final FutureEvent eventoAtual =
-                            SimulacaoParalela.this.threadFilaEventos.get(this.getRecurso()).poll();
+                        SimulacaoParalela.this.threadFilaEventos.get(this.getRecurso()).poll();
                     if (eventoAtual.getCreationTime() > this.getRelogioLocal()) {
                         this.setRelogioLocal(eventoAtual.getCreationTime());
                     }
                     switch (eventoAtual.getType()) {
                         case FutureEvent.CHEGADA:
                             eventoAtual.getServidor()
-                                       .chegadaDeCliente(this.getSimulacao(), (Tarefa) eventoAtual.getClient());
+                                .chegadaDeCliente(
+                                    this.getSimulacao(),
+                                    (Tarefa) eventoAtual.getClient()
+                                );
                             break;
                         case FutureEvent.ATENDIMENTO:
                             eventoAtual.getServidor()
-                                       .atendimento(this.getSimulacao(), (Tarefa) eventoAtual.getClient());
+                                .atendimento(this.getSimulacao(), (Tarefa) eventoAtual.getClient());
                             break;
                         case FutureEvent.SAIDA:
                             eventoAtual.getServidor()
-                                       .saidaDeCliente(this.getSimulacao(), (Tarefa) eventoAtual.getClient());
+                                .saidaDeCliente(
+                                    this.getSimulacao(),
+                                    (Tarefa) eventoAtual.getClient()
+                                );
                             break;
                         case FutureEvent.ESCALONAR:
-                            eventoAtual.getServidor().requisicao(this.getSimulacao(), null, FutureEvent.ESCALONAR);
+                            eventoAtual
+                                .getServidor()
+                                .requisicao(this.getSimulacao(), null, FutureEvent.ESCALONAR);
                             break;
                         default:
                             eventoAtual.getServidor().requisicao(
-                                    this.getSimulacao(), (Mensagem) eventoAtual.getClient(), eventoAtual.getType()
+                                this.getSimulacao(),
+                                (Mensagem) eventoAtual.getClient(),
+                                eventoAtual.getType()
                             );
                             break;
                     }
@@ -334,18 +370,23 @@ public class SimulacaoParalela extends Simulation {
         public void run () {
             synchronized (SimulacaoParalela.this.threadFilaEventos.get(this.mestre)) {
                 System.out.println(
-                        "Nome: " + Thread.currentThread().getName() + " Vou criar tarefas do " + this.mestre.getId());
+                    "Nome: "
+                    + Thread.currentThread().getName()
+                    + " Vou criar tarefas do "
+                    + this.mestre.getId());
                 for (final Tarefa tarefa : SimulacaoParalela.this.getJobs()) {
                     if (tarefa.getOrigem() == this.mestre) {
                         //criar evento...
                         final FutureEvent evt = new FutureEvent(
-                                tarefa.getTimeCriacao(), FutureEvent.CHEGADA, tarefa.getOrigem(), tarefa
+                            tarefa.getTimeCriacao(), FutureEvent.CHEGADA, tarefa.getOrigem(), tarefa
                         );
                         SimulacaoParalela.this.threadFilaEventos.get(this.mestre).add(evt);
                     }
                 }
                 System.out.println("Nome: " + Thread.currentThread().getName() + " foram criadas " +
-                                   SimulacaoParalela.this.threadFilaEventos.get(this.mestre).size());
+                                   SimulacaoParalela.this.threadFilaEventos
+                                       .get(this.mestre)
+                                       .size());
             }
         }
     }

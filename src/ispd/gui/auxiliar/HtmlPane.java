@@ -7,7 +7,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
@@ -18,14 +17,46 @@ import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 
 public class HtmlPane extends JEditorPane implements HyperlinkListener {
 
-    private static final String TAG_END                        = ">";
-    private static final String CLOSE_TAG_START                = "</";
-    private static final int    SET_CARET_POSITION_UPPER_BOUND = 20;
+    private static final String TAG_END = ">";
+
+    private static final String CLOSE_TAG_START = "</";
+
+    private static final int SET_CARET_POSITION_UPPER_BOUND = 20;
 
     public HtmlPane () {
         this.setContentType("text/html");
         this.setEditable(false);
         this.addHyperlinkListener(this);
+    }
+
+    /**
+     * Opens a link with user's default browser, if supported
+     *
+     * @param url
+     *     address for browser to open
+     */
+    public static void openDefaultBrowser (final URL url) {
+        final var desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+
+        if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
+            return;
+        }
+
+        try {
+            desktop.browse(url.toURI());
+        } catch (final IOException | URISyntaxException ignored) {
+        }
+    }
+
+    private static String getDocText (final Document doc) {
+        try {
+            return doc.getText(0, doc.getLength());
+        } catch (final BadLocationException ex) {
+            Logger.getLogger(HtmlPane.class.getName())
+                .log(Level.SEVERE, null, ex);
+        }
+
+        return "";
     }
 
     @Override
@@ -63,26 +94,7 @@ public class HtmlPane extends JEditorPane implements HyperlinkListener {
             this.scrollRectToVisible(caret);
         } catch (final BadLocationException ex) {
             Logger.getLogger(HtmlPane.class.getName())
-                  .log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * Opens a link with user's default browser, if supported
-     *
-     * @param url
-     *         address for browser to open
-     */
-    public static void openDefaultBrowser (final URL url) {
-        final var desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
-
-        if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
-            return;
-        }
-
-        try {
-            desktop.browse(url.toURI());
-        } catch (final IOException | URISyntaxException ignored) {
+                .log(Level.SEVERE, null, ex);
         }
     }
 
@@ -97,23 +109,12 @@ public class HtmlPane extends JEditorPane implements HyperlinkListener {
         final int end   = html.indexOf(HtmlPane.CLOSE_TAG_START, start);
 
         return html.substring(start, end)
-                   .replaceAll("\n", "")
-                   .replaceAll("&#225;", "á")
-                   .replaceAll("&#227;", "ã")
-                   .replaceAll("&#231;", "ç")
-                   .replaceAll("&#233;", "é")
-                   .replaceAll("&#245;", "õ")
-                   .trim();
-    }
-
-    private static String getDocText (final Document doc) {
-        try {
-            return doc.getText(0, doc.getLength());
-        } catch (final BadLocationException ex) {
-            Logger.getLogger(HtmlPane.class.getName())
-                  .log(Level.SEVERE, null, ex);
-        }
-
-        return "";
+            .replaceAll("\n", "")
+            .replaceAll("&#225;", "á")
+            .replaceAll("&#227;", "ã")
+            .replaceAll("&#231;", "ç")
+            .replaceAll("&#233;", "é")
+            .replaceAll("&#245;", "õ")
+            .trim();
     }
 }

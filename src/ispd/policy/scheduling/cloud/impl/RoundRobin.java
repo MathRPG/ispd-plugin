@@ -1,26 +1,25 @@
 package ispd.policy.scheduling.cloud.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-
 import ispd.annotations.Policy;
 import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.policy.scheduling.cloud.CloudSchedulingPolicy;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
- * Implementation of the RoundRobin scheduling algorithm.
- * Hands over the next task on the FIFO queue,
- * for the next resource in a circular queue of resources.
+ * Implementation of the RoundRobin scheduling algorithm. Hands over the next task on the FIFO
+ * queue, for the next resource in a circular queue of resources.
  */
 @Policy
 public class RoundRobin extends CloudSchedulingPolicy {
 
-    private ListIterator<CS_Processamento> resources  = null;
-    private LinkedList<CS_Processamento>   slavesUser = null;
+    private ListIterator<CS_Processamento> resources = null;
+
+    private LinkedList<CS_Processamento> slavesUser = null;
 
     public RoundRobin () {
         this.tarefas  = new ArrayList<>();
@@ -60,29 +59,36 @@ public class RoundRobin extends CloudSchedulingPolicy {
     }
 
     @Override
+    public CS_Processamento escalonarRecurso () {
+        if (!this.resources.hasNext()) {
+            this.resources = this.slavesUser.listIterator(0);
+        }
+        return this.resources.next();
+    }
+
+    @Override
     public Tarefa escalonarTarefa () {
         return this.tarefas.remove(0);
     }
 
     private void noAllocatedVms (final Tarefa task) {
-        System.out.printf("Não existem VMs alocadas ainda, devolvendo tarefa %d%n", task.getIdentificador());
+        System.out.printf(
+            "Não existem VMs alocadas ainda, devolvendo tarefa %d%n",
+            task.getIdentificador()
+        );
         this.adicionarTarefa(task);
         this.mestre.freeScheduler();
     }
 
     private void scheduleTask (final Tarefa task) {
         final var resource = this.escalonarRecurso();
-        System.out.printf("escalonando tarefa %d para:%s%n", task.getIdentificador(), resource.getId());
+        System.out.printf(
+            "escalonando tarefa %d para:%s%n",
+            task.getIdentificador(),
+            resource.getId()
+        );
         task.setLocalProcessamento(resource);
         task.setCaminho(this.escalonarRota(resource));
         this.mestre.sendTask(task);
-    }
-
-    @Override
-    public CS_Processamento escalonarRecurso () {
-        if (!this.resources.hasNext()) {
-            this.resources = this.slavesUser.listIterator(0);
-        }
-        return this.resources.next();
     }
 }

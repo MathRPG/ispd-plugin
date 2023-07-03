@@ -5,21 +5,24 @@ public class MetricasTarefa {
     /**
      * Recebe tempo total que a tarefa permaneceu em um fila de um recurso de computação
      */
-    private double tempoEsperaProc    = 0;
+    private double tempoEsperaProc = 0.0;
+
     /**
      * Recebe tempo total que a tarefa permaneceu em um fila de um recurso de comunicação
      */
-    private double tempoEsperaComu    = 0;
+    private double tempoEsperaComu = 0.0;
+
     /**
      * Recebe tempo total que a tarefa gastou sendo computada no modelo
      */
-    private double tempoProcessamento = 0;
+    private double tempoProcessamento = 0.0;
+
     /**
      * Recebe tempo total que a tarefa gastou sendo transferida na rede modelada
      */
-    private double tempoComunicacao   = 0;
+    private double tempoComunicacao = 0.0;
 
-    private double eficiencia = 0;
+    private double eficiencia = 0.0;
 
     public void incTempoComunicacao (final double tempoComunicacao) {
         this.tempoComunicacao += tempoComunicacao;

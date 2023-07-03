@@ -1,32 +1,35 @@
 package ispd.gui.configuracao;
 
-import java.util.ResourceBundle;
-
-import javax.swing.table.AbstractTableModel;
-
 import ispd.gui.iconico.grade.GridItem;
 import ispd.gui.iconico.grade.Internet;
 import ispd.gui.iconico.grade.Link;
+import java.util.ResourceBundle;
+import javax.swing.table.AbstractTableModel;
 
 public class LinkTable extends AbstractTableModel {
 
-    private static final int            TYPE         = 0;
-    private static final int            VALUE        = 1;
-    private static final int            LABEL        = 0;
-    private static final int            BANDWIDTH    = 1;
-    private static final int            LATENCY      = 2;
-    private static final int            LOAD_FACTOR  = 3;
-    private static final int            ROW_COUNT    = 4;
-    private static final int            COLUMN_COUNT = 2;
-    private              GridItem       link         = null;
-    private              ResourceBundle words;
+    private static final int TYPE = 0;
+
+    private static final int VALUE = 1;
+
+    private static final int LABEL = 0;
+
+    private static final int BANDWIDTH = 1;
+
+    private static final int LATENCY = 2;
+
+    private static final int LOAD_FACTOR = 3;
+
+    private static final int ROW_COUNT = 4;
+
+    private static final int COLUMN_COUNT = 2;
+
+    private GridItem link = null;
+
+    private ResourceBundle words;
 
     public LinkTable (final ResourceBundle words) {
         this.words = words;
-    }
-
-    public void setLink (final GridItem link) {
-        this.link = link;
     }
 
     @Override
@@ -57,6 +60,34 @@ public class LinkTable extends AbstractTableModel {
         }
 
         throw new IndexOutOfBoundsException("columnIndex out of bounds");
+    }
+
+    @Override
+    public String getColumnName (final int columnIndex) {
+        return switch (columnIndex) {
+            case LinkTable.TYPE -> this.words.getString("Properties");
+            case LinkTable.VALUE -> this.words.getString("Values");
+            default -> null;
+        };
+    }
+
+    @Override
+    public boolean isCellEditable (final int rowIndex, final int columnIndex) {
+        return columnIndex != LinkTable.TYPE;
+    }
+
+    @Override
+    public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
+        if (columnIndex != LinkTable.VALUE || this.link == null) {
+            return;
+        }
+
+        this.updateValue(aValue, rowIndex);
+        this.fireTableCellUpdated(rowIndex, LinkTable.VALUE);
+    }
+
+    public void setLink (final GridItem link) {
+        this.link = link;
     }
 
     private String getRowName (final int rowIndex) {
@@ -101,30 +132,6 @@ public class LinkTable extends AbstractTableModel {
         }
 
         return null;
-    }
-
-    @Override
-    public String getColumnName (final int columnIndex) {
-        return switch (columnIndex) {
-            case LinkTable.TYPE -> this.words.getString("Properties");
-            case LinkTable.VALUE -> this.words.getString("Values");
-            default -> null;
-        };
-    }
-
-    @Override
-    public boolean isCellEditable (final int rowIndex, final int columnIndex) {
-        return columnIndex != LinkTable.TYPE;
-    }
-
-    @Override
-    public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
-        if (columnIndex != LinkTable.VALUE || this.link == null) {
-            return;
-        }
-
-        this.updateValue(aValue, rowIndex);
-        this.fireTableCellUpdated(rowIndex, LinkTable.VALUE);
     }
 
     private void updateValue (final Object aValue, final int rowIndex) {

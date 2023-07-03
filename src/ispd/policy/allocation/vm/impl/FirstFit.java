@@ -1,8 +1,5 @@
 package ispd.policy.allocation.vm.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import ispd.annotations.Policy;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
@@ -10,32 +7,20 @@ import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
 import ispd.motor.filas.servidores.implementacao.CS_VMM;
 import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
 import ispd.policy.allocation.vm.VmAllocationPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 @Policy
 public class FirstFit extends VmAllocationPolicy {
 
-    private boolean fit;
-    private int     maqIndex;
+    private boolean fit = false;
+
+    private int maqIndex = 0;
 
     public FirstFit () {
         this.maquinasVirtuais = new ArrayList<>();
         this.escravos         = new ArrayList<>();
         this.VMsRejeitadas    = new ArrayList<>();
-    }
-
-    @Override
-    public void iniciar () {
-        this.fit      = true;
-        this.maqIndex = 0;
-
-        if (!this.escravos.isEmpty() && !this.maquinasVirtuais.isEmpty()) {
-            this.escalonar();
-        }
-    }
-
-    @Override
-    public CS_VirtualMac escalonarVM () {
-        return this.maquinasVirtuais.remove(0);
     }
 
     private static boolean canMachineFitVm (final CS_MaquinaCloud machine, final CS_VirtualMac vm) {
@@ -47,8 +32,19 @@ public class FirstFit extends VmAllocationPolicy {
     private static void makeMachineHostVm (final CS_MaquinaCloud machine, final CS_VirtualMac vm) {
         machine.setMemoriaDisponivel(machine.getMemoriaDisponivel() - vm.getMemoriaDisponivel());
         machine.setDiscoDisponivel(machine.getDiscoDisponivel() - vm.getDiscoDisponivel());
-        machine.setProcessadoresDisponiveis(machine.getProcessadoresDisponiveis() - vm.getProcessadoresDisponiveis());
+        machine.setProcessadoresDisponiveis(machine.getProcessadoresDisponiveis()
+                                            - vm.getProcessadoresDisponiveis());
         vm.setMaquinaHospedeira(machine);
+    }
+
+    @Override
+    public void iniciar () {
+        this.fit      = true;
+        this.maqIndex = 0;
+
+        if (!this.escravos.isEmpty() && !this.maquinasVirtuais.isEmpty()) {
+            this.escalonar();
+        }
     }
 
     @Override
@@ -105,5 +101,10 @@ public class FirstFit extends VmAllocationPolicy {
     @Override
     public CS_Processamento escalonarRecurso () {
         return this.escravos.get(this.fit ? 0 : this.maqIndex);
+    }
+
+    @Override
+    public CS_VirtualMac escalonarVM () {
+        return this.maquinasVirtuais.remove(0);
     }
 }

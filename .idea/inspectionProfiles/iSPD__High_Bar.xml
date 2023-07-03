@@ -32,6 +32,8 @@
     <inspection_tool class="AnonymousInnerClassMayBeStatic" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ArrayEquality" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ArrayLengthInLoopCondition" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="AssertEqualsCalledOnArray" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="AssertEqualsMayBeAssertSame" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AssertMessageNotString" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AssertStatement" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AssertWithoutMessage" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -364,7 +366,7 @@
     </inspection_tool>
     <inspection_tool class="ImplicitDefaultCharsetUsage" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ImplicitNumericConversion" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoreWideningConversions" value="false" />
+      <option name="ignoreWideningConversions" value="true" />
       <option name="ignoreCharConversions" value="false" />
       <option name="ignoreConstantConversions" value="false" />
     </inspection_tool>
@@ -872,9 +874,7 @@
     <inspection_tool class="StringConcatenationArgumentToLogCall" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StringConcatenationInFormatCall" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StringConcatenationInMessageFormatCall" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="StringConcatenationMissingWhitespace" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="ignoreNonStringLiterals" value="false" />
-    </inspection_tool>
+    <inspection_tool class="StringConcatenationMissingWhitespace" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="StringEqualsEmptyString" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="SUPPRESS_FOR_VALUES_WHICH_COULD_BE_NULL" value="true" />
     </inspection_tool>
@@ -916,6 +916,9 @@
     <inspection_tool class="SystemSetSecurityManager" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TestCaseWithNoTestMethods" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreSupers" value="true" />
+    </inspection_tool>
+    <inspection_tool class="TextBlockMigration" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="mySuggestLiteralReplacement" value="true" />
     </inspection_tool>
     <inspection_tool class="ThisEscapedInConstructor" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ThreadDeathRethrown" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -969,6 +972,7 @@
       <option name="m_ignoreStaticAccessFromStaticContext" value="false" />
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticallyImportedElement" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="UnnecessaryConstantArrayCreationExpression" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnnecessaryConstructor" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreAnnotations" value="true" />
     </inspection_tool>

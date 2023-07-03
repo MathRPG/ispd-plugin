@@ -1,55 +1,61 @@
 package ispd.arquivo.interpretador.simgrid;
 
-import org.w3c.dom.Document;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-
 import javax.swing.JOptionPane;
+import org.w3c.dom.Document;
 
 public class InterpretadorSimGrid {
 
-    private static String   fname;
-    private        Document modelo;
+    private static String fname = null;
+
+    private Document modelo = null;
 
     public static String getFileName () {
-        return fname;
+        return InterpretadorSimGrid.fname;
     }
 
-    private void setFileName (File f) {
-        fname = f.getName();
+    private void setFileName (final File f) {
+        InterpretadorSimGrid.fname = f.getName();
     }
 
-    public void interpreta (File file1, File file2) {
-        boolean error;
+    public void interpreta (final File file1, final File file2) {
         try {
             try {
-                FileInputStream application_file = new FileInputStream(file1);
-                FileInputStream plataform_file   = new FileInputStream(file2);
-                SimGrid         parser           = SimGrid.getInstance(application_file);
-                setFileName(file1);
+                final var application_file = new FileInputStream(file1);
+                final var plataform_file   = new FileInputStream(file2);
+                final var parser           = SimGrid.getInstance(application_file);
+                this.setFileName(file1);
                 SimGrid.ReInit(application_file);
                 SimGrid.modelo();
-                setFileName(file2);
+                this.setFileName(file2);
                 SimGrid.ReInit(plataform_file);
                 SimGrid.modelo();
-                error = parser.resultadoParser();
+                final var error = parser.resultadoParser();
                 if (!error) {
-                    //parser.writefile();
-                    modelo = parser.getModelo().getDescricao();
+                    this.modelo = parser.getModelo().getDescricao();
                 }
                 parser.reset();
-            } catch (ParseException ex) {
-                JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+            } catch (final ParseException ex) {
+                JOptionPane.showMessageDialog(
+                    null,
+                    ex.getMessage(),
+                    "Error",
+                    JOptionPane.WARNING_MESSAGE
+                );
             }
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.WARNING_MESSAGE);
+        } catch (final IOException ex) {
+            JOptionPane.showMessageDialog(
+                null,
+                ex.getMessage(),
+                "Error",
+                JOptionPane.WARNING_MESSAGE
+            );
         }
     }
 
     public Document getModelo () {
-        return modelo;
+        return this.modelo;
     }
-
 }

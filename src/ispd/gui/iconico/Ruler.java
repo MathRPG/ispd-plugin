@@ -28,23 +28,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
 package ispd.gui.iconico;
 
+import ispd.gui.utils.Fonts.SansSerif;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-
 import javax.swing.JComponent;
 
 public class Ruler extends JComponent {
-
-    /**
-     * It represents the font used to mark the labels on the ruler.
-     */
-    private static final Font RULER_FONT = new Font("SansSerif", Font.PLAIN, 10);
 
     /**
      * It represents the background color.
@@ -52,14 +45,14 @@ public class Ruler extends JComponent {
     private static final Color RULER_BACKGROUND_COLOR = new Color(240, 240, 240);
 
     /**
-     * It represents the tick length. The term <em>tick</em> is coined
-     * to represent integral unit numbers in the rule.
+     * It represents the tick length. The term <em>tick</em> is coined to represent integral unit
+     * numbers in the rule.
      */
     private static final int RULER_TICK_LENGTH = 10;
 
     /**
-     * It represents the pre-tick length. The term <em>pre-tick</em>
-     * is coined to represent the fractional numbers in the rule.
+     * It represents the pre-tick length. The term <em>pre-tick</em> is coined to represent the
+     * fractional numbers in the rule.
      */
     private static final int RULER_PRE_TICK_LENGTH = 7;
 
@@ -69,16 +62,14 @@ public class Ruler extends JComponent {
     private static final int SIZE = 35;
 
     /**
-     * It stores the ruler's orientation, this is essential because
-     * the orientation in which the ruler is drawn on the grid depends
-     * on the value specified by this variable.
+     * It stores the ruler's orientation, this is essential because the orientation in which the
+     * ruler is drawn on the grid depends on the value specified by this variable.
      */
     private final RulerOrientation orientation;
 
     /**
-     * It stores the ruler's unit, this is essential because the unit
-     * is used to draw the <em>ticks</em> and <em>labels</em> relative
-     * to the unit specified in this variable.
+     * It stores the ruler's unit, this is essential because the unit is used to draw the
+     * <em>ticks</em> and <em>labels</em> relative to the unit specified in this variable.
      */
     private RulerUnit unit;
 
@@ -86,9 +77,9 @@ public class Ruler extends JComponent {
      * Constructor which specifies the ruler orientation and the ruler unit.
      *
      * @param orientation
-     *         the orientation
+     *     the orientation
      * @param unit
-     *         the unit
+     *     the unit
      */
     public Ruler (final RulerOrientation orientation, final RulerUnit unit) {
         this.orientation = orientation;
@@ -106,11 +97,11 @@ public class Ruler extends JComponent {
         g.fillRect(drawHere.x, drawHere.y, drawHere.width, drawHere.height);
 
         // Set the color and font for marking the ruler's labels.
-        g.setFont(Ruler.RULER_FONT);
+        g.setFont(SansSerif.PLAIN_10);
         g.setColor(Color.BLACK);
 
         final var isHorizontal =
-                this.orientation == RulerOrientation.HORIZONTAL;
+            this.orientation == RulerOrientation.HORIZONTAL;
 
         // Use clipping bounds to calculate first and last tick locations.
         int       start;
@@ -168,12 +159,11 @@ public class Ruler extends JComponent {
     /**
      * It updates the ruler unit to the specified unit.
      * <p>
-     * Further, the specified unit is supposed to be <em>non-null</em>.
-     * Therefore, unexpected behavior may arise if this precondition
-     * is not followed.
+     * Further, the specified unit is supposed to be <em>non-null</em>. Therefore, unexpected
+     * behavior may arise if this precondition is not followed.
      *
      * @param newUnit
-     *         the unit to be updated to
+     *     the unit to be updated to
      */
     public void updateUnitTo (final RulerUnit newUnit) {
         this.unit = newUnit;
@@ -184,7 +174,7 @@ public class Ruler extends JComponent {
      * It sets the ruler's preferred height.
      *
      * @param preferredHeight
-     *         the preferred height
+     *     the preferred height
      */
     protected void setPreferredHeight (final int preferredHeight) {
         this.setPreferredSize(new Dimension(Ruler.SIZE, preferredHeight));
@@ -194,7 +184,7 @@ public class Ruler extends JComponent {
      * It sets the ruler's preferred width.
      *
      * @param preferredWidth
-     *         the preferred width
+     *     the preferred width
      */
     protected void setPreferredWidth (final int preferredWidth) {
         this.setPreferredSize(new Dimension(preferredWidth, Ruler.SIZE));

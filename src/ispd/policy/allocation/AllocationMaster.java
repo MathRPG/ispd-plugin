@@ -1,9 +1,8 @@
 package ispd.policy.allocation;
 
-import java.util.Set;
-
 import ispd.policy.PolicyCondition;
 import ispd.policy.PolicyMaster;
+import java.util.Set;
 
 public interface AllocationMaster extends PolicyMaster {
 

@@ -1,5 +1,6 @@
 package ispd.gui.iconico.grade;
 
+import ispd.gui.iconico.Vertex;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -7,14 +8,11 @@ import java.awt.Polygon;
 import java.util.ResourceBundle;
 import java.util.Set;
 
-import ispd.gui.iconico.Vertex;
-
 public class Link extends EdgeGridItem {
 
     /**
-     * It represents the <em>dark green</em> color. Further,
-     * it is used to draw the link using this color since
-     * this link is configured.
+     * It represents the <em>dark green</em> color. Further, it is used to draw the link using this
+     * color since this link is configured.
      */
     private static final Color DARK_GREEN = new Color(0, 130, 0);
 
@@ -36,27 +34,47 @@ public class Link extends EdgeGridItem {
     private double latency;
 
     /**
-     * Constructor of  which specifies the source,
-     * destination vertices and the local and global
+     * Constructor of  which specifies the source, destination vertices and the local and global
      * identifiers.
      *
      * @param source
-     *         the source vertex
+     *     the source vertex
      * @param destination
-     *         the destination vertex
+     *     the destination vertex
      * @param localId
-     *         the local identifier
+     *     the local identifier
      * @param globalId
-     *         the global identifier
+     *     the global identifier
      */
-    public Link (final Vertex source, final Vertex destination, final int localId, final int globalId) {
+    public Link (
+        final Vertex source,
+        final Vertex destination,
+        final int localId,
+        final int globalId
+    ) {
         super(localId, globalId, "link", source, destination, true);
         this.arrowPolygon = new Polygon();
     }
 
     /**
-     * It draws the link starting from the source vertex
-     * and ending at the destination vertex.
+     * It returns the following calculation
+     * <pre>
+     *     (p1 + 7 * p2) / 8
+     * </pre>
+     *
+     * @param p1
+     *     the first point
+     * @param p2
+     *     the second point
+     *
+     * @return a weighted mean between these points
+     */
+    private static int biasedMidPoint (final int p1, final int p2) {
+        return (p1 + 7 * p2) / 8;
+    }
+
+    /**
+     * It draws the link starting from the source vertex and ending at the destination vertex.
      */
     @Override
     public void draw (final Graphics g) {
@@ -111,8 +129,8 @@ public class Link extends EdgeGridItem {
         }
 
         g.drawLine(
-                this.getSource().getX(), this.getSource().getY(), this.getDestination().getX(),
-                this.getDestination().getY()
+            this.getSource().getX(), this.getSource().getY(), this.getDestination().getX(),
+            this.getDestination().getY()
         );
         g.fillPolygon(this.arrowPolygon);
     }
@@ -153,23 +171,6 @@ public class Link extends EdgeGridItem {
     }
 
     /**
-     * It returns the following calculation
-     * <pre>
-     *     (p1 + 7 * p2) / 8
-     * </pre>
-     *
-     * @param p1
-     *         the first point
-     * @param p2
-     *         the second point
-     *
-     * @return a weighted mean between these points
-     */
-    private static int biasedMidPoint (final int p1, final int p2) {
-        return (p1 + 7 * p2) / 8;
-    }
-
-    /**
      * It throws {@link UnsupportedOperationException}.
      */
     @Override
@@ -189,34 +190,38 @@ public class Link extends EdgeGridItem {
      * Returns the link attributes.
      *
      * @param translator
-     *         the translator containing
-     *         the translation messages
+     *     the translator containing the translation messages
      *
      * @return the link attributes
      */
     @Override
     public String makeDescription (final ResourceBundle translator) {
         return (
-                "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s %d<br>%s " +
-                "%d<br>%s: %s<br>%s: %s<br>%s: %s"
+            "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s %d<br>%s " +
+            "%d<br>%s: %s<br>%s: %s<br>%s: %s"
         ).formatted(
-                translator.getString("Local ID:"), this.id.getLocalId(),
-                translator.getString("Global ID:"), this.id.getGlobalId(),
-                translator.getString("Label"), this.id.getName(),
-                translator.getString("X1-coordinate:"), this.getSource().getX(),
-                translator.getString("Y1-coordinate:"), this.getSource().getY(),
-                translator.getString("X2-coordinate:"),
-                this.getDestination().getY(),
-                translator.getString("Y2-coordinate:"),
-                this.getDestination().getX(),
-                translator.getString("Bandwidth"), this.bandwidth,
-                translator.getString("Latency"), this.latency,
-                translator.getString("Load Factor"), this.loadFactor
+            translator.getString("Local ID:"), this.id.getLocalId(),
+            translator.getString("Global ID:"), this.id.getGlobalId(),
+            translator.getString("Label"), this.id.getName(),
+            translator.getString("X1-coordinate:"), this.getSource().getX(),
+            translator.getString("Y1-coordinate:"), this.getSource().getY(),
+            translator.getString("X2-coordinate:"),
+            this.getDestination().getY(),
+            translator.getString("Y2-coordinate:"),
+            this.getDestination().getX(),
+            translator.getString("Bandwidth"), this.bandwidth,
+            translator.getString("Latency"), this.latency,
+            translator.getString("Load Factor"), this.loadFactor
         );
     }
 
     @Override
-    public Link makeCopy (final int mousePosX, final int mousePosY, final int globalId, final int localId) {
+    public Link makeCopy (
+        final int mousePosX,
+        final int mousePosY,
+        final int globalId,
+        final int localId
+    ) {
         final var link = new Link(null, null, globalId, localId);
         link.bandwidth  = this.bandwidth;
         link.latency    = this.latency;
@@ -226,9 +231,8 @@ public class Link extends EdgeGridItem {
     }
 
     /**
-     * It checks if the current link configuration is well
-     * configured; if so, then {@link #configured} is set
-     * to {@code true}; otherwise, is set to {@code false}.
+     * It checks if the current link configuration is well configured; if so, then
+     * {@link #configured} is set to {@code true}; otherwise, is set to {@code false}.
      */
     private void checkConfiguration () {
         this.configured = this.bandwidth > 0 && this.latency > 0;
@@ -247,7 +251,7 @@ public class Link extends EdgeGridItem {
      * It sets the bandwidth.
      *
      * @param bandwidth
-     *         the bandwidth to be set
+     *     the bandwidth to be set
      */
     public void setBandwidth (final double bandwidth) {
         this.bandwidth = bandwidth;
@@ -267,7 +271,7 @@ public class Link extends EdgeGridItem {
      * It sets the load factor.
      *
      * @param loadFactor
-     *         the load factor to be set
+     *     the load factor to be set
      */
     public void setLoadFactor (final double loadFactor) {
         this.loadFactor = loadFactor;
@@ -286,7 +290,7 @@ public class Link extends EdgeGridItem {
      * It sets the latency
      *
      * @param latency
-     *         the latency to be set
+     *     the latency to be set
      */
     public void setLatency (final double latency) {
         this.latency = latency;

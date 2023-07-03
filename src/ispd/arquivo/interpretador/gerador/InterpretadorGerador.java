@@ -2,35 +2,27 @@ package ispd.arquivo.interpretador.gerador;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.swing.JOptionPane;
 
 /**
- * Classe de interface entre arquivos gerados pelo javaCC para interpretar a gramatica do gerador de escalonadores e
- * o iSPD.
+ * Classe de interface entre arquivos gerados pelo javaCC para interpretar a gramatica do gerador de
+ * escalonadores e o iSPD.
  */
 public class InterpretadorGerador {
 
-    private InputStream   istream;
+    private final InputStream inputStream;
+
     private Interpretador parser = null;
 
     /**
-     * @param codigo
-     *         Texto com código do gerador de escalonadores
+     * @param code
+     *     Texto com código do gerador de escalonadores
      */
-    public InterpretadorGerador (String codigo) {
-        try {
-            istream = new ByteArrayInputStream(codigo.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(InterpretadorGerador.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public InterpretadorGerador (InputStream istream) {
-        this.istream = istream;
+    public InterpretadorGerador (final String code) {
+        this.inputStream = new ByteArrayInputStream(code.getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -40,18 +32,18 @@ public class InterpretadorGerador {
      */
     public boolean executarParse () {
         try {
-            parser         = new Interpretador(istream);
-            parser.verbose = false;
-            parser.printv("Modo verbose ligado");
-            parser.Escalonador();
-            return parser.erroEncontrado;
-        } catch (ParseException ex) {
-            parser.erroEncontrado = true;
-            JOptionPane.showMessageDialog(null, "Foram encontrados os seguintes erros:\n" + ex.getMessage(),
-                                          "Erros Encontrados", JOptionPane.ERROR_MESSAGE
+            this.parser = new Interpretador(this.inputStream);
+            this.parser.Escalonador();
+            return this.parser.isErroEncontrado();
+        } catch (final ParseException ex) {
+            JOptionPane.showMessageDialog(
+                null,
+                "Foram encontrados os seguintes erros:\n" + ex.getMessage(),
+                "Erros Encontrados",
+                JOptionPane.ERROR_MESSAGE
             );
             Logger.getLogger(InterpretadorGerador.class.getName()).log(Level.SEVERE, null, ex);
-            return parser.erroEncontrado;
+            return true;
         }
     }
 
@@ -59,13 +51,13 @@ public class InterpretadorGerador {
      * @return Retorna nome do escalonador gerado
      */
     public String getNome () {
-        return parser.getArquivoNome();
+        return this.parser.getArquivoNome();
     }
 
     /**
      * @return Retorna código java do escalonador gerado a partir do código interpretado
      */
     public String getCodigo () {
-        return parser.getCodigo();
+        return this.parser.getCodigo();
     }
 }

@@ -1,13 +1,13 @@
 package ispd.policy.scheduling.grid.impl.util;
 
+import ispd.motor.filas.Tarefa;
 import java.util.ArrayList;
 import java.util.List;
 
-import ispd.motor.filas.Tarefa;
-
 public class SlaveControl {
 
-    private SlaveStatus            status            = SlaveStatus.FREE;
+    private SlaveStatus status = SlaveStatus.FREE;
+
     private List<? extends Tarefa> tasksInProcessing = new ArrayList<>();
 
     public boolean canHostNewTask () {

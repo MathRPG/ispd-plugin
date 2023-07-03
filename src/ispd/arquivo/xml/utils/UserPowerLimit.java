@@ -1,19 +1,19 @@
 package ispd.arquivo.xml.utils;
 
+import ispd.motor.metricas.MetricasUsuarios;
+import ispd.policy.scheduling.SchedulingPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import ispd.motor.metricas.MetricasUsuarios;
-import ispd.policy.scheduling.SchedulingPolicy;
-
 /**
- * Utility class to process users' power limits, creating user metrics based
- * on these values and giving such information to schedulers.
+ * Utility class to process users' power limits, creating user metrics based on these values and
+ * giving such information to schedulers.
  */
 public class UserPowerLimit {
 
     private final List<String> owners;
+
     private final List<Double> limits;
 
     public UserPowerLimit (final Map<String, Double> powerLimits) {
@@ -31,11 +31,11 @@ public class UserPowerLimit {
     }
 
     /**
-     * Sets the scheduler's {@link MetricasUsuarios} with an instance created
-     * internally, based on the user power limits stored internally.
+     * Sets the scheduler's {@link MetricasUsuarios} with an instance created internally, based on
+     * the user power limits stored internally.
      *
      * @param scheduler
-     *         scheduler to be set with new user metrics.
+     *     scheduler to be set with new user metrics.
      */
     public void setSchedulerUserMetrics (final SchedulingPolicy<?> scheduler) {
         scheduler.setMetricaUsuarios(this.makeUserMetrics());

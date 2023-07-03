@@ -5,29 +5,56 @@ package ispd.gui.auxiliar;
  */
 public class UserOperationTime implements Comparable<UserOperationTime> {
 
-    private final double  time;
+    private final double time;
+
     private final boolean startTime;
-    private final double  nodeUse;
-    private final int     userId;
+
+    private final double nodeUse;
+
+    private final int userId;
 
     /**
-     * Constructor which specifies the time, start time
-     * node use and the user id.
+     * Constructor which specifies the time, start time node use and the user id.
      *
      * @param time
-     *         the time
+     *     the time
      * @param startTime
-     *         the start time
+     *     the start time
      * @param nodeUse
-     *         the node use
+     *     the node use
      * @param userId
-     *         the user id
+     *     the user id
      */
-    public UserOperationTime (final double time, final boolean startTime, final double nodeUse, final int userId) {
+    public UserOperationTime (
+        final double time,
+        final boolean startTime,
+        final double nodeUse,
+        final int userId
+    ) {
         this.time      = time;
         this.startTime = startTime;
         this.nodeUse   = nodeUse;
         this.userId    = userId;
+    }
+
+    /**
+     * Compares the two specified {@link UserOperationTime} classes. It is used the time set in
+     * these classes to compare them. It returns 0 if the {@code this}'s time is equal to the second
+     * one, a value less than 0 if {@code this}'s time is numerically less than the second one and a
+     * value greater than 0 if {@code this}'s time is numerically greater than the second one.
+     *
+     * @param o
+     *     the another {@link UserOperationTime} to be compared.
+     *
+     * @return 0 if {@code this}'s time is numerically equal than the second one; a value less than
+     * 0 if {@code this}'s time is numerically less than the second one; and a value greater than 0
+     * if {@code this}'s time is numerically greater than the second.
+     *
+     * @see Double#compare(double, double)
+     */
+    @Override
+    public int compareTo (final UserOperationTime o) {
+        return Double.compare(this.time, o.time);
     }
 
     /**
@@ -64,28 +91,5 @@ public class UserOperationTime implements Comparable<UserOperationTime> {
      */
     public int getUserId () {
         return this.userId;
-    }
-
-    /**
-     * Compares the two specified {@link UserOperationTime} classes.
-     * It is used the time set in these classes to compare them. It
-     * returns 0 if the {@code this}'s time is equal to the second one,
-     * a value less than 0 if {@code this}'s time is numerically less than
-     * the second one and a value greater than 0 if {@code this}'s time is
-     * numerically greater than the second one.
-     *
-     * @param o
-     *         the another {@link UserOperationTime} to be compared.
-     *
-     * @return 0 if {@code this}'s time is numerically equal than the second one;
-     *         a value less than 0 if {@code this}'s time is numerically less than
-     *         the second one; and a value greater than 0 if {@code this}'s time is
-     *         numerically greater than the second.
-     *
-     * @see Double#compare(double, double)
-     */
-    @Override
-    public int compareTo (final UserOperationTime o) {
-        return Double.compare(this.time, o.time);
     }
 }

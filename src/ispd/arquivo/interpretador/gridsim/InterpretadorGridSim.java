@@ -1,145 +1,148 @@
 package ispd.arquivo.interpretador.gridsim;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
+import ispd.arquivo.xml.ManipuladorXML;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import ispd.arquivo.interpretador.gridsim.JavaParser.ResourceChar;
+import org.w3c.dom.Document;
 
 public class InterpretadorGridSim {
 
-    private String                                         fname;
-    private List<HashMap<String, JavaParser.ResourceChar>> ListaMetodo;
-    private List<String>                                   NomeMetodo = new ArrayList<String>();
-    private List<String>                                   Nome       = new ArrayList<String>();
-    private List<Integer>                                  Quantidade = new ArrayList<Integer>();
+    private List<HashMap<String, JavaParser.ResourceChar>> ListaMetodo = null;
 
-    public String getFileName () {
-        return fname;
+    private List<String> NomeMetodo = new ArrayList<>();
+
+    private List<String> Nome = new ArrayList<>();
+
+    private List<Integer> Quantidade = new ArrayList<>();
+
+    private static String getInt (final String valor) {
+        final var random = new Random();
+        if ("random".equals(valor)) {
+            return String.valueOf(Math.abs(random.nextInt()));
+        } else {
+            return valor;
+        }
     }
 
-    private void setFileName (File f) {
-        fname = f.getName();
-    }
-
-    public void interpreta (File file1) {
+    public void interpreta (final File file1) {
         try {
-            setFileName(file1);
-            InputStream fisfile = new FileInputStream(file1);
-            JavaParser  parser  = new JavaParser(fisfile);
+            final var fisfile = new FileInputStream(file1);
+            final var parser  = new JavaParser(fisfile);
             parser.CompilationUnit();
             parser.escreverLista();
-            ListaMetodo = parser.getListaMetodo();
-            NomeMetodo  = parser.getNomeMetodo();
-            Nome        = parser.getNome();
-            Quantidade  = parser.getQuantidade();
-        } catch (ParseException ex) {
+            this.ListaMetodo = parser.getListaMetodo();
+            this.NomeMetodo  = parser.getNomeMetodo();
+            this.Nome        = parser.getNome();
+            this.Quantidade  = parser.getQuantidade();
+        } catch (final ParseException ex) {
             System.err.println("Erro ao fechar arquivo1: " + ex.getMessage());
             Logger.getLogger(InterpretadorGridSim.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FileNotFoundException ex) {
+        } catch (final FileNotFoundException ex) {
             System.err.println("Erro ao fechar arquivo2: " + ex.getMessage());
-            Logger.getLogger(InterpretadorGridSim.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            System.err.println("Erro ao fechar arquivo: " + ex.getMessage());
             Logger.getLogger(InterpretadorGridSim.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     public Document getDescricao () {
-        LinkedList<String>                       user      = new LinkedList<String>();
-        LinkedList<String>                       mestre    = new LinkedList<String>();
-        HashMap<JavaParser.ResourceChar, String> idGlobal  = new HashMap<JavaParser.ResourceChar, String>();
-        Document                                 descricao = ispd.arquivo.xml.ManipuladorXML.newDocument();
-        Element                                  system    = descricao.createElement("system");
-        Element                                  load      = descricao.createElement("load");
+        final var descricao = ManipuladorXML.newDocument();
+        final var system    = descricao.createElement("system");
+        final var load      = descricao.createElement("load");
         system.setAttribute("version", "1");
         descricao.appendChild(system);
-        int     icon                     = 0;
-        Integer cont_machine             = 0, cont_link = 0, cont_global = 0, ident_global = 0, linha = 50, coluna = 50;
-        Double  num_linhas, num_col, lin = 0.0, col = 0.0;
-        for (int i = 0; i < Nome.size(); i++) {
-            for (int j = 0; j < NomeMetodo.size(); j++) {
-                if (NomeMetodo.get(j).equals(Nome.get(i))) {
-                    for (int k = 1; k < Quantidade.get(i); k++) {
+        var cont_global = 0;
+        for (var i = 0; i < this.Nome.size(); i++) {
+            for (var j = 0; j < this.NomeMetodo.size(); j++) {
+                if (this.NomeMetodo.get(j).equals(this.Nome.get(i))) {
+                    for (var k = 1; k < this.Quantidade.get(i); k++) {
                         //obter o conteúdo do método
-                        HashMap<String, JavaParser.ResourceChar> temp = ListaMetodo.get(j);
+                        final var temp = this.ListaMetodo.get(j);
                         //criar uma cópia
-                        HashMap<String, JavaParser.ResourceChar> tempAux =
-                                new HashMap<String, JavaParser.ResourceChar>();
-                        JavaParser                               criar   = new JavaParser();
-                        for (Map.Entry<String, JavaParser.ResourceChar> entry : temp.entrySet()) {
-                            String                  string       = entry.getKey();
-                            JavaParser.ResourceChar resourceChar = entry.getValue();
-                            if (resourceChar.getType().equals("GridResource")) {
-                                List<JavaParser.ResourceChar> mach_list = new ArrayList<ResourceChar>();
-                                JavaParser.ResourceChar       aux       =
-                                        criar.Criar(resourceChar, resourceChar.getName() + k);
-                                aux.setLink(criar.Criar(resourceChar.getLink(),
-                                                        resourceChar.getLink().getName_Link() + cont_global
+                        final var tempAux =
+                            new HashMap<String, JavaParser.ResourceChar>();
+                        final var criar = new JavaParser();
+                        for (final var entry : temp.entrySet()) {
+                            final var string       = entry.getKey();
+                            final var resourceChar = entry.getValue();
+                            if ("GridResource".equals(resourceChar.getType())) {
+                                final var aux =
+                                    criar.Criar(resourceChar, resourceChar.getName() + k);
+                                aux.setLink(criar.Criar(
+                                    resourceChar.getLink(),
+                                    resourceChar.getLink().getName_Link() + cont_global
                                 ));
                                 cont_global++;
-                                int l = 100;
-                                for (ResourceChar mach : resourceChar.getResConfig().getMLIST().getMach_List()) {
-                                    ResourceChar maq = criar.Criar(mach, resourceChar.getId() + k);
+                                var                                 l         = 100;
+                                final List<JavaParser.ResourceChar> mach_list = new ArrayList<>();
+                                for (final var mach : resourceChar
+                                    .getResConfig()
+                                    .getMLIST()
+                                    .getMach_List()) {
+                                    final var maq = criar.Criar(mach, resourceChar.getId() + k);
                                     mach_list.add(maq);
                                     tempAux.put(aux.getName() + k + l, maq);
                                     l++;
                                 }
-                                aux.setResConfig(criar.Criar(resourceChar.getResConfig(), resourceChar.getName() + k));
+                                aux.setResConfig(criar.Criar(
+                                    resourceChar.getResConfig(),
+                                    resourceChar.getName() + k
+                                ));
                                 aux.getResConfig()
-                                   .setMlist(criar.Criar(resourceChar.getResConfig().getMLIST(), "mlist" + k));
+                                    .setMlist(criar.Criar(
+                                        resourceChar.getResConfig().getMLIST(),
+                                        "mlist" + k
+                                    ));
                                 aux.getResConfig().getMLIST().setMach_List(mach_list);
                                 tempAux.put(aux.getName() + k, aux);
                             }
                         }
                         //adicionar cópia na lista
-                        ListaMetodo.add(tempAux);
+                        this.ListaMetodo.add(tempAux);
                     }
                 }
             }
         }
-        for (int i = 0; i < ListaMetodo.size(); i++) {
+        var       ident_global = 0;
+        var       icon         = 0;
+        final var idGlobal     = new HashMap<JavaParser.ResourceChar, String>();
+        final var mestre       = new LinkedList<String>();
+        final var user         = new LinkedList<String>();
+        for (final var stringResourceCharHashMap : this.ListaMetodo) {
             //For para percorrer lista
-            for (Map.Entry<String, JavaParser.ResourceChar> object : ListaMetodo.get(i).entrySet()) {
-                String                  key = object.getKey();
-                JavaParser.ResourceChar res = object.getValue();
-                if (res.getType().equals("ResourceUser")) {
-                    Element owner = descricao.createElement("owner");
-                    owner.setAttribute("id", res.getUserID());
-                    user.add(res.getUserID());
-                    system.appendChild(owner);
-                } else if (res.getType().equals("Machine") || res.getType().equals("Router")) {
-                    icon++;
-                    idGlobal.put(res, ident_global.toString());
-                    //if(i >= NomeMetodo.size())
-                    //System.out.println("Adicionando id  " + ident_global + " para " + res);
-                    ident_global++;
-                } else if (res.getType().equals("GridResource")) {
-                    icon++;
-                    idGlobal.put(res, ident_global.toString());
-                    ident_global++;
-                    mestre.add(res.getName());
+            for (final var object : stringResourceCharHashMap.entrySet()) {
+                final var res = object.getValue();
+                switch (res.getType()) {
+                    case "ResourceUser" -> {
+                        final var owner = descricao.createElement("owner");
+                        owner.setAttribute("id", res.getUserID());
+                        user.add(res.getUserID());
+                        system.appendChild(owner);
+                    }
+                    case "Machine", "Router" -> {
+                        icon++;
+                        idGlobal.put(res, Integer.toString(ident_global));
+                        ident_global++;
+                    }
+                    case "GridResource" -> {
+                        icon++;
+                        idGlobal.put(res, Integer.toString(ident_global));
+                        ident_global++;
+                        mestre.add(res.getName());
+                    }
                 }
             }
         }
-        num_linhas = Math.floor(Math.sqrt(icon));
-        num_col    = num_linhas + 1;
+        final var num_linhas = Math.floor(Math.sqrt(icon));
+        final var num_col    = num_linhas + 1;
         if (user.isEmpty()) {
-            Element owner = descricao.createElement("owner");
+            final var owner = descricao.createElement("owner");
             owner.setAttribute("id", "user1");
             user.add("user1");
             system.appendChild(owner);
@@ -147,15 +150,20 @@ public class InterpretadorGridSim {
         if (mestre.isEmpty()) {
             mestre.add("---");
         }
-        for (int i = 0; i < ListaMetodo.size(); i++) {
-            Iterator iUser   = user.iterator();
-            Iterator iMestre = mestre.iterator();
+        var col          = 0.0;
+        var lin          = 0.0;
+        var coluna       = 50;
+        var linha        = 50;
+        var cont_link    = 0;
+        var cont_machine = 0;
+        for (final var resourceCharHashMap : this.ListaMetodo) {
+            var iUser   = user.iterator();
+            var iMestre = mestre.iterator();
             //For para percorrer lista
-            for (Map.Entry<String, JavaParser.ResourceChar> object : ListaMetodo.get(i).entrySet()) {
-                String                  key = object.getKey();
-                JavaParser.ResourceChar res = object.getValue();
-                if (res.getType().equals("gridlet")) {
-                    Element node = descricao.createElement("node");
+            for (final var object : resourceCharHashMap.entrySet()) {
+                final var res = object.getValue();
+                if ("gridlet".equals(res.getType())) {
+                    final var node = descricao.createElement("node");
                     node.setAttribute("owner", iUser.next().toString());
                     if (!iUser.hasNext()) {
                         iUser = user.iterator();
@@ -166,34 +174,34 @@ public class InterpretadorGridSim {
                         iMestre = mestre.iterator();
                     }
                     node.setAttribute("tasks", "1");
-                    Element size1 = descricao.createElement("size");
+                    final var size1 = descricao.createElement("size");
                     size1.setAttribute("type", "computing");
-                    String computing = getDouble(res.getLenght());
+                    final var computing = this.getDouble(res.getLenght());
                     size1.setAttribute("maximum", computing);
                     size1.setAttribute("minimum", computing);
-                    Element size2 = descricao.createElement("size");
+                    final var size2 = descricao.createElement("size");
                     size2.setAttribute("type", "communication");
-                    Double comunication = Double.valueOf(getDouble(res.getOutput_size()));
-                    comunication += Double.valueOf(getDouble(res.getFile_size()));
-                    size2.setAttribute("maximum", comunication.toString());
-                    size2.setAttribute("minimum", comunication.toString());
+                    var comunication = Double.parseDouble(this.getDouble(res.getOutput_size()));
+                    comunication += Double.parseDouble(this.getDouble(res.getFile_size()));
+                    size2.setAttribute("maximum", String.valueOf(comunication));
+                    size2.setAttribute("minimum", String.valueOf(comunication));
                     node.appendChild(size1);
                     node.appendChild(size2);
                     load.appendChild(node);
                 }
-                if (res.getType().equals("Machine")) {
-                    Element machine = descricao.createElement("machine");
+                if ("Machine".equals(res.getType())) {
+                    final var machine = descricao.createElement("machine");
                     machine.setAttribute("id", "maq" + cont_global);
                     cont_global++;
-                    machine.setAttribute("power", getInt(res.getMipsRating()) + "");
+                    machine.setAttribute("power", InterpretadorGridSim.getInt(res.getMipsRating()));
                     machine.setAttribute("owner", iUser.next().toString());
                     if (!iUser.hasNext()) {
                         iUser = user.iterator();
                     }
                     machine.setAttribute("load", "0.0");
-                    Element pos = descricao.createElement("position");
-                    pos.setAttribute("x", linha.toString());
-                    pos.setAttribute("y", coluna.toString());
+                    final var pos = descricao.createElement("position");
+                    pos.setAttribute("x", Integer.toString(linha));
+                    pos.setAttribute("y", Integer.toString(coluna));
 
                     if (lin < num_linhas) {
                         linha = linha + 100;
@@ -207,26 +215,26 @@ public class InterpretadorGridSim {
                         }
                     }
                     machine.appendChild(pos);
-                    Element id = descricao.createElement("icon_id");
+                    final var id = descricao.createElement("icon_id");
                     id.setAttribute("global", idGlobal.get(res));
-                    id.setAttribute("local", cont_machine.toString());
+                    id.setAttribute("local", Integer.toString(cont_machine));
                     cont_machine++;
                     machine.appendChild(id);
                     system.appendChild(machine);
                 }
-                if (res.getType().equals("Router")) {
-                    Element internet = descricao.createElement("internet");
-                    internet.setAttribute("id", res.getName_Router() + "");
+                if ("Router".equals(res.getType())) {
+                    final var internet = descricao.createElement("internet");
+                    internet.setAttribute("id", res.getName_Router());
                     internet.setAttribute("bandwidth", "1000.0");
                     internet.setAttribute("latency", "0.001");
                     internet.setAttribute("load", "0.0");
-                    Element pos = descricao.createElement("position");
-                    pos.setAttribute("x", linha.toString());
-                    pos.setAttribute("y", coluna.toString());
+                    final var pos = descricao.createElement("position");
+                    pos.setAttribute("x", Integer.toString(linha));
+                    pos.setAttribute("y", Integer.toString(coluna));
                     internet.appendChild(pos);
-                    Element id = descricao.createElement("icon_id");
+                    final var id = descricao.createElement("icon_id");
                     id.setAttribute("global", idGlobal.get(res));
-                    id.setAttribute("local", cont_machine.toString());
+                    id.setAttribute("local", Integer.toString(cont_machine));
                     cont_machine++;
                     internet.appendChild(id);
                     system.appendChild(internet);
@@ -242,63 +250,88 @@ public class InterpretadorGridSim {
                         }
                     }
                 }
-                if (res.getType().equals("GridResource")) {
-                    Element machine = descricao.createElement("machine");
-                    machine.setAttribute("id", res.getName() + "");
+                if ("GridResource".equals(res.getType())) {
+                    final var machine = descricao.createElement("machine");
+                    machine.setAttribute("id", res.getName());
                     machine.setAttribute("power", "100.0");
                     machine.setAttribute("owner", iUser.next().toString());
                     if (!iUser.hasNext()) {
                         iUser = user.iterator();
                     }
                     machine.setAttribute("load", "0.0");
-                    Element master = descricao.createElement("master");
+                    final var master = descricao.createElement("master");
                     master.setAttribute("scheduler", "RoundRobin");
-                    for (JavaParser.ResourceChar slv : res.getResConfig().getMLIST().getMach_List()) {
-                        Element slave = descricao.createElement("slave");
+                    for (final var slv : res
+                        .getResConfig()
+                        .getMLIST()
+                        .getMach_List()) {
+                        final var slave = descricao.createElement("slave");
                         slave.setAttribute("id", idGlobal.get(slv));
                         master.appendChild(slave);
                         //adiciona o link de ida
-                        Element link_gr = descricao.createElement("link");
-                        link_gr.setAttribute("id", "link_" + res.getLink().getName_Link() + cont_global + "");
+                        var link_gr = descricao.createElement("link");
+                        link_gr.setAttribute(
+                            "id",
+                            "link_"
+                            + res.getLink().getName_Link()
+                            + cont_global
+                        );
                         cont_global++;
-                        link_gr.setAttribute("bandwidth", getDouble(res.getLink().getBaud_rate()));
-                        //System.out.println("Latencia" + getDouble(res.getLink().getPropDelay()));
-                        link_gr.setAttribute("latency", getDouble(res.getLink().getPropDelay()));
+                        link_gr.setAttribute(
+                            "bandwidth",
+                            this.getDouble(res.getLink().getBaud_rate())
+                        );
+                        link_gr.setAttribute(
+                            "latency",
+                            this.getDouble(res.getLink().getPropDelay())
+                        );
                         link_gr.setAttribute("load", "0.0");
-                        Element connect = descricao.createElement("connect");
+                        var connect = descricao.createElement("connect");
                         connect.setAttribute("origination", idGlobal.get(slv));
                         connect.setAttribute("destination", idGlobal.get(res));
                         link_gr.appendChild(connect);
-                        Element id = descricao.createElement("icon_id");
-                        id.setAttribute("global", ident_global.toString());
-                        id.setAttribute("local", cont_link.toString());
+                        var id = descricao.createElement("icon_id");
+                        id.setAttribute("global", Integer.toString(ident_global));
+                        id.setAttribute("local", Integer.toString(cont_link));
                         ident_global++;
                         cont_link++;
                         link_gr.appendChild(id);
                         system.appendChild(link_gr);
                         //adiciona link de volta
                         link_gr = descricao.createElement("link");
-                        link_gr.setAttribute("id", "link_" + res.getLink().getName_Link() + cont_global + "_1");
+                        link_gr.setAttribute(
+                            "id",
+                            "link_"
+                            + res.getLink().getName_Link()
+                            + cont_global
+                            + "_1"
+                        );
                         cont_global++;
-                        link_gr.setAttribute("bandwidth", getDouble(res.getLink().getBaud_rate()));
-                        link_gr.setAttribute("latency", getDouble(res.getLink().getPropDelay()));
+                        link_gr.setAttribute(
+                            "bandwidth",
+                            this.getDouble(res.getLink().getBaud_rate())
+                        );
+                        link_gr.setAttribute(
+                            "latency",
+                            this.getDouble(res.getLink().getPropDelay())
+                        );
                         link_gr.setAttribute("load", "0.0");
                         connect = descricao.createElement("connect");
                         connect.setAttribute("origination", idGlobal.get(res));
                         connect.setAttribute("destination", idGlobal.get(slv));
                         link_gr.appendChild(connect);
                         id = descricao.createElement("icon_id");
-                        id.setAttribute("global", ident_global.toString());
-                        id.setAttribute("local", cont_link.toString());
+                        id.setAttribute("global", Integer.toString(ident_global));
+                        id.setAttribute("local", Integer.toString(cont_link));
                         ident_global++;
                         cont_link++;
                         link_gr.appendChild(id);
                         system.appendChild(link_gr);
                     }
                     machine.appendChild(master);
-                    Element pos = descricao.createElement("position");
-                    pos.setAttribute("x", linha.toString());
-                    pos.setAttribute("y", coluna.toString());
+                    final var pos = descricao.createElement("position");
+                    pos.setAttribute("x", Integer.toString(linha));
+                    pos.setAttribute("y", Integer.toString(coluna));
                     if (lin < num_linhas) {
                         linha = linha + 100;
                         lin   = lin + 1.0;
@@ -311,36 +344,35 @@ public class InterpretadorGridSim {
                         }
                     }
                     machine.appendChild(pos);
-                    Element id = descricao.createElement("icon_id");
+                    final var id = descricao.createElement("icon_id");
                     id.setAttribute("global", idGlobal.get(res));
-                    id.setAttribute("local", cont_machine.toString());
+                    id.setAttribute("local", Integer.toString(cont_machine));
                     cont_machine++;
                     machine.appendChild(id);
                     system.appendChild(machine);
                 }
             }
         }
-        for (int i = 0; i < ListaMetodo.size(); i++) {
-            Iterator iUser = user.iterator();
+        for (final var stringResourceCharHashMap : this.ListaMetodo) {
+            var iUser = user.iterator();
             //For para percorrer lista
-            for (Map.Entry<String, JavaParser.ResourceChar> object : ListaMetodo.get(i).entrySet()) {
-                String                  key = object.getKey();
-                JavaParser.ResourceChar res = object.getValue();
-                if (res.getType().equals("SimpleLink")) {
+            for (final var object : stringResourceCharHashMap.entrySet()) {
+                final var res = object.getValue();
+                if ("SimpleLink".equals(res.getType())) {
                     if (res.getOrigination() != null && res.getRouter() != null) {
                         //adiciona link de ida
-                        Element link = descricao.createElement("link");
-                        link.setAttribute("id", res.getName_Link() + "");
-                        link.setAttribute("bandwidth", getDouble(res.getBaud_rate()));
-                        link.setAttribute("latency", getDouble(res.getPropDelay()));
+                        var link = descricao.createElement("link");
+                        link.setAttribute("id", res.getName_Link());
+                        link.setAttribute("bandwidth", this.getDouble(res.getBaud_rate()));
+                        link.setAttribute("latency", this.getDouble(res.getPropDelay()));
                         link.setAttribute("load", "0.0");
-                        Element connect = descricao.createElement("connect");
+                        var connect = descricao.createElement("connect");
                         connect.setAttribute("origination", idGlobal.get(res.getOrigination()));
                         connect.setAttribute("destination", idGlobal.get(res.getRouter()));
                         link.appendChild(connect);
-                        Element id = descricao.createElement("icon_id");
-                        id.setAttribute("global", ident_global.toString());
-                        id.setAttribute("local", cont_link.toString());
+                        var id = descricao.createElement("icon_id");
+                        id.setAttribute("global", Integer.toString(ident_global));
+                        id.setAttribute("local", Integer.toString(cont_link));
                         ident_global++;
                         cont_link++;
                         link.appendChild(id);
@@ -348,57 +380,81 @@ public class InterpretadorGridSim {
                         //adiciona link de volta
                         link = descricao.createElement("link");
                         link.setAttribute("id", res.getName_Link() + "1");
-                        link.setAttribute("bandwidth", getDouble(res.getBaud_rate()));
-                        link.setAttribute("latency", getDouble(res.getPropDelay()));
+                        link.setAttribute("bandwidth", this.getDouble(res.getBaud_rate()));
+                        link.setAttribute("latency", this.getDouble(res.getPropDelay()));
                         link.setAttribute("load", "0.0");
                         connect = descricao.createElement("connect");
                         connect.setAttribute("destination", idGlobal.get(res.getOrigination()));
                         connect.setAttribute("origination", idGlobal.get(res.getRouter()));
                         link.appendChild(connect);
                         id = descricao.createElement("icon_id");
-                        id.setAttribute("global", ident_global.toString());
-                        id.setAttribute("local", cont_link.toString());
+                        id.setAttribute("global", Integer.toString(ident_global));
+                        id.setAttribute("local", Integer.toString(cont_link));
                         ident_global++;
                         cont_link++;
                         link.appendChild(id);
                         system.appendChild(link);
                     }
                 }
-                if (res.getType().equals("attachHost") && res.getCoreAttach().equals("ALL")) {
-                    for (JavaParser.ResourceChar elem : idGlobal.keySet()) {
-                        if (elem.getType().equals("GridResource") && elem.getLink() != null &&
+                if ("attachHost".equals(res.getType()) && res.getCoreAttach().equals("ALL")) {
+                    for (final var elem : idGlobal.keySet()) {
+                        if ("GridResource".equals(elem.getType()) && elem.getLink() != null &&
                             res.getOrigination() != null) {
                             if (res.getOrigination() != null) {
                                 //adiciona link de ida
-                                Element link = descricao.createElement("link");
-                                link.setAttribute("id", "link_all" + elem.getLink().getName_Link() + "");
-                                link.setAttribute("bandwidth", getDouble(elem.getLink().getBaud_rate()));
-                                link.setAttribute("latency", getDouble(elem.getLink().getPropDelay()));
+                                var link = descricao.createElement("link");
+                                link.setAttribute(
+                                    "id",
+                                    "link_all" + elem.getLink().getName_Link()
+                                );
+                                link.setAttribute(
+                                    "bandwidth",
+                                    this.getDouble(elem.getLink().getBaud_rate())
+                                );
+                                link.setAttribute(
+                                    "latency",
+                                    this.getDouble(elem.getLink().getPropDelay())
+                                );
                                 link.setAttribute("load", "0.0");
-                                Element connect = descricao.createElement("connect");
+                                var connect = descricao.createElement("connect");
                                 connect.setAttribute("origination", idGlobal.get(elem));
-                                connect.setAttribute("destination", idGlobal.get(res.getOrigination()));
+                                connect.setAttribute(
+                                    "destination",
+                                    idGlobal.get(res.getOrigination())
+                                );
                                 link.appendChild(connect);
-                                Element id = descricao.createElement("icon_id");
-                                id.setAttribute("global", ident_global.toString());
-                                id.setAttribute("local", cont_link.toString());
+                                var id = descricao.createElement("icon_id");
+                                id.setAttribute("global", Integer.toString(ident_global));
+                                id.setAttribute("local", Integer.toString(cont_link));
                                 ident_global++;
                                 cont_link++;
                                 link.appendChild(id);
                                 system.appendChild(link);
                                 //adiciona link de volta
                                 link = descricao.createElement("link");
-                                link.setAttribute("id", "link_all_" + elem.getLink().getName_Link() + "1");
-                                link.setAttribute("bandwidth", getDouble(elem.getLink().getBaud_rate()));
-                                link.setAttribute("latency", getDouble(elem.getLink().getPropDelay()));
+                                link.setAttribute(
+                                    "id",
+                                    "link_all_" + elem.getLink().getName_Link() + "1"
+                                );
+                                link.setAttribute(
+                                    "bandwidth",
+                                    this.getDouble(elem.getLink().getBaud_rate())
+                                );
+                                link.setAttribute(
+                                    "latency",
+                                    this.getDouble(elem.getLink().getPropDelay())
+                                );
                                 link.setAttribute("load", "0.0");
                                 connect = descricao.createElement("connect");
                                 connect.setAttribute("destination", idGlobal.get(elem));
-                                connect.setAttribute("origination", idGlobal.get(res.getOrigination()));
+                                connect.setAttribute(
+                                    "origination",
+                                    idGlobal.get(res.getOrigination())
+                                );
                                 link.appendChild(connect);
                                 id = descricao.createElement("icon_id");
-                                id.setAttribute("global", ident_global.toString());
-                                id.setAttribute("local", cont_link.toString());
+                                id.setAttribute("global", Integer.toString(ident_global));
+                                id.setAttribute("local", Integer.toString(cont_link));
                                 ident_global++;
                                 cont_link++;
                                 link.appendChild(id);
@@ -406,21 +462,21 @@ public class InterpretadorGridSim {
                             }
                         }
                     }
-                } else if (res.getType().equals("attachHost") &&
+                } else if ("attachHost".equals(res.getType()) &&
                            res.getCoreAttach() instanceof JavaParser.ResourceChar) {
-                    Element link = descricao.createElement("link");
+                    var link = descricao.createElement("link");
                     link.setAttribute("id", "link_temp" + cont_global);
                     cont_global++;
-                    link.setAttribute("bandwidth", "1000");//res.getLink().getBaud_rate());
-                    link.setAttribute("latency", "0.001");//res.getLink().getPropDelay());
+                    link.setAttribute("bandwidth", "1000");
+                    link.setAttribute("latency", "0.001");
                     link.setAttribute("load", "0.0");
-                    Element connect = descricao.createElement("connect");
+                    var connect = descricao.createElement("connect");
                     connect.setAttribute("origination", idGlobal.get(res.getOrigination()));
                     connect.setAttribute("destination", idGlobal.get(res.getCoreAttach()));
                     link.appendChild(connect);
-                    Element id = descricao.createElement("icon_id");
-                    id.setAttribute("global", ident_global.toString());
-                    id.setAttribute("local", cont_link.toString());
+                    var id = descricao.createElement("icon_id");
+                    id.setAttribute("global", Integer.toString(ident_global));
+                    id.setAttribute("local", Integer.toString(cont_link));
                     ident_global++;
                     cont_link++;
                     link.appendChild(id);
@@ -429,28 +485,28 @@ public class InterpretadorGridSim {
                     link = descricao.createElement("link");
                     link.setAttribute("id", "link_temp" + cont_global);
                     cont_global++;
-                    link.setAttribute("bandwidth", "1000");//res.getLink().getBaud_rate());
-                    link.setAttribute("latency", "0.001");//res.getLink().getPropDelay());
+                    link.setAttribute("bandwidth", "1000");
+                    link.setAttribute("latency", "0.001");
                     link.setAttribute("load", "0.0");
                     connect = descricao.createElement("connect");
                     connect.setAttribute("destination", idGlobal.get(res.getOrigination()));
                     connect.setAttribute("origination", idGlobal.get(res.getCoreAttach()));
                     link.appendChild(connect);
                     id = descricao.createElement("icon_id");
-                    id.setAttribute("global", ident_global.toString());
-                    id.setAttribute("local", cont_link.toString());
+                    id.setAttribute("global", Integer.toString(ident_global));
+                    id.setAttribute("local", Integer.toString(cont_link));
                     ident_global++;
                     cont_link++;
                     link.appendChild(id);
                     system.appendChild(link);
-                } else if (res.getType().equals("attachHost")) {
-                    Element ident        = descricao.createElement("icon_id");
-                    String  mestreGlobal = ident_global.toString();
-                    ident.setAttribute("global", ident_global.toString());
-                    ident.setAttribute("local", cont_machine.toString());
+                } else if ("attachHost".equals(res.getType())) {
+                    final var ident        = descricao.createElement("icon_id");
+                    final var mestreGlobal = Integer.toString(ident_global);
+                    ident.setAttribute("global", Integer.toString(ident_global));
+                    ident.setAttribute("local", Integer.toString(cont_machine));
                     ident_global++;
                     cont_machine++;
-                    Element machine = descricao.createElement("machine");
+                    final var machine = descricao.createElement("machine");
                     machine.setAttribute("id", res.getName() + "mestre");
                     machine.setAttribute("power", "100.0");
                     machine.setAttribute("owner", iUser.next().toString());
@@ -458,56 +514,56 @@ public class InterpretadorGridSim {
                         iUser = user.iterator();
                     }
                     machine.setAttribute("load", "0.0");
-                    Element master = descricao.createElement("master");
+                    final var master = descricao.createElement("master");
                     master.setAttribute("scheduler", "RoundRobin");
                     //adiciona escravos
-                    for (JavaParser.ResourceChar slv : idGlobal.keySet()) {
-                        if (slv.getType().equals("GridResource")) {
-                            Element slave = descricao.createElement("slave");
+                    for (final var slv : idGlobal.keySet()) {
+                        if ("GridResource".equals(slv.getType())) {
+                            final var slave = descricao.createElement("slave");
                             slave.setAttribute("id", idGlobal.get(slv));
                             master.appendChild(slave);
                         }
                     }
                     //adiciona o link de ida
-                    Element link_gr = descricao.createElement("link");
+                    var link_gr = descricao.createElement("link");
                     link_gr.setAttribute("id", "link_temp" + cont_global);
                     cont_global++;
-                    link_gr.setAttribute("bandwidth", "1000");//res.getLink().getBaud_rate());
-                    link_gr.setAttribute("latency", "0.001");//res.getLink().getPropDelay());
+                    link_gr.setAttribute("bandwidth", "1000");
+                    link_gr.setAttribute("latency", "0.001");
                     link_gr.setAttribute("load", "0.0");
-                    Element connect = descricao.createElement("connect");
+                    var connect = descricao.createElement("connect");
                     connect.setAttribute("origination", mestreGlobal);
                     connect.setAttribute("destination", idGlobal.get(res.getOrigination()));
                     link_gr.appendChild(connect);
-                    Element id = descricao.createElement("icon_id");
-                    id.setAttribute("global", ident_global.toString());
-                    id.setAttribute("local", cont_link.toString());
+                    var id = descricao.createElement("icon_id");
+                    id.setAttribute("global", Integer.toString(ident_global));
+                    id.setAttribute("local", Integer.toString(cont_link));
                     ident_global++;
                     cont_link++;
                     link_gr.appendChild(id);
                     system.appendChild(link_gr);
                     //adiciona link de volta
                     link_gr = descricao.createElement("link");
-                    link_gr.setAttribute("id", "link_temp" + cont_global + "");
+                    link_gr.setAttribute("id", "link_temp" + cont_global);
                     cont_global++;
-                    link_gr.setAttribute("bandwidth", "1000");//res.getLink().getBaud_rate());
-                    link_gr.setAttribute("latency", "0.001");//res.getLink().getPropDelay());
+                    link_gr.setAttribute("bandwidth", "1000");
+                    link_gr.setAttribute("latency", "0.001");
                     link_gr.setAttribute("load", "0.0");
                     connect = descricao.createElement("connect");
                     connect.setAttribute("origination", idGlobal.get(res.getOrigination()));
                     connect.setAttribute("destination", mestreGlobal);
                     link_gr.appendChild(connect);
                     id = descricao.createElement("icon_id");
-                    id.setAttribute("global", ident_global.toString());
-                    id.setAttribute("local", cont_link.toString());
+                    id.setAttribute("global", Integer.toString(ident_global));
+                    id.setAttribute("local", Integer.toString(cont_link));
                     ident_global++;
                     cont_link++;
                     link_gr.appendChild(id);
                     system.appendChild(link_gr);
                     machine.appendChild(master);
-                    Element pos = descricao.createElement("position");
-                    pos.setAttribute("x", linha.toString());
-                    pos.setAttribute("y", coluna.toString());
+                    final var pos = descricao.createElement("position");
+                    pos.setAttribute("x", Integer.toString(linha));
+                    pos.setAttribute("y", Integer.toString(coluna));
                     if (lin < num_linhas) {
                         linha = linha + 100;
                         lin   = lin + 1.0;
@@ -523,63 +579,21 @@ public class InterpretadorGridSim {
                     machine.appendChild(ident);
                     system.appendChild(machine);
                 }
-
             }
         }
         system.appendChild(load);
-        //IconicoXML.escrever(descricao, new File("/home/gabriel/arq.imsx"));
         return descricao;
     }
 
-    private String getDouble (String valor) {
-        Random random = new Random();
-        if (valor.equals("random")) {
-            String Low, high;
-            //Low = JOptionPane.showInputDialog("Digite o limite inferior do número randômico a ser gerado");
-            //high = JOptionPane.showInputDialog("Digite o limite superior do número randômico a ser gerado");
-            Low  = "500000";
-            high = "1000000";
-            double med, hi, low;
-            hi  = Double.parseDouble(high);
-            low = Double.parseDouble(Low);
-            med = 750000;
-            double prob      = 1;
-            double a;
-            double b;
-            double tsu;
-            double u;
-            Random randomico = new Random();
-            u = randomico.nextDouble();
-            if (u <= prob) { /* uniform(low , med) */
-                a = low;
-                b = med;
-            } else { /* uniform(med , hi) */
-                a = med;
-                b = hi;
-            }
-
-            //generate a value of a random variable from distribution uniform(a,b)
-            tsu = (random.nextDouble() * (b - a)) + a;
+    private String getDouble (final String valor) {
+        final var random = new Random();
+        if ("random".equals(valor)) {
+            final var low = 500000;
+            // generate a value of a random variable from distribution uniform(a,b)
+            final var tsu = (random.nextDouble() * (750000 - low)) + low;
             return String.valueOf(Math.abs(tsu));
         } else {
             return valor;
         }
-    }
-
-    private String getInt (String valor) {
-        Random random = new Random();
-        if (valor.equals("random")) {
-            return String.valueOf(Math.abs(random.nextInt()));
-        } else {
-            return valor;
-        }
-    }
-
-    public int getW () {
-        return 1500;
-    }
-
-    public int getH () {
-        return 1500;
     }
 }

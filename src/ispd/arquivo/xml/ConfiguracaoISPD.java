@@ -1,57 +1,93 @@
 package ispd.arquivo.xml;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
-
+import ispd.arquivo.xml.utils.WrappedDocument;
+import ispd.arquivo.xml.utils.WrappedElement;
+import ispd.gui.LogExceptions;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.logging.Logger;
-
 import javax.xml.parsers.ParserConfigurationException;
-
-import ispd.arquivo.xml.utils.WrappedDocument;
-import ispd.arquivo.xml.utils.WrappedElement;
-import ispd.gui.LogExceptions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Responsible for reading and updating the software's configuration file
  */
 public class ConfiguracaoISPD {
 
-    public static final  byte           DEFAULT                = 0;
-    public static final  byte           OPTIMISTIC             = 1;
-    public static final  byte           GRAPHICAL              = 2;
-    public static final  File           DIRETORIO_ISPD         = loadIspdDirectory();
-    private static final String         FILENAME               = "configuration.xml";
-    private final        File           configurationFile      =
-            new File(ConfiguracaoISPD.DIRETORIO_ISPD, ConfiguracaoISPD.FILENAME);
-    private              SimulationMode simulationMode         =
-            SimulationMode.DEFAULT;
-    private              Integer        threadCount            = 1;
-    private              Integer        simulationCount        = 1;
-    private              Boolean        shouldChartProc        = true;
-    private              Boolean        shouldChartComms       = true;
-    private              Boolean        shouldChartUserTime    = true;
-    private              Boolean        shouldChartMachineTime = false;
-    private              Boolean        shouldChartTaskTime    = false;
-    private              File           lastModelOpen          = ConfiguracaoISPD.DIRETORIO_ISPD;
+    public static final byte DEFAULT = 0;
+
+    public static final byte OPTIMISTIC = 1;
+
+    public static final byte GRAPHICAL = 2;
+
+    public static final File DIRETORIO_ISPD = loadIspdDirectory();
+
+    private static final String FILENAME = "configuration.xml";
+
+    private final File configurationFile =
+        new File(ConfiguracaoISPD.DIRETORIO_ISPD, ConfiguracaoISPD.FILENAME);
+
+    private SimulationMode simulationMode = SimulationMode.DEFAULT;
+
+    private Integer threadCount = 1;
+
+    private Integer simulationCount = 1;
+
+    private Boolean shouldChartProc = true;
+
+    private Boolean shouldChartComms = true;
+
+    private Boolean shouldChartUserTime = true;
+
+    private Boolean shouldChartMachineTime = false;
+
+    private Boolean shouldChartTaskTime = false;
+
+    private File lastModelOpen = ConfiguracaoISPD.DIRETORIO_ISPD;
 
     /**
-     * If the configuration file exists, reads configuration from it.
-     * Otherwise, default values are used.
+     * If the configuration file exists, reads configuration from it. Otherwise, default values are
+     * used.
      */
     public ConfiguracaoISPD () {
         try {
-            final var doc = new WrappedDocument(ManipuladorXML.read(this.configurationFile, "configurationFile.dtd"));
+            final var doc = new WrappedDocument(ManipuladorXML.read(
+                this.configurationFile,
+                "configurationFile.dtd"
+            ));
 
             this.readConfigFromDoc(doc);
         } catch (final IOException | ParserConfigurationException | SAXException ignored) {
             Logger.getLogger(ConfiguracaoISPD.class.getName())
-                  .warning("Error while reading configuration file '%s'".formatted(this.configurationFile));
+                .warning("Error while reading configuration file '%s'".formatted(this.configurationFile));
+        }
+    }
+
+    private static File loadIspdDirectory () {
+        final var dir = getDirectory();
+
+        if (dir.getName().endsWith(".jar")) {
+            return dir.getParentFile();
+        } else {
+            return new File(".");
+        }
+    }
+
+    private static File getDirectory () {
+        final var location = LogExceptions.class
+            .getProtectionDomain()
+            .getCodeSource()
+            .getLocation();
+
+        try {
+            return new File(location.toURI());
+        } catch (final URISyntaxException ex) {
+            return new File(location.getPath());
         }
     }
 
@@ -64,25 +100,24 @@ public class ConfiguracaoISPD {
     }
 
     /**
-     * Read 'generalist' configurations from the element, such as simulation
-     * type, number of threads to be used in the simulation(s), and number of
-     * simulations to execute.
+     * Read 'generalist' configurations from the element, such as simulation type, number of threads
+     * to be used in the simulation(s), and number of simulations to execute.
      */
     private void readGeneralConfig (final WrappedElement e) {
         final var mode = e.simulationMode();
 
         this.simulationMode = Arrays.stream(SimulationMode.values())
-                                    .filter(t -> t.hasName(mode))
-                                    .findFirst()
-                                    .orElseThrow(() -> new IllegalSimulationModeException(mode));
+            .filter(t -> t.hasName(mode))
+            .findFirst()
+            .orElseThrow(() -> new IllegalSimulationModeException(mode));
 
         this.threadCount     = e.numberOfThreads();
         this.simulationCount = e.numberOfSimulations();
     }
 
     /**
-     * Read information pertained to which charts will be created to display
-     * the results of the simulation(s).
+     * Read information pertained to which charts will be created to display the results of the
+     * simulation(s).
      */
     private void readChartCreationConfig (final WrappedElement e) {
         final var c = e.chartCreate();
@@ -101,34 +136,9 @@ public class ConfiguracaoISPD {
         }
     }
 
-    private static File loadIspdDirectory () {
-        final var dir = getDirectory();
-
-        if (dir.getName().endsWith(".jar")) {
-            return dir.getParentFile();
-        } else {
-            return new File(".");
-        }
-    }
-
-    private static File getDirectory () {
-        final var location = LogExceptions.class
-                .getProtectionDomain()
-                .getCodeSource()
-                .getLocation();
-
-        try {
-            return new File(location.toURI());
-        } catch (final URISyntaxException ex) {
-            return new File(location.getPath());
-        }
-    }
-
     /**
-     * Returns which simulation mode is being used<br>
-     * {@literal 0}: <b>Default</b> simulation mode<br>
-     * {@literal 1}: <b>Optimisitc</b><br>
-     * {@literal 2}: <b>Graphical</b>
+     * Returns which simulation mode is being used<br> {@literal 0}: <b>Default</b> simulation
+     * mode<br> {@literal 1}: <b>Optimisitc</b><br> {@literal 2}: <b>Graphical</b>
      */
     public int getSimulationMode () {
         return this.simulationMode.asInt;
@@ -139,9 +149,9 @@ public class ConfiguracaoISPD {
      */
     public void setSimulationMode (final byte simulationMode) {
         this.simulationMode = Arrays.stream(SimulationMode.values())
-                                    .filter(t -> t.asInt == simulationMode)
-                                    .findFirst()
-                                    .orElseThrow();
+            .filter(t -> t.asInt == simulationMode)
+            .findFirst()
+            .orElseThrow();
     }
 
     /**
@@ -188,8 +198,7 @@ public class ConfiguracaoISPD {
     }
 
     /**
-     * @return The number of threads that will be used in executing the
-     *         simulation(s)
+     * @return The number of threads that will be used in executing the simulation(s)
      */
     public Integer getNumberOfThreads () {
         return this.threadCount;

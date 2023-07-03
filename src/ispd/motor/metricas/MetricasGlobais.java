@@ -1,8 +1,5 @@
 package ispd.motor.metricas;
 
-import java.io.Serializable;
-import java.util.List;
-
 import ispd.motor.filas.RedeDeFilas;
 import ispd.motor.filas.RedeDeFilasCloud;
 import ispd.motor.filas.Tarefa;
@@ -10,28 +7,99 @@ import ispd.motor.filas.servidores.CS_Comunicacao;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.implementacao.CS_VMM;
 import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
+import java.io.Serializable;
+import java.util.List;
 
 public class MetricasGlobais implements Serializable {
 
     private double tempoSimulacao;
-    private double satisfacaoMedia;
-    private double ociosidadeComputacao;
-    private double ociosidadeComunicacao;
-    private double eficiencia;
-    private double custoTotalDisco;
-    private double custoTotalProc;
-    private double custoTotalMem;
-    private int    totaldeVMs;
-    private int    numVMsRejeitadas;
-    private int    total;
 
-    public MetricasGlobais (final RedeDeFilas redeDeFilas, final double tempoSimulacao, final List<Tarefa> tarefas) {
+    private double satisfacaoMedia;
+
+    private double ociosidadeComputacao;
+
+    private double ociosidadeComunicacao;
+
+    private double eficiencia;
+
+    private double custoTotalDisco = 0.0;
+
+    private double custoTotalProc = 0.0;
+
+    private double custoTotalMem = 0.0;
+
+    private int totaldeVMs = 0;
+
+    private int numVMsRejeitadas = 0;
+
+    public MetricasGlobais (
+        final RedeDeFilas redeDeFilas, final double tempoSimulacao, final List<Tarefa> tarefas
+    ) {
         this.tempoSimulacao        = tempoSimulacao;
         this.satisfacaoMedia       = 100;
         this.ociosidadeComputacao  = this.getOciosidadeComputacao(redeDeFilas);
         this.ociosidadeComunicacao = this.getOciosidadeComunicacao(redeDeFilas);
         this.eficiencia            = this.getEficiencia(tarefas);
-        this.total                 = 0;
+    }
+
+    public MetricasGlobais (
+        final RedeDeFilasCloud redeDeFilas, final double tempoSimulacao, final List<Tarefa> tarefas
+    ) {
+        this.tempoSimulacao        = tempoSimulacao;
+        this.satisfacaoMedia       = 100;
+        this.ociosidadeComputacao  = this.getOciosidadeComputacaoCloud(redeDeFilas);
+        this.ociosidadeComunicacao = this.getOciosidadeComunicacao(redeDeFilas);
+        this.eficiencia            = this.getEficiencia(tarefas);
+        this.custoTotalDisco       = this.getCustoTotalDisco(redeDeFilas);
+        this.custoTotalMem         = this.getCustoTotalMem(redeDeFilas);
+        this.custoTotalProc        = this.getCustoTotalProc(redeDeFilas);
+        this.totaldeVMs            = this.getTotalVMs(redeDeFilas);
+        this.numVMsRejeitadas      = this.getNumVMsRejeitadas(redeDeFilas);
+    }
+
+    public MetricasGlobais () {
+        this.tempoSimulacao        = 0;
+        this.satisfacaoMedia       = 0;
+        this.ociosidadeComputacao  = 0;
+        this.ociosidadeComunicacao = 0;
+        this.eficiencia            = 0;
+        this.custoTotalDisco       = 0;
+        this.custoTotalMem         = 0;
+        this.custoTotalProc        = 0;
+    }
+
+    @Override
+    public String toString () {
+        String    texto     = "\t\tSimulation Results\n\n";
+        texto += String.format("\tTotal Simulated Time = %g \n", this.tempoSimulacao);
+        texto += String.format("\tSatisfaction = %g %%\n", this.satisfacaoMedia);
+        texto += String.format(
+            "\tIdleness of processing resources = %g %%\n",
+            this.ociosidadeComputacao
+        );
+        texto += String.format(
+            "\tIdleness of communication resources = %g %%\n",
+            this.ociosidadeComunicacao
+        );
+        texto += String.format("\tEfficiency = %g %%\n", this.eficiencia);
+        if (this.eficiencia > 70.0) {
+            texto += "\tEfficiency GOOD\n ";
+        } else if (this.eficiencia > 40.0) {
+            texto += "\tEfficiency MEDIA\n ";
+        } else {
+            texto += "\tEfficiency BAD\n ";
+        }
+        texto += "\t\tCost Results:\n\n";
+        texto += String.format("\tCost Total de Processing = %g %%\n", this.custoTotalProc);
+        texto += String.format("\tCost Total de Memory = %g %%\n", this.custoTotalMem);
+        texto += String.format("\tCost Total de Disk = %g %%\n", this.custoTotalDisco);
+        texto += "\t\tVM Alocation results:";
+        texto += String.format(
+            "\tTotal of VMs alocated = %d %%\n",
+            (this.totaldeVMs - this.numVMsRejeitadas)
+        );
+        texto += String.format("\tTotal of VMs rejected = %d %%\n", this.numVMsRejeitadas);
+        return texto;
     }
 
     private double getOciosidadeComputacao (final RedeDeFilas redeDeFilas) {
@@ -44,7 +112,7 @@ public class MetricasGlobais implements Serializable {
             tempoLivreMedio -= aux;
         }
         tempoLivreMedio = tempoLivreMedio / redeDeFilas.getMaquinas().size();
-        return (tempoLivreMedio * 100) / tempoSimulacao;
+        return (tempoLivreMedio * 100) / this.tempoSimulacao;
     }
 
     private double getOciosidadeComunicacao (final RedeDeFilas redeDeFilas) {
@@ -57,7 +125,7 @@ public class MetricasGlobais implements Serializable {
             tempoLivreMedio -= aux;
         }
         tempoLivreMedio = tempoLivreMedio / redeDeFilas.getLinks().size();
-        return (tempoLivreMedio * 100) / tempoSimulacao;
+        return (tempoLivreMedio * 100) / this.tempoSimulacao;
     }
 
     private double getEficiencia (final List<Tarefa> tarefas) {
@@ -66,22 +134,6 @@ public class MetricasGlobais implements Serializable {
             somaEfic += tar.getMetricas().getEficiencia();
         }
         return somaEfic / tarefas.size();
-    }
-
-    public MetricasGlobais (
-            final RedeDeFilasCloud redeDeFilas, final double tempoSimulacao, final List<Tarefa> tarefas
-    ) {
-        this.tempoSimulacao        = tempoSimulacao;
-        this.satisfacaoMedia       = 100;
-        this.ociosidadeComputacao  = this.getOciosidadeComputacaoCloud(redeDeFilas);
-        this.ociosidadeComunicacao = this.getOciosidadeComunicacao(redeDeFilas);
-        this.eficiencia            = this.getEficiencia(tarefas);
-        this.custoTotalDisco       = this.getCustoTotalDisco(redeDeFilas);
-        this.custoTotalMem         = this.getCustoTotalMem(redeDeFilas);
-        this.custoTotalProc        = this.getCustoTotalProc(redeDeFilas);
-        this.totaldeVMs            = this.getTotalVMs(redeDeFilas);
-        this.numVMsRejeitadas      = this.getNumVMsRejeitadas(redeDeFilas);
-        this.total                 = 0;
     }
 
     private double getOciosidadeComputacaoCloud (final RedeDeFilasCloud redeDeFilas) {
@@ -97,20 +149,21 @@ public class MetricasGlobais implements Serializable {
             }
         }
         tempoLivreMedio = tempoLivreMedio / redeDeFilas.getVMs().size();
-        return (tempoLivreMedio * 100) / tempoSimulacao;
+        return (tempoLivreMedio * 100) / this.tempoSimulacao;
     }
 
-    public double getCustoTotalDisco (final RedeDeFilasCloud redeDeFilas) {
+    private double getCustoTotalDisco (final RedeDeFilasCloud redeDeFilas) {
         // calcula o custo total de uso de disco na nuvem
         for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
             if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
-                this.custoTotalDisco = this.custoTotalDisco + auxVM.getMetricaCusto().getCustoDisco();
+                this.custoTotalDisco =
+                    this.custoTotalDisco + auxVM.getMetricaCusto().getCustoDisco();
             }
         }
         return this.custoTotalDisco;
     }
 
-    public double getCustoTotalMem (final RedeDeFilasCloud redeDeFilas) {
+    private double getCustoTotalMem (final RedeDeFilasCloud redeDeFilas) {
         // calcula custo total de uso de memória pela nuvem
         for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
             if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
@@ -120,7 +173,7 @@ public class MetricasGlobais implements Serializable {
         return this.custoTotalMem;
     }
 
-    public double getCustoTotalProc (final RedeDeFilasCloud redeDeFilas) {
+    private double getCustoTotalProc (final RedeDeFilasCloud redeDeFilas) {
         // calcula o custo total de uso de processamento da nuvem
         for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
             if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
@@ -150,18 +203,6 @@ public class MetricasGlobais implements Serializable {
         return totalRejeitadas;
     }
 
-    public MetricasGlobais () {
-        this.tempoSimulacao        = 0;
-        this.satisfacaoMedia       = 0;
-        this.ociosidadeComputacao  = 0;
-        this.ociosidadeComunicacao = 0;
-        this.eficiencia            = 0;
-        this.total                 = 0;
-        this.custoTotalDisco       = 0;
-        this.custoTotalMem         = 0;
-        this.custoTotalProc        = 0;
-    }
-
     public double getTempoSimulacao () {
         return this.tempoSimulacao;
     }
@@ -188,10 +229,6 @@ public class MetricasGlobais implements Serializable {
 
     public int getNumVMsRejeitadas () {
         return this.numVMsRejeitadas;
-    }
-
-    public int getTotaldeVMs () {
-        return this.totaldeVMs;
     }
 
     public double getSatisfacaoMedia () {
@@ -225,37 +262,4 @@ public class MetricasGlobais implements Serializable {
     public void setEficiencia (final double eficiencia) {
         this.eficiencia = eficiencia;
     }
-
-    @Override
-    public String toString () {
-        int totalTemp = 1;
-        if (this.total > 0) {
-            totalTemp = this.total;
-        }
-        String texto = "\t\tSimulation Results\n\n";
-        texto += String.format("\tTotal Simulated Time = %g \n", this.tempoSimulacao / totalTemp);
-        texto += String.format("\tSatisfaction = %g %%\n", this.satisfacaoMedia / totalTemp);
-        texto += String.format("\tIdleness of processing resources = %g %%\n", this.ociosidadeComputacao / totalTemp);
-        texto += String.format(
-                "\tIdleness of communication resources = %g %%\n",
-                this.ociosidadeComunicacao / totalTemp
-        );
-        texto += String.format("\tEfficiency = %g %%\n", this.eficiencia / totalTemp);
-        if (this.eficiencia / totalTemp > 70.0) {
-            texto += "\tEfficiency GOOD\n ";
-        } else if (this.eficiencia / totalTemp > 40.0) {
-            texto += "\tEfficiency MEDIA\n ";
-        } else {
-            texto += "\tEfficiency BAD\n ";
-        }
-        texto += "\t\tCost Results:\n\n";
-        texto += String.format("\tCost Total de Processing = %g %%\n", this.custoTotalProc);
-        texto += String.format("\tCost Total de Memory = %g %%\n", this.custoTotalMem);
-        texto += String.format("\tCost Total de Disk = %g %%\n", this.custoTotalDisco);
-        texto += "\t\tVM Alocation results:";
-        texto += String.format("\tTotal of VMs alocated = %d %%\n", (this.totaldeVMs - this.numVMsRejeitadas));
-        texto += String.format("\tTotal of VMs rejected = %d %%\n", this.numVMsRejeitadas);
-        return texto;
-    }
-
 }

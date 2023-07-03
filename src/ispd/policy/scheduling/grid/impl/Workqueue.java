@@ -1,20 +1,20 @@
 package ispd.policy.scheduling.grid.impl;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import ispd.annotations.Policy;
 import ispd.motor.filas.Tarefa;
 import ispd.motor.filas.servidores.CS_Processamento;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.policy.scheduling.grid.GridSchedulingPolicy;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 @Policy
 public class Workqueue extends GridSchedulingPolicy {
 
     private final LinkedList<Tarefa> ultimaTarefaConcluida = new LinkedList<>();
-    private       List<Tarefa>       tarefaEnviada         = null;
+
+    private List<Tarefa> tarefaEnviada = null;
 
     public Workqueue () {
         this.tarefas  = new ArrayList<>();
@@ -59,6 +59,24 @@ public class Workqueue extends GridSchedulingPolicy {
     }
 
     @Override
+    public CS_Processamento escalonarRecurso () {
+        if (!this.ultimaTarefaConcluida.isEmpty() && !this.ultimaTarefaConcluida
+            .getLast()
+            .isCopy()) {
+            final int index =
+                this.tarefaEnviada.indexOf(this.ultimaTarefaConcluida.getLast());
+            return this.escravos.get(index);
+        } else {
+            for (int i = 0; i < this.tarefaEnviada.size(); i++) {
+                if (this.tarefaEnviada.get(i) == null) {
+                    return this.escravos.get(i);
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
     public Tarefa escalonarTarefa () {
         if (!this.tarefas.isEmpty()) {
             return this.tarefas.remove(0);
@@ -83,21 +101,5 @@ public class Workqueue extends GridSchedulingPolicy {
             this.tarefaEnviada.set(index, null);
             this.mestre.executeScheduling();
         }
-    }
-
-    @Override
-    public CS_Processamento escalonarRecurso () {
-        if (!this.ultimaTarefaConcluida.isEmpty() && !this.ultimaTarefaConcluida.getLast().isCopy()) {
-            final int index =
-                    this.tarefaEnviada.indexOf(this.ultimaTarefaConcluida.getLast());
-            return this.escravos.get(index);
-        } else {
-            for (int i = 0; i < this.tarefaEnviada.size(); i++) {
-                if (this.tarefaEnviada.get(i) == null) {
-                    return this.escravos.get(i);
-                }
-            }
-        }
-        return null;
     }
 }

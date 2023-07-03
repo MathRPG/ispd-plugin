@@ -3,37 +3,35 @@ package ispd.gui.iconico;
 public abstract class Edge implements Icon {
 
     /**
-     * It represents the source vertex. Mathematically speaking,
-     * this edge is <em>incident from</em> this vertex.
+     * It represents the source vertex. Mathematically speaking, this edge is <em>incident from</em>
+     * this vertex.
      */
     private Vertex source;
 
     /**
-     * It represents the destination vertex. Mathematically
-     * speaking, this edge is <em>incident to</em> this vertex.
+     * It represents the destination vertex. Mathematically speaking, this edge is <em>incident
+     * to</em> this vertex.
      */
     private Vertex destination;
 
     /**
-     * It marks whether the edge is selected. If this variable
-     * is {@code true}, then this edge is selected; otherwise,
-     * it is not selected.
+     * It marks whether the edge is selected. If this variable is {@code true}, then this edge is
+     * selected; otherwise, it is not selected.
      */
     private boolean selected;
 
     /**
-     * Constructor of  which specifies the source,
-     * destination and whether the edge is selected. Mathematically
-     * speaking, the source vertex is which this edge is
+     * Constructor of  which specifies the source, destination and whether the edge is selected.
+     * Mathematically speaking, the source vertex is which this edge is
      * <em>incident from</em> and the destination vertex is
      * whcih this edge is <em>incident to</em>.
      *
      * @param source
-     *         the source vertex
+     *     the source vertex
      * @param destination
-     *         the destination vertex
+     *     the destination vertex
      * @param selected
-     *         whether the edge is selected
+     *     whether the edge is selected
      */
     protected Edge (final Vertex source, final Vertex destination, final boolean selected) {
         this.source      = source;
@@ -42,42 +40,23 @@ public abstract class Edge implements Icon {
     }
 
     /**
-     * Returns the source vertex.
+     * It calculates the midpoint between the specified points.
      *
-     * @return the source vertex
+     * @param p1
+     *     the first point
+     * @param p2
+     *     the second point
+     *
+     * @return the midpoint between the specified points
      */
-    public Vertex getSource () {
-        return this.source;
+    private static int midPoint (final int p1, final int p2) {
+        return p1 + (p2 - p1) / 2;
     }
 
     /**
-     * Returns the destination vertex.
+     * Returns {@code true} if this edge is selected. Otherwise, returns {@code false}.
      *
-     * @return the destination vertex
-     */
-    public Vertex getDestination () {
-        return this.destination;
-    }
-
-    /**
-     * It sets the source and destination vertices.
-     *
-     * @param source
-     *         the source vertex
-     * @param destination
-     *         the destination vertex
-     */
-    public void setPosition (final Vertex source, final Vertex destination) {
-        this.source      = source;
-        this.destination = destination;
-    }
-
-    /**
-     * Returns {@code true} if this edge is selected.
-     * Otherwise, returns {@code false}.
-     *
-     * @return {@code true} if this edge is selected;
-     *         otherwise, returns {@code false}.
+     * @return {@code true} if this edge is selected; otherwise, returns {@code false}.
      */
     @Override
     public boolean isSelected () {
@@ -88,8 +67,7 @@ public abstract class Edge implements Icon {
      * It sets the edge as selected or not.
      *
      * @param selected
-     *         if {@code true}, set this edge as selected;
-     *         otherwise, set this edge as not selected.
+     *     if {@code true}, set this edge as selected; otherwise, set this edge as not selected.
      */
     @Override
     public void setSelected (final boolean selected) {
@@ -117,17 +95,33 @@ public abstract class Edge implements Icon {
     }
 
     /**
-     * It calculates the midpoint between the specified
-     * points.
+     * Returns the source vertex.
      *
-     * @param p1
-     *         the first point
-     * @param p2
-     *         the second point
-     *
-     * @return the midpoint between the specified points
+     * @return the source vertex
      */
-    private static int midPoint (final int p1, final int p2) {
-        return p1 + (p2 - p1) / 2;
+    public Vertex getSource () {
+        return this.source;
+    }
+
+    /**
+     * Returns the destination vertex.
+     *
+     * @return the destination vertex
+     */
+    public Vertex getDestination () {
+        return this.destination;
+    }
+
+    /**
+     * It sets the source and destination vertices.
+     *
+     * @param source
+     *     the source vertex
+     * @param destination
+     *     the destination vertex
+     */
+    public void setPosition (final Vertex source, final Vertex destination) {
+        this.source      = source;
+        this.destination = destination;
     }
 }

@@ -3,19 +3,17 @@ package ispd.motor.workload.impl.task;
 import jdk.jfr.Unsigned;
 
 /**
- * Class to represent the information gathered from a trace file about a
- * single task. See {@link #TraceTaskInfo(String)} for details about how the
- * file contents are interpreted.
+ * Class to represent the information gathered from a trace file about a single task. See
+ * {@link #TraceTaskInfo(String)} for details about how the file contents are interpreted.
  */
 public class TraceTaskInfo {
 
     private final String[] fields;
 
     /**
-     * Create a task information instance from the given {@link String}; the
-     * string is split on its quotes ({@code '"'}) and the resulting array of
-     * strings is interpreted as 'fields' to be parsed. The relation of the
-     * index of a field in the array and what it is interpreted as is as
+     * Create a task information instance from the given {@link String}; the string is split on its
+     * quotes ({@code '"'}) and the resulting array of strings is interpreted as 'fields' to be
+     * parsed. The relation of the index of a field in the array and what it is interpreted as is as
      * follows:
      * <ol start="0">
      *     <li><i>[IGNORED]</i></li>
@@ -34,8 +32,7 @@ public class TraceTaskInfo {
      * Any further fields are also ignored.
      *
      * @param s
-     *         {@link String} to be split and interpreted as fields
-     *         containing task attributes.
+     *     {@link String} to be split and interpreted as fields containing task attributes.
      */
     public TraceTaskInfo (final String s) {
         this.fields = s.split("\"");
@@ -77,12 +74,12 @@ public class TraceTaskInfo {
     }
 
     /**
-     * Determines if the task information parsed demands that the task should
-     * be cancelled or not. Specifically, a task should be cancelled if its
-     * "status" field either contains as a substring {@code "0"} or {@code "5"}.
+     * Determines if the task information parsed demands that the task should be cancelled or not.
+     * Specifically, a task should be cancelled if its "status" field either contains as a substring
+     * {@code "0"} or {@code "5"}.
      *
-     * @return {@code true} if this task should be cancelled (according to
-     *         the task information in the file), and {@code false} otherwise.
+     * @return {@code true} if this task should be cancelled (according to the task information in
+     * the file), and {@code false} otherwise.
      */
     public boolean shouldBeCanceled () {
         return this.status().contains("0") || this.status().contains("5");
@@ -93,9 +90,8 @@ public class TraceTaskInfo {
     }
 
     /**
-     * Helper {@code enum} to map field 'meaning' to/from the index that is
-     * used to access that value in an array.<br>
-     * Also contains utility methods to parse such fields from the array into
+     * Helper {@code enum} to map field 'meaning' to/from the index that is used to access that
+     * value in an array.<br> Also contains utility methods to parse such fields from the array into
      * numeric values.
      */
     private enum TaskFields {
