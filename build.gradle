@@ -4,8 +4,8 @@ plugins {
     id 'application'
 }
 
-group 'ispd'
-version '1.0-SNAPSHOT'
+group 'gspd'
+version '1.0.0-SNAPSHOT'
 
 
 application {
