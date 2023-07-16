@@ -4,8 +4,8 @@ plugins {
     id 'application'
 }
 
-group 'ispd'
-version '1.0-SNAPSHOT'
+group 'gspd'
+version '1.0.0-SNAPSHOT'
 
 
 application {
@@ -18,7 +18,9 @@ dependencies {
         exclude group: "xml-apis"
     }
     implementation 'org.jetbrains:annotations:24.0.0'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
@@ -32,16 +34,8 @@ jar {
 
 sourceSets {
     main {
-        java {
-            srcDirs = ["src/"]
-        }
         resources {
-            srcDirs = ["src/"]
-        }
-    }
-    test {
-        java {
-            srcDirs = ["test/"]
+            srcDirs = ["src/main/java/"]
         }
     }
 }
@@ -50,11 +44,10 @@ repositories {
     mavenCentral()
 }
 
-
 test {
     useJUnitPlatform()
 }
 
-tasks.withType(JavaCompile) {
-    options.warnings = false
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:unchecked"
 }

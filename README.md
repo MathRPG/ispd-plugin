@@ -7,7 +7,7 @@ The *iconic Simulator of Parallel and Distributed systems* (iSPD) is a tool for 
 Modeling is done via a graphical user interface with iconic elements (hence the name).
 Simulation is done via a discrete event system with queue networks.
 
-More info about the project, how it works, and the theory behind it can be found in `docs/`.
+More info about the project, how it works, and the theory behind it can be found in `doc/`.
 
 ## Compilation and Execution
 
@@ -91,7 +91,7 @@ A conceptual and programmatic merging of the different simulation types needs to
 
 #### Updating External Documentation
 
-External documentation (the ones present in the project folder `docs`) are, in general, about some design decisions for the application, such as the grammar for a parser.
+External documentation (the ones present in the project folder `doc`) are, in general, about some design decisions for the application, such as the grammar for a parser.
 
 Updating this documentation is of currently low priority, since:
 - Well-engineered code should demonstrate these characteristics without the need for external documentation (at most, a javadoc should suffice)
@@ -115,7 +115,7 @@ With the state of the project, the addition of any moderately complex feature wi
 
 If you'd like to contribute to the project, simply open a Pull Request. It will be reviewed and merged if deemed constructive, with immense gratitude.
 
-Use the code style configurations available in `docs/codeStyle`.
+Use the code style configurations available in `doc/codeStyle`.
 - If you'd like to suggest changes to the project code style, simply open a new _issue_ with your suggestion and reasoning!
 
 Make sure to read the **Project Status** section above to know what the project's priorities are right now, and focus on changes aimed at these goals.
