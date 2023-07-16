@@ -1436,7 +1436,7 @@ public class PolicyGeneratorWindow extends JDialog {
         this.setIconImage(
             Toolkit
                 .getDefaultToolkit()
-                .getImage(this.getClass().getResource("imagens/Logo_iSPD_25.png")));
+                .getImage(this.getClass().getResource("../imagens/Logo_iSPD_25.png")));
         this.setLocation(new Point(0, 0));
 
         final JPanel jPanelPassos = new JPanel();
