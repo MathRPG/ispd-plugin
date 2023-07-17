@@ -70,6 +70,13 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outputStream);
     }
 
+    @Test
+    void givenVersionArg_whenRun_thenPrintsVersion () {
+        runTerminalApplicationWith("-v");
+
+        verify(this.outputStream);
+    }
+
     @AfterEach
     void reinstateStandardSystemOut () {
         System.setOut(this.standardOut);

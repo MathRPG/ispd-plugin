@@ -102,7 +102,7 @@ public class TerminalApplication implements Application {
     }
 
     private static void printVersion () {
-        System.out.println(
+        System.out.print(
             """
             iSPD version 3.1
               Iconic Simulator of Parallel and Distributed System
