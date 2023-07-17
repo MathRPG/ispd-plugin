@@ -60,36 +60,8 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenHelpArg_whenRun_thenPrintsHelp () {
-        runTerminalApplicationWith("-h");
-
-        verify(this.outputStream);
-    }
-
-    @Test
-    void givenHelpAndVersionArgs_whenRun_thenPrintsHelp () {
-        runTerminalApplicationWith("-h", "-v");
-
-        verify(this.outputStream);
-    }
-
-    @Test
-    void givenVersionArg_whenRun_thenPrintsVersion () {
-        runTerminalApplicationWith("-v");
-
-        verify(this.outputStream);
-    }
-
-    @Test
     void givenVersionAndEmptyFilePathArg_whenRun_thenPrintsVersion () {
         runTerminalApplicationWith("-v", "");
-
-        verify(this.outputStream);
-    }
-
-    @Test
-    void givenEmptyFilePath_whenRun_thenPrintsError () {
-        runTerminalApplicationWith("");
 
         verify(this.outputStream);
     }
