@@ -15,8 +15,12 @@ class TerminalApplicationCharacterizationTest {
 
     private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-    private static void createTerminalApplication (final String... args) {
-        new TerminalApplication(args);
+    private static TerminalApplication createTerminalApplication (final String... args) {
+        return new TerminalApplication(args);
+    }
+
+    private static void runTerminalApplicationWith (final String... args) {
+        createTerminalApplication(args).run();
     }
 
     @BeforeEach
@@ -64,10 +68,6 @@ class TerminalApplicationCharacterizationTest {
         runTerminalApplicationWith("-h", "-v");
 
         verify(this.outputStream);
-    }
-
-    private static void runTerminalApplicationWith (final String... args) {
-        new TerminalApplication(args).run();
     }
 
     @AfterEach
