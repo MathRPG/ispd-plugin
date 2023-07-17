@@ -5,9 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import org.approvaltests.Approvals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class TerminalApplicationCharacterizationTest {
 
@@ -110,6 +113,22 @@ class TerminalApplicationCharacterizationTest {
         runTerminalApplicationWith("src/test/resources/models/emptyFile.imsx");
 
         verify(this.outputStream);
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "-h",
+            "-v",
+            "-h -v",
+            "",
+        }
+    )
+    void givenArgs_whenRun_thenBehavesAsVerified (final String joinedArgs) {
+        final String[] args = joinedArgs.split(" ");
+        runTerminalApplicationWith(args);
+
+        verify(this.outputStream, Approvals.NAMES.withParameters(args));
     }
 
     @AfterEach

@@ -1,0 +1,5 @@
+iSPD version 3.1
+  Iconic Simulator of Parallel and Distributed System
+  Copyright 2010-2022, by GSPD from UNESP.
+  Project Info: https://dcce.ibilce.unesp.br/spd
+  Source Code: https://github.com/gspd/ispd
