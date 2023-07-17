@@ -104,6 +104,9 @@ class TerminalApplicationCharacterizationTest {
             "emptyFile",
             "emptyFile.txt",
             "emptyFile.imsx",
+            "emptyGridModel.imsx",
+            "emptyIaaSModel.imsx",
+            "emptyPaaSModel.imsx",
         }
     )
     void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String joinedArgs) {
