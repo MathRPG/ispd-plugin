@@ -54,7 +54,7 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenHelpArg_whenRun_thenPrintsHelp () {
-        new TerminalApplication(new String[]{"-h"}).run();
+        runTerminalApplicationWith("-h");
 
         verify(this.outputStream);
     }
