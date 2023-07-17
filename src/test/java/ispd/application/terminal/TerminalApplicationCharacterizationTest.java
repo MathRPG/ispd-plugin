@@ -43,9 +43,11 @@ class TerminalApplicationCharacterizationTest {
         }
 
         final var expected = "It needs a model to simulate.";
-        final var actual   = outputStream.toString().trim();
+        final var actual   = this.outputStream.toString().trim();
 
         assertEquals(expected, actual, "Should print message");
+
+        verify(this.outputStream);
     }
 
     @AfterEach
