@@ -53,7 +53,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenHelpArgument_whenRun_thenPrintsHelp () {
+    void givenHelpArg_whenRun_thenPrintsHelp () {
         new TerminalApplication(new String[]{"-h"}).run();
 
         verify(this.outputStream);
