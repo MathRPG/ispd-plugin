@@ -77,6 +77,13 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outputStream);
     }
 
+    @Test
+    void givenEmptyFilePath_whenRun_thenPrintsError () {
+        runTerminalApplicationWith("");
+
+        verify(this.outputStream);
+    }
+
     @AfterEach
     void reinstateStandardSystemOut () {
         System.setOut(this.standardOut);
