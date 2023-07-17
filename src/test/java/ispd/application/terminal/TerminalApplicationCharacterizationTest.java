@@ -71,6 +71,23 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outputStream);
     }
 
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "-h",
+            "-v",
+            "-h -v",
+            "-v ",
+            "",
+        }
+    )
+    void givenArgs_whenRun_thenBehavesAsVerified (final String joinedArgs) {
+        final String[] args = joinedArgs.split(" ");
+        runTerminalApplicationWith(args);
+
+        verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
+    }
+
     @Test
     void givenEmptyFileWithNoExtension_whenRun_thenPrintsError () {
         runTerminalApplicationWith(pathToModel("emptyFile"));
@@ -90,22 +107,5 @@ class TerminalApplicationCharacterizationTest {
         runTerminalApplicationWith(pathToModel("emptyFile.imsx"));
 
         verify(this.outputStream);
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "-h",
-            "-v",
-            "-h -v",
-            "-v ",
-            "",
-        }
-    )
-    void givenArgs_whenRun_thenBehavesAsVerified (final String joinedArgs) {
-        final String[] args = joinedArgs.split(" ");
-        runTerminalApplicationWith(args);
-
-        verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
     }
 }

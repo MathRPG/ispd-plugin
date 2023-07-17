@@ -126,7 +126,9 @@ public class TerminalApplication implements Application {
         final String opt,
         final int defaultValue
     ) {
-        return cmd.hasOption(opt) ? setIntValueFromOption(cmd, opt) : defaultValue;
+        return cmd.hasOption(opt)
+               ? setIntValueFromOption(cmd, opt)
+               : defaultValue;
     }
 
     /**
