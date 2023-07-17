@@ -44,7 +44,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenHelpArg_whenConstructed_thenDoesNothing () {
+    void givenValidArguments_whenConstructed_thenDoesNothing () {
         new TerminalApplication(new String[] {"-h"});
 
         verify(this.outputStream);
