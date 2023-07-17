@@ -31,6 +31,11 @@ class TerminalApplicationCharacterizationTest {
         System.setOut(new PrintStream(this.outputStream));
     }
 
+    @AfterEach
+    void reinstateStandardSystemOut () {
+        System.setOut(this.standardOut);
+    }
+
     @Test
     void givenEmptyArgs_whenConstructed_thenThrowsException () {
         final var exception = assertThrows(
@@ -95,10 +100,5 @@ class TerminalApplicationCharacterizationTest {
         runTerminalApplicationWith(args);
 
         verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
-    }
-
-    @AfterEach
-    void reinstateStandardSystemOut () {
-        System.setOut(this.standardOut);
     }
 }
