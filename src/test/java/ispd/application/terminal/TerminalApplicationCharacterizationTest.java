@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.stream.Stream;
 import org.approvaltests.Approvals;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
@@ -107,5 +109,27 @@ class TerminalApplicationCharacterizationTest {
         runTerminalApplicationWith(pathToModel("emptyFile.imsx"));
 
         verify(this.outputStream);
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "emptyFile",
+            "emptyFile.txt",
+            "emptyFile.imsx",
+        }
+    )
+    void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String joinedArgs) {
+        final var rawArgs = joinedArgs.split(" ");
+
+        final var processedArgs = Stream.concat(
+            Arrays.stream(rawArgs, 0, 1)
+                .map(TerminalApplicationCharacterizationTest::pathToModel),
+            Arrays.stream(rawArgs, 1, rawArgs.length)
+        ).toArray(String[]::new);
+
+        runTerminalApplicationWith(processedArgs);
+
+        verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
     }
 }

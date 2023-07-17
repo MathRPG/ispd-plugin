@@ -1,0 +1,2 @@
+Simulation Initiated.
+Opening iconic model. ->Premature end of file.
