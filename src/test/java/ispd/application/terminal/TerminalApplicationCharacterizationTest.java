@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ class TerminalApplicationCharacterizationTest {
     void givenEmptyArgs_whenConstructed_thenThrowsException () {
         final var exception = assertThrows(
             IllegalArgumentException.class,
-            () -> new TerminalApplication(TerminalApplicationCharacterizationTest.NO_ARGS)
+            TerminalApplicationCharacterizationTest::createTerminalApplication
         );
 
         verify(exception);
@@ -35,7 +36,7 @@ class TerminalApplicationCharacterizationTest {
     @Test
     void givenEmptyArgs_whenConstructed_thenPrintsMessageToStandardOut () {
         try {
-            new TerminalApplication(TerminalApplicationCharacterizationTest.NO_ARGS);
+            createTerminalApplication();
         } catch (final RuntimeException ignored) {
             // out of test scope
         }
@@ -45,9 +46,13 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenValidArguments_whenConstructed_thenDoesNothing () {
-        new TerminalApplication(new String[] {"-h"});
+        createTerminalApplication("-h");
 
         verify(this.outputStream);
+    }
+
+    private static void createTerminalApplication (final String... args) {
+        new TerminalApplication(args);
     }
 
     @AfterEach
