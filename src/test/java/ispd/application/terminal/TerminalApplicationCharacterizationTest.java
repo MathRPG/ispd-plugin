@@ -59,6 +59,13 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outputStream);
     }
 
+    @Test
+    void givenHelpAndVersionArgs_whenRun_thenPrintsHelp () {
+        new TerminalApplication(new String[]{"-h", "-v"}).run();
+
+        verify(this.outputStream);
+    }
+
     @AfterEach
     void reinstateStandardSystemOut () {
         System.setOut(this.standardOut);
