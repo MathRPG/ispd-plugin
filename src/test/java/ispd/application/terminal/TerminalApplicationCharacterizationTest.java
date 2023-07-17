@@ -61,9 +61,13 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenHelpAndVersionArgs_whenRun_thenPrintsHelp () {
-        new TerminalApplication(new String[]{"-h", "-v"}).run();
+        runTerminalApplicationWith("-h", "-v");
 
         verify(this.outputStream);
+    }
+
+    private static void runTerminalApplicationWith (final String... args) {
+        new TerminalApplication(args).run();
     }
 
     @AfterEach
