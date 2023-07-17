@@ -35,6 +35,14 @@ class TerminalApplicationCharacterizationTest {
         return Paths.get("src", "test", "resources", "models", modelName).toString();
     }
 
+    private static @NotNull String[] makePathOfFirstValue (final String[] rawArgs) {
+        return Stream.concat(
+            Arrays.stream(rawArgs, 0, 1)
+                .map(TerminalApplicationCharacterizationTest::pathToModel),
+            Arrays.stream(rawArgs, 1, rawArgs.length)
+        ).toArray(String[]::new);
+    }
+
     @BeforeEach
     void replaceSystemOut () {
         System.setOut(new PrintStream(this.outputStream));
@@ -99,13 +107,8 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String joinedArgs) {
-        final var rawArgs = joinedArgs.split(" ");
-
-        final var processedArgs = Stream.concat(
-            Arrays.stream(rawArgs, 0, 1)
-                .map(TerminalApplicationCharacterizationTest::pathToModel),
-            Arrays.stream(rawArgs, 1, rawArgs.length)
-        ).toArray(String[]::new);
+        final var rawArgs       = joinedArgs.split(" ");
+        final var processedArgs = makePathOfFirstValue(rawArgs);
 
         runTerminalApplicationWith(processedArgs);
 
