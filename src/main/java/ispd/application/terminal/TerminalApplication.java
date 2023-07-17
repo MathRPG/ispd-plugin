@@ -161,7 +161,6 @@ public class TerminalApplication implements Application {
             case SERVER -> this.serverSimulation();
             case CLIENT -> this.clientSimulation();
         }
-        System.exit(0);
     }
 
     private void attemptLocalSimulation () {
