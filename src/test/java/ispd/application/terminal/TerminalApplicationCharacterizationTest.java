@@ -60,13 +60,6 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenVersionAndEmptyFilePathArg_whenRun_thenPrintsVersion () {
-        runTerminalApplicationWith("-v", "");
-
-        verify(this.outputStream);
-    }
-
-    @Test
     void givenEmptyFileWithNoExtension_whenRun_thenPrintsError () {
         runTerminalApplicationWith("src/test/resources/models/emptyFile");
 
@@ -93,6 +86,7 @@ class TerminalApplicationCharacterizationTest {
             "-h",
             "-v",
             "-h -v",
+            "-v ",
             "",
         }
     )
@@ -100,7 +94,7 @@ class TerminalApplicationCharacterizationTest {
         final String[] args = joinedArgs.split(" ");
         runTerminalApplicationWith(args);
 
-        verify(this.outputStream, Approvals.NAMES.withParameters(args));
+        verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
     }
 
     @AfterEach
