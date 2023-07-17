@@ -23,7 +23,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void emptyArgs () {
+    void givenEmptyArgs_whenConstructed_thenThrowsException () {
         final var exception = assertThrows(
             IllegalArgumentException.class,
             () -> new TerminalApplication(TerminalApplicationCharacterizationTest.NO_ARGS)
@@ -33,6 +33,20 @@ class TerminalApplicationCharacterizationTest {
         final var actual   = exception.getMessage();
 
         assertEquals(expected, actual, "Exception message doesn't match");
+    }
+
+    @Test
+    void givenEmptyArgs_whenConstructed_thenPrintsMessageToStandardOut () {
+        try {
+            new TerminalApplication(TerminalApplicationCharacterizationTest.NO_ARGS);
+        } catch (final RuntimeException ignored) {
+            // out of test scope
+        }
+
+        final var expected = "It needs a model to simulate.";
+        final var actual   = outputStream.toString().trim();
+
+        assertEquals(expected, actual, "Should print message");
     }
 
     @AfterEach
