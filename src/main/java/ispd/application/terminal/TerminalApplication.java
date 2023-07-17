@@ -74,8 +74,9 @@ public class TerminalApplication implements Application {
         this.serverAddress = this.setServerAddress(cmd);
 
         if (this.mode.requiresModel() && this.inputFile.isEmpty()) {
-            System.out.println("It needs a model to simulate.");
-            System.exit(1);
+            final var message = "It needs a model to simulate.";
+            System.out.println(message);
+            throw new IllegalArgumentException(message);
         }
     }
 
