@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.file.Paths;
 import org.approvaltests.Approvals;
+import org.jetbrains.annotations.NonNls;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +27,10 @@ class TerminalApplicationCharacterizationTest {
 
     private static void runTerminalApplicationWith (final String... args) {
         createTerminalApplication(args).run();
+    }
+
+    private static @NotNull @NonNls String pathToModel (final @NonNls String modelName) {
+        return Paths.get("src", "test", "resources", "models", modelName).toString();
     }
 
     @BeforeEach
@@ -66,21 +73,21 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenEmptyFileWithNoExtension_whenRun_thenPrintsError () {
-        runTerminalApplicationWith("src/test/resources/models/emptyFile");
+        runTerminalApplicationWith(pathToModel("emptyFile"));
 
         verify(this.outputStream);
     }
 
     @Test
     void givenEmptyFileWithWrongExtension_whenRun_thenPrintsError () {
-        runTerminalApplicationWith("src/test/resources/models/emptyFile.txt");
+        runTerminalApplicationWith(pathToModel("emptyFile.txt"));
 
         verify(this.outputStream);
     }
 
     @Test
     void givenEmptyFileWithRightExtension_whenRun_thenPrintsError () {
-        runTerminalApplicationWith("src/test/resources/models/emptyFile.imsx");
+        runTerminalApplicationWith(pathToModel("emptyFile.imsx"));
 
         verify(this.outputStream);
     }
