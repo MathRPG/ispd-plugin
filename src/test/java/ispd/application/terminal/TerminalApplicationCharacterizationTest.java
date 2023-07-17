@@ -1,16 +1,12 @@
 package ispd.application.terminal;
 
 import static org.approvaltests.Approvals.verify;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.PrintStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class TerminalApplicationCharacterizationTest {
@@ -115,7 +111,7 @@ class TerminalApplicationCharacterizationTest {
 
         verify(this.outputStream);
     }
-    
+
     @AfterEach
     void reinstateStandardSystemOut () {
         System.setOut(this.standardOut);

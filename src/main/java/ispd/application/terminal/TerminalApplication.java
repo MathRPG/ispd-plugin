@@ -357,8 +357,6 @@ public class TerminalApplication implements Application {
             return model;
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-//            System.exit(-1);
-//            throw new AssertionError("Code shouldn't be reachable.");
             return null;
         }
     }
