@@ -9,7 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class CliCharacterizationTest {
+class TerminalApplicationCharacterizationTest {
 
     private static final String[] NO_ARGS = {};
 
@@ -26,7 +26,7 @@ class CliCharacterizationTest {
     void emptyArgs () {
         final var exception = assertThrows(
             IllegalArgumentException.class,
-            () -> new TerminalApplication(CliCharacterizationTest.NO_ARGS)
+            () -> new TerminalApplication(TerminalApplicationCharacterizationTest.NO_ARGS)
         );
 
         final var expected = "It needs a model to simulate.";
