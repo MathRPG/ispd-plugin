@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import org.approvaltests.Approvals;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +30,7 @@ class TerminalApplicationCharacterizationTest {
             () -> new TerminalApplication(TerminalApplicationCharacterizationTest.NO_ARGS)
         );
 
-        final var expected = "It needs a model to simulate.";
-        final var actual   = exception.getMessage();
-
-        assertEquals(expected, actual, "Exception message doesn't match");
+        Approvals.verify(exception);
     }
 
     @Test
