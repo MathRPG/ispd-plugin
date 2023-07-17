@@ -78,6 +78,13 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
+    void givenVersionAndEmptyFilePathArg_whenRun_thenPrintsVersion () {
+        runTerminalApplicationWith("-v", "");
+
+        verify(this.outputStream);
+    }
+
+    @Test
     void givenEmptyFilePath_whenRun_thenPrintsError () {
         runTerminalApplicationWith("");
 
