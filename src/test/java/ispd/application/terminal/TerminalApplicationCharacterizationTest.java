@@ -42,11 +42,6 @@ class TerminalApplicationCharacterizationTest {
             // out of test scope
         }
 
-        final var expected = "It needs a model to simulate.";
-        final var actual   = this.outputStream.toString().trim();
-
-        assertEquals(expected, actual, "Should print message");
-
         verify(this.outputStream);
     }
 
