@@ -286,6 +286,11 @@ public class TerminalApplication implements Application {
         System.out.print("Opening iconic model. ->");
 
         final Document model         = this.getModelFromFile();
+
+        if (model == null) {
+            return;
+        }
+
         final var      metrics       = new Metricas(IconicoXML.newListUsers(model));
         double         totalDuration = 0.0;
         for (int i = 1; i <= this.nExecutions; i++) {
@@ -352,8 +357,9 @@ public class TerminalApplication implements Application {
             return model;
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-            System.exit(-1);
-            throw new AssertionError("Code shouldn't be reachable.");
+//            System.exit(-1);
+//            throw new AssertionError("Code shouldn't be reachable.");
+            return null;
         }
     }
 

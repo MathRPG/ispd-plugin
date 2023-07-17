@@ -109,6 +109,13 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outputStream);
     }
 
+    @Test
+    void givenEmptyFileWithRightExtension_whenRun_thenPrintsError () {
+        runTerminalApplicationWith("src/test/resources/models/emptyFile.imsx");
+
+        verify(this.outputStream);
+    }
+    
     @AfterEach
     void reinstateStandardSystemOut () {
         System.setOut(this.standardOut);
