@@ -92,7 +92,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenArgs_whenRun_thenBehavesAsVerified (final String joinedArgs) {
-        final String[] args = joinedArgs.split(" ");
+        final var args = joinedArgs.split(" ");
         runTerminalApplicationWith(args);
 
         verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
