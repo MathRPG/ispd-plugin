@@ -1,5 +1,6 @@
 package ispd.application.terminal;
 
+import static org.approvaltests.Approvals.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -30,7 +31,7 @@ class TerminalApplicationCharacterizationTest {
             () -> new TerminalApplication(TerminalApplicationCharacterizationTest.NO_ARGS)
         );
 
-        Approvals.verify(exception);
+        verify(exception);
     }
 
     @Test
