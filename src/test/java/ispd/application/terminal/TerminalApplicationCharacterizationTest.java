@@ -102,6 +102,13 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outputStream);
     }
 
+    @Test
+    void givenEmptyFileWithWrongExtension_whenRun_thenPrintsError () {
+        runTerminalApplicationWith("src/test/resources/models/emptyFile.txt");
+
+        verify(this.outputStream);
+    }
+
     @AfterEach
     void reinstateStandardSystemOut () {
         System.setOut(this.standardOut);
