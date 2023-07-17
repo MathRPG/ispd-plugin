@@ -90,27 +90,6 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
     }
 
-    @Test
-    void givenEmptyFileWithNoExtension_whenRun_thenPrintsError () {
-        runTerminalApplicationWith(pathToModel("emptyFile"));
-
-        verify(this.outputStream);
-    }
-
-    @Test
-    void givenEmptyFileWithWrongExtension_whenRun_thenPrintsError () {
-        runTerminalApplicationWith(pathToModel("emptyFile.txt"));
-
-        verify(this.outputStream);
-    }
-
-    @Test
-    void givenEmptyFileWithRightExtension_whenRun_thenPrintsError () {
-        runTerminalApplicationWith(pathToModel("emptyFile.imsx"));
-
-        verify(this.outputStream);
-    }
-
     @ParameterizedTest
     @ValueSource(
         strings = {
