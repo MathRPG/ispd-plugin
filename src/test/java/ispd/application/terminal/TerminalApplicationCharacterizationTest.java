@@ -101,15 +101,23 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
+            // Empty and incomplete Files
             "emptyFile",
             "emptyFile.txt",
             "emptyFile.imsx",
+            "incompleteIaaSModel.imsx",
+            // Grid models
             "emptyGridModel.imsx",
-            "emptyIaaSModel.imsx",
-            "emptyPaaSModel.imsx",
             "emptyGridModelWithSingleUser.imsx",
+            "gridModelWithSingleMachineIcon.imsx",
+            // Iaas models
+            "emptyIaaSModel.imsx",
             "emptyIaaSModelWithSingleUser.imsx",
+            "iaasModelWithSingleMachineIcon.imsx",
+            // Paas models
+            "emptyPaaSModel.imsx",
             "emptyPaaSModelWithSingleUser.imsx",
+            "paasModelWithSingleMachineIcon.imsx",
         }
     )
     void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String joinedArgs) {
