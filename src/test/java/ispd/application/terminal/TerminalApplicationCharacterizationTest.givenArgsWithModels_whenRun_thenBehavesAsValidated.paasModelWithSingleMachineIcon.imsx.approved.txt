@@ -1,1 +1,3 @@
-iSPD can not open the file: paasModelWithSingleMachineIcon.imsx
+Simulation Initiated.
+Opening iconic model. ->[0;32mOK[0m
+One or more workloads have not been configured.
