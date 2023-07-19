@@ -110,14 +110,17 @@ class TerminalApplicationCharacterizationTest {
             "emptyGridModel.imsx",
             "emptyGridModelWithSingleUser.imsx",
             "gridModelWithSingleMachineIcon.imsx",
+            "gridModelWithSingleTask.imsx",
             // Iaas models
             "emptyIaaSModel.imsx",
             "emptyIaaSModelWithSingleUser.imsx",
             "iaasModelWithSingleMachineIcon.imsx",
+            "iaasModelWithSingleTask.imsx",
             // Paas models
             "emptyPaaSModel.imsx",
             "emptyPaaSModelWithSingleUser.imsx",
             "paasModelWithSingleMachineIcon.imsx",
+            "paasModelWithSingleTask.imsx",
         }
     )
     void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String joinedArgs) {
