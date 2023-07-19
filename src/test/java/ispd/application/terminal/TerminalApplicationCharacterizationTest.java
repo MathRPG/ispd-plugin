@@ -7,9 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Stream;
 import org.approvaltests.Approvals;
-import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ class TerminalApplicationCharacterizationTest {
 
     private final PrintStream standardOut = System.out;
 
-    private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
     private static TerminalApplication createTerminalApplication (final String... args) {
         return new TerminalApplication(args);
@@ -31,7 +31,7 @@ class TerminalApplicationCharacterizationTest {
         createTerminalApplication(args).run();
     }
 
-    private static @NotNull @NonNls String pathToModel (final @NonNls String modelName) {
+    private static @NotNull String pathToModel (final String modelName) {
         return Paths.get("src", "test", "resources", "models", modelName).toString();
     }
 
@@ -45,7 +45,7 @@ class TerminalApplicationCharacterizationTest {
 
     @BeforeEach
     void replaceSystemOut () {
-        System.setOut(new PrintStream(this.outputStream));
+        System.setOut(new PrintStream(this.outStream));
     }
 
     @AfterEach
@@ -71,14 +71,14 @@ class TerminalApplicationCharacterizationTest {
             // out of test scope
         }
 
-        verify(this.outputStream);
+        verify(this.outStream);
     }
 
     @Test
     void givenValidArgs_whenConstructed_thenDoesNothing () {
         createTerminalApplication("-h");
 
-        verify(this.outputStream);
+        verify(this.outStream);
     }
 
     @ParameterizedTest
@@ -95,7 +95,7 @@ class TerminalApplicationCharacterizationTest {
         final var args = joinedArgs.split(" ");
         runTerminalApplicationWith(args);
 
-        verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
+        verify(this.outStream, Approvals.NAMES.withParameters(joinedArgs));
     }
 
     @ParameterizedTest
@@ -124,11 +124,36 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String joinedArgs) {
-        final var rawArgs       = joinedArgs.split(" ");
+        final var rawArgs = joinedArgs.split(" ");
         final var processedArgs = makePathOfFirstValue(rawArgs);
 
         runTerminalApplicationWith(processedArgs);
 
-        verify(this.outputStream, Approvals.NAMES.withParameters(joinedArgs));
+        verify(this.outStream, Approvals.NAMES.withParameters(joinedArgs));
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "gridModelWithSingleMaster.imsx",
+            "iaasModelWithSingleMaster.imsx",
+            "paasModelWithSingleMaster.imsx",
+        }
+    )
+    void givenModelWithInvalidPolicy_whenRun_thenThrowsException (final String modelName) {
+        final var path = pathToModel(modelName);
+
+        final var exception = assertThrows(
+            RuntimeException.class,
+            () -> runTerminalApplicationWith(path)
+        );
+
+        verify(
+            Map.of(
+                "ex", exception,
+                "out", this.outStream
+            ),
+            Approvals.NAMES.withParameters(modelName)
+        );
     }
 }
