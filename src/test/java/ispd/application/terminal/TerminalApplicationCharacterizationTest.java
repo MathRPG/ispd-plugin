@@ -15,6 +15,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TerminalApplicationCharacterizationTest {
@@ -33,14 +34,6 @@ class TerminalApplicationCharacterizationTest {
 
     private static @NotNull String pathToModel (final String modelName) {
         return Paths.get("src", "test", "resources", "models", modelName).toString();
-    }
-
-    private static @NotNull String[] makePathOfFirstValue (final String[] rawArgs) {
-        return Stream.concat(
-            Arrays.stream(rawArgs, 0, 1)
-                .map(TerminalApplicationCharacterizationTest::pathToModel),
-            Arrays.stream(rawArgs, 1, rawArgs.length)
-        ).toArray(String[]::new);
     }
 
     @BeforeEach
@@ -123,13 +116,10 @@ class TerminalApplicationCharacterizationTest {
             "paasModelWithSingleTask.imsx",
         }
     )
-    void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String joinedArgs) {
-        final var rawArgs = joinedArgs.split(" ");
-        final var processedArgs = makePathOfFirstValue(rawArgs);
+    void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String modelName) {
+        runTerminalApplicationWith(pathToModel(modelName));
 
-        runTerminalApplicationWith(processedArgs);
-
-        verify(this.outStream, Approvals.NAMES.withParameters(joinedArgs));
+        verify(this.outStream, Approvals.NAMES.withParameters(modelName));
     }
 
     @ParameterizedTest
