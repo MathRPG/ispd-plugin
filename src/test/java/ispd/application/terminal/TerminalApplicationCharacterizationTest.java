@@ -129,6 +129,8 @@ class TerminalApplicationCharacterizationTest {
             "gridModelWithSingleMaster.imsx",
             "iaasModelWithSingleMaster.imsx",
             "paasModelWithSingleMaster.imsx",
+            "iaasModelWithInvalidAllocation.imsx",
+            "paasModelWithInvalidAllocation.imsx",
         }
     )
     void givenModelWithInvalidPolicies_whenRun_thenThrowsException (final String modelName) {
