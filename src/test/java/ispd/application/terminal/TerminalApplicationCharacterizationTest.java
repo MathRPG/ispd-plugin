@@ -1,21 +1,19 @@
 package ispd.application.terminal;
 
 import static org.approvaltests.Approvals.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.Stream;
 import org.approvaltests.Approvals;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TerminalApplicationCharacterizationTest {
@@ -24,16 +22,23 @@ class TerminalApplicationCharacterizationTest {
 
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-    private static TerminalApplication createTerminalApplication (final String... args) {
+    private static TerminalApplication initTerminalApplicationWith (final String... args) {
         return new TerminalApplication(args);
     }
 
     private static void runTerminalApplicationWith (final String... args) {
-        createTerminalApplication(args).run();
+        initTerminalApplicationWith(args).run();
     }
 
     private static @NotNull String pathToModel (final String modelName) {
         return Paths.get("src", "test", "resources", "models", modelName).toString();
+    }
+
+    private @NotNull Map<String, Object> mapOfExceptionAndOut (final Exception exception) {
+        return Map.of(
+            "ex", exception,
+            "out", this.outStream
+        );
     }
 
     @BeforeEach
@@ -47,31 +52,24 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenEmptyArgs_whenConstructed_thenThrowsException () {
+    void givenEmptyArgs_whenInitialized_thenThrowsAndPrintsError () {
         final var exception = assertThrows(
             IllegalArgumentException.class,
-            TerminalApplicationCharacterizationTest::createTerminalApplication
+            TerminalApplicationCharacterizationTest::initTerminalApplicationWith
         );
 
-        verify(exception);
+        verify(this.mapOfExceptionAndOut(exception));
     }
 
     @Test
-    void givenEmptyArgs_whenConstructed_thenPrintsMessageToStandardOut () {
-        try {
-            createTerminalApplication();
-        } catch (final RuntimeException ignored) {
-            // out of test scope
-        }
+    void givenValidArgs_whenInitialized_thenDoesNotPrintToOut () {
+        initTerminalApplicationWith("-h");
 
-        verify(this.outStream);
-    }
-
-    @Test
-    void givenValidArgs_whenConstructed_thenDoesNothing () {
-        createTerminalApplication("-h");
-
-        verify(this.outStream);
+        assertEquals(
+            "",
+            this.outStream.toString(),
+            "Should not print to system out after intialization."
+        );
     }
 
     @ParameterizedTest
@@ -80,11 +78,10 @@ class TerminalApplicationCharacterizationTest {
             "-h",
             "-v",
             "-h -v",
-            "-v ",
-            "",
+            "-v doesNotExist.imsx",
         }
     )
-    void givenArgs_whenRun_thenBehavesAsVerified (final String joinedArgs) {
+    void givenHelpAndVersionArgs_whenRun_thenPrintsInfo (final String joinedArgs) {
         final var args = joinedArgs.split(" ");
         runTerminalApplicationWith(args);
 
@@ -94,6 +91,8 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
+            // Non-existent file
+            "doesNotExist.imsx",
             // Empty and incomplete Files
             "emptyFile",
             "emptyFile.txt",
@@ -116,8 +115,10 @@ class TerminalApplicationCharacterizationTest {
             "paasModelWithSingleTask.imsx",
         }
     )
-    void givenArgsWithModels_whenRun_thenBehavesAsValidated (final String modelName) {
-        runTerminalApplicationWith(pathToModel(modelName));
+    void givenInvalidModel_whenRun_thenPrintsErrors (final String modelName) {
+        final var path = pathToModel(modelName);
+
+        runTerminalApplicationWith(path);
 
         verify(this.outStream, Approvals.NAMES.withParameters(modelName));
     }
@@ -130,7 +131,7 @@ class TerminalApplicationCharacterizationTest {
             "paasModelWithSingleMaster.imsx",
         }
     )
-    void givenModelWithInvalidPolicy_whenRun_thenThrowsException (final String modelName) {
+    void givenModelWithInvalidPolicies_whenRun_thenThrowsException (final String modelName) {
         final var path = pathToModel(modelName);
 
         final var exception = assertThrows(
@@ -139,10 +140,7 @@ class TerminalApplicationCharacterizationTest {
         );
 
         verify(
-            Map.of(
-                "ex", exception,
-                "out", this.outStream
-            ),
+            this.mapOfExceptionAndOut(exception),
             Approvals.NAMES.withParameters(modelName)
         );
     }
