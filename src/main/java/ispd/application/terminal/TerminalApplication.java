@@ -35,13 +35,11 @@ public class TerminalApplication implements Application {
 
     private static final int DEFAULT_PORT = 2004;
 
-    private static final String UNREACHABLE_STATEMENT = "Unreachable Statement";
-
     private final Optional<File> inputFile;
 
     private final Optional<File> outputFolder;
 
-    private final Modes mode;
+    private final Mode mode;
 
     private final int nThreads;
 
@@ -64,14 +62,14 @@ public class TerminalApplication implements Application {
     public TerminalApplication (final String[] args) {
         final var cmd = this.commandLinePreparation(OptionsHolder.ALL_OPTIONS, args);
 
-        this.mode          = setMode(cmd);
+        this.mode          = getActiveMode(cmd);
         this.serverPort    = getIntOptionOr(cmd, "P", TerminalApplication.DEFAULT_PORT);
         this.nExecutions   = getIntOptionOr(cmd, "e", 1);
         this.nThreads      = this.setNThreads(cmd);
-        this.inputFile     = this.setInputFile(cmd);
-        this.outputFolder  = this.setOutputFolder(cmd);
-        this.parallel      = this.setParallelSimulation(cmd);
-        this.serverAddress = this.setServerAddress(cmd);
+        this.inputFile     = setInputFile(cmd);
+        this.outputFolder  = setOutputFolder(cmd);
+        this.parallel      = isParallelSimulation(cmd);
+        this.serverAddress = setServerAddress(cmd);
 
         if (this.mode.requiresModel() && this.inputFile.isEmpty()) {
             final var message = "It needs a model to simulate.";
@@ -88,11 +86,11 @@ public class TerminalApplication implements Application {
      *
      * @return An int representing a mode based on the options.
      */
-    private static Modes setMode (final CommandLine cmd) {
-        return Arrays.stream(Modes.values())
-            .filter(v -> v.isOptionMode(cmd))
+    private static Mode getActiveMode (final CommandLine cmd) {
+        return Arrays.stream(Mode.values())
+            .filter(v -> v.isActive(cmd))
             .findFirst()
-            .orElse(Modes.SIMULATE);
+            .orElse(Mode.SIMULATE);
     }
 
     private static Optional<File> getFileFromFirstArgument (final CommandLine cmd) {
@@ -151,6 +149,64 @@ public class TerminalApplication implements Application {
     }
 
     /**
+     * Get the name of the model file from the command line.
+     *
+     * @param cmd
+     *     The command line class from Common Cli.
+     *
+     * @return A configuration file with information for the simulation
+     */
+    private static Optional<File> setInputFile (final CommandLine cmd) {
+        return getFileFromOption(cmd, "in")
+            .or(() -> getFileFromFirstArgument(cmd));
+    }
+
+    /**
+     * Get the name of the output folder for the html export from the command line.
+     *
+     * @param cmd
+     *     The command line class from Common Cli.
+     *
+     * @return The folder coming from the command line argument or an empty optional.
+     */
+    private static Optional<File> setOutputFolder (final CommandLine cmd) {
+        return getFileFromOption(cmd, "o");
+    }
+
+    /**
+     * Get the option of parallel simulation from the command line and configure it.
+     *
+     * @param cmd
+     *     The command line class from Command Cli.
+     *
+     * @return True if there is "p" in the command line of false otherwise.
+     */
+    private static boolean isParallelSimulation (final CommandLine cmd) {
+        return cmd.hasOption("p");
+    }
+
+    /**
+     * Set the mode for running the terminal application.
+     *
+     * @param cmd
+     *     CommandLine used in the application.
+     *
+     * @return An int representing a mode based on the options.
+     */
+    private static Inet4Address setServerAddress (final CommandLine cmd) {
+        try {
+            final var hostName = cmd.getOptionValue("a", StringConstants.LOCALHOST);
+            return (Inet4Address) InetAddress.getByName(hostName);
+        } catch (final UnknownHostException e) {
+            System.out.printf(
+                "Error at getting the server address from command line. (%s)%n",
+                e.getMessage()
+            );
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
      * Method for running the simulation based on the configuration done before.
      */
     @Override
@@ -165,14 +221,16 @@ public class TerminalApplication implements Application {
     }
 
     private void attemptLocalSimulation () {
-        if (this.inputFile.isPresent()) {
-            final var file = this.inputFile.get();
+        if (this.inputFile.isEmpty()) {
+            return;
+        }
 
-            if (file.getName().endsWith(FileExtensions.ICONIC_MODEL) && file.exists()) {
-                this.runNSimulations();
-            } else {
-                System.out.printf("iSPD can not open the file: %s%n", file.getName());
-            }
+        final var file = this.inputFile.get();
+
+        if (file.getName().endsWith(FileExtensions.ICONIC_MODEL) && file.exists()) {
+            this.runNSimulations();
+        } else {
+            System.out.printf("iSPD can not open the file: %s%n", file.getName());
         }
     }
 
@@ -219,64 +277,6 @@ public class TerminalApplication implements Application {
     }
 
     /**
-     * Get the name of the model file from the command line.
-     *
-     * @param cmd
-     *     The command line class from Common Cli.
-     *
-     * @return A configuration file with information for the simulation
-     */
-    private Optional<File> setInputFile (final CommandLine cmd) {
-        return getFileFromOption(cmd, "in")
-            .or(() -> getFileFromFirstArgument(cmd));
-    }
-
-    /**
-     * Get the name of the output folder for the html export from the command line.
-     *
-     * @param cmd
-     *     The command line class from Common Cli.
-     *
-     * @return The folder coming from the command line argument or an empty optional.
-     */
-    private Optional<File> setOutputFolder (final CommandLine cmd) {
-        return getFileFromOption(cmd, "o");
-    }
-
-    /**
-     * Get the option of parallel simulation from the command line and configure it.
-     *
-     * @param cmd
-     *     The command line class from Command Cli.
-     *
-     * @return True if there is "p" in the command line of false otherwise.
-     */
-    private boolean setParallelSimulation (final CommandLine cmd) {
-        return cmd.hasOption("p");
-    }
-
-    /**
-     * Set the mode for running the terminal application.
-     *
-     * @param cmd
-     *     CommandLine used in the application.
-     *
-     * @return An int representing a mode based on the options.
-     */
-    private Inet4Address setServerAddress (final CommandLine cmd) {
-        try {
-            final var hostName = cmd.getOptionValue("a", StringConstants.LOCALHOST);
-            return (Inet4Address) InetAddress.getByName(hostName);
-        } catch (final UnknownHostException e) {
-            System.out.printf(
-                "Error at getting the server address from command line. (%s)%n",
-                e.getMessage()
-            );
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    /**
      * Run a number of simulations and calculate the time for each one, printing the results of them
      * at the end.
      */
@@ -284,14 +284,14 @@ public class TerminalApplication implements Application {
         System.out.println("Simulation Initiated.");
         System.out.print("Opening iconic model. ->");
 
-        final Document model         = this.getModelFromFile();
+        final Document model = this.getModelFromFile();
 
         if (model == null) {
             return;
         }
 
-        final var      metrics       = new Metricas(IconicoXML.newListUsers(model));
-        double         totalDuration = 0.0;
+        final var metrics       = new Metricas(IconicoXML.newListUsers(model));
+        double    totalDuration = 0.0;
         for (int i = 1; i <= this.nExecutions; i++) {
             System.out.printf("* Simulation %d%n", i);
 
@@ -460,7 +460,7 @@ public class TerminalApplication implements Application {
     /**
      * An enum for run modes for the terminal application.
      */
-    private enum Modes {
+    private enum Mode {
         HELP("h"),
         VERSION("v"),
         SIMULATE("", true),
@@ -471,17 +471,17 @@ public class TerminalApplication implements Application {
 
         private final boolean requiresModel;
 
-        Modes (final String s) {
+        Mode (final String s) {
             this.str           = s;
             this.requiresModel = false;
         }
 
-        Modes (final String s, final boolean requiresModel) {
+        Mode (final String s, final boolean requiresModel) {
             this.str           = s;
             this.requiresModel = requiresModel;
         }
 
-        private boolean isOptionMode (final CommandLine cmd) {
+        private boolean isActive (final CommandLine cmd) {
             return cmd.hasOption(this.str);
         }
 
