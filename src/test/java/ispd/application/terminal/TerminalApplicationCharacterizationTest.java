@@ -8,40 +8,50 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.regex.Pattern;
 import org.approvaltests.Approvals;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TerminalApplicationCharacterizationTest {
+    private static final String[] NO_ARGS = {};
+
+    private static final Pattern SPACE_MATCHER = Pattern.compile(" ");
 
     private final PrintStream standardOut = System.out;
 
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-    private static TerminalApplication initTerminalApplicationWith (final String... args) {
-        return new TerminalApplication(args);
+    private static String[] convertToArgList (final CharSequence spaceSeparatedArgs) {
+        if (spaceSeparatedArgs == null) {
+            return null;
+        }
+        if (spaceSeparatedArgs.isEmpty()) {
+            return TerminalApplicationCharacterizationTest.NO_ARGS;
+        }
+        return TerminalApplicationCharacterizationTest.SPACE_MATCHER.split(spaceSeparatedArgs);
     }
 
-    private static void runTerminalApplicationWith (final String... args) {
-        initTerminalApplicationWith(args).run();
+    private static TerminalApplication initTerminalApplication (final CharSequence argString) {
+        return new TerminalApplication(convertToArgList(argString));
     }
 
-    private static void runTerminalApplicationWithJoinedArgs (final String joinedArgs) {
-        final var args = joinedArgs.split(" ");
-        runTerminalApplicationWith(args);
+    private static void runTerminalApplication (final CharSequence argString) {
+        initTerminalApplication(argString).run();
     }
 
-    private static @NotNull String pathToModel (final String modelName) {
+    private static @NotNull String makePathToModel (final String modelName) {
         return Paths.get("src", "test", "resources", "models", modelName).toString();
     }
 
     private @NotNull Map<String, Object> mapOfExceptionAndOut (final Exception exception) {
         return Map.of(
-            "ex", exception,
+            "ex", exception, // TODO: Change
             "out", this.outStream
         );
     }
@@ -56,11 +66,12 @@ class TerminalApplicationCharacterizationTest {
         System.setOut(this.standardOut);
     }
 
-    @Test
-    void givenInvalidArgs_whenInitialized_thenThrowsAndPrintsError () {
+    @ParameterizedTest
+    @NullAndEmptySource
+    void givenInvalidArgs_whenInitialized_thenThrowsAndPrintsError (final String args) {
         final var exception = assertThrows(
             IllegalArgumentException.class,
-            TerminalApplicationCharacterizationTest::initTerminalApplicationWith
+            () -> initTerminalApplication(args)
         );
 
         verify(this.mapOfExceptionAndOut(exception));
@@ -68,7 +79,7 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenValidArgs_whenInitialized_thenDoesNotPrintToOut () {
-        initTerminalApplicationWith("-h");
+        initTerminalApplication("-h");
 
         assertEquals(
             "",
@@ -89,7 +100,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenHelpArg_whenRun_thenPrintsHelp (final String joinedArgs) {
-        runTerminalApplicationWithJoinedArgs(joinedArgs);
+        runTerminalApplication(joinedArgs);
 
         verify(this.outStream);
     }
@@ -104,7 +115,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenVersionArg_whenRun_thenPrintsVersionInfo (final String joinedArgs) {
-        runTerminalApplicationWithJoinedArgs(joinedArgs);
+        runTerminalApplication(joinedArgs);
 
         verify(this.outStream);
     }
@@ -137,9 +148,9 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenInvalidModel_whenRun_thenPrintsErrors (final String modelName) {
-        final var path = pathToModel(modelName);
+        final var path = makePathToModel(modelName);
 
-        runTerminalApplicationWith(path);
+        initTerminalApplication(path).run();
 
         verify(this.outStream, Approvals.NAMES.withParameters(modelName));
     }
@@ -155,11 +166,11 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenModelWithInvalidPolicies_whenRun_thenThrowsException (final String modelName) {
-        final var path = pathToModel(modelName);
+        final var path = makePathToModel(modelName);
 
         final var exception = assertThrows(
             RuntimeException.class,
-            () -> runTerminalApplicationWith(path)
+            () -> runTerminalApplication(path)
         );
 
         verify(
