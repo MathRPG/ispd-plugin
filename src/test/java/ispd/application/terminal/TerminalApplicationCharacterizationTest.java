@@ -117,8 +117,8 @@ class TerminalApplicationCharacterizationTest {
             "doesNotExist.imsx -h",
         }
     )
-    void givenHelpArg_whenRun_thenPrintsHelp (final String joinedArgs) {
-        runTerminalApplication(joinedArgs);
+    void givenHelpArg_whenRun_thenPrintsHelp (final String args) {
+        runTerminalApplication(args);
 
         verify(this.outStream);
     }
@@ -132,8 +132,8 @@ class TerminalApplicationCharacterizationTest {
             "doesNotExist.imsx -v",
         }
     )
-    void givenVersionArg_whenRun_thenPrintsVersionInfo (final String joinedArgs) {
-        runTerminalApplication(joinedArgs);
+    void givenVersionArg_whenRun_thenPrintsVersionInfo (final String args) {
+        runTerminalApplication(args);
 
         verify(this.outStream);
     }
@@ -166,9 +166,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenInvalidModel_whenRun_thenPrintsErrors (final String modelName) {
-        final var path = makePathToModel(modelName);
-
-        initTerminalApplication(path).run();
+        runTerminalApplication(makePathToModel(modelName));
 
         verify(this.outStream, Approvals.NAMES.withParameters(modelName));
     }
