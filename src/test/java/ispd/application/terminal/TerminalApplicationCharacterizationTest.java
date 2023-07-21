@@ -82,11 +82,13 @@ class TerminalApplicationCharacterizationTest {
         strings = {
             "-h",
             "--help",
+            "-h -v",
+            "-v -h",
             "-h doesNotExist.imsx",
             "doesNotExist.imsx -h",
         }
     )
-    void givenHelpAndNoVersionArg_whenRun_thenPrintsHelp (final String joinedArgs) {
+    void givenHelpArg_whenRun_thenPrintsHelp (final String joinedArgs) {
         runTerminalApplicationWithJoinedArgs(joinedArgs);
 
         verify(this.outStream);
