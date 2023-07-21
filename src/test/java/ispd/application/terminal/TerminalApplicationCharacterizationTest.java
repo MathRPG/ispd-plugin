@@ -74,18 +74,20 @@ class TerminalApplicationCharacterizationTest {
         strings = {
             "-z", // Unrecognized command
             "-P",
-//            "-h -P -1", // can construct, probably fails at run
             "-P NaN",
-//            "-e",
-//            "-e 0",
-//            "-e -1",
-//            "-e NaN",
-//            "-t",
-//            "-t NaN",
+            "-e",
+            "-e NaN",
+            "-t",
+            "-t NaN",
+//            "-e 0 -t 0", // system.exit
+
 //            "-t 0",
 //            "-t -1",
 //            "-a",
 //            "-a NotAnAddress",
+//            "-e -1", // should probably fail
+//            "-t -1", // should probably fail
+//            "-h -P -1", // can construct, probably fails at run
         }
     )
     void givenInvalidArgs_whenInitialized_thenThrowsAndPrintsError (final String args) {

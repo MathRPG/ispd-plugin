@@ -1,0 +1,3 @@
+ex : java.lang.IllegalArgumentException: It needs a model to simulate. 
+out : It needs a model to simulate.
+ 
