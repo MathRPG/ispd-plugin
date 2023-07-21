@@ -212,7 +212,7 @@ public class TerminalApplication implements Application {
 
         if (this.nExecutions < 1) {
             System.out.printf("Number of executions is invalid (%d)%n", this.nExecutions);
-            System.exit(1);
+            throw new IllegalArgumentException("Invalid Number of Executions.");
         }
 
         return Math.min(threads, this.nExecutions);
