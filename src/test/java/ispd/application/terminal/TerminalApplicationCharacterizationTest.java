@@ -80,9 +80,8 @@ class TerminalApplicationCharacterizationTest {
             "-t",
             "-t NaN",
             "-e 0 -t 0",
-
-//            "-a",
-//            "-a NotAnAddress",
+            "-a",
+            "-a NotAnAddress",
 //            "-e -1", // should probably fail
 //            "-t 0", // should probably fail
 //            "-h -P -1", // can construct, probably fails at run

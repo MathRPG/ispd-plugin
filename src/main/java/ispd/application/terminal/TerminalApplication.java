@@ -272,8 +272,7 @@ public class TerminalApplication implements Application {
                 "Error at getting the server address from command line. (%s)%n",
                 e.getMessage()
             );
-            System.exit(1);
-            throw new AssertionError(TerminalApplication.UNREACHABLE_STATEMENT);
+            throw new IllegalArgumentException(e);
         }
     }
 
