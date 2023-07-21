@@ -24,6 +24,8 @@ import java.util.Optional;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.w3c.dom.Document;
@@ -501,8 +503,8 @@ public class TerminalApplication implements Application {
          */
         private static Options makeAllOptions () {
             return new Options()
-                .addOption("h", "help", false, "print this help message.")
-                .addOption("v", "version", false, "print the version of iSPD.")
+                .addOption(new Option("h", "help", false, "print this help message."))
+                .addOption(new Option("v", "version", false, "print the version of iSPD."))
                 .addOption("s", "server", false, "run iSPD as a server.")
                 .addOption("c", "client", false, "run iSPD as a client.")
                 .addOption("P", "port", true, "specify a port.")
