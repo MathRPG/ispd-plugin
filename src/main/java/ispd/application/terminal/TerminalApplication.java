@@ -192,8 +192,7 @@ public class TerminalApplication implements Application {
             return (new DefaultParser()).parse(options, args);
         } catch (final ParseException e) {
             System.out.println(e.getMessage());
-            System.exit(1);
-            throw new AssertionError("Should not be reachable.");
+            throw new RuntimeException(e);
         }
     }
 

@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.regex.Pattern;
+import javax.xml.stream.events.Namespace;
 import org.approvaltests.Approvals;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -19,6 +20,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TerminalApplicationCharacterizationTest {
+
     private static final String[] NO_ARGS = {};
 
     private static final Pattern SPACE_MATCHER = Pattern.compile(" ");
@@ -68,13 +70,31 @@ class TerminalApplicationCharacterizationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
+    @ValueSource(
+        strings = {
+            "-z", // Unrecognized command
+            "-P",
+//            "-h -P -1", // can construct, probably fails at run
+//            "-P NaN",
+//            "-e",
+//            "-e 0",
+//            "-e -1",
+//            "-e NaN",
+//            "-t",
+//            "-t NaN",
+//            "-t 0",
+//            "-t -1",
+//            "-a",
+//            "-a NotAnAddress",
+        }
+    )
     void givenInvalidArgs_whenInitialized_thenThrowsAndPrintsError (final String args) {
         final var exception = assertThrows(
-            IllegalArgumentException.class,
+            Exception.class,
             () -> initTerminalApplication(args)
         );
 
-        verify(this.mapOfExceptionAndOut(exception));
+        verify(this.mapOfExceptionAndOut(exception), Approvals.NAMES.withParameters(args));
     }
 
     @Test
