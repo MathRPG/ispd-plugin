@@ -1,0 +1,13 @@
+usage: java -jar iSPD.jar
+ -a,--address <arg>      specify the server address.
+ -c,--client             run iSPD as a client.
+ -conf,--conf <arg>      specify a configuration file.
+ -e,--executions <arg>   specify the number of executions.
+ -h,--help               print this help message.
+ -in,--input <arg>       specify the input file of the model to simulate.
+ -o,--output <arg>       specify an output folder for the html export.
+ -P,--port <arg>         specify a port.
+ -p,--parallel           runs the simulation parallel.
+ -s,--server             run iSPD as a server.
+ -t,--threads <arg>      specify the number of threads.
+ -v,--version            print the version of iSPD.

@@ -30,6 +30,11 @@ class TerminalApplicationCharacterizationTest {
         initTerminalApplicationWith(args).run();
     }
 
+    private static void runTerminalApplicationWithJoinedArgs (final String joinedArgs) {
+        final var args = joinedArgs.split(" ");
+        runTerminalApplicationWith(args);
+    }
+
     private static @NotNull String pathToModel (final String modelName) {
         return Paths.get("src", "test", "resources", "models", modelName).toString();
     }
@@ -52,7 +57,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenEmptyArgs_whenInitialized_thenThrowsAndPrintsError () {
+    void givenInvalidArgs_whenInitialized_thenThrowsAndPrintsError () {
         final var exception = assertThrows(
             IllegalArgumentException.class,
             TerminalApplicationCharacterizationTest::initTerminalApplicationWith
@@ -76,14 +81,28 @@ class TerminalApplicationCharacterizationTest {
     @ValueSource(
         strings = {
             "-h",
+            "--help",
+            "-h doesNotExist.imsx",
+            "doesNotExist.imsx -h",
+        }
+    )
+    void givenHelpAndNoVersionArg_whenRun_thenPrintsHelp (final String joinedArgs) {
+        runTerminalApplicationWithJoinedArgs(joinedArgs);
+
+        verify(this.outStream);
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "-h",
             "-v",
             "-h -v",
             "-v doesNotExist.imsx",
         }
     )
     void givenHelpAndVersionArgs_whenRun_thenPrintsInfo (final String joinedArgs) {
-        final var args = joinedArgs.split(" ");
-        runTerminalApplicationWith(args);
+        runTerminalApplicationWithJoinedArgs(joinedArgs);
 
         verify(this.outStream, Approvals.NAMES.withParameters(joinedArgs));
     }
