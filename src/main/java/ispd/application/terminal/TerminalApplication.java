@@ -493,6 +493,11 @@ public class TerminalApplication implements Application {
     }
 
     private static class OptionsHolder {
+        private static final Option HELP =
+            new Option("h", "help", false, "print this help message.");
+
+        private static final Option VERSION =
+            new Option("v", "version", false, "print the version of iSPD.");
 
         private static final Options ALL_OPTIONS = makeAllOptions();
 
@@ -503,8 +508,8 @@ public class TerminalApplication implements Application {
          */
         private static Options makeAllOptions () {
             return new Options()
-                .addOption(new Option("h", "help", false, "print this help message."))
-                .addOption(new Option("v", "version", false, "print the version of iSPD."))
+                .addOption(OptionsHolder.HELP)
+                .addOption(OptionsHolder.VERSION)
                 .addOption("s", "server", false, "run iSPD as a server.")
                 .addOption("c", "client", false, "run iSPD as a client.")
                 .addOption("P", "port", true, "specify a port.")
