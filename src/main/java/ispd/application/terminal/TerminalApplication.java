@@ -25,7 +25,6 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.w3c.dom.Document;
@@ -209,6 +208,41 @@ public class TerminalApplication implements Application {
     }
 
     /**
+     * Create a job list from the model and the queue network from it.
+     *
+     * @param model
+     *     The model from the simulation
+     * @param queueNetwork
+     *     The queue network from the model
+     *
+     * @return The respective job list from the model
+     */
+    private static List<Tarefa> createJobsList (
+        final Document model,
+        final RedeDeFilas queueNetwork
+    ) {
+        System.out.print("  Creating tasks: ");
+        final var jobs = IconicoXML.newGerarCarga(model).makeTaskList(queueNetwork);
+        System.out.println(ConsoleColors.surroundGreen("OK!"));
+        return jobs;
+    }
+
+    /**
+     * Create a queue network from a simulation model.
+     *
+     * @param model
+     *     The model from a simulation
+     *
+     * @return A queue network from the model
+     */
+    private static RedeDeFilas createQueueNetwork (final Document model) {
+        System.out.print("  Mounting network queue: ");
+        final var queueNetwork = IconicoXML.newRedeDeFilas(model);
+        System.out.println(ConsoleColors.surroundGreen("OK!"));
+        return queueNetwork;
+    }
+
+    /**
      * Method for running the simulation based on the configuration done before.
      */
     @Override
@@ -268,7 +302,7 @@ public class TerminalApplication implements Application {
             return 1;
         }
 
-        final int threads = setIntValueFromOption(cmd, "t");
+        final var threads = setIntValueFromOption(cmd, "t");
 
         if (this.nExecutions < 1) {
             System.out.printf("Number of executions is invalid (%d)%n", this.nExecutions);
@@ -286,21 +320,21 @@ public class TerminalApplication implements Application {
         System.out.println("Simulation Initiated.");
         System.out.print("Opening iconic model. ->");
 
-        final Document model = this.getModelFromFile();
+        final var model = this.getModelFromFile();
 
         if (model == null) {
             return;
         }
 
         final var metrics       = new Metricas(IconicoXML.newListUsers(model));
-        double    totalDuration = 0.0;
-        for (int i = 1; i <= this.nExecutions; i++) {
+        var       totalDuration = 0.0;
+        for (var i = 1; i <= this.nExecutions; i++) {
             System.out.printf("* Simulation %d%n", i);
 
-            final var    preSimInstant    = System.currentTimeMillis();
-            final var    simMetric        = this.runASimulation(model);
-            final var    postSimInstant   = System.currentTimeMillis();
-            final double totalSimDuration = (double) (postSimInstant - preSimInstant) / 1000.0;
+            final var preSimInstant    = System.currentTimeMillis();
+            final var simMetric        = this.runASimulation(model);
+            final var postSimInstant   = System.currentTimeMillis();
+            final var totalSimDuration = (double) (postSimInstant - preSimInstant) / 1000.0;
 
             System.out.printf("Simulation Execution Time = %f seconds%n", totalSimDuration);
 
@@ -371,8 +405,8 @@ public class TerminalApplication implements Application {
      * @return The metrics resulted from the simulation
      */
     private Metricas runASimulation (final Document model) {
-        final var queueNetwork = this.createQueueNetwork(model);
-        final var jobs         = this.createJobsList(model, queueNetwork);
+        final var queueNetwork = createQueueNetwork(model);
+        final var jobs         = createJobsList(model, queueNetwork);
 
         final var sim = this.selectSimulation(queueNetwork, jobs);
         sim.createRouting();
@@ -395,38 +429,6 @@ public class TerminalApplication implements Application {
         return this.parallel
                ? new SimulacaoParalela(this.simulationProgress, queueNetwork, jobs, this.nThreads)
                : new SimulacaoSequencial(this.simulationProgress, queueNetwork, jobs);
-    }
-
-    /**
-     * Create a job list from the model and the queue network from it.
-     *
-     * @param model
-     *     The model from the simulation
-     * @param queueNetwork
-     *     The queue network from the model
-     *
-     * @return The respective job list from the model
-     */
-    private List<Tarefa> createJobsList (final Document model, final RedeDeFilas queueNetwork) {
-        System.out.print("  Creating tasks: ");
-        final var jobs = IconicoXML.newGerarCarga(model).makeTaskList(queueNetwork);
-        System.out.println(ConsoleColors.surroundGreen("OK!"));
-        return jobs;
-    }
-
-    /**
-     * Create a queue network from a simulation model.
-     *
-     * @param model
-     *     The model from a simulation
-     *
-     * @return A queue network from the model
-     */
-    private RedeDeFilas createQueueNetwork (final Document model) {
-        System.out.print("  Mounting network queue: ");
-        final var queueNetwork = IconicoXML.newRedeDeFilas(model);
-        System.out.println(ConsoleColors.surroundGreen("OK!"));
-        return queueNetwork;
     }
 
     /**
@@ -493,6 +495,7 @@ public class TerminalApplication implements Application {
     }
 
     private static class OptionsHolder {
+
         private static final Option HELP =
             new Option("h", "help", false, "print this help message.");
 
