@@ -177,10 +177,13 @@ class TerminalApplicationCharacterizationTest {
     @ValueSource(
         strings = {
             "gridModelWithSingleMaster.imsx",
+            "gridModelWithNoSlaves.imsx",
             "iaasModelWithSingleMaster.imsx",
-            "paasModelWithSingleMaster.imsx",
             "iaasModelWithInvalidAllocation.imsx",
+            "iaasModelWithNoSlaves.imsx",
+            "paasModelWithSingleMaster.imsx",
             "paasModelWithInvalidAllocation.imsx",
+            "paasModelWithNoSlaves.imsx",
         }
     )
     void givenModelWithInvalidPolicies_whenRun_thenThrowsException (final String modelName) {

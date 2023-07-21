@@ -1,0 +1,7 @@
+ex : java.util.NoSuchElementException 
+out : Simulation Initiated.
+Opening iconic model. ->[0;32mOK[0m
+* Simulation 1
+  Mounting network queue: [0;32mOK![0m
+  Creating tasks: [0;32mOK![0m
+ 
