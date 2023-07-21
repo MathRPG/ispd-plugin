@@ -95,16 +95,16 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "-h",
             "-v",
-            "-h -v",
+            "--version",
             "-v doesNotExist.imsx",
+            "doesNotExist.imsx -v",
         }
     )
-    void givenHelpAndVersionArgs_whenRun_thenPrintsInfo (final String joinedArgs) {
+    void givenVersionArg_whenRun_thenPrintsVersionInfo (final String joinedArgs) {
         runTerminalApplicationWithJoinedArgs(joinedArgs);
 
-        verify(this.outStream, Approvals.NAMES.withParameters(joinedArgs));
+        verify(this.outStream);
     }
 
     @ParameterizedTest
