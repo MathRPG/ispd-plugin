@@ -75,7 +75,7 @@ class TerminalApplicationCharacterizationTest {
             "-z", // Unrecognized command
             "-P",
 //            "-h -P -1", // can construct, probably fails at run
-//            "-P NaN",
+            "-P NaN",
 //            "-e",
 //            "-e 0",
 //            "-e -1",

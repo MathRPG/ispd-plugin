@@ -146,8 +146,7 @@ public class TerminalApplication implements Application {
             return Integer.parseInt(cmd.getOptionValue(op));
         } catch (final NumberFormatException ignored) {
             System.out.printf("\"%s\" is not a valid number%n", cmd.getOptionValue(op));
-            System.exit(1);
-            throw new AssertionError(TerminalApplication.UNREACHABLE_STATEMENT);
+            throw new RuntimeException(ignored);
         }
     }
 
