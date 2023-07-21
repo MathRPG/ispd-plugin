@@ -497,10 +497,10 @@ public class TerminalApplication implements Application {
     private static class OptionsHolder {
 
         private static final Option HELP =
-            new Option("h", "help", false, "print this help message.");
+            Option.builder("h").longOpt("help").desc("print this help message.").build();
 
         private static final Option VERSION =
-            new Option("v", "version", false, "print the version of iSPD.");
+            Option.builder("v").longOpt("version").desc("print the version of iSPD.").build();
 
         private static final Options ALL_OPTIONS = makeAllOptions();
 
