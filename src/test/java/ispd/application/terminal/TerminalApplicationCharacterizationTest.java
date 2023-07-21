@@ -9,7 +9,6 @@ import java.io.PrintStream;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax.xml.stream.events.Namespace;
 import org.approvaltests.Approvals;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -82,9 +81,9 @@ class TerminalApplicationCharacterizationTest {
             "-e 0 -t 0",
             "-a",
             "-a NotAnAddress",
-//            "-e -1", // should probably fail
-//            "-t 0", // should probably fail
-//            "-h -P -1", // can construct, probably fails at run
+            //            "-e -1", // should probably fail
+            //            "-t 0", // should probably fail
+            //            "-h -P -1", // can construct, probably fails at run
         }
     )
     void givenInvalidArgs_whenInitialized_thenThrowsAndPrintsError (final String args) {
