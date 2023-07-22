@@ -147,8 +147,8 @@ class TerminalApplicationCharacterizationTest {
             "emptyFile",
             "emptyFile.txt",
             "emptyFile.imsx",
-            "incompleteIaaSModel.imsx",
             // Grid models
+            "gridMalformedModel.imsx",
             "emptyGridModel.imsx",
             "emptyGridModelWithSingleUser.imsx",
             "gridModelWithSingleMachineIcon.imsx",

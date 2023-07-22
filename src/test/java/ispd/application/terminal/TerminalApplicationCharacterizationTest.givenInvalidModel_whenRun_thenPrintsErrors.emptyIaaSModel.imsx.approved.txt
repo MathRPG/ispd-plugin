@@ -1,2 +1,3 @@
 Simulation Initiated.
-Opening iconic model. ->The markup in the document following the root element must be well-formed.
+Opening iconic model. ->[0;32mOK[0m
+The model has no users.
