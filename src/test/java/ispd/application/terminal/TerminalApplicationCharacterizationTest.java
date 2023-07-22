@@ -73,11 +73,8 @@ class TerminalApplicationCharacterizationTest {
         strings = {
             "-z", // Unrecognized command
             "-P",
-            "-P NaN",
             "-e",
-            "-e NaN",
             "-t",
-            "-t NaN",
             "-e 0 -t 0",
             "-a",
             "-a NotAnAddress",
@@ -93,6 +90,23 @@ class TerminalApplicationCharacterizationTest {
         );
 
         verify(this.mapOfExceptionAndOut(exception), Approvals.NAMES.withParameters(args));
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "-P NaN",
+            "-e NaN",
+            "-t NaN",
+        }
+    )
+    void givenInvalidNumberArgument_whenInitialized_thenThrowsAndPrintsError (final String args) {
+        final var exception = assertThrows(
+            RuntimeException.class,
+            () -> initTerminalApplication(args)
+        );
+
+        verify(this.mapOfExceptionAndOut(exception));
     }
 
     @Test
