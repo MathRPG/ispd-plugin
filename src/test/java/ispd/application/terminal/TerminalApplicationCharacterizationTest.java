@@ -69,6 +69,16 @@ class TerminalApplicationCharacterizationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
+    void givenEmptyOrNullArgs_whenInitialized_throws (final String args) {
+        final var exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> initTerminalApplication(args)
+        );
+
+        verify(this.mapOfExceptionAndOut(exception));
+    }
+
+    @ParameterizedTest
     @ValueSource(
         strings = {
             "-z", // Unrecognized command
