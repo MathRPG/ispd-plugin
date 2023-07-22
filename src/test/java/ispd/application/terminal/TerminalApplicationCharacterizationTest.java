@@ -174,11 +174,14 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
+            // Grid Models
             "gridModelWithSingleMaster.imsx",
             "gridModelWithNoSlaves.imsx",
+            // IaaS Models
             "iaasModelWithSingleMaster.imsx",
             "iaasModelWithInvalidAllocation.imsx",
             "iaasModelWithNoSlaves.imsx",
+            // PaaS Models
             "paasModelWithSingleMaster.imsx",
             "paasModelWithInvalidAllocation.imsx",
             "paasModelWithNoSlaves.imsx",
