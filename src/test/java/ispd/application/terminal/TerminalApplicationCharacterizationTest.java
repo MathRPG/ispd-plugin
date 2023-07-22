@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.approvaltests.Approvals;
@@ -47,7 +47,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     private static @NotNull String makePathToModel (final String modelName) {
-        return Paths.get("src", "test", "resources", "models", modelName).toString();
+        return Path.of("src", "test", "resources", "models", modelName).toString();
     }
 
     private @NotNull Map<String, Object> mapOfExceptionAndOut (final Exception exception) {
