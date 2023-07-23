@@ -85,7 +85,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(exception, hasMessageIn(this.systemOutContents()));
 
-        verify(this.mapOfExceptionAndOut(exception));
+        verify(this.systemOutContents());
     }
 
     @Test
