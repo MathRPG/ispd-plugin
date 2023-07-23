@@ -247,6 +247,15 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
+    private static void runApplicationOnModelWith (
+        final String users,
+        final String icons,
+        final String load
+    ) {
+        final String modelName = String.join(FILE_NAME_DELIMITER, users, icons, load);
+        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
+    }
+
     @ParameterizedTest
     @CsvSource(
         {
@@ -261,8 +270,7 @@ class TerminalApplicationCharacterizationTest {
     void givenModelWithNoUsers_thenPrintsErrorAfterOpeningModel (
         final String icons, final String load
     ) {
-        final String modelName = String.join(FILE_NAME_DELIMITER, "noUsers", icons, load);
-        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
+        runApplicationOnModelWith("noUsers", icons, load);
 
         verify(this.outStream);
     }
@@ -279,8 +287,7 @@ class TerminalApplicationCharacterizationTest {
     void givenModelWithNoIcons_thenPrintsErrorAfterOpeningModel (
         final String users, final String load
     ) {
-        final String modelName = String.join(FILE_NAME_DELIMITER, users, "noIcons", load);
-        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
+        runApplicationOnModelWith(users, "noIcons", load);
 
         verify(this.outStream);
     }
@@ -297,8 +304,7 @@ class TerminalApplicationCharacterizationTest {
     void givenModelWithNoLoad_thenPrintsErrorAfterOpeningModel (
         final String users, final String icons
     ) {
-        final String modelName = String.join(FILE_NAME_DELIMITER, users, icons, "noLoad");
-        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
+        runApplicationOnModelWith(users, icons, "noLoad");
 
         verify(this.outStream);
     }
