@@ -29,7 +29,7 @@ class TerminalApplicationCharacterizationTest {
 
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-    private static String[] convertToOptionArray (final CharSequence spacedOptions) {
+    private static String @Nullable [] convertToOptionArray (final CharSequence spacedOptions) {
         if (spacedOptions == null) {
             return null;
         }
