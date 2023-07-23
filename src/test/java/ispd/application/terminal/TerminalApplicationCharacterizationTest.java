@@ -21,6 +21,8 @@ class TerminalApplicationCharacterizationTest {
 
     private static final Pattern SPACE_MATCHER = Pattern.compile(" ");
 
+    private static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
+
     private final PrintStream standardOut = System.out;
 
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
@@ -269,7 +271,7 @@ class TerminalApplicationCharacterizationTest {
         private final Path path;
 
         ModelFolder (final String folderName) {
-            this.path = Path.of("src", "test", "resources", "models", folderName);
+            this.path = MODEL_FOLDER_PATH.resolve(folderName);
         }
 
         private String pathTo (final String modelName) {
