@@ -140,14 +140,18 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenInvalidAddress_thenThrowsOnInit () {
-        final var exception = assertThrows(
+        final var cause = assertThrows(
             IllegalArgumentException.class,
             () -> initTerminalApplication("-a NotAnAddress")
+        ).getCause();
+
+        assertThat(
+            cause,
+            both(hasMessageIn(this.systemOutContents()))
+                .and(is(instanceOf(UnknownHostException.class)))
         );
 
-        assertInstanceOf(UnknownHostException.class, exception.getCause());
-
-        verify(this.mapOfExceptionAndOut(exception));
+        verify(this.systemOutContents());
     }
 
     @ParameterizedTest
