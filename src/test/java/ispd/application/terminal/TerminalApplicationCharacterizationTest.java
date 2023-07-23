@@ -82,7 +82,7 @@ class TerminalApplicationCharacterizationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void givenEmptyOrNullArgs_thenThrowsOnInit (final String options) {
+    void givenEmptyOrNullOptions_thenThrowsOnInit (final String options) {
         final var exception = assertThrows(
             IllegalArgumentException.class,
             () -> initTerminalApplication(options)
@@ -167,7 +167,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenValidArgs_thenPrintsNothingOnInit () {
+    void givenValidOptions_thenPrintsNothingOnInit () {
         initTerminalApplication("-h");
 
         assertThat(
@@ -188,7 +188,7 @@ class TerminalApplicationCharacterizationTest {
             "nonexistent.imsx -h",
         }
     )
-    void givenHelpArg_thenPrintsHelpWhenRun (final String options) {
+    void givenHelpOption_thenPrintsHelpWhenRun (final String options) {
         runTerminalApplication(options);
 
         verify(this.outStream);
@@ -203,7 +203,7 @@ class TerminalApplicationCharacterizationTest {
             "nonexistent.imsx -v",
         }
     )
-    void givenVersionArg_thenPrintsVersionInfoWhenRun (final String options) {
+    void givenVersionOption_thenPrintsVersionInfoWhenRun (final String options) {
         runTerminalApplication(options);
 
         verify(this.outStream);
