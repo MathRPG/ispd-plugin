@@ -146,10 +146,7 @@ class TerminalApplicationCharacterizationTest {
             () -> initTerminalApplication("-a NotAnAddress")
         ).getCause();
 
-        assertThat(
-            cause,
-            this.hasMessageInSystemOut_andIsOfType(UnknownHostException.class)
-        );
+        assertThat(cause, this.hasMessageInSystemOut_andIsOfType(UnknownHostException.class));
 
         verify(this.systemOutContents());
     }
