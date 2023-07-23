@@ -10,7 +10,6 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
-import org.approvaltests.*;
 import org.jetbrains.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -215,7 +214,7 @@ class TerminalApplicationCharacterizationTest {
     void givenInvalidModel_whenRun_thenPrintsErrors (final String modelName) {
         runTerminalApplication(makePathToModel(modelName));
 
-        verify(this.outStream, Approvals.NAMES.withParameters(modelName));
+        verify(this.outStream, NAMES.withParameters(modelName));
     }
 
     @ParameterizedTest
@@ -244,7 +243,7 @@ class TerminalApplicationCharacterizationTest {
 
         verify(
             this.mapOfExceptionAndOut(exception),
-            Approvals.NAMES.withParameters(modelName)
+            NAMES.withParameters(modelName)
         );
     }
 }
