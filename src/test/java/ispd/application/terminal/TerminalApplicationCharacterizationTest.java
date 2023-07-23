@@ -218,7 +218,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenNonexistentOrWrongExtensionModel_thenPrintsErrorWhenRun (final String modelName) {
-        runTerminalApplication(ModelFolder.NO_TYPE.pathTo(modelName));
+        runTerminalApplication(ModelFolder.NO_TYPE.pathToFile(modelName));
 
         assertThat(
             "Error message printed to out should contain model name",
@@ -233,14 +233,14 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenEmptyModelFile_thenPrintsErrorWhileOpeningIconicModel () {
-        runTerminalApplication(ModelFolder.NO_TYPE.pathTo("empty.imsx"));
+        runTerminalApplication(ModelFolder.NO_TYPE.pathToModel("empty"));
 
         verify(this.outStream);
     }
 
     @Test
     void givenModelFileWithInvalidXml_thenPrintsErrorWhileOpeningIconicModel () {
-        runTerminalApplication(ModelFolder.GRID.pathTo("malformed.imsx"));
+        runTerminalApplication(ModelFolder.GRID.pathToModel("malformed"));
 
         verify(this.outStream);
     }
