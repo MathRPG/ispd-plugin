@@ -286,16 +286,31 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @ParameterizedTest
+    @CsvSource(
+        {
+            "oneUser,oneMachineIcon",
+            "oneUser,oneMachineMasterIcon",
+            "twoUsers,oneMachineIcon",
+            "twoUsers,oneMachineMasterIcon",
+        }
+    )
+    void givenModelWithNoLoad_thenPrintsErrorAfterOpeningModel (
+        final String users, final String icons
+    ) {
+        final String modelName = String.join(FILE_NAME_DELIMITER, users, icons, "noLoad");
+        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
+
+        verify(this.outStream);
+    }
+
+    @ParameterizedTest
     @ValueSource(
         strings = {
             // Grid models
-            "gridModelWithSingleMachineIcon.imsx",
             "gridModelWithSingleTask.imsx",
             // Iaas models
-            "iaasModelWithSingleMachineIcon.imsx",
             "iaasModelWithSingleTask.imsx",
             // Paas models
-            "paasModelWithSingleMachineIcon.imsx",
             "paasModelWithSingleTask.imsx",
         }
     )
