@@ -207,9 +207,23 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            // Empty and incomplete Files
-            "emptyFile",
-            "emptyFile.txt",
+            "wrongExtension",
+            "wrongExtension.txt",
+        }
+    )
+    void givenModelFiileWithWrongExtension_whenRun_thenPrintsErrorToOut(final String modelName) {
+        runTerminalApplication(ModelFolder.NO_TYPE.pathTo(modelName));
+
+        assertTrue(
+            this.outStream.toString().contains(modelName)
+            && this.outStream.toString().contains("iSPD can not open the file:"),
+            "Should tell there was an error opening the file, and the file name."
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
             "emptyFile.imsx",
             // Grid models
             "gridMalformedModel.imsx",
