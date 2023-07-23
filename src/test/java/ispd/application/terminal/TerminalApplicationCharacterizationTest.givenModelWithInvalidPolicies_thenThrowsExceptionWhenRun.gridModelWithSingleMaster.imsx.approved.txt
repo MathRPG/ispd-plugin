@@ -1,5 +1,0 @@
-ex : java.lang.RuntimeException: java.lang.ClassNotFoundException: ispd.policy.scheduling.grid.impl.--- 
-out : Simulation Initiated.
-Opening iconic model. ->[0;32mOK[0m
-* Simulation 1
-  Mounting network queue:  

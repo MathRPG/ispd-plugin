@@ -11,7 +11,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 import java.nio.file.*;
-import java.util.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
 import org.hamcrest.core.*;
@@ -24,7 +23,7 @@ class TerminalApplicationCharacterizationTest {
 
     public static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
 
-    public static final String FILE_NAME_DELIMITER = "_";
+    private static final CharSequence FILE_NAME_DELIMITER = "_";
 
     private static final String[] NO_OPTIONS = {};
 
@@ -53,15 +52,13 @@ class TerminalApplicationCharacterizationTest {
         initTerminalApplication(spacedOptions).run();
     }
 
-    private static @NotNull String makePathToModel (final String modelName) {
-        return Path.of("src", "test", "resources", "models", modelName).toString();
-    }
-
-    private @NotNull Map<String, Object> mapOfExceptionAndOut (final Exception exception) {
-        return Map.of(
-            "ex", exception, // TODO: Change
-            "out", this.outStream
-        );
+    private static void runApplicationOnModelWith (
+        final String users,
+        final String icons,
+        final String load
+    ) {
+        final String modelName = String.join(FILE_NAME_DELIMITER, users, icons, load);
+        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
     }
 
     private String systemOutContents () {
@@ -247,15 +244,6 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
-    private static void runApplicationOnModelWith (
-        final String users,
-        final String icons,
-        final String load
-    ) {
-        final String modelName = String.join(FILE_NAME_DELIMITER, users, icons, load);
-        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
-    }
-
     @ParameterizedTest
     @CsvSource(
         {
@@ -310,49 +298,41 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-        strings = {
-            // Grid models
-            "gridModelWithSingleTask.imsx",
-            // Iaas models
-            "iaasModelWithSingleTask.imsx",
-            // Paas models
-            "paasModelWithSingleTask.imsx",
+    @CsvSource(
+        {
+            "oneUser,oneTaskGlobalLoad",
+            "twoUsers,oneTaskGlobalLoad",
         }
     )
-    void givenInvalidModel_thenPrintsErrorsWhenRun (final String modelName) {
-        runTerminalApplication(makePathToModel(modelName));
+    void givenModelWithNoMasters_thenPrintsErrorAfterOpeningModel (
+        final String users, final String load
+    ) {
+        runApplicationOnModelWith(users, "oneMachineIcon", load);
 
-        verify(this.outStream, NAMES.withParameters(modelName));
+        verify(this.outStream);
     }
 
     @ParameterizedTest
     @ValueSource(
         strings = {
-            // Grid Models
-            "gridModelWithSingleMaster.imsx",
-            "gridModelWithNoSlaves.imsx",
-            // IaaS Models
-            "iaasModelWithSingleMaster.imsx",
-            "iaasModelWithInvalidAllocation.imsx",
-            "iaasModelWithNoSlaves.imsx",
-            // PaaS Models
-            "paasModelWithSingleMaster.imsx",
-            "paasModelWithInvalidAllocation.imsx",
-            "paasModelWithNoSlaves.imsx",
+            "oneUser",
+            "twoUsers",
         }
     )
-    void givenModelWithInvalidPolicies_thenThrowsExceptionWhenRun (final String modelName) {
-        final var path = makePathToModel(modelName);
-
-        final var exception = assertThrows(
+    void givenModelWithInvalidSchedulingPolicy_thenThrowsWhileInterpretingModel (final String users) {
+        final var cause = assertThrowsExactly(
             RuntimeException.class,
-            () -> runTerminalApplication(path)
+            () -> runApplicationOnModelWith(
+                users, "oneMachineMasterIcon", "oneTaskGlobalLoad"
+            )
+        ).getCause();
+
+        assertThat(
+            cause,
+            both(is(instanceOf(ClassNotFoundException.class)))
+                .and(hasProperty("message", containsString("---")))
         );
 
-        verify(
-            this.mapOfExceptionAndOut(exception),
-            NAMES.withParameters(modelName)
-        );
+        verify(this.outStream);
     }
 }
