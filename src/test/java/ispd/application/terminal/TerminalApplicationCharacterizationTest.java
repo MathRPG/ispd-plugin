@@ -2,6 +2,7 @@ package ispd.application.terminal;
 
 import static org.approvaltests.Approvals.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
@@ -9,6 +10,8 @@ import java.io.PrintStream;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.regex.Pattern;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.UnrecognizedOptionException;
 import org.approvaltests.Approvals;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
@@ -78,6 +81,18 @@ class TerminalApplicationCharacterizationTest {
         verify(this.mapOfExceptionAndOut(exception));
     }
 
+    @Test
+    void givenUnrecognizedOption_thenThrowsOnInit () {
+        final var exception = assertThrows(
+            RuntimeException.class,
+            () -> initTerminalApplication("-z")
+        );
+
+        assertInstanceOf(UnrecognizedOptionException.class, exception.getCause());
+
+        verify(this.mapOfExceptionAndOut(exception));
+    }
+
     @ParameterizedTest
     @ValueSource(
         strings = {
@@ -93,6 +108,8 @@ class TerminalApplicationCharacterizationTest {
             () -> initTerminalApplication(args)
         );
 
+        assertInstanceOf(MissingArgumentException.class, exception.getCause());
+
         verify(
             this.mapOfExceptionAndOut(exception),
             Approvals.NAMES.withParameters(args.replace("-", ""))
@@ -102,7 +119,6 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "-z", // Unrecognized command
             "-e 0 -t 0",
             "-a NotAnAddress",
             //            "-e -1", // should probably fail
