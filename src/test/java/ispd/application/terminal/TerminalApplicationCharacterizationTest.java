@@ -275,7 +275,8 @@ class TerminalApplicationCharacterizationTest {
 
         private String pathTo (final String modelName) {
             return Path
-                .of("src", "test", "resources", "models", this.folderName, modelName)
+                .of("src", "test", "resources", "models", this.folderName)
+                .resolve(modelName)
                 .toString();
         }
     }
