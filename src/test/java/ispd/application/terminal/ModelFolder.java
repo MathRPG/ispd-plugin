@@ -3,7 +3,9 @@ package ispd.application.terminal;
 import java.nio.file.*;
 
 public enum ModelFolder {
-    NO_TYPE("notype");
+    NO_TYPE("notype"),
+    GRID("grid"),
+    ;
 
     private final Path path;
 

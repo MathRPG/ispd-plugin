@@ -238,11 +238,17 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
+    @Test
+    void givenModelFileWithInvalidXml_thenPrintsErrorWhileOpeningIconicModel () {
+        runTerminalApplication(ModelFolder.GRID.pathTo("malformed.imsx"));
+
+        verify(this.outStream);
+    }
+
     @ParameterizedTest
     @ValueSource(
         strings = {
             // Grid models
-            "gridMalformedModel.imsx",
             "emptyGridModel.imsx",
             "emptyGridModelWithSingleUser.imsx",
             "gridModelWithSingleMachineIcon.imsx",
