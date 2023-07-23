@@ -114,15 +114,15 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenOptionWithMissingArgument_thenThrowsOnInit (final String options) {
-        final var underlyingException = assertThrows(
+        final var cause = assertThrows(
             RuntimeException.class,
             () -> initTerminalApplication(options)
         ).getCause();
 
-        assertInstanceOf(MissingArgumentException.class, underlyingException);
+        assertInstanceOf(MissingArgumentException.class, cause);
 
         assertTrue(
-            this.systemOutContents().contains(underlyingException.getMessage()),
+            this.systemOutContents().contains(cause.getMessage()),
             "Should print exception cause to out."
         );
     }
