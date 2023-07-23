@@ -146,13 +146,13 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenValidArgs_whenInitialized_thenDoesNotPrintToOut () {
+    void givenValidArgs_thenPrintsNothingToOutOnInit () {
         initTerminalApplication("-h");
 
-        assertEquals(
-            "",
+        assertThat(
+            "Should not print anything to out on valid initialization.",
             this.outStream.toString(),
-            "Should not print to system out after initialization."
+            is(emptyString())
         );
     }
 
