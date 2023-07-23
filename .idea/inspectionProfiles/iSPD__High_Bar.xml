@@ -981,7 +981,7 @@
       <option name="ignoreReferencesNeedingImport" value="true" />
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignoreStaticFieldAccesses" value="true" />
+      <option name="m_ignoreStaticFieldAccesses" value="false" />
       <option name="m_ignoreStaticMethodCalls" value="false" />
       <option name="m_ignoreStaticAccessFromStaticContext" value="false" />
     </inspection_tool>
@@ -1014,7 +1014,7 @@
     </inspection_tool>
     <inspection_tool class="UnqualifiedMethodAccess" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnqualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignoreStaticFieldAccesses" value="false" />
+      <option name="m_ignoreStaticFieldAccesses" value="true" />
       <option name="m_ignoreStaticMethodCalls" value="true" />
       <option name="m_ignoreStaticAccessFromStaticContext" value="false" />
     </inspection_tool>

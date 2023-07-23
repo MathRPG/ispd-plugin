@@ -38,9 +38,9 @@ class TerminalApplicationCharacterizationTest {
             return null;
         }
         if (spacedOptions.isEmpty()) {
-            return TerminalApplicationCharacterizationTest.NO_OPTIONS;
+            return NO_OPTIONS;
         }
-        return TerminalApplicationCharacterizationTest.SPACE_MATCHER.split(spacedOptions);
+        return SPACE_MATCHER.split(spacedOptions);
     }
 
     private static TerminalApplication initTerminalApplication (final CharSequence spacedOptions) {
