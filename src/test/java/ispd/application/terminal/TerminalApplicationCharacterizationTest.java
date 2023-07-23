@@ -108,6 +108,7 @@ class TerminalApplicationCharacterizationTest {
     @ValueSource(
         strings = {
             "-P",
+            "--port",
             "-e",
             "-t",
             "-a",
@@ -119,11 +120,10 @@ class TerminalApplicationCharacterizationTest {
             () -> initTerminalApplication(options)
         ).getCause();
 
-        assertInstanceOf(MissingArgumentException.class, cause);
-
-        assertTrue(
-            this.systemOutContents().contains(cause.getMessage()),
-            "Should print exception cause to out."
+        assertThat(
+            cause,
+            both(hasMessageIn(this.systemOutContents()))
+                .and(is(instanceOf(MissingArgumentException.class)))
         );
     }
 
