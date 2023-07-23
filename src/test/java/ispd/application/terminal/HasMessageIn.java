@@ -2,7 +2,7 @@ package ispd.application.terminal;
 
 import org.hamcrest.*;
 
-public class HasMessageIn <E extends Exception> extends TypeSafeMatcher<E> {
+public class HasMessageIn <T extends Throwable> extends TypeSafeMatcher<T> {
 
     private final String str;
 
@@ -10,7 +10,7 @@ public class HasMessageIn <E extends Exception> extends TypeSafeMatcher<E> {
         this.str = str;
     }
 
-    public static <T extends Exception> Matcher<T> hasMessageIn (final String str) {
+    public static <T extends Throwable> Matcher<T> hasMessageIn (final String str) {
         return new HasMessageIn<>(str);
     }
 
@@ -20,7 +20,7 @@ public class HasMessageIn <E extends Exception> extends TypeSafeMatcher<E> {
     }
 
     @Override
-    protected boolean matchesSafely (final E item) {
+    protected boolean matchesSafely (final T item) {
         return this.str.contains(item.getMessage());
     }
 }

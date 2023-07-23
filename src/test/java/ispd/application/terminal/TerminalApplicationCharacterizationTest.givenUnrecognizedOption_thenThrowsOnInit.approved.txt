@@ -1,3 +1,1 @@
-ex : java.lang.RuntimeException: org.apache.commons.cli.UnrecognizedOptionException: Unrecognized option: -z 
-out : Unrecognized option: -z
- 
+Unrecognized option: -z

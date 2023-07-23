@@ -21,11 +21,11 @@ import org.junit.jupiter.params.provider.*;
 
 class TerminalApplicationCharacterizationTest {
 
+    public static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
+
     private static final String[] NO_OPTIONS = {};
 
     private static final Pattern SPACE_MATCHER = Pattern.compile(" ");
-
-    public static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
 
     private final PrintStream standardOut = System.out;
 
@@ -90,14 +90,18 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenUnrecognizedOption_thenThrowsOnInit () {
-        final var exception = assertThrows(
+        final var cause = assertThrows(
             RuntimeException.class,
             () -> initTerminalApplication("-z")
+        ).getCause();
+
+        assertThat(
+            cause,
+            both(hasMessageIn(this.systemOutContents()))
+                .and(is(instanceOf(UnrecognizedOptionException.class)))
         );
 
-        assertInstanceOf(UnrecognizedOptionException.class, exception.getCause());
-
-        verify(this.mapOfExceptionAndOut(exception));
+        verify(this.systemOutContents());
     }
 
     @ParameterizedTest
