@@ -159,12 +159,10 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenOptionWithInvalidNumberArgument_thenThrowsOnInit (final String options) {
-        final var exception = assertThrows(
+        final var cause = assertThrows(
             RuntimeException.class,
             () -> initTerminalApplication(options)
-        );
-
-        final var cause = exception.getCause();
+        ).getCause();
 
         assertThat(
             cause,
