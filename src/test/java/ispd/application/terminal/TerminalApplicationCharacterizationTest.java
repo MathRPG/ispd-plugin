@@ -138,11 +138,13 @@ class TerminalApplicationCharacterizationTest {
             "-t NaN",
         }
     )
-    void givenInvalidNumberArgument_whenInitialized_thenThrowsAndPrintsError (final String args) {
+    void givenOptionWithInvalidNumberArgument_thenThrowsOnInit (final String args) {
         final var exception = assertThrows(
             RuntimeException.class,
             () -> initTerminalApplication(args)
         );
+
+        assertInstanceOf(NumberFormatException.class, exception.getCause());
 
         verify(this.mapOfExceptionAndOut(exception));
     }
