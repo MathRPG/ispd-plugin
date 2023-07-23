@@ -47,6 +47,10 @@ class TerminalApplicationCharacterizationTest {
         return Path.of("src", "test", "resources", "models", modelName).toString();
     }
 
+    private static String makePathToModel (final String folder, final String modelName) {
+        return Path.of("src", "test", "resources", "models", folder, modelName).toString();
+    }
+
     private @NotNull Map<String, Object> mapOfExceptionAndOut (final Exception exception) {
         return Map.of(
             "ex", exception, // TODO: Change
@@ -187,8 +191,24 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            // Non-existent file
-            "doesNotExist.imsx",
+            "nonexistent",
+            "nonexistent.txt",
+            "nonexistent.imsx",
+        }
+    )
+    void givenNonexistentModel_whenRun_thenPrintsErrorToOut (final String modelName) {
+        runTerminalApplication(makePathToModel("notype", modelName));
+
+        assertTrue(
+            this.outStream.toString().contains(modelName)
+            && this.outStream.toString().contains("iSPD can not open the file:"),
+            "Should tell there was an error opening the file, and the file name."
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
             // Empty and incomplete Files
             "emptyFile",
             "emptyFile.txt",
