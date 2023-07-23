@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
 <!DOCTYPE system SYSTEM "iSPD.dtd">
-<system version="2.3">
+<system version="2.1">
+  <owner id="user1" powerlimit="100.0"/>
+  <owner id="user2" powerlimit="100.0"/>
 </system>

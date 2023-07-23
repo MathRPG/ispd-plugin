@@ -248,19 +248,43 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
+            "noUsers_noIcons_noLoad",
+            "noUsers_noIcons_oneTaskGlobalLoad",
+            "noUsers_oneMasterIcon_noLoad",
+            "noUsers_oneMasterIcon_oneTaskGlobalLoad",
+        }
+    )
+    void givenModelWithNoUsers_thenPrintsErrorAfterOpeningModel (final String modelName) {
+        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
+
+        verify(this.outStream);
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "oneUser_noIcons_noLoad",
+            "oneUser_noIcons_oneTaskGlobalLoad",
+            "twoUsers_noIcons_noLoad",
+            "twoUsers_noIcons_oneTaskGlobalLoad",
+        }
+    )
+    void givenModelWithNoIcons_thenPrintsErrorAfterOpeningModel (final String modelName) {
+        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
+
+        verify(this.outStream);
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
             // Grid models
-            "emptyGridModel.imsx",
-            "emptyGridModelWithSingleUser.imsx",
             "gridModelWithSingleMachineIcon.imsx",
             "gridModelWithSingleTask.imsx",
             // Iaas models
-            "emptyIaaSModel.imsx",
-            "emptyIaaSModelWithSingleUser.imsx",
             "iaasModelWithSingleMachineIcon.imsx",
             "iaasModelWithSingleTask.imsx",
             // Paas models
-            "emptyPaaSModel.imsx",
-            "emptyPaaSModelWithSingleUser.imsx",
             "paasModelWithSingleMachineIcon.imsx",
             "paasModelWithSingleTask.imsx",
         }

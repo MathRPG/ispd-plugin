@@ -1,3 +1,0 @@
-Simulation Initiated.
-Opening iconic model. ->[0;32mOK[0m
-The model has no users.
