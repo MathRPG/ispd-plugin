@@ -156,7 +156,7 @@ class TerminalApplicationCharacterizationTest {
         assertEquals(
             "",
             this.outStream.toString(),
-            "Should not print to system out after intialization."
+            "Should not print to system out after initialization."
         );
     }
 
