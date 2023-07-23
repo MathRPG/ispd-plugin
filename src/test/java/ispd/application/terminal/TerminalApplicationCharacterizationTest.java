@@ -191,36 +191,22 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "nonexistent",
-            "nonexistent.txt",
             "nonexistent.imsx",
-        }
-    )
-    void givenNonexistentModel_whenRun_thenPrintsErrorToOut (final String modelName) {
-        runTerminalApplication(ModelFolder.NO_TYPE.pathTo(modelName));
-
-        assertThat(
-            "Should print error and model name to out",
-            this.outStream.toString(),
-            both(containsString(modelName))
-                .and(containsString("iSPD can not open the file:"))
-        );
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-        strings = {
             "wrongExtension",
             "wrongExtension.txt",
         }
     )
-    void givenModelFiileWithWrongExtension_whenRun_thenPrintsErrorToOut (final String modelName) {
+    void givenNonexistentOrWrongExtensionModel_thenPrintsErrorToOutOnRun (final String modelName) {
         runTerminalApplication(ModelFolder.NO_TYPE.pathTo(modelName));
 
-        assertTrue(
-            this.outStream.toString().contains(modelName)
-            && this.outStream.toString().contains("iSPD can not open the file:"),
-            "Should tell there was an error opening the file, and the file name."
+        assertThat(
+            "Error message printed to out should contain model name",
+            this.outStream.toString(),
+            containsString(modelName)
+        );
+
+        verify(
+            this.outStream.toString().replace(modelName, "")
         );
     }
 
