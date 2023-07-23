@@ -47,12 +47,6 @@ class TerminalApplicationCharacterizationTest {
         return Path.of("src", "test", "resources", "models", modelName).toString();
     }
 
-    private static String makePathToModel (final ModelFolder folder, final String modelName) {
-        return Path
-            .of("src", "test", "resources", "models", folder.toString(), modelName)
-            .toString();
-    }
-
     private @NotNull Map<String, Object> mapOfExceptionAndOut (final Exception exception) {
         return Map.of(
             "ex", exception, // TODO: Change
@@ -199,7 +193,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenNonexistentModel_whenRun_thenPrintsErrorToOut (final String modelName) {
-        runTerminalApplication(makePathToModel(ModelFolder.NO_TYPE, modelName));
+        runTerminalApplication(ModelFolder.NO_TYPE.pathTo(modelName));
 
         assertTrue(
             this.outStream.toString().contains(modelName)
@@ -279,9 +273,10 @@ class TerminalApplicationCharacterizationTest {
             this.folderName = folderName;
         }
 
-        @Override
-        public String toString () {
-            return this.folderName;
+        private String pathTo (final String modelName) {
+            return Path
+                .of("src", "test", "resources", "models", this.folderName, modelName)
+                .toString();
         }
     }
 }
