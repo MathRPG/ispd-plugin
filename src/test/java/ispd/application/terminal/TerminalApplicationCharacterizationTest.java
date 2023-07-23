@@ -1,27 +1,19 @@
 package ispd.application.terminal;
 
-import static org.approvaltests.Approvals.verify;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.approvaltests.Approvals.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.net.UnknownHostException;
-import java.nio.file.Path;
-import java.util.Map;
-import java.util.regex.Pattern;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.UnrecognizedOptionException;
-import org.approvaltests.Approvals;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
+import java.io.*;
+import java.net.*;
+import java.nio.file.*;
+import java.util.*;
+import java.util.regex.*;
+import org.apache.commons.cli.*;
+import org.approvaltests.*;
+import org.jetbrains.annotations.*;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.*;
+import org.junit.jupiter.params.provider.*;
 
 class TerminalApplicationCharacterizationTest {
 
