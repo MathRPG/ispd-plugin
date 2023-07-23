@@ -11,6 +11,7 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 import java.nio.file.*;
+import java.util.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
 import org.hamcrest.core.*;
@@ -285,6 +286,18 @@ class TerminalApplicationCharacterizationTest {
             cause,
             both(is(instanceOf(ClassNotFoundException.class)))
                 .and(hasProperty("message", containsString("---")))
+        );
+
+        verify(this.outStream);
+    }
+
+    @Test
+    void givenModelWithNoSlaves_thenThrowsWhileSimulatingScheduling () {
+        assertThrowsExactly(
+            NoSuchElementException.class,
+            () -> runApplicationOnModelWith(
+                "oneUser", "oneMachineMasterSchedulerIcon", "oneTaskGlobalLoad"
+            )
         );
 
         verify(this.outStream);
