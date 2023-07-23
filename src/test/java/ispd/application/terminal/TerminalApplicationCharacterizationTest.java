@@ -25,7 +25,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class TerminalApplicationCharacterizationTest {
 
-    private static final String[] NO_ARGS = {};
+    private static final String[] NO_OPTIONS = {};
 
     private static final Pattern SPACE_MATCHER = Pattern.compile(" ");
 
@@ -33,22 +33,22 @@ class TerminalApplicationCharacterizationTest {
 
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-    private static String[] convertToArgList (final CharSequence spaceSeparatedArgs) {
-        if (spaceSeparatedArgs == null) {
+    private static String[] convertToOptionArray (final CharSequence spacedOptions) {
+        if (spacedOptions == null) {
             return null;
         }
-        if (spaceSeparatedArgs.isEmpty()) {
-            return TerminalApplicationCharacterizationTest.NO_ARGS;
+        if (spacedOptions.isEmpty()) {
+            return TerminalApplicationCharacterizationTest.NO_OPTIONS;
         }
-        return TerminalApplicationCharacterizationTest.SPACE_MATCHER.split(spaceSeparatedArgs);
+        return TerminalApplicationCharacterizationTest.SPACE_MATCHER.split(spacedOptions);
     }
 
-    private static TerminalApplication initTerminalApplication (final CharSequence argString) {
-        return new TerminalApplication(convertToArgList(argString));
+    private static TerminalApplication initTerminalApplication (final CharSequence spacedOptions) {
+        return new TerminalApplication(convertToOptionArray(spacedOptions));
     }
 
-    private static void runTerminalApplication (final CharSequence argString) {
-        initTerminalApplication(argString).run();
+    private static void runTerminalApplication (final CharSequence spacedOptions) {
+        initTerminalApplication(spacedOptions).run();
     }
 
     private static @NotNull String makePathToModel (final String modelName) {
@@ -64,7 +64,7 @@ class TerminalApplicationCharacterizationTest {
 
     @BeforeEach
     void replaceSystemOut () {
-        System.setOut(new PrintStream(this.outStream));
+        System.setOut(new PrintStream(this.outStream)); // TODO: Fix
     }
 
     @AfterEach
@@ -74,10 +74,10 @@ class TerminalApplicationCharacterizationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void givenEmptyOrNullArgs_thenThrowsOnInit (final String args) {
+    void givenEmptyOrNullArgs_thenThrowsOnInit (final String options) {
         final var exception = assertThrows(
             IllegalArgumentException.class,
-            () -> initTerminalApplication(args)
+            () -> initTerminalApplication(options)
         );
 
         verify(this.mapOfExceptionAndOut(exception));
@@ -104,10 +104,10 @@ class TerminalApplicationCharacterizationTest {
             "-a",
         }
     )
-    void givenOptionWithMissingArgument_thenThrowsOnInit (final String args) {
+    void givenOptionWithMissingArgument_thenThrowsOnInit (final String options) {
         final var underlyingException = assertThrows(
             RuntimeException.class,
-            () -> initTerminalApplication(args)
+            () -> initTerminalApplication(options)
         ).getCause();
 
         assertInstanceOf(MissingArgumentException.class, underlyingException);
@@ -138,10 +138,10 @@ class TerminalApplicationCharacterizationTest {
             "-t NaN",
         }
     )
-    void givenOptionWithInvalidNumberArgument_thenThrowsOnInit (final String args) {
+    void givenOptionWithInvalidNumberArgument_thenThrowsOnInit (final String options) {
         final var exception = assertThrows(
             RuntimeException.class,
-            () -> initTerminalApplication(args)
+            () -> initTerminalApplication(options)
         );
 
         assertInstanceOf(NumberFormatException.class, exception.getCause());
@@ -171,8 +171,8 @@ class TerminalApplicationCharacterizationTest {
             "doesNotExist.imsx -h",
         }
     )
-    void givenHelpArg_whenRun_thenPrintsHelp (final String args) {
-        runTerminalApplication(args);
+    void givenHelpArg_whenRun_thenPrintsHelp (final String options) {
+        runTerminalApplication(options);
 
         verify(this.outStream);
     }
@@ -186,8 +186,8 @@ class TerminalApplicationCharacterizationTest {
             "doesNotExist.imsx -v",
         }
     )
-    void givenVersionArg_whenRun_thenPrintsVersionInfo (final String args) {
-        runTerminalApplication(args);
+    void givenVersionArg_whenRun_thenPrintsVersionInfo (final String options) {
+        runTerminalApplication(options);
 
         verify(this.outStream);
     }

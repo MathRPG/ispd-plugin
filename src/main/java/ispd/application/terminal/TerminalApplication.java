@@ -57,11 +57,11 @@ public class TerminalApplication implements Application {
     /**
      * Pre run of the terminal application, adding the necessary flags to the class before it runs.
      *
-     * @param args
-     *     Arguments from the command line.
+     * @param options
+     *     Options from the command line.
      */
-    public TerminalApplication (final String[] args) {
-        final var cmd = this.commandLinePreparation(OptionsHolder.ALL_OPTIONS, args);
+    public TerminalApplication (final String[] options) {
+        final var cmd = this.commandLinePreparation(OptionsHolder.ALL_OPTIONS, options);
 
         this.mode          = getActiveMode(cmd);
         this.serverPort    = getIntOptionOr(cmd, "P", TerminalApplication.DEFAULT_PORT);
@@ -275,14 +275,14 @@ public class TerminalApplication implements Application {
      *
      * @param options
      *     The class Common Cli's Options class for the command line options.
-     * @param args
-     *     The arguments got from the command line.
+     * @param cmdOptions
+     *     The options received from the command line.
      *
      * @return The command line class with the chosen options.
      */
-    private CommandLine commandLinePreparation (final Options options, final String[] args) {
+    private CommandLine commandLinePreparation (final Options options, final String[] cmdOptions) {
         try {
-            return (new DefaultParser()).parse(options, args);
+            return (new DefaultParser()).parse(options, cmdOptions);
         } catch (final ParseException e) {
             System.out.println(e.getMessage());
             throw new RuntimeException(e);
