@@ -14,6 +14,7 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
+import org.hamcrest.core.*;
 import org.jetbrains.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -147,11 +148,15 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(
             cause,
-            both(hasMessageIn(this.systemOutContents()))
-                .and(is(instanceOf(UnknownHostException.class)))
+            this.hasMessageInSystemOut_andIsOfType(UnknownHostException.class)
         );
 
         verify(this.systemOutContents());
+    }
+
+    private <T> CombinableMatcher<Throwable> hasMessageInSystemOut_andIsOfType (final Class<T> type) {
+        return both(hasMessageIn(this.systemOutContents()))
+            .and(is(instanceOf(type)));
     }
 
     @ParameterizedTest
