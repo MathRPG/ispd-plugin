@@ -72,7 +72,7 @@ class TerminalApplicationCharacterizationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void givenEmptyOrNullArgs_whenInitialized_throws (final String args) {
+    void givenEmptyOrNullArgs_thenThrowsOnInit (final String args) {
         final var exception = assertThrows(
             IllegalArgumentException.class,
             () -> initTerminalApplication(args)
@@ -102,7 +102,7 @@ class TerminalApplicationCharacterizationTest {
             "-a",
         }
     )
-    void givenArgumentWithNoValue_whenInitialized_throws (final String args) {
+    void givenOptionWithMissingArgument_thenThrowsOnInit (final String args) {
         final var exception = assertThrows(
             RuntimeException.class,
             () -> initTerminalApplication(args)
