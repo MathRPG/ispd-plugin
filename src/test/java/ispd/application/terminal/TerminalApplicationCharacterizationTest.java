@@ -146,14 +146,13 @@ class TerminalApplicationCharacterizationTest {
             () -> initTerminalApplication("-a NotAnAddress")
         ).getCause();
 
-        assertThat(cause, this.hasMessageInSystemOut_andIsOfType(UnknownHostException.class));
+        assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnknownHostException.class));
 
         verify(this.systemOutContents());
     }
 
-    private <T> CombinableMatcher<Throwable> hasMessageInSystemOut_andIsOfType (final Class<T> type) {
-        return both(hasMessageIn(this.systemOutContents()))
-            .and(is(instanceOf(type)));
+    private <T> CombinableMatcher<Throwable> hasMessageInSysOut_andIsOfType (final Class<T> type) {
+        return both(hasMessageIn(this.systemOutContents())).and(is(instanceOf(type)));
     }
 
     @ParameterizedTest
