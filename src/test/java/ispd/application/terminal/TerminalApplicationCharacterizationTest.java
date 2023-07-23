@@ -291,12 +291,17 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
-    @Test
-    void givenModelWithNoSlaves_thenThrowsWhileSimulatingScheduling () {
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "oneMachineSchedulerIcon",
+        }
+    )
+    void givenModelWithMistake_thenThrowsAfterCreatingTasks (final String icons) {
         assertThrowsExactly(
             NoSuchElementException.class,
             () -> runApplicationOnModelWith(
-                "oneUser", "oneMachineSchedulerIcon", "oneTaskGlobalLoad"
+                "oneUser", icons, "oneTaskGlobalLoad"
             )
         );
 
