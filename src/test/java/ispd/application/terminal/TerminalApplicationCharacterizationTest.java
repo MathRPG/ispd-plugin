@@ -47,8 +47,10 @@ class TerminalApplicationCharacterizationTest {
         return Path.of("src", "test", "resources", "models", modelName).toString();
     }
 
-    private static String makePathToModel (final String folder, final String modelName) {
-        return Path.of("src", "test", "resources", "models", folder, modelName).toString();
+    private static String makePathToModel (final ModelFolder folder, final String modelName) {
+        return Path
+            .of("src", "test", "resources", "models", folder.toString(), modelName)
+            .toString();
     }
 
     private @NotNull Map<String, Object> mapOfExceptionAndOut (final Exception exception) {
@@ -197,7 +199,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenNonexistentModel_whenRun_thenPrintsErrorToOut (final String modelName) {
-        runTerminalApplication(makePathToModel("notype", modelName));
+        runTerminalApplication(makePathToModel(ModelFolder.NO_TYPE, modelName));
 
         assertTrue(
             this.outStream.toString().contains(modelName)
@@ -265,5 +267,21 @@ class TerminalApplicationCharacterizationTest {
             this.mapOfExceptionAndOut(exception),
             NAMES.withParameters(modelName)
         );
+    }
+
+    private enum ModelFolder {
+        NO_TYPE("notype");
+
+        private final String folderName;
+
+        ModelFolder (final String folderName) {
+
+            this.folderName = folderName;
+        }
+
+        @Override
+        public String toString () {
+            return this.folderName;
+        }
     }
 }
