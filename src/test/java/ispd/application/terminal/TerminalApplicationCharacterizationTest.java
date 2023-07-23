@@ -232,14 +232,14 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenEmptyModelFile_thenPrintsErrorWhileOpeningIconicModel () {
+    void givenEmptyModelFile_thenPrintsErrorWhileOpeningModel () {
         runTerminalApplication(ModelFolder.NO_TYPE.pathToModel("empty"));
 
         verify(this.outStream);
     }
 
     @Test
-    void givenModelFileWithInvalidXml_thenPrintsErrorWhileOpeningIconicModel () {
+    void givenModelFileWithInvalidXml_thenPrintsErrorWhileOpeningModel () {
         runTerminalApplication(ModelFolder.GRID.pathToModel("malformed"));
 
         verify(this.outStream);
