@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.*;
 import java.util.regex.*;
@@ -56,7 +57,7 @@ class TerminalApplicationCharacterizationTest {
 
     @BeforeEach
     void replaceSystemOut () {
-        System.setOut(new PrintStream(this.outStream)); // TODO: Fix
+        System.setOut(new PrintStream(this.outStream, true, StandardCharsets.UTF_8));
     }
 
     @AfterEach
