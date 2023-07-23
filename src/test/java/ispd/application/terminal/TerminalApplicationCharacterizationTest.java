@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import ispd.annotations.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
@@ -29,6 +30,7 @@ class TerminalApplicationCharacterizationTest {
 
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
+    @RefactorOnJava20(reason = "Use Pattern Matching.")
     private static String @Nullable [] convertToOptionArray (final CharSequence spacedOptions) {
         if (spacedOptions == null) {
             return null;
