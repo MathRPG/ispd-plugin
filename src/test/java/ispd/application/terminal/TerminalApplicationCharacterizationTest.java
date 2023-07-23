@@ -164,9 +164,14 @@ class TerminalApplicationCharacterizationTest {
             () -> initTerminalApplication(options)
         );
 
-        assertInstanceOf(NumberFormatException.class, exception.getCause());
+        final var cause = exception.getCause();
 
-        verify(this.mapOfExceptionAndOut(exception));
+        assertThat(
+            cause,
+            is(instanceOf(NumberFormatException.class))
+        );
+
+        verify(this.systemOutContents());
     }
 
     @Test

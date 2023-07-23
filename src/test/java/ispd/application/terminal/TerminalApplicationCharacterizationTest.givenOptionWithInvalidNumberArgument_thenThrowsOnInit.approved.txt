@@ -1,3 +1,1 @@
-ex : java.lang.RuntimeException: java.lang.NumberFormatException: For input string: "NaN" 
-out : "NaN" is not a valid number
- 
+"NaN" is not a valid number
