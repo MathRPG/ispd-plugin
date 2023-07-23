@@ -184,8 +184,8 @@ class TerminalApplicationCharacterizationTest {
             "--help",
             "-h -v",
             "-v -h",
-            "-h doesNotExist.imsx",
-            "doesNotExist.imsx -h",
+            "-h nonexistent.imsx",
+            "nonexistent.imsx -h",
         }
     )
     void givenHelpArg_whenRun_thenPrintsHelp (final String options) {
@@ -199,8 +199,8 @@ class TerminalApplicationCharacterizationTest {
         strings = {
             "-v",
             "--version",
-            "-v doesNotExist.imsx",
-            "doesNotExist.imsx -v",
+            "-v nonexistent.imsx",
+            "nonexistent.imsx -v",
         }
     )
     void givenVersionArg_whenRun_thenPrintsVersionInfo (final String options) {
