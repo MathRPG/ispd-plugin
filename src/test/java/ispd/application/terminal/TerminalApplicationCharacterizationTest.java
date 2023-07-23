@@ -266,20 +266,14 @@ class TerminalApplicationCharacterizationTest {
     private enum ModelFolder {
         NO_TYPE("notype");
 
-        private final String folderName;
-
-        private Path path;
+        private final Path path;
 
         ModelFolder (final String folderName) {
-            this.folderName = folderName;
-            path            = Path.of("src", "test", "resources", "models", this.folderName);
+            this.path = Path.of("src", "test", "resources", "models", folderName);
         }
 
         private String pathTo (final String modelName) {
-
-            return path
-                .resolve(modelName)
-                .toString();
+            return this.path.resolve(modelName).toString();
         }
     }
 }
