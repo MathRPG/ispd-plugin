@@ -271,13 +271,12 @@ class TerminalApplicationCharacterizationTest {
         private Path path;
 
         ModelFolder (final String folderName) {
-
             this.folderName = folderName;
+            path            = Path.of("src", "test", "resources", "models", this.folderName);
         }
 
         private String pathTo (final String modelName) {
-            path = Path
-                .of("src", "test", "resources", "models", this.folderName);
+
             return path
                 .resolve(modelName)
                 .toString();
