@@ -24,6 +24,8 @@ class TerminalApplicationCharacterizationTest {
 
     public static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
 
+    public static final String FILE_NAME_DELIMITER = "_";
+
     private static final String[] NO_OPTIONS = {};
 
     private static final Pattern SPACE_MATCHER = Pattern.compile(" ");
@@ -250,14 +252,14 @@ class TerminalApplicationCharacterizationTest {
         {
             "noIcons,noLoad",
             "noIcons,oneTaskGlobalLoad",
-            "oneMasterIcon,noLoad",
-            "oneMasterIcon,oneTaskGlobalLoad",
+            "oneMachineMasterIcon,noLoad",
+            "oneMachineMasterIcon,oneTaskGlobalLoad",
         }
     )
     void givenModelWithNoUsers_thenPrintsErrorAfterOpeningModel (
         final String icons, final String load
     ) {
-        final String modelName = String.join("_", "noUsers", icons, load);
+        final String modelName = String.join(FILE_NAME_DELIMITER, "noUsers", icons, load);
         runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
 
         verify(this.outStream);
@@ -275,7 +277,7 @@ class TerminalApplicationCharacterizationTest {
     void givenModelWithNoIcons_thenPrintsErrorAfterOpeningModel (
         final String users, final String load
     ) {
-        final String modelName = String.join("_", users, "noIcons", load);
+        final String modelName = String.join(FILE_NAME_DELIMITER, users, "noIcons", load);
         runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
 
         verify(this.outStream);
