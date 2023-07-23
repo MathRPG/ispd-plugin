@@ -66,6 +66,10 @@ class TerminalApplicationCharacterizationTest {
         return this.outStream.toString();
     }
 
+    private <T> CombinableMatcher<Throwable> hasMessageInSysOut_andIsOfType (final Class<T> type) {
+        return both(hasMessageIn(this.systemOutContents())).and(is(instanceOf(type)));
+    }
+
     @BeforeEach
     void replaceSystemOut () {
         System.setOut(new PrintStream(this.outStream, true, StandardCharsets.UTF_8));
@@ -96,11 +100,7 @@ class TerminalApplicationCharacterizationTest {
             () -> initTerminalApplication("-z")
         ).getCause();
 
-        assertThat(
-            cause,
-            both(hasMessageIn(this.systemOutContents()))
-                .and(is(instanceOf(UnrecognizedOptionException.class)))
-        );
+        assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnrecognizedOptionException.class));
 
         verify(this.systemOutContents());
     }
@@ -121,11 +121,7 @@ class TerminalApplicationCharacterizationTest {
             () -> initTerminalApplication(options)
         ).getCause();
 
-        assertThat(
-            cause,
-            both(hasMessageIn(this.systemOutContents()))
-                .and(is(instanceOf(MissingArgumentException.class)))
-        );
+        assertThat(cause, this.hasMessageInSysOut_andIsOfType(MissingArgumentException.class));
     }
 
     @Test
@@ -151,10 +147,6 @@ class TerminalApplicationCharacterizationTest {
         verify(this.systemOutContents());
     }
 
-    private <T> CombinableMatcher<Throwable> hasMessageInSysOut_andIsOfType (final Class<T> type) {
-        return both(hasMessageIn(this.systemOutContents())).and(is(instanceOf(type)));
-    }
-
     @ParameterizedTest
     @ValueSource(
         strings = {
@@ -169,10 +161,7 @@ class TerminalApplicationCharacterizationTest {
             () -> initTerminalApplication(options)
         ).getCause();
 
-        assertThat(
-            cause,
-            is(instanceOf(NumberFormatException.class))
-        );
+        assertThat(cause, is(instanceOf(NumberFormatException.class)));
 
         verify(this.systemOutContents());
     }
