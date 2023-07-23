@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -116,11 +117,22 @@ class TerminalApplicationCharacterizationTest {
         );
     }
 
+    @Test
+    void givenInvalidAddress_thenThrowsOnInit () {
+        final var exception = assertThrows(
+            IllegalArgumentException.class,
+            () -> initTerminalApplication("-a NotAnAddress")
+        );
+
+        assertInstanceOf(UnknownHostException.class, exception.getCause());
+
+        verify(this.mapOfExceptionAndOut(exception));
+    }
+
     @ParameterizedTest
     @ValueSource(
         strings = {
             "-e 0 -t 0",
-            "-a NotAnAddress",
             //            "-e -1", // should probably fail
             //            "-t 0", // should probably fail
             //            "-h -P -1", // can construct, probably fails at run
