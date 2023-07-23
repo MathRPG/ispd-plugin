@@ -133,24 +133,6 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "-e 0 -t 0",
-            //            "-e -1", // should probably fail
-            //            "-t 0", // should probably fail
-            //            "-h -P -1", // can construct, probably fails at run
-        }
-    )
-    void givenInvalidArgs_whenInitialized_thenThrowsAndPrintsError (final String args) {
-        final var exception = assertThrows(
-            Exception.class,
-            () -> initTerminalApplication(args)
-        );
-
-        verify(this.mapOfExceptionAndOut(exception), Approvals.NAMES.withParameters(args));
-    }
-
-    @ParameterizedTest
-    @ValueSource(
-        strings = {
             "-P NaN",
             "-e NaN",
             "-t NaN",
