@@ -231,10 +231,16 @@ class TerminalApplicationCharacterizationTest {
         );
     }
 
+    @Test
+    void givenEmptyModelFile_thenPrintsErrorWhileOpeningIconicModel () {
+        runTerminalApplication(ModelFolder.NO_TYPE.pathTo("empty.imsx"));
+
+        verify(this.outStream);
+    }
+
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "emptyFile.imsx",
             // Grid models
             "gridMalformedModel.imsx",
             "emptyGridModel.imsx",
