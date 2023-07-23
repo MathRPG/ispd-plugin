@@ -268,14 +268,17 @@ class TerminalApplicationCharacterizationTest {
 
         private final String folderName;
 
+        private Path path;
+
         ModelFolder (final String folderName) {
 
             this.folderName = folderName;
         }
 
         private String pathTo (final String modelName) {
-            return Path
-                .of("src", "test", "resources", "models", this.folderName)
+            path = Path
+                .of("src", "test", "resources", "models", this.folderName);
+            return path
                 .resolve(modelName)
                 .toString();
         }
