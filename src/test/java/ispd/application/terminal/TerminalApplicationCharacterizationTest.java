@@ -252,6 +252,8 @@ class TerminalApplicationCharacterizationTest {
         {
             "noIcons,noLoad",
             "noIcons,oneTaskGlobalLoad",
+            "oneMachineIcon,noLoad",
+            "oneMachineIcon,oneTaskGlobalLoad",
             "oneMachineMasterIcon,noLoad",
             "oneMachineMasterIcon,oneTaskGlobalLoad",
         }
