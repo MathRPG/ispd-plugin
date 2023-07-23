@@ -246,30 +246,36 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "noUsers_noIcons_noLoad",
-            "noUsers_noIcons_oneTaskGlobalLoad",
-            "noUsers_oneMasterIcon_noLoad",
-            "noUsers_oneMasterIcon_oneTaskGlobalLoad",
+    @CsvSource(
+        {
+            "noIcons,noLoad",
+            "noIcons,oneTaskGlobalLoad",
+            "oneMasterIcon,noLoad",
+            "oneMasterIcon,oneTaskGlobalLoad",
         }
     )
-    void givenModelWithNoUsers_thenPrintsErrorAfterOpeningModel (final String modelName) {
+    void givenModelWithNoUsers_thenPrintsErrorAfterOpeningModel (
+        final String icons, final String load
+    ) {
+        final String modelName = String.join("_", "noUsers", icons, load);
         runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
 
         verify(this.outStream);
     }
 
     @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "oneUser_noIcons_noLoad",
-            "oneUser_noIcons_oneTaskGlobalLoad",
-            "twoUsers_noIcons_noLoad",
-            "twoUsers_noIcons_oneTaskGlobalLoad",
+    @CsvSource(
+        {
+            "oneUser,noLoad",
+            "oneUser,oneTaskGlobalLoad",
+            "twoUsers,noLoad",
+            "twoUsers,oneTaskGlobalLoad",
         }
     )
-    void givenModelWithNoIcons_thenPrintsErrorAfterOpeningModel (final String modelName) {
+    void givenModelWithNoIcons_thenPrintsErrorAfterOpeningModel (
+        final String users, final String load
+    ) {
+        final String modelName = String.join("_", users, "noIcons", load);
         runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
 
         verify(this.outStream);
