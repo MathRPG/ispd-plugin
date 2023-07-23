@@ -1,6 +1,6 @@
 package ispd.application.terminal;
 
-import static ispd.application.terminal.TerminalApplicationCharacterizationTest.HasMessageIn.*;
+import static ispd.application.terminal.HasMessageIn.*;
 import static org.approvaltests.Approvals.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
@@ -14,8 +14,6 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
-import org.hamcrest.Matcher;
-import org.hamcrest.*;
 import org.jetbrains.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -27,7 +25,7 @@ class TerminalApplicationCharacterizationTest {
 
     private static final Pattern SPACE_MATCHER = Pattern.compile(" ");
 
-    private static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
+    public static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
 
     private final PrintStream standardOut = System.out;
 
@@ -277,42 +275,5 @@ class TerminalApplicationCharacterizationTest {
             this.mapOfExceptionAndOut(exception),
             NAMES.withParameters(modelName)
         );
-    }
-
-    private enum ModelFolder {
-        NO_TYPE("notype");
-
-        private final Path path;
-
-        ModelFolder (final String folderName) {
-            this.path = MODEL_FOLDER_PATH.resolve(folderName);
-        }
-
-        private String pathTo (final String modelName) {
-            return this.path.resolve(modelName).toString();
-        }
-    }
-
-    public static class HasMessageIn <E extends Exception> extends TypeSafeMatcher<E> {
-
-        private final String str;
-
-        private HasMessageIn (final String str) {
-            this.str = str;
-        }
-
-        public static <T extends Exception> Matcher<T> hasMessageIn (final String str) {
-            return new HasMessageIn<>(str);
-        }
-
-        @Override
-        public void describeTo (final Description description) {
-            description.appendText("has message in given string");
-        }
-
-        @Override
-        protected boolean matchesSafely (final E item) {
-            return this.str.contains(item.getMessage());
-        }
     }
 }
