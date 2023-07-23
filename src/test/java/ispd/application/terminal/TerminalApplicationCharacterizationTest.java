@@ -58,6 +58,10 @@ class TerminalApplicationCharacterizationTest {
         );
     }
 
+    private String stdOutContents () {
+        return this.outStream.toString();
+    }
+
     @BeforeEach
     void replaceSystemOut () {
         System.setOut(new PrintStream(this.outStream, true, StandardCharsets.UTF_8));
@@ -109,7 +113,7 @@ class TerminalApplicationCharacterizationTest {
         assertInstanceOf(MissingArgumentException.class, underlyingException);
 
         assertTrue(
-            this.outStream.toString().contains(underlyingException.getMessage()),
+            this.stdOutContents().contains(underlyingException.getMessage()),
             "Should print exception cause to out."
         );
     }
@@ -151,7 +155,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(
             "Should not print anything to out on valid initialization.",
-            this.outStream.toString(),
+            this.stdOutContents(),
             is(emptyString())
         );
     }
@@ -201,7 +205,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(
             "Error message printed to out should contain model name",
-            this.outStream.toString(),
+            this.stdOutContents(),
             containsString(modelName)
         );
 
