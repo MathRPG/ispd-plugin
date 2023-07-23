@@ -296,7 +296,7 @@ class TerminalApplicationCharacterizationTest {
         assertThrowsExactly(
             NoSuchElementException.class,
             () -> runApplicationOnModelWith(
-                "oneUser", "oneMachineMasterSchedulerIcon", "oneTaskGlobalLoad"
+                "oneUser", "oneMachineSchedulerIcon", "oneTaskGlobalLoad"
             )
         );
 
