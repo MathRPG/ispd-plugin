@@ -125,7 +125,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenOptionWithMissingArgument_thenPrintsErrorToOut () {
+    void givenOptionWithMissingArgument_thenPrintsErrorOnInit () {
         try {
             initTerminalApplication("-P");
         } catch (final RuntimeException ignored) {
@@ -167,7 +167,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenValidArgs_thenPrintsNothingToOutOnInit () {
+    void givenValidArgs_thenPrintsNothingOnInit () {
         initTerminalApplication("-h");
 
         assertThat(
@@ -188,7 +188,7 @@ class TerminalApplicationCharacterizationTest {
             "nonexistent.imsx -h",
         }
     )
-    void givenHelpArg_whenRun_thenPrintsHelp (final String options) {
+    void givenHelpArg_thenPrintsHelpWhenRun (final String options) {
         runTerminalApplication(options);
 
         verify(this.outStream);
@@ -203,7 +203,7 @@ class TerminalApplicationCharacterizationTest {
             "nonexistent.imsx -v",
         }
     )
-    void givenVersionArg_whenRun_thenPrintsVersionInfo (final String options) {
+    void givenVersionArg_thenPrintsVersionInfoWhenRun (final String options) {
         runTerminalApplication(options);
 
         verify(this.outStream);
@@ -217,7 +217,7 @@ class TerminalApplicationCharacterizationTest {
             "wrongExtension.txt",
         }
     )
-    void givenNonexistentOrWrongExtensionModel_thenPrintsErrorToOutOnRun (final String modelName) {
+    void givenNonexistentOrWrongExtensionModel_thenPrintsErrorWhenRun (final String modelName) {
         runTerminalApplication(ModelFolder.NO_TYPE.pathTo(modelName));
 
         assertThat(
@@ -253,7 +253,7 @@ class TerminalApplicationCharacterizationTest {
             "paasModelWithSingleTask.imsx",
         }
     )
-    void givenInvalidModel_whenRun_thenPrintsErrors (final String modelName) {
+    void givenInvalidModel_thenPrintsErrorsWhenRun (final String modelName) {
         runTerminalApplication(makePathToModel(modelName));
 
         verify(this.outStream, NAMES.withParameters(modelName));
@@ -275,7 +275,7 @@ class TerminalApplicationCharacterizationTest {
             "paasModelWithNoSlaves.imsx",
         }
     )
-    void givenModelWithInvalidPolicies_whenRun_thenThrowsException (final String modelName) {
+    void givenModelWithInvalidPolicies_thenThrowsExceptionWhenRun (final String modelName) {
         final var path = makePathToModel(modelName);
 
         final var exception = assertThrows(
