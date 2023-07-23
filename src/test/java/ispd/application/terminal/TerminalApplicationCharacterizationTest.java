@@ -81,12 +81,29 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "-z", // Unrecognized command
             "-P",
             "-e",
             "-t",
-            "-e 0 -t 0",
             "-a",
+        }
+    )
+    void givenArgumentWithNoValue_whenInitialized_throws (final String args) {
+        final var exception = assertThrows(
+            RuntimeException.class,
+            () -> initTerminalApplication(args)
+        );
+
+        verify(
+            this.mapOfExceptionAndOut(exception),
+            Approvals.NAMES.withParameters(args.replace("-", ""))
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "-z", // Unrecognized command
+            "-e 0 -t 0",
             "-a NotAnAddress",
             //            "-e -1", // should probably fail
             //            "-t 0", // should probably fail
