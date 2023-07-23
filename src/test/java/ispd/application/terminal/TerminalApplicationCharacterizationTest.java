@@ -33,7 +33,7 @@ class TerminalApplicationCharacterizationTest {
 
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
-    @RefactorOnJava20(reason = "Use Pattern Matching.")
+    @RefactorOnNextJavaLts(reason = "Use Pattern Matching.")
     private static String @Nullable [] convertToOptionArray (final CharSequence spacedOptions) {
         if (spacedOptions == null) {
             return null;
