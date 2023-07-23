@@ -128,6 +128,17 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
+    void givenOptionWithMissingArgument_thenPrintsErrorToOut () {
+        try {
+            initTerminalApplication("-P");
+        } catch (final RuntimeException ignored) {
+            // ... throwing behavior already tested
+        }
+
+        verify(this.systemOutContents());
+    }
+
+    @Test
     void givenInvalidAddress_thenThrowsOnInit () {
         final var exception = assertThrows(
             IllegalArgumentException.class,
