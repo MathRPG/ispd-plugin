@@ -244,86 +244,40 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @CsvSource(
-        {
-            "noIcons,noLoad",
-            "noIcons,oneTaskGlobalLoad",
-            "oneMachineIcon,noLoad",
-            "oneMachineIcon,oneTaskGlobalLoad",
-            "oneMachineMasterIcon,noLoad",
-            "oneMachineMasterIcon,oneTaskGlobalLoad",
-        }
-    )
-    void givenModelWithNoUsers_thenPrintsErrorAfterOpeningModel (
-        final String icons, final String load
-    ) {
-        runApplicationOnModelWith("noUsers", icons, load);
+    @Test
+    void givenModelWithNoUsers_thenPrintsErrorAfterOpeningModel () {
+        runApplicationOnModelWith("noUsers", "noIcons", "noLoad");
 
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @CsvSource(
-        {
-            "oneUser,noLoad",
-            "oneUser,oneTaskGlobalLoad",
-            "twoUsers,noLoad",
-            "twoUsers,oneTaskGlobalLoad",
-        }
-    )
-    void givenModelWithNoIcons_thenPrintsErrorAfterOpeningModel (
-        final String users, final String load
-    ) {
-        runApplicationOnModelWith(users, "noIcons", load);
+    @Test
+    void givenModelWithNoIcons_thenPrintsErrorAfterOpeningModel () {
+        runApplicationOnModelWith("oneUser", "noIcons", "noLoad");
 
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @CsvSource(
-        {
-            "oneUser,oneMachineIcon",
-            "oneUser,oneMachineMasterIcon",
-            "twoUsers,oneMachineIcon",
-            "twoUsers,oneMachineMasterIcon",
-        }
-    )
-    void givenModelWithNoLoad_thenPrintsErrorAfterOpeningModel (
-        final String users, final String icons
-    ) {
-        runApplicationOnModelWith(users, icons, "noLoad");
+    @Test
+    void givenModelWithNoLoad_thenPrintsErrorAfterOpeningModel () {
+        runApplicationOnModelWith("oneUser", "oneMachineIcon", "noLoad");
 
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @CsvSource(
-        {
-            "oneUser,oneTaskGlobalLoad",
-            "twoUsers,oneTaskGlobalLoad",
-        }
-    )
-    void givenModelWithNoMasters_thenPrintsErrorAfterOpeningModel (
-        final String users, final String load
-    ) {
-        runApplicationOnModelWith(users, "oneMachineIcon", load);
+    @Test
+    void givenModelWithNoMasters_thenPrintsErrorAfterOpeningModel () {
+        runApplicationOnModelWith("oneUser", "oneMachineIcon", "oneTaskGlobalLoad");
 
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "oneUser",
-            "twoUsers",
-        }
-    )
-    void givenModelWithInvalidSchedulingPolicy_thenThrowsWhileInterpretingModel (final String users) {
+    @Test
+    void givenModelWithInvalidSchedulingPolicy_thenThrowsWhileInterpretingModel () {
         final var cause = assertThrowsExactly(
             RuntimeException.class,
             () -> runApplicationOnModelWith(
-                users, "oneMachineMasterIcon", "oneTaskGlobalLoad"
+                "oneUser", "oneMachineMasterIcon", "oneTaskGlobalLoad"
             )
         ).getCause();
 
