@@ -1,6 +1,8 @@
 package ispd.application.terminal;
 
 import static org.approvaltests.Approvals.*;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.*;
@@ -197,10 +199,11 @@ class TerminalApplicationCharacterizationTest {
     void givenNonexistentModel_whenRun_thenPrintsErrorToOut (final String modelName) {
         runTerminalApplication(ModelFolder.NO_TYPE.pathTo(modelName));
 
-        assertTrue(
-            this.outStream.toString().contains(modelName)
-            && this.outStream.toString().contains("iSPD can not open the file:"),
-            "Should tell there was an error opening the file, and the file name."
+        assertThat(
+            "Should print error and model name to out",
+            this.outStream.toString(),
+            both(containsString(modelName))
+                .and(containsString("iSPD can not open the file:"))
         );
     }
 
@@ -211,7 +214,7 @@ class TerminalApplicationCharacterizationTest {
             "wrongExtension.txt",
         }
     )
-    void givenModelFiileWithWrongExtension_whenRun_thenPrintsErrorToOut(final String modelName) {
+    void givenModelFiileWithWrongExtension_whenRun_thenPrintsErrorToOut (final String modelName) {
         runTerminalApplication(ModelFolder.NO_TYPE.pathTo(modelName));
 
         assertTrue(
