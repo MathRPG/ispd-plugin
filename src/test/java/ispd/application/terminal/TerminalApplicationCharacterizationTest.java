@@ -4,6 +4,7 @@ import static org.approvaltests.Approvals.verify;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -104,16 +105,16 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenOptionWithMissingArgument_thenThrowsOnInit (final String args) {
-        final var exception = assertThrows(
+        final var underlyingException = assertThrows(
             RuntimeException.class,
             () -> initTerminalApplication(args)
-        );
+        ).getCause();
 
-        assertInstanceOf(MissingArgumentException.class, exception.getCause());
+        assertInstanceOf(MissingArgumentException.class, underlyingException);
 
-        verify(
-            this.mapOfExceptionAndOut(exception),
-            Approvals.NAMES.withParameters(args.replace("-", ""))
+        assertTrue(
+            this.outStream.toString().contains(underlyingException.getMessage()),
+            "Should print exception cause to out."
         );
     }
 

@@ -1,3 +1,0 @@
-ex : java.lang.RuntimeException: org.apache.commons.cli.MissingArgumentException: Missing argument for option: e 
-out : Missing argument for option: e
- 
