@@ -310,8 +310,8 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @ValueSource(
         strings = {
-            "schedulerLinkSlaveIcons",
-            "schedulerBiLinkSlaveIcons",
+            "schedulerDefaultLinkSlaveIcons",
+            "schedulerDefaultBiLinkSlaveIcons",
         }
     )
     void givenModelWithImproperLinks_thenThrowsAfterCreatingTasks (final String icons) {
