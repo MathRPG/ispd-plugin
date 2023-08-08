@@ -1,10 +1,11 @@
 package ispd.application.terminal;
 
 import static ispd.application.terminal.HasMessageIn.*;
-import static org.approvaltests.Approvals.*;
+import static org.approvaltests.Approvals.verify;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
 import ispd.annotations.*;
 import java.io.*;
@@ -33,6 +34,8 @@ class TerminalApplicationCharacterizationTest {
 
     private final ByteArrayOutputStream outStream = new ByteArrayOutputStream();
 
+    private final SystemTimeProvider systemTimeProvider = mock();
+
     @RefactorOnNextJavaLts(reason = "Use Pattern Matching.")
     private static String @Nullable [] convertToOptionArray (final CharSequence spacedOptions) {
         if (spacedOptions == null) {
@@ -44,21 +47,24 @@ class TerminalApplicationCharacterizationTest {
         return SPACE_MATCHER.split(spacedOptions);
     }
 
-    private static TerminalApplication initTerminalApplication (final CharSequence spacedOptions) {
-        return new TerminalApplication(convertToOptionArray(spacedOptions));
+    private TerminalApplication initTerminalApplication (final CharSequence spacedOptions) {
+        return new TerminalApplication(
+            convertToOptionArray(spacedOptions),
+            this.systemTimeProvider
+        );
     }
 
-    private static void runTerminalApplication (final CharSequence spacedOptions) {
-        initTerminalApplication(spacedOptions).run();
+    private void runTerminalApplication (final CharSequence spacedOptions) {
+        this.initTerminalApplication(spacedOptions).run();
     }
 
-    private static void runApplicationOnModelWith (
+    private void runApplicationOnModelWith (
         final String users,
         final String icons,
         final String load
     ) {
         final String modelName = String.join(FILE_NAME_DELIMITER, users, icons, load);
-        runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
+        this.runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
     }
 
     private String systemOutContents () {
@@ -84,7 +90,7 @@ class TerminalApplicationCharacterizationTest {
     void givenEmptyOrNullOptions_thenThrowsOnInit (final String options) {
         final var exception = assertThrows(
             IllegalArgumentException.class,
-            () -> initTerminalApplication(options)
+            () -> this.initTerminalApplication(options)
         );
 
         assertThat(exception, hasMessageIn(this.systemOutContents()));
@@ -96,7 +102,7 @@ class TerminalApplicationCharacterizationTest {
     void givenUnrecognizedOption_thenThrowsOnInit () {
         final var cause = assertThrows(
             RuntimeException.class,
-            () -> initTerminalApplication("-z")
+            () -> this.initTerminalApplication("-z")
         ).getCause();
 
         assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnrecognizedOptionException.class));
@@ -117,7 +123,7 @@ class TerminalApplicationCharacterizationTest {
     void givenOptionWithMissingArgument_thenThrowsOnInit (final String options) {
         final var cause = assertThrows(
             RuntimeException.class,
-            () -> initTerminalApplication(options)
+            () -> this.initTerminalApplication(options)
         ).getCause();
 
         assertThat(cause, this.hasMessageInSysOut_andIsOfType(MissingArgumentException.class));
@@ -126,7 +132,7 @@ class TerminalApplicationCharacterizationTest {
     @Test
     void givenOptionWithMissingArgument_thenPrintsErrorOnInit () {
         try {
-            initTerminalApplication("-P");
+            this.initTerminalApplication("-P");
         } catch (final RuntimeException ignored) {
             // ... throwing behavior already tested
         }
@@ -138,7 +144,7 @@ class TerminalApplicationCharacterizationTest {
     void givenInvalidAddress_thenThrowsOnInit () {
         final var cause = assertThrows(
             IllegalArgumentException.class,
-            () -> initTerminalApplication("-a NotAnAddress")
+            () -> this.initTerminalApplication("-a NotAnAddress")
         ).getCause();
 
         assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnknownHostException.class));
@@ -157,7 +163,7 @@ class TerminalApplicationCharacterizationTest {
     void givenOptionWithInvalidNumberArgument_thenThrowsOnInit (final String options) {
         final var cause = assertThrows(
             RuntimeException.class,
-            () -> initTerminalApplication(options)
+            () -> this.initTerminalApplication(options)
         ).getCause();
 
         assertThat(cause, is(instanceOf(NumberFormatException.class)));
@@ -167,7 +173,7 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenValidOptions_thenPrintsNothingOnInit () {
-        initTerminalApplication("-h");
+        this.initTerminalApplication("-h");
 
         assertThat(
             "Should not print anything to out on valid initialization.",
@@ -188,7 +194,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenHelpOption_thenPrintsHelpWhenRun (final String options) {
-        runTerminalApplication(options);
+        this.runTerminalApplication(options);
 
         verify(this.outStream);
     }
@@ -203,7 +209,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenVersionOption_thenPrintsVersionInfoWhenRun (final String options) {
-        runTerminalApplication(options);
+        this.runTerminalApplication(options);
 
         verify(this.outStream);
     }
@@ -217,7 +223,7 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenNonexistentOrWrongExtensionModel_thenPrintsErrorWhenRun (final String modelName) {
-        runTerminalApplication(ModelFolder.NO_TYPE.pathToFile(modelName));
+        this.runTerminalApplication(ModelFolder.NO_TYPE.pathToFile(modelName));
 
         assertThat(
             "Error message printed to out should contain model name",
@@ -232,42 +238,42 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenEmptyModelFile_thenPrintsErrorWhileOpeningModel () {
-        runTerminalApplication(ModelFolder.NO_TYPE.pathToModel("empty"));
+        this.runTerminalApplication(ModelFolder.NO_TYPE.pathToModel("empty"));
 
         verify(this.outStream);
     }
 
     @Test
     void givenModelFileWithInvalidXml_thenPrintsErrorWhileOpeningModel () {
-        runTerminalApplication(ModelFolder.GRID.pathToModel("malformed"));
+        this.runTerminalApplication(ModelFolder.GRID.pathToModel("malformed"));
 
         verify(this.outStream);
     }
 
     @Test
     void givenModelWithNoUsers_thenPrintsErrorAfterOpeningModel () {
-        runApplicationOnModelWith("noUsers", "noIcons", "noLoad");
+        this.runApplicationOnModelWith("noUsers", "noIcons", "noLoad");
 
         verify(this.outStream);
     }
 
     @Test
     void givenModelWithNoIcons_thenPrintsErrorAfterOpeningModel () {
-        runApplicationOnModelWith("oneUser", "noIcons", "noLoad");
+        this.runApplicationOnModelWith("oneUser", "noIcons", "noLoad");
 
         verify(this.outStream);
     }
 
     @Test
     void givenModelWithNoLoad_thenPrintsErrorAfterOpeningModel () {
-        runApplicationOnModelWith("oneUser", "oneMachineIcon", "noLoad");
+        this.runApplicationOnModelWith("oneUser", "oneMachineIcon", "noLoad");
 
         verify(this.outStream);
     }
 
     @Test
     void givenModelWithNoMasters_thenPrintsErrorAfterOpeningModel () {
-        runApplicationOnModelWith("oneUser", "oneMachineIcon", "oneTaskGlobalLoad");
+        this.runApplicationOnModelWith("oneUser", "oneMachineIcon", "oneTaskGlobalLoad");
 
         verify(this.outStream);
     }
@@ -276,7 +282,7 @@ class TerminalApplicationCharacterizationTest {
     void givenModelWithInvalidSchedulingPolicy_thenThrowsWhileInterpretingModel () {
         final var cause = assertThrowsExactly(
             RuntimeException.class,
-            () -> runApplicationOnModelWith(
+            () -> this.runApplicationOnModelWith(
                 "oneUser", "oneMachineMasterIcon", "oneTaskGlobalLoad"
             )
         ).getCause();
@@ -291,15 +297,11 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "oneMachineSchedulerIcon",
-        }
-    )
+    @ValueSource(strings = "oneMachineSchedulerIcon")
     void givenModelWithMistake_thenThrowsAfterCreatingTasks (final String icons) {
         assertThrows(
             RuntimeException.class,
-            () -> runApplicationOnModelWith(
+            () -> this.runApplicationOnModelWith(
                 "oneUser", icons, "oneTaskGlobalLoad"
             )
         );
@@ -317,7 +319,7 @@ class TerminalApplicationCharacterizationTest {
     void givenModelWithImproperLinks_thenThrowsAfterCreatingTasks (final String icons) {
         assertThrows(
             LinkageError.class,
-            () -> runApplicationOnModelWith(
+            () -> this.runApplicationOnModelWith(
                 "oneUser", icons, "oneTaskGlobalLoad"
             )
         );
@@ -326,18 +328,24 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "schedulerValidLinkSlaveIcons"
-        }
-    )
-    void givenModelWithImproperMachineConfig_thenThrowsNumberFormatAfterSimulating (final String icons) {
+    @ValueSource(strings = "schedulerValidLinkSlaveIcons")
+    void givenModelWithImproperMachineConfig_thenThrowsNumberFormatException (final String icons) {
         assertThrows(
             NumberFormatException.class,
-            () -> runApplicationOnModelWith(
+            () -> this.runApplicationOnModelWith(
                 "oneUser", icons, "oneTaskGlobalLoad"
             )
         );
+
+        verify(this.outStream);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = "schedulerValidLinkValidSlaveIcons")
+    void givenValidModel_thenSimulates (final String icons) {
+        given(this.systemTimeProvider.getSystemTime()).willReturn(0L, 1L);
+
+        this.runApplicationOnModelWith("oneUser", icons, "oneTaskGlobalLoad");
 
         verify(this.outStream);
     }

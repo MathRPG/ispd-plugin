@@ -1,0 +1,30 @@
+Simulation Initiated.
+Opening iconic model. ->[0;32mOK[0m
+* Simulation 1
+  Mounting network queue: [0;32mOK![0m
+  Creating tasks: [0;32mOK![0m
+Simulation Execution Time = 0.001000 seconds
+Results:
+Usuário 	 SatisfaçãoGeralTempoSim	SatisfaçãoGeralTempoUso	SatisfaçãoDesempenho	ConsumoTotal	LimiteConsumoTempoSimulado	LimiteConsumoTempoUso	ConsumoLocal	ConsumoLocalProprio	ConsumoLocalEstrangeiro	ConsumoMaxLocal	TarefasPreemp	Alpha	BetaTempoSim	BetaTempoUso	Desperdicio	ConsumoKJS	TurnaroundTime	TempoSIM
+user1	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0	0	0	0	0.00	0.00	0.1	0.1
+
+
+
+
+  Total Simulation Execution Time = 0.001seconds
+		Simulation Results
+
+	Total Simulated Time = 0.200977 
+	Satisfaction = 100.000 %
+	Idleness of processing resources = 100.000 %
+	Idleness of communication resources = 50.0000 %
+	Efficiency = Infinity %
+	Efficiency GOOD
+ 		Cost Results:
+
+	Cost Total de Processing = 0.00000 %
+	Cost Total de Memory = 0.00000 %
+	Cost Total de Disk = 0.00000 %
+		VM Alocation results:	Total of VMs alocated = 0 %
+	Total of VMs rejected = 0 %
+

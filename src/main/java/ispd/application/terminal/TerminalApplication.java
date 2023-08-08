@@ -1,33 +1,19 @@
 package ispd.application.terminal;
 
-import ispd.application.Application;
-import ispd.arquivo.SalvarResultadosHTML;
-import ispd.arquivo.xml.IconicoXML;
-import ispd.gui.auxiliar.SimulationResultChartMaker;
-import ispd.motor.ProgressoSimulacao;
-import ispd.motor.SilentSimulationProgress;
-import ispd.motor.SimulacaoParalela;
-import ispd.motor.SimulacaoSequencial;
-import ispd.motor.Simulation;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.metricas.Metricas;
-import ispd.utils.constants.FileExtensions;
-import ispd.utils.constants.StringConstants;
-import java.io.File;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.w3c.dom.Document;
+import ispd.application.*;
+import ispd.arquivo.*;
+import ispd.arquivo.xml.*;
+import ispd.gui.auxiliar.*;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.metricas.*;
+import ispd.utils.constants.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import org.apache.commons.cli.*;
+import org.jetbrains.annotations.*;
+import org.w3c.dom.*;
 
 /**
  * A class for setting up the terminal part of iSPD and run the simulations.
@@ -54,6 +40,8 @@ public class TerminalApplication implements Application {
 
     private final ProgressoSimulacao simulationProgress = new SilentSimulationProgress();
 
+    private final @NotNull SystemTimeProvider systemTimeProvider;
+
     /**
      * Pre run of the terminal application, adding the necessary flags to the class before it runs.
      *
@@ -61,10 +49,26 @@ public class TerminalApplication implements Application {
      *     Options from the command line.
      */
     public TerminalApplication (final String[] options) {
+        this(options, new DefaultSystemTimeProvider());
+    }
+
+    /**
+     * Pre run of the terminal application, adding the necessary flags to the class before it runs.
+     *
+     * @param options
+     *     Options from the command line.
+     * @param systemTimeProvider
+     *     Provider for the system time. Used when presenting simulation results. Must not be
+     *     {@code null}.
+     */
+    public TerminalApplication (
+        final String[] options,
+        final @NotNull SystemTimeProvider systemTimeProvider
+    ) {
         final var cmd = this.commandLinePreparation(OptionsHolder.ALL_OPTIONS, options);
 
         this.mode          = getActiveMode(cmd);
-        this.serverPort    = getIntOptionOr(cmd, "P", TerminalApplication.DEFAULT_PORT);
+        this.serverPort    = getIntOptionOr(cmd, "P", DEFAULT_PORT);
         this.nExecutions   = getIntOptionOr(cmd, "e", 1);
         this.nThreads      = this.setNThreads(cmd);
         this.inputFile     = setInputFile(cmd);
@@ -77,6 +81,8 @@ public class TerminalApplication implements Application {
             System.out.println(message);
             throw new IllegalArgumentException(message);
         }
+
+        this.systemTimeProvider = Objects.requireNonNull(systemTimeProvider);
     }
 
     /**
@@ -331,9 +337,9 @@ public class TerminalApplication implements Application {
         for (var i = 1; i <= this.nExecutions; i++) {
             System.out.printf("* Simulation %d%n", i);
 
-            final var preSimInstant    = System.currentTimeMillis();
+            final var preSimInstant    = this.systemTimeProvider.getSystemTime();
             final var simMetric        = this.runASimulation(model);
-            final var postSimInstant   = System.currentTimeMillis();
+            final var postSimInstant   = this.systemTimeProvider.getSystemTime();
             final var totalSimDuration = (double) (postSimInstant - preSimInstant) / 1000.0;
 
             System.out.printf("Simulation Execution Time = %f seconds%n", totalSimDuration);
@@ -511,8 +517,8 @@ public class TerminalApplication implements Application {
          */
         private static Options makeAllOptions () {
             return new Options()
-                .addOption(OptionsHolder.HELP)
-                .addOption(OptionsHolder.VERSION)
+                .addOption(HELP)
+                .addOption(VERSION)
                 .addOption("s", "server", false, "run iSPD as a server.")
                 .addOption("c", "client", false, "run iSPD as a client.")
                 .addOption("P", "port", true, "specify a port.")
@@ -524,5 +530,9 @@ public class TerminalApplication implements Application {
                 .addOption("a", "address", true, "specify the server address.")
                 .addOption("p", "parallel", false, "runs the simulation parallel.");
         }
+    }
+
+    private static class DefaultSystemTimeProvider implements SystemTimeProvider {
+
     }
 }
