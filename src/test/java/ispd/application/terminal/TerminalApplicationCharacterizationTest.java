@@ -324,4 +324,21 @@ class TerminalApplicationCharacterizationTest {
 
         verify(this.outStream);
     }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "schedulerValidLinkSlaveIcons"
+        }
+    )
+    void givenModelWithImproperMachineConfig_thenThrowsNumberFormatAfterSimulating (final String icons) {
+        assertThrows(
+            NumberFormatException.class,
+            () -> runApplicationOnModelWith(
+                "oneUser", icons, "oneTaskGlobalLoad"
+            )
+        );
+
+        verify(this.outStream);
+    }
 }
