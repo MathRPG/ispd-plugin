@@ -72,7 +72,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     private <T> CombinableMatcher<Throwable> hasMessageInSysOut_andIsOfType (final Class<T> type) {
-        return both(hasMessageIn(this.systemOutContents())).and(is(instanceOf(type)));
+        return both(hasMessageIn(this.outStream.toString())).and(is(instanceOf(type)));
     }
 
     @BeforeEach
@@ -95,7 +95,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(exception, hasMessageIn(this.systemOutContents()));
 
-        verify(this.systemOutContents());
+        verify(this.outStream);
     }
 
     @Test
@@ -107,7 +107,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnrecognizedOptionException.class));
 
-        verify(this.systemOutContents());
+        verify(this.outStream);
     }
 
     @ParameterizedTest
@@ -137,7 +137,7 @@ class TerminalApplicationCharacterizationTest {
             // ... throwing behavior already tested
         }
 
-        verify(this.systemOutContents());
+        verify(this.outStream);
     }
 
     @Test
@@ -149,7 +149,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnknownHostException.class));
 
-        verify(this.systemOutContents());
+        verify(this.outStream);
     }
 
     @ParameterizedTest
@@ -168,7 +168,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(cause, is(instanceOf(NumberFormatException.class)));
 
-        verify(this.systemOutContents());
+        verify(this.outStream);
     }
 
     @Test
@@ -177,7 +177,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(
             "Should not print anything to out on valid initialization.",
-            this.systemOutContents(),
+            this.outStream.toString(),
             is(emptyString())
         );
     }
@@ -227,7 +227,7 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(
             "Error message printed to out should contain model name",
-            this.systemOutContents(),
+            this.outStream.toString(),
             containsString(modelName)
         );
 
