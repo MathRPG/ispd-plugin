@@ -482,8 +482,7 @@ public class TerminalApplication implements Application {
         private final boolean requiresModel;
 
         Mode (final String s) {
-            this.str           = s;
-            this.requiresModel = false;
+            this(s, false);
         }
 
         Mode (final String s, final boolean requiresModel) {
