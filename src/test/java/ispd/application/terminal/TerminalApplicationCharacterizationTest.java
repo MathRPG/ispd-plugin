@@ -11,7 +11,6 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
 import java.nio.file.*;
-import java.util.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
 import org.hamcrest.core.*;
@@ -298,8 +297,26 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenModelWithMistake_thenThrowsAfterCreatingTasks (final String icons) {
-        assertThrowsExactly(
-            NoSuchElementException.class,
+        assertThrows(
+            RuntimeException.class,
+            () -> runApplicationOnModelWith(
+                "oneUser", icons, "oneTaskGlobalLoad"
+            )
+        );
+
+        verify(this.outStream);
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "schedulerLinkSlaveIcons",
+            "schedulerBiLinkSlaveIcons",
+        }
+    )
+    void givenModelWithImproperLinks_thenThrowsAfterCreatingTasks (final String icons) {
+        assertThrows(
+            LinkageError.class,
             () -> runApplicationOnModelWith(
                 "oneUser", icons, "oneTaskGlobalLoad"
             )

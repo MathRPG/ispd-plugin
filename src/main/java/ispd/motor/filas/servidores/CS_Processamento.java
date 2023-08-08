@@ -298,7 +298,7 @@ public abstract class CS_Processamento extends CentroServico {
             }
             return menorCaminho;
         }
-        return null;
+        return new ArrayList<>();
     }
 
     /**
