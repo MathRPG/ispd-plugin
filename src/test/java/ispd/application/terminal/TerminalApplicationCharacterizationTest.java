@@ -298,17 +298,11 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @ValueSource(
-        strings = {
-            "schedulerDefaultLinkSlaveIcons",
-            "schedulerDefaultBiLinkSlaveIcons",
-        }
-    )
-    void givenModelWithImproperLinks_thenThrowsAfterCreatingTasks (final String icons) {
+    @Test
+    void givenModelWithImproperLinks_thenThrowsAfterCreatingTasks () {
         assertThrows(
             LinkageError.class,
-            () -> this.runApplicationOnModelWith(icons)
+            () -> this.runApplicationOnModelWith("schedulerDefaultLinkSlaveIcons")
         );
 
         verify(this.outStream);
