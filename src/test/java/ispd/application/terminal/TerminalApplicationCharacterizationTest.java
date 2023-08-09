@@ -67,6 +67,10 @@ class TerminalApplicationCharacterizationTest {
         this.runTerminalApplication(ModelFolder.GRID.pathToModel(modelName));
     }
 
+    private void runApplicationOnModelWith (final String icons) {
+        this.runApplicationOnModelWith("oneUser", icons, "oneTaskGlobalLoad");
+    }
+
     private String systemOutContents () {
         return this.outStream.toString();
     }
@@ -263,7 +267,7 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenModelWithNoMasters_thenPrintsErrorAfterOpeningModel () {
-        this.runApplicationOnModelWith("oneUser", "oneMachineIcon", "oneTaskGlobalLoad");
+        this.runApplicationOnModelWith("oneMachineIcon");
 
         verify(this.outStream);
     }
@@ -272,9 +276,7 @@ class TerminalApplicationCharacterizationTest {
     void givenModelWithInvalidSchedulingPolicy_thenThrowsWhileInterpretingModel () {
         final var cause = assertThrowsExactly(
             RuntimeException.class,
-            () -> this.runApplicationOnModelWith(
-                "oneUser", "oneMachineMasterIcon", "oneTaskGlobalLoad"
-            )
+            () -> this.runApplicationOnModelWith("oneMachineMasterIcon")
         ).getCause();
 
         assertThat(
@@ -286,14 +288,11 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = "oneMachineSchedulerIcon")
-    void givenModelWithMistake_thenThrowsAfterCreatingTasks (final String icons) {
+    @Test
+    void givenModelWithMistake_thenThrowsAfterCreatingTasks () {
         assertThrows(
             RuntimeException.class,
-            () -> this.runApplicationOnModelWith(
-                "oneUser", icons, "oneTaskGlobalLoad"
-            )
+            () -> this.runApplicationOnModelWith("oneMachineSchedulerIcon")
         );
 
         verify(this.outStream);
@@ -309,33 +308,27 @@ class TerminalApplicationCharacterizationTest {
     void givenModelWithImproperLinks_thenThrowsAfterCreatingTasks (final String icons) {
         assertThrows(
             LinkageError.class,
-            () -> this.runApplicationOnModelWith(
-                "oneUser", icons, "oneTaskGlobalLoad"
-            )
+            () -> this.runApplicationOnModelWith(icons)
         );
 
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = "schedulerValidLinkSlaveIcons")
-    void givenModelWithImproperMachineConfig_thenThrowsNumberFormatException (final String icons) {
+    @Test
+    void givenModelWithImproperMachineConfig_thenThrowsNumberFormatException () {
         assertThrows(
             NumberFormatException.class,
-            () -> this.runApplicationOnModelWith(
-                "oneUser", icons, "oneTaskGlobalLoad"
-            )
+            () -> this.runApplicationOnModelWith("schedulerValidLinkSlaveIcons")
         );
 
         verify(this.outStream);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = "schedulerValidLinkValidSlaveIcons")
-    void givenValidModel_thenSimulates (final String icons) {
+    @Test
+    void givenValidModel_thenSimulates () {
         given(this.systemTimeProvider.getSystemTime()).willReturn(0L, 1L);
 
-        this.runApplicationOnModelWith("oneUser", icons, "oneTaskGlobalLoad");
+        this.runApplicationOnModelWith("schedulerValidLinkValidSlaveIcons");
 
         verify(this.outStream);
     }
