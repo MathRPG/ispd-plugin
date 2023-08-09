@@ -72,7 +72,8 @@ class TerminalApplicationCharacterizationTest {
     }
 
     private <T> CombinableMatcher<Throwable> hasMessageInSysOut_andIsOfType (final Class<T> type) {
-        return both(hasMessageIn(this.outStream.toString())).and(is(instanceOf(type)));
+        return both(hasMessageIn(this.systemOutContents()))
+            .and(is(instanceOf(type)));
     }
 
     @BeforeEach
@@ -87,7 +88,7 @@ class TerminalApplicationCharacterizationTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    void givenEmptyOrNullOptions_thenThrowsOnInit (final String options) {
+    void givenEmptyOrNullOptions_whenInit_thenThrowsAndPrints (final String options) {
         final var exception = assertThrows(
             IllegalArgumentException.class,
             () -> this.initTerminalApplication(options)
@@ -99,7 +100,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenUnrecognizedOption_thenThrowsOnInit () {
+    void givenUnrecognizedOption_whenInit_thenThrowsAndPrints () {
         final var cause = assertThrows(
             RuntimeException.class,
             () -> this.initTerminalApplication("-z")
@@ -120,7 +121,7 @@ class TerminalApplicationCharacterizationTest {
             "-a",
         }
     )
-    void givenOptionWithMissingArgument_thenThrowsOnInit (final String options) {
+    void givenOptionWithMissingArgument_whenInit_thenThrowsAndPrints (final String options) {
         final var cause = assertThrows(
             RuntimeException.class,
             () -> this.initTerminalApplication(options)
@@ -130,18 +131,7 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenOptionWithMissingArgument_thenPrintsErrorOnInit () {
-        try {
-            this.initTerminalApplication("-P");
-        } catch (final RuntimeException ignored) {
-            // ... throwing behavior already tested
-        }
-
-        verify(this.outStream);
-    }
-
-    @Test
-    void givenInvalidAddress_thenThrowsOnInit () {
+    void givenInvalidAddress_whenInit_thenThrowsAndPrints () {
         final var cause = assertThrows(
             IllegalArgumentException.class,
             () -> this.initTerminalApplication("-a NotAnAddress")
@@ -172,12 +162,12 @@ class TerminalApplicationCharacterizationTest {
     }
 
     @Test
-    void givenValidOptions_thenPrintsNothingOnInit () {
-        this.initTerminalApplication("-h");
+    void givenValidOptions_whenInit_thenPrintsNothingToStandardOut () {
+        final var ignored = this.initTerminalApplication("-h");
 
         assertThat(
-            "Should not print anything to out on valid initialization.",
-            this.outStream.toString(),
+            "Should not print anything to standard out on valid initialization.",
+            this.systemOutContents(),
             is(emptyString())
         );
     }
@@ -193,7 +183,7 @@ class TerminalApplicationCharacterizationTest {
             "nonexistent.imsx -h",
         }
     )
-    void givenHelpOption_thenPrintsHelpWhenRun (final String options) {
+    void givenHelpOption_whenRun_thenPrintsHelp (final String options) {
         this.runTerminalApplication(options);
 
         verify(this.outStream);
@@ -208,7 +198,7 @@ class TerminalApplicationCharacterizationTest {
             "nonexistent.imsx -v",
         }
     )
-    void givenVersionOption_thenPrintsVersionInfoWhenRun (final String options) {
+    void givenVersionOption_whenRun_thenPrintsVersionInfo (final String options) {
         this.runTerminalApplication(options);
 
         verify(this.outStream);
@@ -227,12 +217,12 @@ class TerminalApplicationCharacterizationTest {
 
         assertThat(
             "Error message printed to out should contain model name",
-            this.outStream.toString(),
+            this.systemOutContents(),
             containsString(modelName)
         );
 
         verify(
-            this.outStream.toString().replace(modelName, "")
+            this.systemOutContents().replace(modelName, "")
         );
     }
 
