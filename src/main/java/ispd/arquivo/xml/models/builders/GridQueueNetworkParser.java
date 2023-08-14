@@ -1,29 +1,16 @@
 package ispd.arquivo.xml.models.builders;
 
-import ispd.arquivo.xml.utils.SwitchConnection;
-import ispd.arquivo.xml.utils.UserPowerLimit;
-import ispd.arquivo.xml.utils.WrappedDocument;
-import ispd.arquivo.xml.utils.WrappedElement;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.filas.servidores.implementacao.CS_Internet;
-import ispd.motor.filas.servidores.implementacao.CS_Link;
-import ispd.motor.filas.servidores.implementacao.CS_Maquina;
-import ispd.motor.filas.servidores.implementacao.CS_Mestre;
-import ispd.motor.filas.servidores.implementacao.CS_Switch;
-import ispd.motor.filas.servidores.implementacao.Vertice;
-import ispd.policy.scheduling.grid.GridSchedulingPolicy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ispd.arquivo.xml.utils.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.policy.scheduling.grid.*;
+import java.util.*;
 
 /**
  * Class to build a queue network from a model in a {@link WrappedDocument}.
  * Usage should be as follows: <pre>{@code
- * new QueueNetworkBuilder()
+ * new GridQueueNetworkParser()
  * .parseDocument(doc)
  * .build();
  * }</pre>
@@ -31,24 +18,7 @@ import java.util.Map;
  *
  * @see ispd.arquivo.xml.IconicoXML
  */
-public class QueueNetworkBuilder {
-
-    /**
-     * Map or {@link CentroServico}s parsed from the document, indexed by id.
-     */
-    protected final Map<Integer, CentroServico> serviceCenters = new HashMap<>();
-
-    /**
-     * Map of {@link CS_Internet}s parsed from the document.
-     */
-    protected final List<CS_Internet> internets = new ArrayList<>();
-
-    /**
-     * Map of {@link CS_Link}s parsed from the document.
-     */
-    protected final List<CS_Comunicacao> links = new ArrayList<>();
-
-    private final Map<String, Double> powerLimits = new HashMap<>();
+public class GridQueueNetworkParser extends QueueNetworkParser<CS_Maquina, CS_Processamento> {
 
     private final List<CS_Maquina> machines = new ArrayList<>();
 
@@ -57,17 +27,63 @@ public class QueueNetworkBuilder {
     private final Map<CentroServico, List<CS_Maquina>> clusterSlaves = new HashMap<>();
 
     /**
-     * Whether this instance has already parsed a document successfully. Each instance should be
-     * responsible for parsing <b>only one</b> document.
+     * Process a {@link WrappedElement} that is representing a cluster of {@link CentroServico}s.
+     * The {@link CS_Mestre}, {@link CS_Maquina}s and {@link CS_Link}s in the cluster are
+     * differentiated and all processed individually.
+     *
+     * @param e
+     *     {@link WrappedElement} representing a cluster.
      */
-    private boolean hasParsedADocument = false;
+    @Override
+    protected void processClusterElement (final WrappedElement e) {
+        if (e.isMaster()) {
+            final var cluster = ServiceCenterFactory.aMasterWithNoLoadFactor(e);
 
-    private static void connectLinkAndVertices (
-        final CS_Link link, final Vertice origination, final Vertice destination
-    ) {
-        link.setConexoesSaida((CentroServico) destination);
-        origination.addConexoesSaida(link);
-        destination.addConexoesEntrada(link);
+            this.masters.add(cluster);
+            this.serviceCenters.put(e.globalIconId(), cluster);
+
+            final int slaveCount = e.nodes();
+
+            final double power = cluster.getPoderComputacional() * (slaveCount + 1);
+
+            this.increaseUserPower(cluster.getProprietario(), power);
+
+            final var theSwitch = ServiceCenterFactory.aSwitch(e);
+
+            this.links.add(theSwitch);
+
+            SwitchConnection.toMaster(theSwitch, cluster);
+
+            for (int i = 0; i < slaveCount; i++) {
+                final var machine = ServiceCenterFactory.aMachineWithNumber(e, i);
+                SwitchConnection.toMachine(theSwitch, machine);
+
+                machine.addMestre(cluster);
+                cluster.addEscravo(machine);
+
+                this.machines.add(machine);
+            }
+        } else {
+            final var theSwitch = ServiceCenterFactory.aSwitch(e);
+
+            this.links.add(theSwitch);
+            this.serviceCenters.put(e.globalIconId(), theSwitch);
+
+            this.increaseUserPower(e.owner(), e.power() * e.nodes());
+
+            final int slaveCount = e.nodes();
+
+            final var slaves = new ArrayList<CS_Maquina>(slaveCount);
+
+            for (int i = 0; i < slaveCount; i++) {
+                final var machine = ServiceCenterFactory.aMachineWithNumber(e, i);
+                SwitchConnection.toMachine(theSwitch, machine);
+                slaves.add(machine);
+            }
+
+            this.machines.addAll(slaves);
+            this.clusterSlaves.put(theSwitch, slaves);
+        }
     }
 
     /**
@@ -83,7 +99,7 @@ public class QueueNetworkBuilder {
      * @throws IllegalStateException
      *     if this instance was already used to parse a {@link WrappedDocument}.
      */
-    public QueueNetworkBuilder parseDocument (final WrappedDocument doc) {
+    public GridQueueNetworkParser parseDocument (final WrappedDocument doc) {
         if (this.hasParsedADocument) {
             throw new IllegalStateException(".parseDocument(doc) method called twice.");
         }
@@ -106,84 +122,6 @@ public class QueueNetworkBuilder {
         this.serviceCenters.put(e.globalIconId(), machine);
 
         this.increaseUserPower(machine.getProprietario(), machine.getPoderComputacional());
-    }
-
-    /**
-     * Process a {@link WrappedElement} that is representing a cluster of {@link CentroServico}s.
-     * The {@link CS_Mestre}, {@link CS_Maquina}s and {@link CS_Link}s in the cluster are
-     * differentiated and all processed individually.
-     *
-     * @param e
-     *     {@link WrappedElement} representing a cluster.
-     */
-    protected void processClusterElement (final WrappedElement e) {
-        if (e.isMaster()) {
-            final var cluster = ServiceCenterBuilder.aMasterWithNoLoad(e);
-
-            this.masters.add(cluster);
-            this.serviceCenters.put(e.globalIconId(), cluster);
-
-            final int slaveCount = e.nodes();
-
-            final double power = cluster.getPoderComputacional() * (slaveCount + 1);
-
-            this.increaseUserPower(cluster.getProprietario(), power);
-
-            final var theSwitch = ServiceCenterBuilder.aSwitch(e);
-
-            this.links.add(theSwitch);
-
-            SwitchConnection.toMaster(theSwitch, cluster);
-
-            for (int i = 0; i < slaveCount; i++) {
-                final var machine = ServiceCenterBuilder.aMachineWithId(e, i);
-                SwitchConnection.toMachine(theSwitch, machine);
-
-                machine.addMestre(cluster);
-                cluster.addEscravo(machine);
-
-                this.machines.add(machine);
-            }
-        } else {
-            final var theSwitch = ServiceCenterBuilder.aSwitch(e);
-
-            this.links.add(theSwitch);
-            this.serviceCenters.put(e.globalIconId(), theSwitch);
-
-            this.increaseUserPower(e.owner(), e.power() * e.nodes());
-
-            final int slaveCount = e.nodes();
-
-            final var slaves = new ArrayList<CS_Maquina>(slaveCount);
-
-            for (int i = 0; i < slaveCount; i++) {
-                final var machine = ServiceCenterBuilder.aMachineWithId(e, i);
-                SwitchConnection.toMachine(theSwitch, machine);
-                slaves.add(machine);
-            }
-
-            this.machines.addAll(slaves);
-            this.clusterSlaves.put(theSwitch, slaves);
-        }
-    }
-
-    private void processInternetElement (final WrappedElement e) {
-        final var net = ServiceCenterBuilder.anInternet(e);
-
-        this.internets.add(net);
-        this.serviceCenters.put(e.globalIconId(), net);
-    }
-
-    private void processLinkElement (final WrappedElement e) {
-        final var link = ServiceCenterBuilder.aLink(e);
-
-        connectLinkAndVertices(
-            link,
-            this.getVertex(e.origination()),
-            this.getVertex(e.destination())
-        );
-
-        this.links.add(link);
     }
 
     private void addSlavesToMachine (final WrappedElement e) {
@@ -211,10 +149,10 @@ public class QueueNetworkBuilder {
         final CS_Processamento machine;
 
         if (e.hasMasterAttribute()) {
-            machine = ServiceCenterBuilder.aMaster(e);
+            machine = ServiceCenterFactory.aMaster(e);
             this.masters.add(machine);
         } else {
-            machine = ServiceCenterBuilder.aMachine(e);
+            machine = ServiceCenterFactory.aMachine(e);
             this.machines.add((CS_Maquina) machine);
         }
 
@@ -233,10 +171,6 @@ public class QueueNetworkBuilder {
     protected void increaseUserPower (final String userId, final double increment) {
         final var oldValue = this.powerLimits.get(userId);
         this.powerLimits.put(userId, oldValue + increment);
-    }
-
-    private Vertice getVertex (final int e) {
-        return (Vertice) this.serviceCenters.get(e);
     }
 
     /**
@@ -261,7 +195,7 @@ public class QueueNetworkBuilder {
      *     {@link CS_Mestre}.
      * @apiNote the parameter {@code master} is typed as a {@link CS_Processamento} to support
      * overrides that deal with other types of masters. See
-     * {@link CloudQueueNetworkBuilder#addSlavesToProcessingCenter} for an example.
+     * {@link CloudQueueNetworkParser#addSlavesToProcessingCenter} for an example.
      */
     protected void addSlavesToProcessingCenter (
         final CS_Processamento master,

@@ -228,7 +228,8 @@ public class TerminalApplication implements Application {
         final RedeDeFilas queueNetwork
     ) {
         System.out.print("  Creating tasks: ");
-        final var jobs = IconicoXML.newGerarCarga(model).makeTaskList(queueNetwork);
+        final var jobs =
+            IconicoXML.readWorkloadGeneratorFromModel(model).makeTaskList(queueNetwork);
         System.out.println(ConsoleColors.surroundGreen("OK!"));
         return jobs;
     }
@@ -243,7 +244,7 @@ public class TerminalApplication implements Application {
      */
     private static RedeDeFilas createQueueNetwork (final Document model) {
         System.out.print("  Mounting network queue: ");
-        final var queueNetwork = IconicoXML.newRedeDeFilas(model);
+        final var queueNetwork = IconicoXML.readQueueNetworkFromModel(model);
         System.out.println(ConsoleColors.surroundGreen("OK!"));
         return queueNetwork;
     }
@@ -392,7 +393,7 @@ public class TerminalApplication implements Application {
         }
 
         try {
-            final var model = IconicoXML.ler(this.inputFile.get());
+            final var model = ManipuladorXML.readModelFromFile(this.inputFile.get());
             System.out.println(ConsoleColors.GREEN + "OK" + ConsoleColors.RESET);
             this.simulationProgress.validarInicioSimulacao(model);
             return model;

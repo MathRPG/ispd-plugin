@@ -1,5 +1,6 @@
 package ispd.arquivo.xml.utils;
 
+import ispd.arquivo.xml.models.builders.*;
 import ispd.motor.filas.servidores.CentroServico;
 import ispd.motor.filas.servidores.implementacao.CS_Maquina;
 import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
@@ -10,8 +11,8 @@ import ispd.motor.filas.servidores.implementacao.CS_VMM;
 /**
  * Class with utility methods to interconnect service centers and switches.
  *
- * @see ispd.arquivo.xml.models.builders.QueueNetworkBuilder
- * @see ispd.arquivo.xml.models.builders.CloudQueueNetworkBuilder
+ * @see GridQueueNetworkParser
+ * @see CloudQueueNetworkParser
  */
 public enum SwitchConnection {
     ;

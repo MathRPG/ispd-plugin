@@ -97,7 +97,7 @@ public abstract class ProgressoSimulacao {
         }
 
         try {
-            IconicoXML.validarModelo(model);
+            IconicoXML.validateIconicModel(model);
         } catch (final IllegalArgumentException e) {
             this.printAndThrow(e);
         }

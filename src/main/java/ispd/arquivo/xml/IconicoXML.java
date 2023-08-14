@@ -1,42 +1,25 @@
 package ispd.arquivo.xml;
 
-import ispd.arquivo.xml.models.builders.CloudQueueNetworkBuilder;
-import ispd.arquivo.xml.models.builders.IconicModelBuilder;
-import ispd.arquivo.xml.models.builders.LoadBuilder;
-import ispd.arquivo.xml.models.builders.QueueNetworkBuilder;
-import ispd.arquivo.xml.models.builders.ServiceCenterBuilder;
-import ispd.arquivo.xml.utils.WrappedDocument;
-import ispd.arquivo.xml.utils.WrappedElement;
-import ispd.gui.PickModelTypeDialog;
-import ispd.gui.iconico.Edge;
-import ispd.gui.iconico.Vertex;
-import ispd.gui.iconico.grade.VirtualMachine;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.workload.WorkloadGenerator;
-import ispd.motor.workload.impl.CollectionWorkloadGenerator;
-import ispd.motor.workload.impl.GlobalWorkloadGenerator;
-import ispd.motor.workload.impl.TraceFileWorkloadGenerator;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import ispd.arquivo.xml.models.builders.*;
+import ispd.arquivo.xml.utils.*;
+import ispd.gui.*;
+import ispd.gui.iconico.*;
+import ispd.gui.iconico.grade.*;
+import ispd.motor.filas.*;
+import ispd.motor.workload.*;
+import ispd.motor.workload.impl.*;
+import java.util.*;
+import java.util.stream.*;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+import org.w3c.dom.*;
 
 /**
  * Class responsible for manipulating xml files into iconic or simulable models, and building a
  * document with a model from an iconic one.
  */
 public class IconicoXML {
+
+    public static final String ISPD_DTD = "iSPD.dtd";
 
     private static final Element[] NO_CHILDREN = {};
 
@@ -46,15 +29,16 @@ public class IconicoXML {
 
     private final WrappedDocument document = new WrappedDocument(ManipuladorXML.newDocument());
 
-    private final Element system = this.document.createElement("system");
+    private final Element system;
 
     private Element load = null;
 
     public IconicoXML () {
-        this(IconicoXML.DEFAULT_MODEL_TYPE);
+        this(DEFAULT_MODEL_TYPE);
     }
 
     public IconicoXML (final int modelType) {
+        this.system = this.document.createElement("system");
         this.system.setAttribute("version", getVersionForModelType(modelType));
         this.document.appendChild(this.system);
     }
@@ -68,36 +52,9 @@ public class IconicoXML {
             case PickModelTypeDialog.GRID -> "2.1";
             case PickModelTypeDialog.IAAS -> "2.2";
             case PickModelTypeDialog.PAAS -> "2.3";
-            case IconicoXML.DEFAULT_MODEL_TYPE -> "1.2";
+            case DEFAULT_MODEL_TYPE -> "1.2";
             default -> throw new IllegalArgumentException("Invalid model type " + modelType);
         };
-    }
-
-    /**
-     * Write iconic model in {@link Document} to path
-     *
-     * @param doc
-     *     {@link Document} containing an iconic model
-     * @param path
-     *     path in which to save the file
-     *
-     * @return {@code true} if the file was saved successfully, {@code false} otherwise
-     */
-    public static boolean escrever (final Document doc, final File path) {
-        return ManipuladorXML.write(doc, path, "iSPD.dtd", false);
-    }
-
-    /**
-     * Reads xml file in path and parses it into a {@link Document} containing an iconic model
-     *
-     * @param path
-     *     path to xml file with an iconic model
-     *
-     * @return {@link Document} with the iconic model in the file
-     */
-    public static Document ler (final File path)
-        throws ParserConfigurationException, IOException, SAXException {
-        return ManipuladorXML.read(path, "iSPD.dtd");
     }
 
     /**
@@ -110,7 +67,7 @@ public class IconicoXML {
      * @throws IllegalArgumentException
      *     if the model is incomplete
      */
-    public static void validarModelo (final Document doc) {
+    public static void validateIconicModel (final Document doc) {
         final var document = new WrappedDocument(doc);
 
         if (document.hasNoOwners()) {
@@ -138,8 +95,8 @@ public class IconicoXML {
      *
      * @return Simulable queue network, in accordance to given model
      */
-    public static RedeDeFilas newRedeDeFilas (final Document model) {
-        return new QueueNetworkBuilder()
+    public static RedeDeFilas readQueueNetworkFromModel (final Document model) {
+        return new GridQueueNetworkParser()
             .parseDocument(new WrappedDocument(model))
             .build();
     }
@@ -152,8 +109,8 @@ public class IconicoXML {
      *
      * @return Simulable cloud queue network, in accordance to given model
      */
-    public static RedeDeFilasCloud newRedeDeFilasCloud (final Document model) {
-        return (RedeDeFilasCloud) new CloudQueueNetworkBuilder()
+    public static RedeDeFilasCloud readCloudQueueNetworkFromModel (final Document model) {
+        return (RedeDeFilasCloud) new CloudQueueNetworkParser()
             .parseDocument(new WrappedDocument(model))
             .build();
     }
@@ -169,8 +126,8 @@ public class IconicoXML {
      * @see CollectionWorkloadGenerator
      * @see GlobalWorkloadGenerator
      */
-    public static WorkloadGenerator newGerarCarga (final Document doc) {
-        return LoadBuilder.build(new WrappedDocument(doc)).orElse(null);
+    public static WorkloadGenerator readWorkloadGeneratorFromModel (final Document model) {
+        return LoadBuilder.build(new WrappedDocument(model)).orElse(null);
     }
 
     /**
@@ -215,7 +172,7 @@ public class IconicoXML {
      */
     public static HashSet<VirtualMachine> newListVirtualMachines (final Document doc) {
         return new WrappedDocument(doc).virtualMachines()
-            .map(ServiceCenterBuilder::aVirtualMachineWithVmm)
+            .map(ServiceCenterFactory::aVirtualMachineWithVmm)
             .collect(Collectors.toCollection(HashSet::new));
     }
 
@@ -277,7 +234,7 @@ public class IconicoXML {
      * @return children-less element.
      */
     private Element anElement (final String name, final Object[][] attrs) {
-        return this.anElement(name, attrs, IconicoXML.NO_CHILDREN);
+        return this.anElement(name, attrs, NO_CHILDREN);
     }
 
     /**
@@ -441,7 +398,7 @@ public class IconicoXML {
         final Double power, final Integer coreCount, final Double memory, final Double disk,
         final Double processingCost, final Double memoryCost, final Double diskCost
     ) {
-        return this.anElement("characteristic", IconicoXML.NO_ATTRS, new Element[] {
+        return this.anElement("characteristic", NO_ATTRS, new Element[] {
             this.anElement("process", "power", power, "number", coreCount),
             this.anElement("memory", "size", memory),
             this.anElement("hard_disk", "size", disk),
@@ -492,7 +449,7 @@ public class IconicoXML {
             isMaster,
             slaves,
             new Object[][] { { "energy", energy } },
-            IconicoXML.NO_ATTRS
+            NO_ATTRS
         );
     }
 
@@ -505,7 +462,7 @@ public class IconicoXML {
     private Node newCharacteristic (
         final Double power, final Integer coreCount, final Double memory, final Double disk
     ) {
-        return this.anElement("characteristic", IconicoXML.NO_ATTRS, new Element[] {
+        return this.anElement("characteristic", NO_ATTRS, new Element[] {
             this.anElement("process", "power", power, "number", coreCount),
             this.anElement("memory", "size", memory),
             this.anElement("hard_disk", "size", disk),
@@ -526,7 +483,7 @@ public class IconicoXML {
      * {@link #addMachine(Integer, Integer, Integer, Integer, String, Double, Double, String,
      * String, Integer, Double, Double, boolean, Collection, Double)}.
      */
-    public void addMachine (
+    private void addMachine (
         final Integer x,
         final Integer y,
         final Integer localId,
@@ -560,8 +517,8 @@ public class IconicoXML {
             0.0,
             isMaster,
             slaves,
-            IconicoXML.NO_ATTRS,
-            IconicoXML.NO_ATTRS
+            NO_ATTRS,
+            NO_ATTRS
         );
     }
 
@@ -610,7 +567,7 @@ public class IconicoXML {
             costPerDisk,
             isMaster,
             slaves,
-            IconicoXML.NO_ATTRS,
+            NO_ATTRS,
             new Object[][] { { "vm_alloc", vmAlloc }, }
         );
     }

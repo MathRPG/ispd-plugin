@@ -134,6 +134,33 @@ public enum ManipuladorXML {
         return null;
     }
 
+    /**
+     * Write iconic model in {@link Document} to the given file.
+     *
+     * @param doc
+     *     {@link Document} containing an iconic model.
+     * @param file
+     *     file in which to save the model.
+     *
+     * @return {@code true} if the file was saved successfully, {@code false} otherwise.
+     */
+    public static boolean writeModelToFile (final Document doc, final File file) {
+        return write(doc, file, IconicoXML.ISPD_DTD, false);
+    }
+
+    /**
+     * Reads xml file and parses it into a {@link Document} containing an iconic model.
+     *
+     * @param file
+     *     XML file with an iconic model.
+     *
+     * @return {@link Document} with the iconic model represented in the file.
+     */
+    public static Document readModelFromFile (final File file)
+        throws ParserConfigurationException, IOException, SAXException {
+        return read(file, IconicoXML.ISPD_DTD);
+    }
+
     private static final class SubstituteEntityResolver implements EntityResolver {
 
         private final InputSource substitute;

@@ -90,13 +90,13 @@ public class SimulationDialog extends JDialog implements Runnable {
             List<Tarefa> tasks = null;
             if (this.gridOrCloud == PickModelTypeDialog.GRID) {
                 final RedeDeFilas queueNetwork =
-                    IconicoXML.newRedeDeFilas(this.model);
+                    IconicoXML.readQueueNetworkFromModel(this.model);
                 this.incrementProgress(10);//[10%] --> 35%
                 this.progressTracker.println("OK", Color.green);
                 //criar tarefas
                 this.progressTracker.print("Creating tasks.");
                 this.progressTracker.print(" -> ");
-                tasks = IconicoXML.newGerarCarga(this.model).makeTaskList(queueNetwork);
+                tasks = IconicoXML.readWorkloadGeneratorFromModel(this.model).makeTaskList(queueNetwork);
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
@@ -136,13 +136,13 @@ public class SimulationDialog extends JDialog implements Runnable {
                 janelaResultados.setVisible(true);
             } else if (this.gridOrCloud == PickModelTypeDialog.IAAS) {
                 final RedeDeFilasCloud cloudQueueNetwork =
-                    IconicoXML.newRedeDeFilasCloud(this.model);
+                    IconicoXML.readCloudQueueNetworkFromModel(this.model);
                 this.incrementProgress(10);//[10%] --> 35%
                 this.progressTracker.println("OK", Color.green);
                 //criar tarefas
                 this.progressTracker.print("Creating tasks.");
                 this.progressTracker.print(" -> ");
-                tasks = IconicoXML.newGerarCarga(this.model).makeTaskList(cloudQueueNetwork);
+                tasks = IconicoXML.readWorkloadGeneratorFromModel(this.model).makeTaskList(cloudQueueNetwork);
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
