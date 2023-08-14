@@ -1,17 +1,12 @@
 package ispd.arquivo.xml.models.builders;
 
-import ispd.arquivo.xml.utils.WrappedDocument;
-import ispd.arquivo.xml.utils.WrappedElement;
-import ispd.motor.workload.WorkloadGenerator;
-import ispd.motor.workload.WorkloadGeneratorType;
-import ispd.motor.workload.impl.CollectionWorkloadGenerator;
-import ispd.motor.workload.impl.GlobalWorkloadGenerator;
-import ispd.motor.workload.impl.PerNodeWorkloadGenerator;
-import ispd.motor.workload.impl.TraceFileWorkloadGenerator;
-import ispd.utils.SequentialIntSupplier;
-import java.io.File;
-import java.util.Optional;
-import java.util.function.IntSupplier;
+import ispd.arquivo.xml.utils.*;
+import ispd.motor.workload.*;
+import ispd.motor.workload.impl.*;
+import ispd.utils.*;
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
 
 /**
  * Converts XML docs with simulation workload configuration into {@link WorkloadGenerator} objects,
@@ -47,13 +42,13 @@ public enum LoadBuilder {
             .map(LoadBuilder::randomLoadFromElement);
 
         if (randomLoad.isPresent()) {
-            return randomLoad;
+            return Optional.of(randomLoad.get());
         }
 
         final var nodeLoad = nodeLoadsFromElement(c);
 
         if (nodeLoad.isPresent()) {
-            return nodeLoad;
+            return Optional.of(nodeLoad.get());
         }
 
         return c.traceLoads()
@@ -61,7 +56,7 @@ public enum LoadBuilder {
             .map(LoadBuilder::traceLoadFromElement);
     }
 
-    private static WorkloadGenerator randomLoadFromElement (final WrappedElement e) {
+    private static GlobalWorkloadGenerator randomLoadFromElement (final WrappedElement e) {
         final var computation = e.makeTwoStageFromInnerSizes(
             WrappedElement::isComputingType,
             WrappedElement::toTwoStageUniform
@@ -75,12 +70,11 @@ public enum LoadBuilder {
         return new GlobalWorkloadGenerator(e.tasks(), e.arrivalTime(), computation, communication);
     }
 
-    private static Optional<WorkloadGenerator> nodeLoadsFromElement (final WrappedElement e) {
+    private static Optional<CollectionWorkloadGenerator> nodeLoadsFromElement (final WrappedElement e) {
         final var idSupplier = new SequentialIntSupplier();
 
-        final var nodeLoads = e.nodeLoads()
+        final List<PerNodeWorkloadGenerator> nodeLoads = e.nodeLoads()
             .map(el -> nodeLoadFromElement(el, idSupplier))
-            .map(WorkloadGenerator.class::cast)
             .toList();
 
         if (nodeLoads.isEmpty()) {
@@ -88,12 +82,11 @@ public enum LoadBuilder {
         }
 
         return Optional.of(new CollectionWorkloadGenerator(
-            WorkloadGeneratorType.PER_NODE,
             nodeLoads
         ));
     }
 
-    private static WorkloadGenerator traceLoadFromElement (final WrappedElement e) {
+    private static TraceFileWorkloadGenerator traceLoadFromElement (final WrappedElement e) {
         final var file = new File(e.filePath());
 
         if (file.exists()) {
@@ -103,7 +96,7 @@ public enum LoadBuilder {
         return null;
     }
 
-    private static WorkloadGenerator nodeLoadFromElement (
+    private static PerNodeWorkloadGenerator nodeLoadFromElement (
         final WrappedElement e,
         final IntSupplier idSupplier
     ) {

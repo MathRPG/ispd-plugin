@@ -324,7 +324,8 @@ class TerminalApplicationCharacterizationTest {
         strings = {
             "oneTaskGlobalLoad",
             "twoTasksGlobalLoad",
-            "oneTaskNodeLoad"
+            "oneTaskNodeLoad",
+            "twoTasksNodeLoad",
         }
     )
     void givenValidModels_thenSimulates (final String load) {

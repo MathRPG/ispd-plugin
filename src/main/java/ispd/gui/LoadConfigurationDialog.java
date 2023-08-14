@@ -1,57 +1,24 @@
 package ispd.gui;
 
-import static ispd.gui.utils.ButtonBuilder.aButton;
-import static ispd.gui.utils.ButtonBuilder.basicButton;
+import static ispd.gui.utils.ButtonBuilder.*;
 
-import ispd.arquivo.xml.TraceXML;
-import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.gui.utils.Fonts.Tahoma;
-import ispd.motor.workload.WorkloadGenerator;
-import ispd.motor.workload.WorkloadGeneratorType;
-import ispd.motor.workload.impl.CollectionWorkloadGenerator;
-import ispd.motor.workload.impl.GlobalWorkloadGenerator;
-import ispd.motor.workload.impl.PerNodeWorkloadGenerator;
-import ispd.motor.workload.impl.TraceFileWorkloadGenerator;
-import ispd.utils.SequentialIntSupplier;
-import ispd.utils.constants.FileExtensions;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Vector;
-import java.util.function.Supplier;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
-import javax.swing.SpinnerModel;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileView;
-import javax.swing.table.DefaultTableModel;
+import ispd.arquivo.xml.*;
+import ispd.gui.auxiliar.*;
+import ispd.gui.utils.Fonts;
+import ispd.motor.workload.*;
+import ispd.motor.workload.impl.*;
+import ispd.utils.*;
+import ispd.utils.constants.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.logging.*;
+import java.util.stream.*;
+import javax.swing.*;
+import javax.swing.filechooser.*;
+import javax.swing.table.*;
 
 public class LoadConfigurationDialog extends JDialog {
 
@@ -240,33 +207,33 @@ public class LoadConfigurationDialog extends JDialog {
         this.jRadioButtonConvTrace          = new JRadioButton();
         this.jPanelConvertTrace             = new JPanel();
         this.jTextFieldCaminhoTrace         = new JTextField();
-        final JScrollPane jScrollPane2 = new JScrollPane();
+        final var jScrollPane2 = new JScrollPane();
         this.jTextNotifTrace = new JTextArea();
 
         this.jOpenTrace      = new JFileChooser();
         this.jPanelPickTrace = new JPanel();
-        final JScrollPane jScrollPane1 = new JScrollPane();
+        final var jScrollPane1 = new JScrollPane();
         this.jTextNotification = new JTextArea();
 
         this.jTextFieldCaminhoWMS = new JTextField();
         this.jFileExternalTrace   = new JFileChooser();
-        final JPanel jPanelModo = new JPanel();
+        final var jPanelModo = new JPanel();
         this.jRadioButtonTraces  = new JRadioButton();
         this.jRadioButtonForNode = new JRadioButton();
         this.jRadioButtonRandom  = new JRadioButton();
 
         this.jScrollPaneSelecionado = new JScrollPane();
-        final JPanel jPanel1 = new JPanel();
+        final var jPanel1 = new JPanel();
 
         this.jPanelRandom.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         this.jPanelRandom.setMaximumSize(null);
-        this.jPanelRandom.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
+        this.jPanelRandom.setPreferredSize(PREFERRED_PANEL_SIZE);
 
         final var taskCount = new JLabel(this.translate("Number of tasks"));
 
-        this.jSpinnerNumTarefas.setModel(LoadConfigurationDialog.UNSIGNED_MODEL.get());
+        this.jSpinnerNumTarefas.setModel(UNSIGNED_MODEL.get());
 
-        this.jSpinnerMinComputacao.setModel(LoadConfigurationDialog.POSITIVE_REAL_MODEL.get());
+        this.jSpinnerMinComputacao.setModel(POSITIVE_REAL_MODEL.get());
 
         final var computationalSize = new JLabel(this.translate("Computational size"));
 
@@ -274,27 +241,27 @@ public class LoadConfigurationDialog extends JDialog {
 
         final var arrivalTime = new JLabel(this.translate("Time of arrival"));
 
-        this.jSpinnerMinComunicacao.setModel(LoadConfigurationDialog.POSITIVE_REAL_MODEL.get());
-        this.jSpinnerTimeOfArrival.setModel(LoadConfigurationDialog.UNSIGNED_MODEL.get());
+        this.jSpinnerMinComunicacao.setModel(POSITIVE_REAL_MODEL.get());
+        this.jSpinnerTimeOfArrival.setModel(UNSIGNED_MODEL.get());
 
         final var minimumLabel = new JLabel(this.translate("Minimum"));
         final var averageLabel = new JLabel(this.translate("Average"));
 
-        this.jSpinnerAverageComputacao.setModel(LoadConfigurationDialog.POSITIVE_REAL_MODEL.get());
+        this.jSpinnerAverageComputacao.setModel(POSITIVE_REAL_MODEL.get());
 
-        this.jSpinnerAverageComunicacao.setModel(LoadConfigurationDialog.POSITIVE_REAL_MODEL.get());
+        this.jSpinnerAverageComunicacao.setModel(POSITIVE_REAL_MODEL.get());
 
         final var maximumLabel = new JLabel(this.translate("Maximum"));
 
-        this.jSpinnerMaxComputacao.setModel(LoadConfigurationDialog.POSITIVE_REAL_MODEL.get());
+        this.jSpinnerMaxComputacao.setModel(POSITIVE_REAL_MODEL.get());
 
-        this.jSpinnerMaxComunicacao.setModel(LoadConfigurationDialog.POSITIVE_REAL_MODEL.get());
+        this.jSpinnerMaxComunicacao.setModel(POSITIVE_REAL_MODEL.get());
 
         final var probability = new JLabel(this.translate("Probability"));
 
-        this.jSpinnerProbabilityComputacao.setModel(LoadConfigurationDialog.PROBABILITY_MODEL.get());
+        this.jSpinnerProbabilityComputacao.setModel(PROBABILITY_MODEL.get());
 
-        this.jSpinnerProbabilityComunicacao.setModel(LoadConfigurationDialog.PROBABILITY_MODEL.get());
+        this.jSpinnerProbabilityComunicacao.setModel(PROBABILITY_MODEL.get());
 
         final var mFlops = new JLabel(this.translate("MFLOPS"));
 
@@ -302,7 +269,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         final var seconds = new JLabel(this.translate("Seconds"));
 
-        final GroupLayout jPanelRandomLayout = new GroupLayout(this.jPanelRandom);
+        final var jPanelRandomLayout = new GroupLayout(this.jPanelRandom);
         this.jPanelRandom.setLayout(jPanelRandomLayout);
         jPanelRandomLayout.setHorizontalGroup(jPanelRandomLayout
                                                   .createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -613,12 +580,12 @@ public class LoadConfigurationDialog extends JDialog {
 
         this.jPanelForNode.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
         this.jPanelForNode.setMaximumSize(null);
-        this.jPanelForNode.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
+        this.jPanelForNode.setPreferredSize(PREFERRED_PANEL_SIZE);
 
         final var userLabel = new JLabel(this.translate("User"));
 
         this.comboBoxUsers.setModel(new DefaultComboBoxModel(this.users));
-        this.comboBoxUsers.addActionListener(LoadConfigurationDialog.DO_NOTHING);
+        this.comboBoxUsers.addActionListener(DO_NOTHING);
 
         final var scheduler = new JLabel(this.translate("Scheduler"));
 
@@ -626,7 +593,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         final var numberOfTasks = new JLabel(this.translate("Number of tasks"));
 
-        this.jSpinnerNumTarefasNo.setModel(LoadConfigurationDialog.UNSIGNED_MODEL.get());
+        this.jSpinnerNumTarefasNo.setModel(UNSIGNED_MODEL.get());
 
         final var computational = new JLabel(this.translate("Computational"));
 
@@ -920,7 +887,7 @@ public class LoadConfigurationDialog extends JDialog {
                                                                )
                                                                .addContainerGap()));
 
-        this.jPanelTrace.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
+        this.jPanelTrace.setPreferredSize(PREFERRED_PANEL_SIZE);
 
         this.jRadioButtonWmsx.setSelected(true);
         this.jRadioButtonWmsx.setText(this.translate("Open an existing iSPD " + "trace file"));
@@ -940,7 +907,7 @@ public class LoadConfigurationDialog extends JDialog {
         final var next =
             basicButton("%s >>".formatted(this.translate("Next")), this::onNextClick);
 
-        final GroupLayout jPanelTraceLayout = new GroupLayout(this.jPanelTrace);
+        final var jPanelTraceLayout = new GroupLayout(this.jPanelTrace);
         this.jPanelTrace.setLayout(jPanelTraceLayout);
 
         jPanelTraceLayout.setHorizontalGroup(jPanelTraceLayout
@@ -1017,7 +984,7 @@ public class LoadConfigurationDialog extends JDialog {
                                                              .addGap(44, 44, 44)));
 
         this.jPanelConvertTrace.setBorder(BorderFactory.createLineBorder(new Color(0, 0, 0)));
-        this.jPanelConvertTrace.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
+        this.jPanelConvertTrace.setPreferredSize(PREFERRED_PANEL_SIZE);
 
         final var externalSelect =
             new JLabel(this.translate("Select a external format trace file to convert:"));
@@ -1030,7 +997,7 @@ public class LoadConfigurationDialog extends JDialog {
         final var convertExternal =
             basicButton(this.translate("Convert"), this::onConvertExternalClicked);
 
-        this.jTextFieldCaminhoTrace.addActionListener(LoadConfigurationDialog.DO_NOTHING);
+        this.jTextFieldCaminhoTrace.addActionListener(DO_NOTHING);
 
         this.jTextNotifTrace.setColumns(20);
         this.jTextNotifTrace.setRows(5);
@@ -1042,7 +1009,7 @@ public class LoadConfigurationDialog extends JDialog {
             this::onPreviousClick
         );
 
-        final GroupLayout jPanelConvertTraceLayout = new GroupLayout(this.jPanelConvertTrace);
+        final var jPanelConvertTraceLayout = new GroupLayout(this.jPanelConvertTrace);
         this.jPanelConvertTrace.setLayout(jPanelConvertTraceLayout);
         jPanelConvertTraceLayout.setHorizontalGroup(
             jPanelConvertTraceLayout.createParallelGroup(GroupLayout.Alignment.LEADING).addGroup(
@@ -1108,14 +1075,14 @@ public class LoadConfigurationDialog extends JDialog {
         this.jOpenTrace.setFileView(new SomeFileView());
 
         this.jPanelPickTrace.setCursor(new Cursor(Cursor.TEXT_CURSOR));
-        this.jPanelPickTrace.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
+        this.jPanelPickTrace.setPreferredSize(PREFERRED_PANEL_SIZE);
 
         final var jLabel20 = new JLabel(this.translate("Select an iSPD trace " + "file to open:"));
 
         final var jLabel21 = new JLabel(this.translate("Notifications"));
 
         this.jTextNotification.setColumns(20);
-        this.jTextNotification.setFont(Tahoma.PLAIN_11);
+        this.jTextNotification.setFont(Fonts.Tahoma.PLAIN_11);
         this.jTextNotification.setRows(5);
         this.jTextNotification.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
@@ -1128,7 +1095,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         final var openWmsx = basicButton(this.translate("Open"), this::onOpenWmsxClick);
 
-        final GroupLayout jPanelSelecionaTraceLayout = new GroupLayout(this.jPanelPickTrace);
+        final var jPanelSelecionaTraceLayout = new GroupLayout(this.jPanelPickTrace);
         this.jPanelPickTrace.setLayout(jPanelSelecionaTraceLayout);
 
         jPanelSelecionaTraceLayout.setHorizontalGroup(
@@ -1209,7 +1176,7 @@ public class LoadConfigurationDialog extends JDialog {
         this.jRadioButtonRandom.setText(this.translate("Random"));
         this.jRadioButtonRandom.addActionListener(this::jRadioButtonRandomActionPerformed);
 
-        final GroupLayout jPanelModoLayout = new GroupLayout(jPanelModo);
+        final var jPanelModoLayout = new GroupLayout(jPanelModo);
         jPanelModo.setLayout(jPanelModoLayout);
 
         jPanelModoLayout.setHorizontalGroup(jPanelModoLayout
@@ -1250,9 +1217,9 @@ public class LoadConfigurationDialog extends JDialog {
                                                               .addComponent(this.jRadioButtonForNode))
                                                       .addGap(9, 9, 9)));
 
-        this.jScrollPaneSelecionado.setPreferredSize(LoadConfigurationDialog.PREFERRED_PANEL_SIZE);
+        this.jScrollPaneSelecionado.setPreferredSize(PREFERRED_PANEL_SIZE);
 
-        final GroupLayout jPanel1Layout = new GroupLayout(jPanel1);
+        final var jPanel1Layout = new GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout
@@ -1298,14 +1265,14 @@ public class LoadConfigurationDialog extends JDialog {
             case PER_NODE -> {
                 final var nodes = (CollectionWorkloadGenerator) loadGenerator;
                 for (final WorkloadGenerator item : nodes.getList()) {
-                    final PerNodeWorkloadGenerator node = (PerNodeWorkloadGenerator) item;
+                    final var node = (PerNodeWorkloadGenerator) item;
                     this.tableRow.add(node.toVector());
                 }
                 this.indexTable = this.tableRow.size();
                 this.setTipo(WorkloadGeneratorType.PER_NODE);
             }
             case TRACE -> {
-                final TraceFileWorkloadGenerator trace = (TraceFileWorkloadGenerator) loadGenerator;
+                final var trace = (TraceFileWorkloadGenerator) loadGenerator;
                 this.file            = trace.getTraceFile();
                 this.traceType       = trace.getTraceType();
                 this.traceTaskNumber = trace.getTaskCount();
@@ -1324,7 +1291,7 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onTableAddClick (final ActionEvent evt) {
-        final Vector linha = new Vector(8);
+        final var linha = new Vector(8);
         linha.add("app" + this.indexTable);
         this.indexTable++;
         linha.add(this.comboBoxUsers.getSelectedItem());
@@ -1339,7 +1306,7 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onTableAddClick1 (final ActionEvent evt) {
-        final int linha = this.jTable1.getSelectedRow();
+        final var linha = this.jTable1.getSelectedRow();
         if (linha >= 0 && linha < this.tableRow.size()) {
             this.tableRow.remove(linha);
         }
@@ -1375,17 +1342,17 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onNextClick (final ActionEvent evt) {
-        final JPanel panel =
+        final var panel =
             this.jRadioButtonWmsx.isSelected() ? this.jPanelPickTrace : this.jPanelConvertTrace;
         this.jScrollPaneSelecionado.setViewportView(panel);
     }
 
     private void onOpenExternalClicked (final ActionEvent evt) {
         this.traceFileFilter.setDescricao(this.translate("External Trace " + "File"));
-        final String[] exts = { ".swf", ".gwf" };
+        final var exts = new String[] { ".swf", ".gwf" };
         this.traceFileFilter.setExtensao(exts);
         this.jFileExternalTrace.setAcceptAllFileFilterUsed(false);
-        final int returnVal = this.jFileExternalTrace.showOpenDialog(this);
+        final var returnVal = this.jFileExternalTrace.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             this.file = this.jFileExternalTrace.getSelectedFile();
             this.jTextFieldCaminhoTrace.setText(this.file.getAbsolutePath());
@@ -1395,7 +1362,7 @@ public class LoadConfigurationDialog extends JDialog {
     private void onConvertExternalClicked (final ActionEvent evt) {
 
         try {
-            final TraceXML interpret = new TraceXML(this.jTextFieldCaminhoTrace.getText());
+            final var interpret = new TraceXML(this.jTextFieldCaminhoTrace.getText());
             try {//inicia a conversão do arquivo
                 final double t1 = System.currentTimeMillis();
                 interpret.convert();
@@ -1426,7 +1393,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         this.workloadFileFilter.setExtensao(FileExtensions.WORKLOAD_MODEL);
         this.jOpenTrace.setAcceptAllFileFilterUsed(false);
-        final int returnVal = this.jOpenTrace.showOpenDialog(this);
+        final var returnVal = this.jOpenTrace.showOpenDialog(this);
 
         if (returnVal != JFileChooser.APPROVE_OPTION) {
             return;
@@ -1434,7 +1401,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         this.file = this.jOpenTrace.getSelectedFile();
         this.jTextFieldCaminhoWMS.setText(this.file.getAbsolutePath());
-        final TraceXML interpret = new TraceXML(this.file.getAbsolutePath());
+        final var interpret = new TraceXML(this.file.getAbsolutePath());
         this.jTextNotification.setText(interpret.LerCargaWMS());
         this.traceTaskNumber = interpret.getNum_Tasks();
         this.traceType       = interpret.getTipo();
@@ -1454,11 +1421,11 @@ public class LoadConfigurationDialog extends JDialog {
 
     private void makeLayoutAndPack (final Component panel) {
         final var ok = aButton(this.translate("OK"), this::onOkClick)
-            .withPreferredSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE)
+            .withPreferredSize(PREFERRED_BUTTON_SIZE)
             .build();
 
         final var cancel = aButton(this.translate("Cancel"), this::onCancelClick)
-            .withSize(LoadConfigurationDialog.PREFERRED_BUTTON_SIZE).build();
+            .withSize(PREFERRED_BUTTON_SIZE).build();
 
         final var layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
@@ -1566,16 +1533,16 @@ public class LoadConfigurationDialog extends JDialog {
     private void onOkClick (final ActionEvent evt) {
         if (this.jRadioButtonRandom.isSelected()) {
             try {
-                final var    taskCount = (int) this.jSpinnerNumTarefas.getValue();
-                final var    minComp   = (double) this.jSpinnerMinComputacao.getValue();
-                final var    maxComp   = (double) this.jSpinnerMaxComputacao.getValue();
-                final var    aveComp   = (double) this.jSpinnerAverageComputacao.getValue();
-                final double probComp  = (double) this.jSpinnerProbabilityComputacao.getValue();
-                final var    minComun  = (double) this.jSpinnerMinComunicacao.getValue();
-                final var    maxComun  = (double) this.jSpinnerMaxComunicacao.getValue();
-                final var    aveComun  = (double) this.jSpinnerAverageComunicacao.getValue();
-                final double probComun = (double) this.jSpinnerProbabilityComunicacao.getValue();
-                final var    timeArriv = (int) this.jSpinnerTimeOfArrival.getValue();
+                final var taskCount = (int) this.jSpinnerNumTarefas.getValue();
+                final var minComp   = (double) this.jSpinnerMinComputacao.getValue();
+                final var maxComp   = (double) this.jSpinnerMaxComputacao.getValue();
+                final var aveComp   = (double) this.jSpinnerAverageComputacao.getValue();
+                final var probComp  = (double) this.jSpinnerProbabilityComputacao.getValue();
+                final var minComun  = (double) this.jSpinnerMinComunicacao.getValue();
+                final var maxComun  = (double) this.jSpinnerMaxComunicacao.getValue();
+                final var aveComun  = (double) this.jSpinnerAverageComunicacao.getValue();
+                final var probComun = (double) this.jSpinnerProbabilityComunicacao.getValue();
+                final var timeArriv = (int) this.jSpinnerTimeOfArrival.getValue();
                 this.loadGenerator =
                     new GlobalWorkloadGenerator(
                         taskCount,
@@ -1596,14 +1563,12 @@ public class LoadConfigurationDialog extends JDialog {
             }
         } else if (this.jRadioButtonForNode.isSelected()) {
             try {
-                final List<WorkloadGenerator> configuracaoNo =
-                    new ArrayList<>(this.tableRow.size());
                 final var idSupplier = new SequentialIntSupplier();
-                for (final List item : this.tableRow) {
-                    configuracaoNo.add(PerNodeWorkloadGenerator.fromTableRow(item, idSupplier));
-                }
-                this.loadGenerator =
-                    new CollectionWorkloadGenerator(WorkloadGeneratorType.PER_NODE, configuracaoNo);
+                final var configuracaoNo = this.tableRow
+                    .stream()
+                    .map(item -> PerNodeWorkloadGenerator.fromTableRow(item, idSupplier))
+                    .collect(Collectors.toCollection(() -> new ArrayList<>(this.tableRow.size())));
+                this.loadGenerator = new CollectionWorkloadGenerator(configuracaoNo);
             } catch (final Exception ex) {
                 Logger
                     .getLogger(LoadConfigurationDialog.class.getName())
@@ -1635,7 +1600,7 @@ public class LoadConfigurationDialog extends JDialog {
 
         private static String getFileExtension (final File file) {
             final var s = file.getName();
-            final int i = s.lastIndexOf(SomeFileView.FILE_EXTENSION_SEPARATOR);
+            final var i = s.lastIndexOf(FILE_EXTENSION_SEPARATOR);
 
             if (i <= 0 || i >= s.length() - 1) {
                 return null;

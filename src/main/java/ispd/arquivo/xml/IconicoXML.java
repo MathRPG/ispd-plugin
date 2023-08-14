@@ -58,36 +58,6 @@ public class IconicoXML {
     }
 
     /**
-     * Checks the integrity of the model in the {@link Document}. Performs very simple checks such
-     * as if the model has at least one user and machine.
-     *
-     * @param doc
-     *     {@link Document} containing iconic model
-     *
-     * @throws IllegalArgumentException
-     *     if the model is incomplete
-     */
-    public static void validateIconicModel (final Document doc) {
-        final var document = new WrappedDocument(doc);
-
-        if (document.hasNoOwners()) {
-            throw new IllegalArgumentException("The model has no users.");
-        }
-
-        if (document.hasNoMachines() && document.hasNoClusters()) {
-            throw new IllegalArgumentException("The model has no icons.");
-        }
-
-        if (document.hasNoLoads()) {
-            throw new IllegalArgumentException("One or more workloads have not been configured.");
-        }
-
-        if (document.hasNoMasters()) {
-            throw new IllegalArgumentException("One or more parameters have not been configured.");
-        }
-    }
-
-    /**
      * Convert an iconic model into a queue network, usable in the simulation motor.
      *
      * @param model
@@ -477,52 +447,6 @@ public class IconicoXML {
     }
 
     /**
-     * Add a machine icon with the given attributes to the current model being built.
-     * <b>Notes:</b> No 'energy' attribute is added to the element; costs are
-     * set to 0. See
-     * {@link #addMachine(Integer, Integer, Integer, Integer, String, Double, Double, String,
-     * String, Integer, Double, Double, boolean, Collection, Double)}.
-     */
-    private void addMachine (
-        final Integer x,
-        final Integer y,
-        final Integer localId,
-        final Integer globalId,
-        final String name,
-        final Double power,
-        final Double occupancy,
-        final String scheduler,
-        final String owner,
-        final Integer coreCount,
-        final Double memory,
-        final Double disk,
-        final boolean isMaster,
-        final Collection<Integer> slaves
-    ) {
-        this.addMachineInner(
-            x,
-            y,
-            localId,
-            globalId,
-            name,
-            power,
-            occupancy,
-            scheduler,
-            owner,
-            coreCount,
-            memory,
-            disk,
-            0.0,
-            0.0,
-            0.0,
-            isMaster,
-            slaves,
-            NO_ATTRS,
-            NO_ATTRS
-        );
-    }
-
-    /**
      * Add a IaaS machine icon with the given attributes to the current model being built.
      * <b>Notes:</b> No 'energy' attribute is added to the element; an extra
      * 'vm_alloc' attribute is added, compared to the other machine-adding methods. See
@@ -576,8 +500,6 @@ public class IconicoXML {
      * Helper method to abstract away the addition of a machine element to the model being built. It
      * takes in all attributes in common between the methods
      * {@link #addMachine(Integer, Integer, Integer, Integer, String, Double, Double, String,
-     * String, Integer, Double, Double, boolean, Collection)},
-     * {@link #addMachine(Integer, Integer, Integer, Integer, String, Double, Double, String,
      * String, Integer, Double, Double, boolean, Collection, Double)}, and
      * {@link #addMachineIaaS(Integer, Integer, Integer, Integer, String, Double, Double, String,
      * String, String, Integer, Double, Double, Double, Double, Double, boolean, Collection)}, but
@@ -585,7 +507,7 @@ public class IconicoXML {
      * containing the specific attributes of each of the outer methods.
      *
      * @param isMaster
-     *     indicates whether or not to include a inner 'master' element
+     *     indicates whether to include a inner 'master' element
      * @param extraAttrs
      *     extra attributes to be added ot the element
      * @param extraMasterAttrs
