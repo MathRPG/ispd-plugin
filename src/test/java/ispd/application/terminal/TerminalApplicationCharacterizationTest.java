@@ -14,6 +14,7 @@ import java.nio.charset.*;
 import java.nio.file.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
+import org.approvaltests.*;
 import org.hamcrest.core.*;
 import org.jetbrains.annotations.*;
 import org.junit.jupiter.api.*;
@@ -318,12 +319,19 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
-    @Test
-    void givenValidModel_thenSimulates () {
+    @ParameterizedTest
+    @ValueSource(
+        strings = {
+            "oneTaskGlobalLoad",
+            "twoTasksGlobalLoad",
+        }
+    )
+    void givenValidModels_thenSimulates (final String load) {
         given(this.systemTimeProvider.getSystemTime()).willReturn(0L, 1L);
 
-        this.runApplicationOnModelWith("schedulerValidLinkValidSlaveIcons");
+        this.runApplicationOnModelWith(
+            "oneUser", "schedulerValidLinkValidSlaveIcons", load);
 
-        verify(this.outStream);
+        verify(this.outStream, Approvals.NAMES.withParameters(load));
     }
 }
