@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>
+<!DOCTYPE system SYSTEM "iSPD.dtd">
+<system version="2.1">
+    <owner id="user1" powerlimit="100.0"/>
+    <machine energy="0.0" id="mac1" load="0.0" owner="user1" power="1.0">
+        <position x="105" y="188"/>
+        <icon_id global="1" local="1"/>
+        <characteristic>
+            <process number="1" power="1.0"/>
+            <memory size="0.0"/>
+            <hard_disk size="0.0"/>
+        </characteristic>
+    </machine>
+    <machine energy="0.0" id="mac0" load="0.0" owner="user1" power="0.0">
+        <position x="100" y="100"/>
+        <icon_id global="0" local="0"/>
+        <characteristic>
+            <process number="1" power="0.0"/>
+            <memory size="0.0"/>
+            <hard_disk size="0.0"/>
+        </characteristic>
+        <master scheduler="RoundRobin">
+            <slave id="1"/>
+        </master>
+    </machine>
+    <link bandwidth="1.0" id="link2" latency="0.1" load="0.0">
+        <connect destination="1" origination="0"/>
+        <position x="100" y="100"/>
+        <position x="105" y="188"/>
+        <icon_id global="2" local="0"/>
+    </link>
+    <link bandwidth="1.0" id="link3" latency="0.1" load="0.0">
+        <connect destination="0" origination="1"/>
+        <position x="105" y="188"/>
+        <position x="100" y="100"/>
+        <icon_id global="3" local="1"/>
+    </link>
+    <load>
+        <node application="app0" id_master="mac0" owner="user1" tasks="1">
+            <size maximum="0.0" minimum="0.0" type="computing"/>
+            <size maximum="0.0" minimum="0.0" type="communication"/>
+        </node>
+    </load>
+</system>

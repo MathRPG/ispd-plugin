@@ -324,6 +324,7 @@ class TerminalApplicationCharacterizationTest {
         strings = {
             "oneTaskGlobalLoad",
             "twoTasksGlobalLoad",
+            "oneTaskNodeLoad"
         }
     )
     void givenValidModels_thenSimulates (final String load) {
@@ -333,5 +334,11 @@ class TerminalApplicationCharacterizationTest {
             "oneUser", "schedulerValidLinkValidSlaveIcons", load);
 
         verify(this.outStream, Approvals.NAMES.withParameters(load));
+    }
+
+    @Disabled
+    @Test
+    void playGround () {
+
     }
 }

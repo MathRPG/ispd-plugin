@@ -1,13 +1,11 @@
 package ispd.motor.workload.impl;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.random.Distribution;
-import ispd.motor.random.TwoStageUniform;
-import ispd.motor.workload.WorkloadGeneratorType;
-import ispd.utils.SequentialIntSupplier;
-import java.util.List;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.random.*;
+import ispd.motor.workload.*;
+import ispd.utils.*;
+import java.util.*;
 
 /**
  * Generates a workload with randomly-decided sizes from a collection of uniform intervals, and
@@ -92,7 +90,7 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
     ) {
         super(
             taskCount, computation, communication,
-            new SequentialIntSupplier(), new Distribution(System.currentTimeMillis())
+            new SequentialIntSupplier(), new Distribution()
         );
         this.taskCreationTime = taskCreationTime;
     }

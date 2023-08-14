@@ -9,6 +9,10 @@ import java.util.Random;
  */
 public class Distribution extends Random {
 
+    public Distribution () {
+        this(0L);
+    }
+
     public Distribution (final long seed) {
         super(seed);
     }
