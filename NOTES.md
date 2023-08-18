@@ -100,6 +100,9 @@ Methods:
 Potential conflation of concerns: key management and the actual replacing within the target template.
 - For `String`s, how to determine the presence of a `Key`? Regex?
 
+Potential support for hierarchical keys: e.g. `{ispd.policy.count}`, `{ispd.policy.names}`
+- Would need for generic concept for a 'key', could it be an Object, a Map?
+
 ### Charting Facility
 
 Most likely accessible through a fluent interface of builder methods.
