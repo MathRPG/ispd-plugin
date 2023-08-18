@@ -18,13 +18,44 @@ import java.util.*;
  *
  * @see ispd.arquivo.xml.IconicoXML
  */
-public class GridQueueNetworkParser extends QueueNetworkParser<CS_Maquina, CS_Processamento> {
+public class GridQueueNetworkParser {
+
+    /**
+     * Map or {@link CentroServico}s parsed from the document, indexed by id.
+     */
+    protected final Map<Integer, CentroServico> serviceCenters = new HashMap<>();
+
+    /**
+     * Map of {@link CS_Internet}s parsed from the document.
+     */
+    protected final List<CS_Internet> internets = new ArrayList<>();
+
+    /**
+     * Map of {@link CS_Link}s parsed from the document.
+     */
+    protected final List<CS_Comunicacao> links = new ArrayList<>();
+
+    private final Map<String, Double> powerLimits = new HashMap<>();
 
     private final List<CS_Maquina> machines = new ArrayList<>();
 
     private final List<CS_Processamento> masters = new ArrayList<>();
 
     private final Map<CentroServico, List<CS_Maquina>> clusterSlaves = new HashMap<>();
+
+    /**
+     * Whether this instance has already parsed a document successfully. Each instance should be
+     * responsible for parsing <b>only one</b> document.
+     */
+    private boolean hasParsedADocument = false;
+
+    private static void connectLinkAndVertices (
+        final CS_Link link, final Vertice origination, final Vertice destination
+    ) {
+        link.setConexoesSaida((CentroServico) destination);
+        origination.addConexoesSaida(link);
+        destination.addConexoesEntrada(link);
+    }
 
     /**
      * Process a {@link WrappedElement} that is representing a cluster of {@link CentroServico}s.
@@ -34,7 +65,6 @@ public class GridQueueNetworkParser extends QueueNetworkParser<CS_Maquina, CS_Pr
      * @param e
      *     {@link WrappedElement} representing a cluster.
      */
-    @Override
     protected void processClusterElement (final WrappedElement e) {
         if (e.isMaster()) {
             final var cluster = ServiceCenterFactory.aMasterWithNoLoadFactor(e);
@@ -268,5 +298,28 @@ public class GridQueueNetworkParser extends QueueNetworkParser<CS_Maquina, CS_Pr
             this.internets,
             this.powerLimits
         );
+    }
+
+    private void processInternetElement (final WrappedElement e) {
+        final var net = ServiceCenterFactory.anInternet(e);
+
+        this.internets.add(net);
+        this.serviceCenters.put(e.globalIconId(), net);
+    }
+
+    private void processLinkElement (final WrappedElement e) {
+        final var link = ServiceCenterFactory.aLink(e);
+
+        connectLinkAndVertices(
+            link,
+            this.getVertex(e.origination()),
+            this.getVertex(e.destination())
+        );
+
+        this.links.add(link);
+    }
+
+    private Vertice getVertex (final int e) {
+        return (Vertice) this.serviceCenters.get(e);
     }
 }
