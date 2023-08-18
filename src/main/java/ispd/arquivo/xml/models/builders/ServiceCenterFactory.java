@@ -1,21 +1,14 @@
 package ispd.arquivo.xml.models.builders;
 
-import ispd.arquivo.xml.utils.WrappedElement;
-import ispd.gui.iconico.grade.VirtualMachine;
-import ispd.motor.filas.servidores.implementacao.CS_Internet;
-import ispd.motor.filas.servidores.implementacao.CS_Link;
-import ispd.motor.filas.servidores.implementacao.CS_Maquina;
-import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
-import ispd.motor.filas.servidores.implementacao.CS_Mestre;
-import ispd.motor.filas.servidores.implementacao.CS_Switch;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
-import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
+import ispd.arquivo.xml.utils.*;
+import ispd.gui.iconico.grade.*;
+import ispd.motor.filas.servidores.implementacao.*;
 
 /**
  * Utility class with static methods to build service centers for simulable models and,
  * exceptionally, virtual machines for cloud models
  */
-public class ServiceCenterBuilder {
+public class ServiceCenterFactory {
 
     /**
      * @return a master from the given {@link WrappedElement}
@@ -32,17 +25,17 @@ public class ServiceCenterBuilder {
     }
 
     /**
+     * @return a master (with load set to 0) from the given {@link WrappedElement}
+     */
+    public static CS_Mestre aMasterWithNoLoadFactor (final WrappedElement e) {
+        return new CS_Mestre(e.id(), e.owner(), e.power(), 0.0, e.scheduler(), e.energy());
+    }
+
+    /**
      * @return a machine (with one core) from the given {@link WrappedElement}
      */
     public static CS_Maquina aMachine (final WrappedElement e) {
         return new CS_Maquina(e.id(), e.owner(), e.power(), 1, e.load(), e.energy());
-    }
-
-    /**
-     * @return a master (with load set to 0) from the given {@link WrappedElement}
-     */
-    public static CS_Mestre aMasterWithNoLoad (final WrappedElement e) {
-        return new CS_Mestre(e.id(), e.owner(), e.power(), 0.0, e.scheduler(), e.energy());
     }
 
     /**
@@ -53,11 +46,11 @@ public class ServiceCenterBuilder {
     }
 
     /**
-     * @return a machine with the given id from the given {@link WrappedElement}. Its core count is
-     * set to 1 and its load factor, to zero.
+     * @return a machine with the given number from the given {@link WrappedElement}. Its core count
+     * is set to 1 and its load factor, to zero.
      */
-    public static CS_Maquina aMachineWithId (final WrappedElement e, final int id) {
-        return new CS_Maquina(e.id(), e.owner(), e.power(), 1, 0.0, id + 1, e.energy());
+    public static CS_Maquina aMachineWithNumber (final WrappedElement e, final int number) {
+        return new CS_Maquina(e.id(), e.owner(), e.power(), 1, 0.0, number + 1, e.energy());
     }
 
     /**
@@ -79,13 +72,14 @@ public class ServiceCenterBuilder {
      */
     public static CS_MaquinaCloud aCloudMachine (final WrappedElement e) {
         final var characteristics = e.characteristics();
+        final var processor       = characteristics.processor();
         final var costs           = characteristics.costs();
 
         return new CS_MaquinaCloud(
             e.id(),
             e.owner(),
-            characteristics.processor().power(),
-            characteristics.processor().number(),
+            processor.power(),
+            processor.number(),
             e.load(),
             characteristics.memory().size(),
             characteristics.hardDisk().size(),

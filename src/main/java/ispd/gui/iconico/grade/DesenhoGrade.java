@@ -703,7 +703,7 @@ public class DesenhoGrade extends DrawingArea {
         //Realiza leitura dos icones
         IconicoXML.newGrade(document, this.vertices, this.edges);
         //Realiza leitura da configuração de carga do modelo
-        this.loadConfiguration = IconicoXML.newGerarCarga(document);
+        this.loadConfiguration = IconicoXML.readWorkloadGeneratorFromModel(document);
 
         this.updateVertexAndEdgeCount();
         this.repaint();

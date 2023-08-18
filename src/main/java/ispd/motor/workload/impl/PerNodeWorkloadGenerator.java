@@ -1,18 +1,12 @@
 package ispd.motor.workload.impl;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.random.Distribution;
-import ispd.motor.random.TwoStageUniform;
-import ispd.motor.workload.WorkloadGeneratorType;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-import java.util.function.IntSupplier;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.random.*;
+import ispd.motor.workload.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 /**
  * Generates a workload for a single master node in a {@link RedeDeFilas}.<br> Some
@@ -69,7 +63,7 @@ public class PerNodeWorkloadGenerator extends RandomicWorkloadGenerator {
     ) {
         super(
             taskCount, computation, communication,
-            idSupplier, new Distribution(System.currentTimeMillis())
+            idSupplier, new Distribution()
         );
         this.application = application;
         this.owner       = owner;
@@ -304,7 +298,8 @@ public class PerNodeWorkloadGenerator extends RandomicWorkloadGenerator {
      * owner's id is {@value #USER_NO_DELAY}.
      */
     private int calculateExtraDelay () {
-        return PerNodeWorkloadGenerator.USER_NO_DELAY.equals(this.owner) ?
-               PerNodeWorkloadGenerator.ON_NO_DELAY : 0;
+        return USER_NO_DELAY.equals(this.owner)
+               ? ON_NO_DELAY
+               : 0;
     }
 }

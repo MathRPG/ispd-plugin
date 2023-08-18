@@ -320,7 +320,21 @@
     <inspection_tool class="ForLoopWithMissingComponent" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreCollectionLoops" value="false" />
     </inspection_tool>
-    <inspection_tool class="HardCodedStringLiteral" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="HardCodedStringLiteral" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="Production" level="WARNING" enabled="true">
+        <option name="ignoreForAssertStatements" value="true" />
+        <option name="ignoreForExceptionConstructors" value="true" />
+        <option name="ignoreForSpecifiedExceptionConstructors" value="" />
+        <option name="ignoreForJUnitAsserts" value="true" />
+        <option name="ignoreForClassReferences" value="true" />
+        <option name="ignoreForPropertyKeyReferences" value="true" />
+        <option name="ignoreForNonAlpha" value="true" />
+        <option name="ignoreAssignedToConstants" value="true" />
+        <option name="ignoreToString" value="false" />
+        <option name="nonNlsCommentPattern" value="NON-NLS" />
+        <option name="ignoreForEnumConstant" value="true" />
+        <option name="reportUnannotatedReferences" value="true" />
+      </scope>
       <option name="ignoreForAssertStatements" value="true" />
       <option name="ignoreForExceptionConstructors" value="true" />
       <option name="ignoreForSpecifiedExceptionConstructors" value="" />
@@ -476,7 +490,12 @@
     <inspection_tool class="MagicNumber" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MapReplaceableByEnumMap" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MarkerInterface" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="MethodCount" enabled="true" level="WARNING" enabled_by_default="true">
+    <inspection_tool class="MethodCount" enabled="true" level="WARNING" enabled_by_default="false">
+      <scope name="Production" level="WARNING" enabled="true">
+        <option name="m_limit" value="10" />
+        <option name="ignoreGettersAndSetters" value="false" />
+        <option name="ignoreOverridingMethods" value="false" />
+      </scope>
       <option name="m_limit" value="10" />
       <option name="ignoreGettersAndSetters" value="false" />
       <option name="ignoreOverridingMethods" value="false" />
@@ -673,7 +692,6 @@
       <option name="ignoreRequiredObsoleteCollectionTypes" value="false" />
     </inspection_tool>
     <inspection_tool class="OctalAndDecimalIntegersMixed" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="OnDemandImport" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="OptionalContainsCollection" enabled="true" level="WEAK WARNING" enabled_by_default="true" editorAttributes="INFO_ATTRIBUTES" />
     <inspection_tool class="OptionalGetWithoutIsPresent" enabled="true" level="ERROR" enabled_by_default="true" editorAttributes="ERRORS_ATTRIBUTES" />
     <inspection_tool class="OptionalToIf" enabled="false" level="INFORMATION" enabled_by_default="false" />
@@ -952,7 +970,7 @@
     <inspection_tool class="TransientFieldInNonSerializableClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TransientFieldNotInitialized" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TypeMayBeWeakened" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="useRighthandTypeAsWeakestTypeInAssignments" value="true" />
+      <option name="useRighthandTypeAsWeakestTypeInAssignments" value="false" />
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
@@ -967,7 +985,7 @@
       <option name="ignoreReferencesNeedingImport" value="true" />
     </inspection_tool>
     <inspection_tool class="UnnecessarilyQualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignoreStaticFieldAccesses" value="true" />
+      <option name="m_ignoreStaticFieldAccesses" value="false" />
       <option name="m_ignoreStaticMethodCalls" value="false" />
       <option name="m_ignoreStaticAccessFromStaticContext" value="false" />
     </inspection_tool>
@@ -1000,7 +1018,7 @@
     </inspection_tool>
     <inspection_tool class="UnqualifiedMethodAccess" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UnqualifiedStaticUsage" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="m_ignoreStaticFieldAccesses" value="false" />
+      <option name="m_ignoreStaticFieldAccesses" value="true" />
       <option name="m_ignoreStaticMethodCalls" value="true" />
       <option name="m_ignoreStaticAccessFromStaticContext" value="false" />
     </inspection_tool>

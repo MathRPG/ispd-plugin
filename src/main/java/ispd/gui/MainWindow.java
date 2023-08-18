@@ -3,8 +3,7 @@ package ispd.gui;
 import ispd.arquivo.exportador.Exportador;
 import ispd.arquivo.interpretador.gridsim.InterpretadorGridSim;
 import ispd.arquivo.interpretador.simgrid.InterpretadorSimGrid;
-import ispd.arquivo.xml.ConfiguracaoISPD;
-import ispd.arquivo.xml.IconicoXML;
+import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.Corner;
 import ispd.gui.auxiliar.HtmlPane;
 import ispd.gui.auxiliar.MultipleExtensionFileFilter;
@@ -1095,7 +1094,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private void readFileContents (final File file)
         throws ParserConfigurationException, IOException, SAXException {
-        final var doc = IconicoXML.ler(file);
+        final var doc = ManipuladorXML.readModelFromFile(file);
         this.startNewDrawing(doc);
         this.modelType       = this.drawingArea.getModelType();
         this.virtualMachines = this.drawingArea.getVirtualMachines();
@@ -1452,7 +1451,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private void saveDrawingAreaToFile (final File file) {
         final var doc = this.drawingArea.getGrade();
-        IconicoXML.escrever(doc, file);
+        ManipuladorXML.writeModelToFile(doc, file);
         this.appendNotificacao(this.translate("model saved"));
     }
 

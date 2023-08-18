@@ -2,7 +2,7 @@ package ispd.motor;
 
 import ispd.arquivo.interpretador.internal.iconic.InterpretadorIconico;
 import ispd.arquivo.interpretador.internal.simulable.InterpretadorSimulavel;
-import ispd.arquivo.xml.IconicoXML;
+import ispd.arquivo.xml.utils.*;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -19,6 +19,36 @@ import org.w3c.dom.Document;
  * Classe de conexão entre interface de usuario e motor de simulação
  */
 public abstract class ProgressoSimulacao {
+
+    /**
+     * Checks the integrity of the model in the {@link Document}. Performs very simple checks such
+     * as if the model has at least one user and machine.
+     *
+     * @param doc
+     *     {@link Document} containing iconic model
+     *
+     * @throws IllegalArgumentException
+     *     if the model is incomplete
+     */
+    public static void validateIconicModel (final Document doc) {
+        final var document = new WrappedDocument(doc);
+
+        if (document.hasNoOwners()) {
+            throw new IllegalArgumentException("The model has no users.");
+        }
+
+        if (document.hasNoMachines() && document.hasNoClusters()) {
+            throw new IllegalArgumentException("The model has no icons.");
+        }
+
+        if (document.hasNoLoads()) {
+            throw new IllegalArgumentException("One or more workloads have not been configured.");
+        }
+
+        if (document.hasNoMasters()) {
+            throw new IllegalArgumentException("One or more parameters have not been configured.");
+        }
+    }
 
     public abstract void incProgresso (int n);
 
@@ -97,7 +127,7 @@ public abstract class ProgressoSimulacao {
         }
 
         try {
-            IconicoXML.validarModelo(model);
+            validateIconicModel(model);
         } catch (final IllegalArgumentException e) {
             this.printAndThrow(e);
         }

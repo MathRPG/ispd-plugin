@@ -1,32 +1,19 @@
 package ispd.application.terminal;
 
-import ispd.application.Application;
-import ispd.arquivo.SalvarResultadosHTML;
-import ispd.arquivo.xml.IconicoXML;
-import ispd.gui.auxiliar.SimulationResultChartMaker;
-import ispd.motor.ProgressoSimulacao;
-import ispd.motor.SilentSimulationProgress;
-import ispd.motor.SimulacaoParalela;
-import ispd.motor.SimulacaoSequencial;
-import ispd.motor.Simulation;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.metricas.Metricas;
-import ispd.utils.constants.FileExtensions;
-import ispd.utils.constants.StringConstants;
-import java.io.File;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.w3c.dom.Document;
+import ispd.application.*;
+import ispd.arquivo.*;
+import ispd.arquivo.xml.*;
+import ispd.gui.auxiliar.*;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.metricas.*;
+import ispd.utils.constants.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import org.apache.commons.cli.*;
+import org.jetbrains.annotations.*;
+import org.w3c.dom.*;
 
 /**
  * A class for setting up the terminal part of iSPD and run the simulations.
@@ -35,13 +22,11 @@ public class TerminalApplication implements Application {
 
     private static final int DEFAULT_PORT = 2004;
 
-    private static final String UNREACHABLE_STATEMENT = "Unreachable Statement";
-
     private final Optional<File> inputFile;
 
     private final Optional<File> outputFolder;
 
-    private final Modes mode;
+    private final Mode mode;
 
     private final int nThreads;
 
@@ -55,28 +40,49 @@ public class TerminalApplication implements Application {
 
     private final ProgressoSimulacao simulationProgress = new SilentSimulationProgress();
 
+    private final @NotNull SystemTimeProvider systemTimeProvider;
+
     /**
      * Pre run of the terminal application, adding the necessary flags to the class before it runs.
      *
-     * @param args
-     *     Arguments from the command line.
+     * @param options
+     *     Options from the command line.
      */
-    public TerminalApplication (final String[] args) {
-        final var cmd = this.commandLinePreparation(OptionsHolder.ALL_OPTIONS, args);
+    public TerminalApplication (final String[] options) {
+        this(options, new DefaultSystemTimeProvider());
+    }
 
-        this.mode          = setMode(cmd);
-        this.serverPort    = getIntOptionOr(cmd, "P", TerminalApplication.DEFAULT_PORT);
+    /**
+     * Pre run of the terminal application, adding the necessary flags to the class before it runs.
+     *
+     * @param options
+     *     Options from the command line.
+     * @param systemTimeProvider
+     *     Provider for the system time. Used when presenting simulation results. Must not be
+     *     {@code null}.
+     */
+    public TerminalApplication (
+        final String[] options,
+        final @NotNull SystemTimeProvider systemTimeProvider
+    ) {
+        final var cmd = this.commandLinePreparation(OptionsHolder.ALL_OPTIONS, options);
+
+        this.mode          = getActiveMode(cmd);
+        this.serverPort    = getIntOptionOr(cmd, "P", DEFAULT_PORT);
         this.nExecutions   = getIntOptionOr(cmd, "e", 1);
         this.nThreads      = this.setNThreads(cmd);
-        this.inputFile     = this.setInputFile(cmd);
-        this.outputFolder  = this.setOutputFolder(cmd);
-        this.parallel      = this.setParallelSimulation(cmd);
-        this.serverAddress = this.setServerAddress(cmd);
+        this.inputFile     = setInputFile(cmd);
+        this.outputFolder  = setOutputFolder(cmd);
+        this.parallel      = isParallelSimulation(cmd);
+        this.serverAddress = setServerAddress(cmd);
 
         if (this.mode.requiresModel() && this.inputFile.isEmpty()) {
-            System.out.println("It needs a model to simulate.");
-            System.exit(1);
+            final var message = "It needs a model to simulate.";
+            System.out.println(message);
+            throw new IllegalArgumentException(message);
         }
+
+        this.systemTimeProvider = Objects.requireNonNull(systemTimeProvider);
     }
 
     /**
@@ -87,11 +93,11 @@ public class TerminalApplication implements Application {
      *
      * @return An int representing a mode based on the options.
      */
-    private static Modes setMode (final CommandLine cmd) {
-        return Arrays.stream(Modes.values())
-            .filter(v -> v.isOptionMode(cmd))
+    private static Mode getActiveMode (final CommandLine cmd) {
+        return Arrays.stream(Mode.values())
+            .filter(v -> v.isActive(cmd))
             .findFirst()
-            .orElse(Modes.SIMULATE);
+            .orElse(Mode.SIMULATE);
     }
 
     private static Optional<File> getFileFromFirstArgument (final CommandLine cmd) {
@@ -101,7 +107,7 @@ public class TerminalApplication implements Application {
     }
 
     private static void printVersion () {
-        System.out.println(
+        System.out.print(
             """
             iSPD version 3.1
               Iconic Simulator of Parallel and Distributed System
@@ -125,7 +131,9 @@ public class TerminalApplication implements Application {
         final String opt,
         final int defaultValue
     ) {
-        return cmd.hasOption(opt) ? setIntValueFromOption(cmd, opt) : defaultValue;
+        return cmd.hasOption(opt)
+               ? setIntValueFromOption(cmd, opt)
+               : defaultValue;
     }
 
     /**
@@ -143,9 +151,102 @@ public class TerminalApplication implements Application {
             return Integer.parseInt(cmd.getOptionValue(op));
         } catch (final NumberFormatException ignored) {
             System.out.printf("\"%s\" is not a valid number%n", cmd.getOptionValue(op));
-            System.exit(1);
-            throw new AssertionError(TerminalApplication.UNREACHABLE_STATEMENT);
+            throw new RuntimeException(ignored);
         }
+    }
+
+    /**
+     * Get the name of the model file from the command line.
+     *
+     * @param cmd
+     *     The command line class from Common Cli.
+     *
+     * @return A configuration file with information for the simulation
+     */
+    private static Optional<File> setInputFile (final CommandLine cmd) {
+        return getFileFromOption(cmd, "in")
+            .or(() -> getFileFromFirstArgument(cmd));
+    }
+
+    /**
+     * Get the name of the output folder for the html export from the command line.
+     *
+     * @param cmd
+     *     The command line class from Common Cli.
+     *
+     * @return The folder coming from the command line argument or an empty optional.
+     */
+    private static Optional<File> setOutputFolder (final CommandLine cmd) {
+        return getFileFromOption(cmd, "o");
+    }
+
+    /**
+     * Get the option of parallel simulation from the command line and configure it.
+     *
+     * @param cmd
+     *     The command line class from Command Cli.
+     *
+     * @return True if there is "p" in the command line of false otherwise.
+     */
+    private static boolean isParallelSimulation (final CommandLine cmd) {
+        return cmd.hasOption("p");
+    }
+
+    /**
+     * Set the mode for running the terminal application.
+     *
+     * @param cmd
+     *     CommandLine used in the application.
+     *
+     * @return An int representing a mode based on the options.
+     */
+    private static Inet4Address setServerAddress (final CommandLine cmd) {
+        try {
+            final var hostName = cmd.getOptionValue("a", StringConstants.LOCALHOST);
+            return (Inet4Address) InetAddress.getByName(hostName);
+        } catch (final UnknownHostException e) {
+            System.out.printf(
+                "Error at getting the server address from command line. (%s)%n",
+                e.getMessage()
+            );
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    /**
+     * Create a job list from the model and the queue network from it.
+     *
+     * @param model
+     *     The model from the simulation
+     * @param queueNetwork
+     *     The queue network from the model
+     *
+     * @return The respective job list from the model
+     */
+    private static List<Tarefa> createJobsList (
+        final Document model,
+        final RedeDeFilas queueNetwork
+    ) {
+        System.out.print("  Creating tasks: ");
+        final var jobs =
+            IconicoXML.readWorkloadGeneratorFromModel(model).makeTaskList(queueNetwork);
+        System.out.println(ConsoleColors.surroundGreen("OK!"));
+        return jobs;
+    }
+
+    /**
+     * Create a queue network from a simulation model.
+     *
+     * @param model
+     *     The model from a simulation
+     *
+     * @return A queue network from the model
+     */
+    private static RedeDeFilas createQueueNetwork (final Document model) {
+        System.out.print("  Mounting network queue: ");
+        final var queueNetwork = IconicoXML.readQueueNetworkFromModel(model);
+        System.out.println(ConsoleColors.surroundGreen("OK!"));
+        return queueNetwork;
     }
 
     /**
@@ -160,18 +261,19 @@ public class TerminalApplication implements Application {
             case SERVER -> this.serverSimulation();
             case CLIENT -> this.clientSimulation();
         }
-        System.exit(0);
     }
 
     private void attemptLocalSimulation () {
-        if (this.inputFile.isPresent()) {
-            final var file = this.inputFile.get();
+        if (this.inputFile.isEmpty()) {
+            return;
+        }
 
-            if (file.getName().endsWith(FileExtensions.ICONIC_MODEL) && file.exists()) {
-                this.runNSimulations();
-            } else {
-                System.out.printf("iSPD can not open the file: %s%n", file.getName());
-            }
+        final var file = this.inputFile.get();
+
+        if (file.getName().endsWith(FileExtensions.ICONIC_MODEL) && file.exists()) {
+            this.runNSimulations();
+        } else {
+            System.out.printf("iSPD can not open the file: %s%n", file.getName());
         }
     }
 
@@ -180,18 +282,17 @@ public class TerminalApplication implements Application {
      *
      * @param options
      *     The class Common Cli's Options class for the command line options.
-     * @param args
-     *     The arguments got from the command line.
+     * @param cmdOptions
+     *     The options received from the command line.
      *
      * @return The command line class with the chosen options.
      */
-    private CommandLine commandLinePreparation (final Options options, final String[] args) {
+    private CommandLine commandLinePreparation (final Options options, final String[] cmdOptions) {
         try {
-            return (new DefaultParser()).parse(options, args);
+            return (new DefaultParser()).parse(options, cmdOptions);
         } catch (final ParseException e) {
             System.out.println(e.getMessage());
-            System.exit(1);
-            throw new AssertionError("Should not be reachable.");
+            throw new RuntimeException(e);
         }
     }
 
@@ -208,73 +309,14 @@ public class TerminalApplication implements Application {
             return 1;
         }
 
-        final int threads = setIntValueFromOption(cmd, "t");
+        final var threads = setIntValueFromOption(cmd, "t");
 
         if (this.nExecutions < 1) {
             System.out.printf("Number of executions is invalid (%d)%n", this.nExecutions);
-            System.exit(1);
+            throw new IllegalArgumentException("Invalid Number of Executions.");
         }
 
         return Math.min(threads, this.nExecutions);
-    }
-
-    /**
-     * Get the name of the model file from the command line.
-     *
-     * @param cmd
-     *     The command line class from Common Cli.
-     *
-     * @return A configuration file with information for the simulation
-     */
-    private Optional<File> setInputFile (final CommandLine cmd) {
-        return getFileFromOption(cmd, "in")
-            .or(() -> getFileFromFirstArgument(cmd));
-    }
-
-    /**
-     * Get the name of the output folder for the html export from the command line.
-     *
-     * @param cmd
-     *     The command line class from Common Cli.
-     *
-     * @return The folder coming from the command line argument or an empty optional.
-     */
-    private Optional<File> setOutputFolder (final CommandLine cmd) {
-        return getFileFromOption(cmd, "o");
-    }
-
-    /**
-     * Get the option of parallel simulation from the command line and configure it.
-     *
-     * @param cmd
-     *     The command line class from Command Cli.
-     *
-     * @return True if there is "p" in the command line of false otherwise.
-     */
-    private boolean setParallelSimulation (final CommandLine cmd) {
-        return cmd.hasOption("p");
-    }
-
-    /**
-     * Set the mode for running the terminal application.
-     *
-     * @param cmd
-     *     CommandLine used in the application.
-     *
-     * @return An int representing a mode based on the options.
-     */
-    private Inet4Address setServerAddress (final CommandLine cmd) {
-        try {
-            final var hostName = cmd.getOptionValue("a", StringConstants.LOCALHOST);
-            return (Inet4Address) InetAddress.getByName(hostName);
-        } catch (final UnknownHostException e) {
-            System.out.printf(
-                "Error at getting the server address from command line. (%s)%n",
-                e.getMessage()
-            );
-            System.exit(1);
-            throw new AssertionError(TerminalApplication.UNREACHABLE_STATEMENT);
-        }
     }
 
     /**
@@ -285,16 +327,21 @@ public class TerminalApplication implements Application {
         System.out.println("Simulation Initiated.");
         System.out.print("Opening iconic model. ->");
 
-        final Document model         = this.getModelFromFile();
-        final var      metrics       = new Metricas(IconicoXML.newListUsers(model));
-        double         totalDuration = 0.0;
-        for (int i = 1; i <= this.nExecutions; i++) {
+        final var model = this.getModelFromFile();
+
+        if (model == null) {
+            return;
+        }
+
+        final var metrics       = new Metricas(IconicoXML.newListUsers(model));
+        var       totalDuration = 0.0;
+        for (var i = 1; i <= this.nExecutions; i++) {
             System.out.printf("* Simulation %d%n", i);
 
-            final var    preSimInstant    = System.currentTimeMillis();
-            final var    simMetric        = this.runASimulation(model);
-            final var    postSimInstant   = System.currentTimeMillis();
-            final double totalSimDuration = (double) (postSimInstant - preSimInstant) / 1000.0;
+            final var preSimInstant    = this.systemTimeProvider.getSystemTime();
+            final var simMetric        = this.runASimulation(model);
+            final var postSimInstant   = this.systemTimeProvider.getSystemTime();
+            final var totalSimDuration = (double) (postSimInstant - preSimInstant) / 1000.0;
 
             System.out.printf("Simulation Execution Time = %f seconds%n", totalSimDuration);
 
@@ -346,14 +393,13 @@ public class TerminalApplication implements Application {
         }
 
         try {
-            final var model = IconicoXML.ler(this.inputFile.get());
+            final var model = ManipuladorXML.readModelFromFile(this.inputFile.get());
             System.out.println(ConsoleColors.GREEN + "OK" + ConsoleColors.RESET);
             this.simulationProgress.validarInicioSimulacao(model);
             return model;
         } catch (final Exception ex) {
             System.out.println(ex.getMessage());
-            System.exit(-1);
-            throw new AssertionError("Code shouldn't be reachable.");
+            return null;
         }
     }
 
@@ -366,8 +412,8 @@ public class TerminalApplication implements Application {
      * @return The metrics resulted from the simulation
      */
     private Metricas runASimulation (final Document model) {
-        final var queueNetwork = this.createQueueNetwork(model);
-        final var jobs         = this.createJobsList(model, queueNetwork);
+        final var queueNetwork = createQueueNetwork(model);
+        final var jobs         = createJobsList(model, queueNetwork);
 
         final var sim = this.selectSimulation(queueNetwork, jobs);
         sim.createRouting();
@@ -390,38 +436,6 @@ public class TerminalApplication implements Application {
         return this.parallel
                ? new SimulacaoParalela(this.simulationProgress, queueNetwork, jobs, this.nThreads)
                : new SimulacaoSequencial(this.simulationProgress, queueNetwork, jobs);
-    }
-
-    /**
-     * Create a job list from the model and the queue network from it.
-     *
-     * @param model
-     *     The model from the simulation
-     * @param queueNetwork
-     *     The queue network from the model
-     *
-     * @return The respective job list from the model
-     */
-    private List<Tarefa> createJobsList (final Document model, final RedeDeFilas queueNetwork) {
-        System.out.print("  Creating tasks: ");
-        final var jobs = IconicoXML.newGerarCarga(model).makeTaskList(queueNetwork);
-        System.out.println(ConsoleColors.surroundGreen("OK!"));
-        return jobs;
-    }
-
-    /**
-     * Create a queue network from a simulation model.
-     *
-     * @param model
-     *     The model from a simulation
-     *
-     * @return A queue network from the model
-     */
-    private RedeDeFilas createQueueNetwork (final Document model) {
-        System.out.print("  Mounting network queue: ");
-        final var queueNetwork = IconicoXML.newRedeDeFilas(model);
-        System.out.println(ConsoleColors.surroundGreen("OK!"));
-        return queueNetwork;
     }
 
     /**
@@ -457,7 +471,7 @@ public class TerminalApplication implements Application {
     /**
      * An enum for run modes for the terminal application.
      */
-    private enum Modes {
+    private enum Mode {
         HELP("h"),
         VERSION("v"),
         SIMULATE("", true),
@@ -468,17 +482,16 @@ public class TerminalApplication implements Application {
 
         private final boolean requiresModel;
 
-        Modes (final String s) {
-            this.str           = s;
-            this.requiresModel = false;
+        Mode (final String s) {
+            this(s, false);
         }
 
-        Modes (final String s, final boolean requiresModel) {
+        Mode (final String s, final boolean requiresModel) {
             this.str           = s;
             this.requiresModel = requiresModel;
         }
 
-        private boolean isOptionMode (final CommandLine cmd) {
+        private boolean isActive (final CommandLine cmd) {
             return cmd.hasOption(this.str);
         }
 
@@ -489,6 +502,12 @@ public class TerminalApplication implements Application {
 
     private static class OptionsHolder {
 
+        private static final Option HELP =
+            Option.builder("h").longOpt("help").desc("print this help message.").build();
+
+        private static final Option VERSION =
+            Option.builder("v").longOpt("version").desc("print the version of iSPD.").build();
+
         private static final Options ALL_OPTIONS = makeAllOptions();
 
         /**
@@ -498,8 +517,8 @@ public class TerminalApplication implements Application {
          */
         private static Options makeAllOptions () {
             return new Options()
-                .addOption("h", "help", false, "print this help message.")
-                .addOption("v", "version", false, "print the version of iSPD.")
+                .addOption(HELP)
+                .addOption(VERSION)
                 .addOption("s", "server", false, "run iSPD as a server.")
                 .addOption("c", "client", false, "run iSPD as a client.")
                 .addOption("P", "port", true, "specify a port.")
@@ -511,5 +530,9 @@ public class TerminalApplication implements Application {
                 .addOption("a", "address", true, "specify the server address.")
                 .addOption("p", "parallel", false, "runs the simulation parallel.");
         }
+    }
+
+    private static class DefaultSystemTimeProvider implements SystemTimeProvider {
+
     }
 }

@@ -1,0 +1,2 @@
+Simulation Initiated.
+Opening iconic model. ->XML document structures must start and end within the same entity.

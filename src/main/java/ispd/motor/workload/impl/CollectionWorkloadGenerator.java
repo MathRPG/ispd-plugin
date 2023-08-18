@@ -1,13 +1,9 @@
 package ispd.motor.workload.impl;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.workload.WorkloadGenerator;
-import ispd.motor.workload.WorkloadGeneratorType;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import ispd.motor.filas.*;
+import ispd.motor.workload.*;
+import java.util.*;
+import java.util.stream.*;
 
 /**
  * Represents a workload from a homogeneous collection of other workloads. Specifically, when used
@@ -16,28 +12,22 @@ import java.util.stream.Collectors;
  */
 public class CollectionWorkloadGenerator implements WorkloadGenerator {
 
-    private final WorkloadGeneratorType type;
-
-    private final List<WorkloadGenerator> list;
+    private final List<PerNodeWorkloadGenerator> list;
 
     /**
      * Instantiate a CollectionWorkloadGenerator from a homogeneous {@link List} of other
      * {@link WorkloadGenerator}s.
      *
-     * @param type
-     *     type of {@link WorkloadGenerator}s hosted in the given list
      * @param list
      *     list of {@link WorkloadGenerator}s
      */
     public CollectionWorkloadGenerator (
-        final WorkloadGeneratorType type,
-        final List<WorkloadGenerator> list
+        final List<PerNodeWorkloadGenerator> list
     ) {
-        this.type = type;
         this.list = list;
     }
 
-    private static String makeStringForList (final Collection<WorkloadGenerator> list) {
+    private static String makeStringForList (final Collection<? extends WorkloadGenerator> list) {
         return list.stream()
             .map(WorkloadGenerator::toString)
             .map(CollectionWorkloadGenerator::adaptStringRepresentation)
@@ -59,12 +49,7 @@ public class CollectionWorkloadGenerator implements WorkloadGenerator {
      */
     @Override
     public List<Tarefa> makeTaskList (final RedeDeFilas qn) {
-        if (this.type != WorkloadGeneratorType.PER_NODE) {
-            return new ArrayList<>(0);
-        }
-
         return this.list.stream()
-            .map(PerNodeWorkloadGenerator.class::cast)
             .flatMap(load -> load.makeTaskList(qn).stream())
             .collect(Collectors.toList());
     }
@@ -74,7 +59,7 @@ public class CollectionWorkloadGenerator implements WorkloadGenerator {
      */
     @Override
     public WorkloadGeneratorType getType () {
-        return this.type;
+        return WorkloadGeneratorType.PER_NODE;
     }
 
     /**
@@ -96,12 +81,10 @@ public class CollectionWorkloadGenerator implements WorkloadGenerator {
     public String toString () {
         return """
                CollectionWorkloadGenerator{
-                   type='%s',
                    list=[
                %s
                    ],
                }""".formatted(
-            this.type,
             makeStringForList(this.list)
         );
     }
@@ -109,7 +92,7 @@ public class CollectionWorkloadGenerator implements WorkloadGenerator {
     /**
      * @return the inner workload generator list.
      */
-    public List<WorkloadGenerator> getList () {
+    public List<PerNodeWorkloadGenerator> getList () {
         return this.list;
     }
 }

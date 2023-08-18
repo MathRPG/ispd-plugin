@@ -1,32 +1,20 @@
 package ispd.arquivo.xml.models.builders;
 
-import ispd.arquivo.xml.utils.SwitchConnection;
-import ispd.arquivo.xml.utils.UserPowerLimit;
-import ispd.arquivo.xml.utils.WrappedDocument;
-import ispd.arquivo.xml.utils.WrappedElement;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.filas.servidores.implementacao.CS_Maquina;
-import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
-import ispd.motor.filas.servidores.implementacao.CS_Switch;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
-import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
-import ispd.policy.scheduling.cloud.CloudSchedulingPolicy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ispd.arquivo.xml.utils.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.policy.scheduling.cloud.*;
+import java.util.*;
 
 /**
  * Class to build a cloud queue network from a model in a {@link WrappedDocument}. The usage is the
- * same as in {@link QueueNetworkBuilder}.
+ * same as in {@link GridQueueNetworkParser}.
  *
  * @see ispd.arquivo.xml.IconicoXML
- * @see QueueNetworkBuilder
+ * @see GridQueueNetworkParser
  */
-public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
+public class CloudQueueNetworkParser extends GridQueueNetworkParser {
 
     /**
      * Overridden from superclass to support {@link CS_MaquinaCloud}s.
@@ -38,6 +26,65 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
     private final List<CS_VirtualMac> virtualMachines = new ArrayList<>();
 
     private final List<CS_Processamento> virtualMachineMasters = new ArrayList<>();
+
+    /**
+     * Process the represented cluster in {@link WrappedElement} very similarly to the superclass,
+     * but adapted to take into account cloud machines and virtual machines.
+     *
+     * @param e
+     *     {@link WrappedElement} representing a cluster.
+     */
+    @Override
+    protected void processClusterElement (final WrappedElement e) {
+        if (e.isMaster()) {
+            final var clust = ServiceCenterFactory.aVmmNoLoad(e);
+
+            this.virtualMachineMasters.add(clust);
+            this.serviceCenters.put(e.globalIconId(), clust);
+
+            final int slaveCount = e.nodes();
+
+            final double power = clust.getPoderComputacional() * (slaveCount + 1);
+
+            this.increaseUserPower(clust.getProprietario(), power);
+
+            final var theSwitch = ServiceCenterFactory.aSwitch(e);
+
+            this.links.add(theSwitch);
+
+            SwitchConnection.toVirtualMachineMaster(theSwitch, clust);
+
+            for (int j = 0; j < slaveCount; j++) {
+                final var machine = ServiceCenterFactory.aCloudMachineWithId(e, j);
+                SwitchConnection.toCloudMachine(theSwitch, machine);
+
+                machine.addMestre(clust);
+                clust.addEscravo(machine);
+
+                this.cloudMachines.add(machine);
+            }
+        } else {
+            final var theSwitch = ServiceCenterFactory.aSwitch(e);
+
+            this.links.add(theSwitch);
+            this.serviceCenters.put(e.globalIconId(), theSwitch);
+
+            this.increaseUserPower(e.owner(), e.power() * e.nodes());
+
+            final int slaveCount = e.nodes();
+
+            final List<CS_MaquinaCloud> slaves = new ArrayList<>(slaveCount);
+
+            for (int j = 0; j < slaveCount; j++) {
+                final var machine = ServiceCenterFactory.aCloudMachineWithId(e, j);
+                SwitchConnection.toCloudMachine(theSwitch, machine);
+                slaves.add(machine);
+            }
+
+            this.cloudMachines.addAll(slaves);
+            this.clusterSlaves.put(theSwitch, slaves);
+        }
+    }
 
     /**
      * Parse the required {@link CentroServico}s and {@link CS_VirtualMac}s from the given
@@ -53,69 +100,10 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
      *     If this instance was already used to parse a {@link WrappedDocument}.
      */
     @Override
-    public QueueNetworkBuilder parseDocument (final WrappedDocument doc) {
+    public GridQueueNetworkParser parseDocument (final WrappedDocument doc) {
         super.parseDocument(doc);
         doc.virtualMachines().forEach(this::processVirtualMachineElement);
         return this;
-    }
-
-    /**
-     * Process the represented cluster in {@link WrappedElement} very similarly to the superclass,
-     * but adapted to take into account cloud machines and virtual machines.
-     *
-     * @param e
-     *     {@link WrappedElement} representing a cluster.
-     */
-    @Override
-    protected void processClusterElement (final WrappedElement e) {
-        if (e.isMaster()) {
-            final var clust = ServiceCenterBuilder.aVmmNoLoad(e);
-
-            this.virtualMachineMasters.add(clust);
-            this.serviceCenters.put(e.globalIconId(), clust);
-
-            final int slaveCount = e.nodes();
-
-            final double power = clust.getPoderComputacional() * (slaveCount + 1);
-
-            this.increaseUserPower(clust.getProprietario(), power);
-
-            final var theSwitch = ServiceCenterBuilder.aSwitch(e);
-
-            this.links.add(theSwitch);
-
-            SwitchConnection.toVirtualMachineMaster(theSwitch, clust);
-
-            for (int j = 0; j < slaveCount; j++) {
-                final var machine = ServiceCenterBuilder.aCloudMachineWithId(e, j);
-                SwitchConnection.toCloudMachine(theSwitch, machine);
-
-                machine.addMestre(clust);
-                clust.addEscravo(machine);
-
-                this.cloudMachines.add(machine);
-            }
-        } else {
-            final var theSwitch = ServiceCenterBuilder.aSwitch(e);
-
-            this.links.add(theSwitch);
-            this.serviceCenters.put(e.globalIconId(), theSwitch);
-
-            this.increaseUserPower(e.owner(), e.power() * e.nodes());
-
-            final int slaveCount = e.nodes();
-
-            final List<CS_MaquinaCloud> slaves = new ArrayList<>(slaveCount);
-
-            for (int j = 0; j < slaveCount; j++) {
-                final var machine = ServiceCenterBuilder.aCloudMachineWithId(e, j);
-                SwitchConnection.toCloudMachine(theSwitch, machine);
-                slaves.add(machine);
-            }
-
-            this.cloudMachines.addAll(slaves);
-            this.clusterSlaves.put(theSwitch, slaves);
-        }
     }
 
     /**
@@ -134,10 +122,10 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
         final CS_Processamento machine;
 
         if (e.hasMasterAttribute()) {
-            machine = ServiceCenterBuilder.aVirtualMachineMaster(e);
+            machine = ServiceCenterFactory.aVirtualMachineMaster(e);
             this.virtualMachineMasters.add(machine);
         } else {
-            machine = ServiceCenterBuilder.aCloudMachine(e);
+            machine = ServiceCenterFactory.aCloudMachine(e);
             this.cloudMachines.add((CS_MaquinaCloud) machine);
         }
 
@@ -208,7 +196,7 @@ public class CloudQueueNetworkBuilder extends QueueNetworkBuilder {
     }
 
     private void processVirtualMachineElement (final WrappedElement e) {
-        final var virtualMachine = ServiceCenterBuilder.aVirtualMachine(e);
+        final var virtualMachine = ServiceCenterFactory.aVirtualMachine(e);
 
         final var masterId = e.vmm();
 

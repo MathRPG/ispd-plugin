@@ -1,9 +1,8 @@
 package ispd;
 
-import java.util.Locale;
-
-import ispd.application.GuiApplication;
-import ispd.application.terminal.TerminalApplication;
+import ispd.application.*;
+import ispd.application.terminal.*;
+import java.util.*;
 
 public enum Main {
     ;
