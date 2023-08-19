@@ -1,20 +1,23 @@
 package ispd.arquivo.xml;
 
+import java.util.*;
+import org.jetbrains.annotations.*;
+
 public enum SimulationMode {
-    DEFAULT((byte) 0, "default"),
-    OPTIMISTIC((byte) 1, "optimistic"),
-    GRAPHICAL((byte) 2, "graphical");
+    DEFAULT("default"),
+    OPTIMISTIC("optimistic"),
+    GRAPHICAL("graphical");
 
-    public final byte   asInt;
+    public final @NonNls String xmlName;
 
-    public final String xmlName;
-
-    SimulationMode (final byte i, final String xmlName) {
-        this.asInt   = i;
+    SimulationMode (final String xmlName) {
         this.xmlName = xmlName;
     }
 
-    public boolean hasName (final String modeName) {
-        return this.xmlName.equals(modeName);
+    public static SimulationMode fromString (final String s) {
+        return Arrays.stream(values())
+            .filter(t -> t.xmlName.equals(s))
+            .findFirst()
+            .orElseThrow(() -> new IllegalSimulationModeException(s));
     }
 }

@@ -1,36 +1,25 @@
 package ispd.arquivo.xml;
 
-import ispd.arquivo.xml.utils.WrappedDocument;
-import ispd.arquivo.xml.utils.WrappedElement;
-import ispd.gui.LogExceptions;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.logging.Logger;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.xml.sax.SAXException;
+import ispd.arquivo.xml.utils.*;
+import ispd.gui.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.logging.*;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
 /**
  * Responsible for reading and updating the software's configuration file
  */
 public class ConfiguracaoISPD {
 
-    public static final byte DEFAULT = 0;
-
-    public static final byte OPTIMISTIC = 1;
-
-    public static final byte GRAPHICAL = 2;
-
     public static final File DIRETORIO_ISPD = loadIspdDirectory();
 
     private static final String FILENAME = "configuration.xml";
 
-    private final File configurationFile =
-        new File(ConfiguracaoISPD.DIRETORIO_ISPD, ConfiguracaoISPD.FILENAME);
+    private final File configurationFile = new File(DIRETORIO_ISPD, FILENAME);
 
     private SimulationMode simulationMode = SimulationMode.DEFAULT;
 
@@ -48,7 +37,7 @@ public class ConfiguracaoISPD {
 
     private Boolean shouldChartTaskTime = false;
 
-    private File lastModelOpen = ConfiguracaoISPD.DIRETORIO_ISPD;
+    private File lastModelOpen = DIRETORIO_ISPD;
 
     /**
      * If the configuration file exists, reads configuration from it. Otherwise, default values are
@@ -63,7 +52,8 @@ public class ConfiguracaoISPD {
 
             this.readConfigFromDoc(doc);
         } catch (final IOException | ParserConfigurationException | SAXException ignored) {
-            Logger.getLogger(ConfiguracaoISPD.class.getName())
+            Logger
+                .getLogger(ConfiguracaoISPD.class.getName())
                 .warning("Error while reading configuration file '%s'".formatted(this.configurationFile));
         }
     }
@@ -79,10 +69,8 @@ public class ConfiguracaoISPD {
     }
 
     private static File getDirectory () {
-        final var location = LogExceptions.class
-            .getProtectionDomain()
-            .getCodeSource()
-            .getLocation();
+        final var location =
+            LogExceptions.class.getProtectionDomain().getCodeSource().getLocation();
 
         try {
             return new File(location.toURI());
@@ -104,13 +92,7 @@ public class ConfiguracaoISPD {
      * to be used in the simulation(s), and number of simulations to execute.
      */
     private void readGeneralConfig (final WrappedElement e) {
-        final var mode = e.simulationMode();
-
-        this.simulationMode = Arrays.stream(SimulationMode.values())
-            .filter(t -> t.hasName(mode))
-            .findFirst()
-            .orElseThrow(() -> new IllegalSimulationModeException(mode));
-
+        this.simulationMode  = SimulationMode.fromString(e.simulationMode());
         this.threadCount     = e.numberOfThreads();
         this.simulationCount = e.numberOfSimulations();
     }
@@ -140,18 +122,12 @@ public class ConfiguracaoISPD {
      * Returns which simulation mode is being used<br> {@literal 0}: <b>Default</b> simulation
      * mode<br> {@literal 1}: <b>Optimisitc</b><br> {@literal 2}: <b>Graphical</b>
      */
-    public int getSimulationMode () {
-        return this.simulationMode.asInt;
+    public SimulationMode getSimulationMode () {
+        return this.simulationMode;
     }
 
-    /**
-     * Update the simulation type that will be executed.
-     */
-    public void setSimulationMode (final byte simulationMode) {
-        this.simulationMode = Arrays.stream(SimulationMode.values())
-            .filter(t -> t.asInt == simulationMode)
-            .findFirst()
-            .orElseThrow();
+    public void setSimulationMode (final SimulationMode mode) {
+        this.simulationMode = mode;
     }
 
     /**
@@ -311,12 +287,5 @@ public class ConfiguracaoISPD {
         }
 
         this.lastModelOpen = lastDir;
-    }
-
-    private static class IllegalSimulationModeException extends IllegalArgumentException {
-
-        private IllegalSimulationModeException (final String mode) {
-            super("Invalid simulation mode '%s' found in configuration file.".formatted(mode));
-        }
     }
 }

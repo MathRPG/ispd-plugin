@@ -1,24 +1,11 @@
 package ispd.gui;
 
-import ispd.arquivo.xml.ConfiguracaoISPD;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.text.DecimalFormat;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
+import ispd.arquivo.xml.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.text.*;
+import javax.swing.*;
+import javax.swing.text.*;
 
 public class SettingsDialog extends JDialog {
 
@@ -64,9 +51,9 @@ public class SettingsDialog extends JDialog {
 
     private void setSimulationModel (final ConfiguracaoISPD configuration) {
         switch (configuration.getSimulationMode()) {
-            case ConfiguracaoISPD.DEFAULT -> this.jRadioButtonDefaultActionPerformed(null);
-            case ConfiguracaoISPD.OPTIMISTIC -> this.jRadioButtonOptimisticActionPerformed(null);
-            case ConfiguracaoISPD.GRAPHICAL -> this.jRadioButtonGraphicalActionPerformed(null);
+            case DEFAULT -> this.jRadioButtonDefaultActionPerformed(null);
+            case OPTIMISTIC -> this.jRadioButtonOptimisticActionPerformed(null);
+            case GRAPHICAL -> this.jRadioButtonGraphicalActionPerformed(null);
         }
     }
 
@@ -362,7 +349,7 @@ public class SettingsDialog extends JDialog {
         this.jRadioButtonOptimistic.setSelected(false);
         this.jRadioButtonGraphical.setSelected(false);
         this.textFieldEnable(true);
-        this.config.setSimulationMode(ConfiguracaoISPD.DEFAULT);
+        this.config.setSimulationMode(SimulationMode.DEFAULT);
     }
 
     private void jRadioButtonOptimisticActionPerformed (final ActionEvent evt) {
@@ -370,7 +357,7 @@ public class SettingsDialog extends JDialog {
         this.jRadioButtonOptimistic.setSelected(true);
         this.jRadioButtonGraphical.setSelected(false);
         this.textFieldEnable(true);
-        this.config.setSimulationMode(ConfiguracaoISPD.OPTIMISTIC);
+        this.config.setSimulationMode(SimulationMode.OPTIMISTIC);
     }
 
     private void jRadioButtonGraphicalActionPerformed (final ActionEvent evt) {
@@ -378,7 +365,7 @@ public class SettingsDialog extends JDialog {
         this.jRadioButtonOptimistic.setSelected(false);
         this.jRadioButtonGraphical.setSelected(true);
         this.textFieldEnable(false);
-        this.config.setSimulationMode(ConfiguracaoISPD.GRAPHICAL);
+        this.config.setSimulationMode(SimulationMode.GRAPHICAL);
     }
 
     private void jTextFieldThreadFocusLost (final FocusEvent evt) {
