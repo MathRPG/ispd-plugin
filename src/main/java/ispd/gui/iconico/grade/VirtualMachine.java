@@ -5,36 +5,36 @@ public class VirtualMachine {
     /**
      * It represents the amount of cores in the chip.
      */
-    private int coreCount;
+    private final int coreCount;
 
     /**
      * It represents the allocated memory in
      * <em>gigabytes (GB)</em>.
      */
-    private double allocatedMemory;
+    private final double allocatedMemory;
 
     /**
      * It represents the allocated disk in
      * <em>gigabytes (GB)</em>.
      */
-    private double allocatedDisk;
+    private final double allocatedDisk;
 
     /**
      * It represents its name.
      */
-    private String name;
+    private final String name;
 
     /**
      * It represents its owner.
      */
-    private String owner;
+    private final String owner;
 
     /**
      * It represents the running operating system.s
      */
-    private String operatingSystem;
+    private final String operatingSystem;
 
-    private String VMM;
+    private final String VMM;
 
     /**
      * Constructor of  which specifies the id, owner, VMM, core count, allocated memory, allocated
@@ -80,32 +80,12 @@ public class VirtualMachine {
     }
 
     /**
-     * It sets the core count.
-     *
-     * @param coreCount
-     *     the core count to be set
-     */
-    public void setCoreCount (final int coreCount) {
-        this.coreCount = coreCount;
-    }
-
-    /**
      * Returns the allocated memory.
      *
      * @return the allocated memory
      */
     public double getAllocatedMemory () {
         return this.allocatedMemory;
-    }
-
-    /**
-     * It sets the allocated memory.
-     *
-     * @param allocatedMemory
-     *     the allocated memory
-     */
-    public void setAllocatedMemory (final double allocatedMemory) {
-        this.allocatedMemory = allocatedMemory;
     }
 
     /**
@@ -118,32 +98,12 @@ public class VirtualMachine {
     }
 
     /**
-     * It sets the allocated disk.
-     *
-     * @param allocatedDisk
-     *     the allocated disk
-     */
-    public void setAllocatedDisk (final double allocatedDisk) {
-        this.allocatedDisk = allocatedDisk;
-    }
-
-    /**
      * Returns the name.
      *
      * @return the name
      */
     public String getName () {
         return this.name;
-    }
-
-    /**
-     * It sets the name
-     *
-     * @param name
-     *     the name to be set
-     */
-    public void setName (final String name) {
-        this.name = name;
     }
 
     /**
@@ -156,16 +116,6 @@ public class VirtualMachine {
     }
 
     /**
-     * It sets the owner.
-     *
-     * @param owner
-     *     the owner to be set
-     */
-    public void setOwner (final String owner) {
-        this.owner = owner;
-    }
-
-    /**
      * Returns the running operating system.
      *
      * @return the running operating system
@@ -175,31 +125,11 @@ public class VirtualMachine {
     }
 
     /**
-     * It sets the running operating system
-     *
-     * @param operatingSystem
-     *     the running operating system to be set
-     */
-    public void setOperatingSystem (final String operatingSystem) {
-        this.operatingSystem = operatingSystem;
-    }
-
-    /**
      * Returns the VMM.
      *
      * @return the VMM
      */
     public String getVMM () {
         return this.VMM;
-    }
-
-    /**
-     * It sets the VMM.
-     *
-     * @param VMM
-     *     the VMM to be set
-     */
-    public void setVMM (final String VMM) {
-        this.VMM = VMM;
     }
 }

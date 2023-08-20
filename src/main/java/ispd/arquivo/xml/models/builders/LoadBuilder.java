@@ -1,5 +1,6 @@
 package ispd.arquivo.xml.models.builders;
 
+import ispd.arquivo.xml.*;
 import ispd.arquivo.xml.utils.*;
 import ispd.motor.workload.*;
 import ispd.motor.workload.impl.*;
@@ -25,7 +26,7 @@ public enum LoadBuilder {
      * @return {@link Optional} containing parsed {@link WorkloadGenerator}, if there was valid
      * configuration for one in the document. Otherwise, an empty {@link Optional}.
      *
-     * @see ispd.arquivo.xml.IconicoXML
+     * @see IconicModelDocumentBuilder
      * @see WorkloadGenerator
      */
     public static Optional<WorkloadGenerator> build (final WrappedDocument doc) {

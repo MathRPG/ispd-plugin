@@ -1,32 +1,24 @@
 package ispd.arquivo.xml;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.io.*;
+import java.util.logging.*;
+import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
 /**
  * Responsible for low-level xml file parsing, writing and creation calls
  *
- * @see IconicoXML
+ * @see IconicModelDocumentBuilder
  * @see ConfiguracaoISPD
  */
 public enum ManipuladorXML {
     ;
+
+    private static final String ISPD_DTD = "iSPD.dtd";
 
     /**
      * Read a xml file using the dtd pointed to by the path
@@ -145,7 +137,7 @@ public enum ManipuladorXML {
      * @return {@code true} if the file was saved successfully, {@code false} otherwise.
      */
     public static boolean writeModelToFile (final Document doc, final File file) {
-        return write(doc, file, IconicoXML.ISPD_DTD, false);
+        return write(doc, file, ISPD_DTD, false);
     }
 
     /**
@@ -158,7 +150,7 @@ public enum ManipuladorXML {
      */
     public static Document readModelFromFile (final File file)
         throws ParserConfigurationException, IOException, SAXException {
-        return read(file, IconicoXML.ISPD_DTD);
+        return read(file, ISPD_DTD);
     }
 
     private static final class SubstituteEntityResolver implements EntityResolver {

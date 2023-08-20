@@ -229,7 +229,9 @@ public class TerminalApplication implements Application {
     ) {
         System.out.print("  Creating tasks: ");
         final var jobs =
-            IconicoXML.readWorkloadGeneratorFromModel(model).makeTaskList(queueNetwork);
+            WorkloadGeneratorFactory
+                .fromDocument(model)
+                .makeTaskList(queueNetwork);
         System.out.println(ConsoleColors.surroundGreen("OK!"));
         return jobs;
     }
@@ -244,7 +246,7 @@ public class TerminalApplication implements Application {
      */
     private static RedeDeFilas createQueueNetwork (final Document model) {
         System.out.print("  Mounting network queue: ");
-        final var queueNetwork = IconicoXML.readQueueNetworkFromModel(model);
+        final var queueNetwork = GridQueueNetworkFactory.fromDocument(model);
         System.out.println(ConsoleColors.surroundGreen("OK!"));
         return queueNetwork;
     }
@@ -333,7 +335,7 @@ public class TerminalApplication implements Application {
             return;
         }
 
-        final var metrics       = new Metricas(IconicoXML.newListUsers(model));
+        final var metrics = new Metricas(IconicModelFactory.userListFromDocument(model));
         var       totalDuration = 0.0;
         for (var i = 1; i <= this.nExecutions; i++) {
             System.out.printf("* Simulation %d%n", i);

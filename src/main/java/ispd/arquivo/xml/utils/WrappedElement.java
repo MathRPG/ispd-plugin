@@ -1,12 +1,9 @@
 package ispd.arquivo.xml.utils;
 
-import ispd.motor.random.TwoStageUniform;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import ispd.motor.random.*;
+import java.util.function.*;
+import java.util.stream.*;
+import org.w3c.dom.*;
 
 /**
  * Utility class to add convenience methods to manipulate XML Element objects. It functions as a
@@ -32,7 +29,7 @@ public class WrappedElement {
      *
      * @return convert given {@link NodeList} into a {@link Stream} of {@code WrappedElement}s
      */
-    public static Stream<WrappedElement> nodeListToWrappedElementStream (final NodeList nl) {
+    public static Stream<WrappedElement> wrapNodeList (final NodeList nl) {
         return IntStream
             .range(0, nl.getLength())
             .mapToObj(nl::item)
@@ -74,7 +71,7 @@ public class WrappedElement {
     }
 
     private Stream<WrappedElement> elementsWithTag (final String tag) {
-        return nodeListToWrappedElementStream(this.getElementsByTagName(tag));
+        return wrapNodeList(this.getElementsByTagName(tag));
     }
 
     private NodeList getElementsByTagName (final String s) {

@@ -1,10 +1,9 @@
 package ispd.arquivo.xml.utils;
 
-import java.util.Objects;
-import java.util.stream.Stream;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.util.*;
+import java.util.stream.*;
 import org.w3c.dom.Node;
+import org.w3c.dom.*;
 
 /**
  * Utility class to add convenience methods to manipulate XML Document objects. It functions as a
@@ -12,7 +11,7 @@ import org.w3c.dom.Node;
  */
 public class WrappedDocument {
 
-    public final Document document;
+    private final Document document;
 
     /**
      * Construct a wrapper to abstract calls to the {@link Document} passed in.
@@ -85,7 +84,7 @@ public class WrappedDocument {
     }
 
     private Stream<WrappedElement> elementsWithTag (final String tag) {
-        return WrappedElement.nodeListToWrappedElementStream(this.document.getElementsByTagName(tag));
+        return WrappedElement.wrapNodeList(this.document.getElementsByTagName(tag));
     }
 
     /**
@@ -159,5 +158,9 @@ public class WrappedDocument {
      */
     public WrappedElement ispd () {
         return this.elementsWithTag("ispd").findFirst().orElse(null);
+    }
+
+    public Document getWrappedDocument () {
+        return this.document;
     }
 }

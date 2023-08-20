@@ -1,5 +1,6 @@
 package ispd.arquivo.xml.models.builders;
 
+import ispd.arquivo.xml.*;
 import ispd.arquivo.xml.utils.*;
 import ispd.motor.filas.*;
 import ispd.motor.filas.servidores.*;
@@ -16,7 +17,7 @@ import java.util.*;
  * }</pre>
  * See methods {@link #parseDocument(WrappedDocument)} and {@link #build()} for further details.
  *
- * @see ispd.arquivo.xml.IconicoXML
+ * @see IconicModelDocumentBuilder
  */
 public class GridQueueNetworkParser {
 

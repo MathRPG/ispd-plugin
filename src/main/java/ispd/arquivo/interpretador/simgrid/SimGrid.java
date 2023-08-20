@@ -1,17 +1,9 @@
 package ispd.arquivo.interpretador.simgrid;
 
-import ispd.arquivo.xml.IconicoXML;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Formatter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.swing.JOptionPane;
+import ispd.arquivo.xml.*;
+import java.io.*;
+import java.util.*;
+import javax.swing.*;
 
 public class SimGrid {
 
@@ -21,7 +13,7 @@ public class SimGrid {
 
     private static final LookaheadSuccess jj_ls = new LookaheadSuccess();
 
-    private static final int[] jj_la1_0 = new int[] {
+    private static final int[] jj_la1_0 = {
         0x10000000,
         0xf8000000,
         0xf8000000,
@@ -46,7 +38,7 @@ public class SimGrid {
         0x180,
     };
 
-    private static final int[] jj_la1_1 = new int[] {
+    private static final int[] jj_la1_1 = {
         0x0,
         0x5f,
         0x5f,
@@ -142,46 +134,46 @@ public class SimGrid {
      * Constructor with InputStream and supplied encoding
      */
     private SimGrid (final InputStream stream, final String encoding) {
-        if (SimGrid.jj_initialized_once) {
+        if (jj_initialized_once) {
             System.out.println("ERROR: Second call to constructor of static parser.  ");
             System.out.println(
                 "       You must either use ReInit() or set the JavaCC option STATIC to false");
             System.out.println("       during parser generation.");
             throw new Error();
         }
-        SimGrid.jj_initialized_once = true;
+        jj_initialized_once = true;
         try {
-            SimGrid.jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1);
+            jj_input_stream = new SimpleCharStream(stream, encoding, 1, 1);
         } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        new SimGridTokenManager(SimGrid.jj_input_stream);
-        SimGrid.token  = new Token();
-        SimGrid.jj_ntk = -1;
-        SimGrid.jj_gen = 0;
+        new SimGridTokenManager(jj_input_stream);
+        token  = new Token();
+        jj_ntk = -1;
+        jj_gen = 0;
         for (var i = 0; i < 22; i++) {
-            SimGrid.jj_la1[i] = -1;
+            jj_la1[i] = -1;
         }
-        for (var i = 0; i < SimGrid.jj_2_rtns.length; i++) {
-            SimGrid.jj_2_rtns[i] = new JJCalls();
+        for (var i = 0; i < jj_2_rtns.length; i++) {
+            jj_2_rtns[i] = new JJCalls();
         }
     }
 
     public static SimGrid getInstance (final FileInputStream file) {
-        if (SimGrid.parser == null) {
-            SimGrid.parser = new SimGrid(file);
+        if (parser == null) {
+            parser = new SimGrid(file);
         }
-        return SimGrid.parser;
+        return parser;
     }
 
     private static void addErroSint (final String msg) {
-        SimGrid.errosSint = SimGrid.errosSint + "\u005cn" + msg;
-        SimGrid.contaErrosSint++;
+        errosSint = errosSint + "\u005cn" + msg;
+        contaErrosSint++;
     }
 
     private static void addErroSem (final String msg) {
-        SimGrid.errosSem = SimGrid.errosSem + "\u005cn" + msg;
-        SimGrid.contaErrosSem++;
+        errosSem = errosSem + "\u005cn" + msg;
+        contaErrosSem++;
     }
 
     private static String inteiro ()
@@ -190,11 +182,11 @@ public class SimGrid {
             var t = "";
             while (true) {
                 jj_consume_token(SimGridConstants.digito);
-                t += SimGrid.token.image;
-                if (((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk)
+                t += token.image;
+                if (((jj_ntk == -1) ? jj_ntk() : jj_ntk)
                     == SimGridConstants.digito) {
                 } else {
-                    SimGrid.jj_la1[0] = SimGrid.jj_gen;
+                    jj_la1[0] = jj_gen;
                     break;
                 }
             }
@@ -216,7 +208,7 @@ public class SimGrid {
         try {
             var t1 = inteiro();
             jj_consume_token(SimGridConstants.ponto);
-            t1 += SimGrid.token.image;
+            t1 += token.image;
             final var t2 = inteiro();
             t1 += t2;
             return t1;
@@ -354,80 +346,80 @@ public class SimGrid {
             var   erro = false;
             Token t1;
             var   t    = "";
-            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                 case SimGridConstants.letra:
                     jj_consume_token(SimGridConstants.letra);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     break;
                 case SimGridConstants.digito:
                     jj_consume_token(SimGridConstants.digito);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.especiais:
                     jj_consume_token(SimGridConstants.especiais);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.ponto:
                     jj_consume_token(SimGridConstants.ponto);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.barra:
                     jj_consume_token(SimGridConstants.barra);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.exclamacao:
                     jj_consume_token(SimGridConstants.exclamacao);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.interrogacao:
                     jj_consume_token(SimGridConstants.interrogacao);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.menor:
                     jj_consume_token(SimGridConstants.menor);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.maior:
                     jj_consume_token(SimGridConstants.maior);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.igual:
                     jj_consume_token(SimGridConstants.igual);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 case SimGridConstants.apostrofo:
                     jj_consume_token(SimGridConstants.apostrofo);
                     t1 = getToken(1);
-                    t += SimGrid.token.image;
+                    t += token.image;
                     erro = true;
                     break;
                 default:
-                    SimGrid.jj_la1[1] = SimGrid.jj_gen;
+                    jj_la1[1] = jj_gen;
                     jj_consume_token(-1);
                     throw new ParseException();
             }
             label_2:
             while (true) {
-                switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                     case SimGridConstants.letra:
                     case SimGridConstants.digito:
                     case SimGridConstants.ponto:
@@ -441,75 +433,75 @@ public class SimGrid {
                     case SimGridConstants.especiais:
                         break;
                     default:
-                        SimGrid.jj_la1[2] = SimGrid.jj_gen;
+                        jj_la1[2] = jj_gen;
                         break label_2;
                 }
-                switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                     case SimGridConstants.letra:
                         jj_consume_token(SimGridConstants.letra);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         break;
                     case SimGridConstants.digito:
                         jj_consume_token(SimGridConstants.digito);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         break;
                     case SimGridConstants.especiais:
                         jj_consume_token(SimGridConstants.especiais);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         break;
                     case SimGridConstants.ponto:
                         jj_consume_token(SimGridConstants.ponto);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         erro = true;
                         break;
                     case SimGridConstants.barra:
                         jj_consume_token(SimGridConstants.barra);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         erro = true;
                         break;
                     case SimGridConstants.exclamacao:
                         jj_consume_token(SimGridConstants.exclamacao);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         erro = true;
                         break;
                     case SimGridConstants.interrogacao:
                         jj_consume_token(SimGridConstants.interrogacao);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         erro = true;
                         break;
                     case SimGridConstants.menor:
                         jj_consume_token(SimGridConstants.menor);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         erro = true;
                         break;
                     case SimGridConstants.maior:
                         jj_consume_token(SimGridConstants.maior);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         erro = true;
                         break;
                     case SimGridConstants.igual:
                         jj_consume_token(SimGridConstants.igual);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         erro = true;
                         break;
                     case SimGridConstants.apostrofo:
                         jj_consume_token(SimGridConstants.apostrofo);
                         t1 = getToken(1);
-                        t += SimGrid.token.image;
+                        t += token.image;
                         erro = true;
                         break;
                     default:
-                        SimGrid.jj_la1[3] = SimGrid.jj_gen;
+                        jj_la1[3] = jj_gen;
                         jj_consume_token(-1);
                         throw new ParseException();
                 }
@@ -553,10 +545,10 @@ public class SimGrid {
         if (jj_2_15(2)) {
             application_file();
         } else {
-            if (((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) == SimGridConstants.menor) {
+            if (((jj_ntk == -1) ? jj_ntk() : jj_ntk) == SimGridConstants.menor) {
                 plataform_file();
             } else {
-                SimGrid.jj_la1[4] = SimGrid.jj_gen;
+                jj_la1[4] = jj_gen;
                 jj_consume_token(-1);
                 throw new ParseException();
             }
@@ -603,13 +595,13 @@ public class SimGrid {
     private static void inicio_xml_plataforma () {
         try {
             jj_consume_token(SimGridConstants.menor);
-            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                 case SimGridConstants.interrogacao:
                     jj_consume_token(SimGridConstants.interrogacao);
                     jj_consume_token(SimGridConstants.XML);
                     jj_consume_token(SimGridConstants.VERSION);
                     jj_consume_token(SimGridConstants.igual);
-                    switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                    switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                         case SimGridConstants.apostrofo:
                             jj_consume_token(SimGridConstants.apostrofo);
                             break;
@@ -617,12 +609,12 @@ public class SimGrid {
                             jj_consume_token(SimGridConstants.aspas);
                             break;
                         default:
-                            SimGrid.jj_la1[5] = SimGrid.jj_gen;
+                            jj_la1[5] = jj_gen;
                             jj_consume_token(-1);
                             throw new ParseException();
                     }
                     real();
-                    switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                    switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                         case SimGridConstants.apostrofo:
                             jj_consume_token(SimGridConstants.apostrofo);
                             break;
@@ -630,34 +622,34 @@ public class SimGrid {
                             jj_consume_token(SimGridConstants.aspas);
                             break;
                         default:
-                            SimGrid.jj_la1[6] = SimGrid.jj_gen;
+                            jj_la1[6] = jj_gen;
                             jj_consume_token(-1);
                             throw new ParseException();
                     }
                     label_5:
                     while (true) {
-                        switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                        switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                             case SimGridConstants.letra:
                             case SimGridConstants.digito:
                             case SimGridConstants.igual:
                             case SimGridConstants.especiais:
                                 break;
                             default:
-                                SimGrid.jj_la1[7] = SimGrid.jj_gen;
+                                jj_la1[7] = jj_gen;
                                 break label_5;
                         }
                         label_6:
                         while (true) {
-                            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                                 case SimGridConstants.letra:
                                 case SimGridConstants.digito:
                                 case SimGridConstants.especiais:
                                     break;
                                 default:
-                                    SimGrid.jj_la1[8] = SimGrid.jj_gen;
+                                    jj_la1[8] = jj_gen;
                                     break label_6;
                             }
-                            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                                 case SimGridConstants.letra:
                                     jj_consume_token(SimGridConstants.letra);
                                     break;
@@ -668,7 +660,7 @@ public class SimGrid {
                                     jj_consume_token(SimGridConstants.especiais);
                                     break;
                                 default:
-                                    SimGrid.jj_la1[9] = SimGrid.jj_gen;
+                                    jj_la1[9] = jj_gen;
                                     jj_consume_token(-1);
                                     throw new ParseException();
                             }
@@ -677,16 +669,16 @@ public class SimGrid {
                         jj_consume_token(SimGridConstants.aspas);
                         label_7:
                         while (true) {
-                            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                                 case SimGridConstants.letra:
                                 case SimGridConstants.digito:
                                 case SimGridConstants.especiais:
                                     break;
                                 default:
-                                    SimGrid.jj_la1[10] = SimGrid.jj_gen;
+                                    jj_la1[10] = jj_gen;
                                     break label_7;
                             }
-                            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                                 case SimGridConstants.letra:
                                     jj_consume_token(SimGridConstants.letra);
                                     break;
@@ -697,7 +689,7 @@ public class SimGrid {
                                     jj_consume_token(SimGridConstants.especiais);
                                     break;
                                 default:
-                                    SimGrid.jj_la1[11] = SimGrid.jj_gen;
+                                    jj_la1[11] = jj_gen;
                                     jj_consume_token(-1);
                                     throw new ParseException();
                             }
@@ -725,7 +717,7 @@ public class SimGrid {
                     jj_consume_token(SimGridConstants.maior);
                     break;
                 default:
-                    SimGrid.jj_la1[12] = SimGrid.jj_gen;
+                    jj_la1[12] = jj_gen;
                     jj_consume_token(-1);
                     throw new ParseException();
             }
@@ -782,7 +774,7 @@ public class SimGrid {
             jj_consume_token(SimGridConstants.menor);
             jj_consume_token(SimGridConstants.PROCESS);
             final String t1;
-            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                 case SimGridConstants.HOST:
                     jj_consume_token(SimGridConstants.HOST);
                     jj_consume_token(SimGridConstants.igual);
@@ -808,14 +800,14 @@ public class SimGrid {
                     jj_consume_token(SimGridConstants.aspas);
                     break;
                 default:
-                    SimGrid.jj_la1[13] = SimGrid.jj_gen;
+                    jj_la1[13] = jj_gen;
                     jj_consume_token(-1);
                     throw new ParseException();
             }
             jj_consume_token(SimGridConstants.maior);
             final var t     = getToken(1);
             var       found = false;
-            for (final var testem : SimGrid.masters) {
+            for (final var testem : masters) {
                 if (t1.equals(testem.getID())) {
                     addErroSem(InterpretadorSimGrid.getFileName()
                                + ": Erro na linha "
@@ -878,7 +870,7 @@ public class SimGrid {
                 jj_consume_token(SimGridConstants.maior);
                 m.setCarga(t2, t3, t4, t5, t6);
             } else {
-                if (((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk)
+                if (((jj_ntk == -1) ? jj_ntk() : jj_ntk)
                     == SimGridConstants.menor) {
                     jj_consume_token(SimGridConstants.menor);
                     jj_consume_token(SimGridConstants.ARGUMENT);
@@ -900,7 +892,7 @@ public class SimGrid {
                     jj_consume_token(SimGridConstants.maior);
                     m.setCarga(t2, t3, t4);
                 } else {
-                    SimGrid.jj_la1[14] = SimGrid.jj_gen;
+                    jj_la1[14] = jj_gen;
                     jj_consume_token(-1);
                     throw new ParseException();
                 }
@@ -942,7 +934,7 @@ public class SimGrid {
             if (!found) {
                 m.setID(t1);
                 m.setSlaves(slaves);
-                SimGrid.masters.add(m);
+                masters.add(m);
             }
         } catch (final ParseException e) {
             final var t = getToken(1);
@@ -962,7 +954,7 @@ public class SimGrid {
             jj_consume_token(SimGridConstants.menor);
             jj_consume_token(SimGridConstants.PROCESS);
             final String t;
-            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                 case SimGridConstants.HOST:
                     jj_consume_token(SimGridConstants.HOST);
                     jj_consume_token(SimGridConstants.igual);
@@ -988,7 +980,7 @@ public class SimGrid {
                     jj_consume_token(SimGridConstants.aspas);
                     break;
                 default:
-                    SimGrid.jj_la1[15] = SimGrid.jj_gen;
+                    jj_la1[15] = jj_gen;
                     jj_consume_token(-1);
                     throw new ParseException();
             }
@@ -996,7 +988,7 @@ public class SimGrid {
             jj_consume_token(SimGridConstants.maior);
             final var t1    = getToken(1);
             var       found = false;
-            for (final var testes : SimGrid.servers) {
+            for (final var testes : servers) {
                 if (t.equals(testes.getID())) {
                     addErroSem(InterpretadorSimGrid.getFileName()
                                + ": Erro na linha "
@@ -1011,7 +1003,7 @@ public class SimGrid {
             }
             if (!found) {
                 s.setID(t);
-                SimGrid.servers.add(s);
+                servers.add(s);
             }
         } catch (final ParseException e) {
             final var t2 = getToken(1);
@@ -1052,7 +1044,7 @@ public class SimGrid {
             jj_consume_token(SimGridConstants.CPU);
             final String t2;
             final String t1;
-            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                 case SimGridConstants.NAME:
                     jj_consume_token(SimGridConstants.NAME);
                     jj_consume_token(SimGridConstants.igual);
@@ -1078,21 +1070,21 @@ public class SimGrid {
                     jj_consume_token(SimGridConstants.aspas);
                     break;
                 default:
-                    SimGrid.jj_la1[16] = SimGrid.jj_gen;
+                    jj_la1[16] = jj_gen;
                     jj_consume_token(-1);
                     throw new ParseException();
             }
             jj_consume_token(SimGridConstants.barra);
             jj_consume_token(SimGridConstants.maior);
             var found = false;
-            for (final var s : SimGrid.servers) {
+            for (final var s : servers) {
                 if (t1.equals(s.getID())) {
                     s.setPower(t2);
                     found = true;
                 }
             }
             if (!found) {
-                for (final var m : SimGrid.masters) {
+                for (final var m : masters) {
                     if (t1.equals(m.getID())) {
                         m.setPower(t2);
                         found = true;
@@ -1130,14 +1122,14 @@ public class SimGrid {
             final String t3;
             final String t2;
             final String t1;
-            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                 case SimGridConstants.NAME:
                     jj_consume_token(SimGridConstants.NAME);
                     jj_consume_token(SimGridConstants.igual);
                     jj_consume_token(SimGridConstants.aspas);
                     t1 = rede_ID();
                     jj_consume_token(SimGridConstants.aspas);
-                    switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                    switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                         case SimGridConstants.BANDWIDTH:
                             jj_consume_token(SimGridConstants.BANDWIDTH);
                             jj_consume_token(SimGridConstants.igual);
@@ -1163,7 +1155,7 @@ public class SimGrid {
                             jj_consume_token(SimGridConstants.aspas);
                             break;
                         default:
-                            SimGrid.jj_la1[17] = SimGrid.jj_gen;
+                            jj_la1[17] = jj_gen;
                             jj_consume_token(-1);
                             throw new ParseException();
                     }
@@ -1174,7 +1166,7 @@ public class SimGrid {
                     jj_consume_token(SimGridConstants.aspas);
                     t3 = latencia();
                     jj_consume_token(SimGridConstants.aspas);
-                    switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                    switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                         case SimGridConstants.BANDWIDTH:
                             jj_consume_token(SimGridConstants.BANDWIDTH);
                             jj_consume_token(SimGridConstants.igual);
@@ -1200,7 +1192,7 @@ public class SimGrid {
                             jj_consume_token(SimGridConstants.aspas);
                             break;
                         default:
-                            SimGrid.jj_la1[18] = SimGrid.jj_gen;
+                            jj_la1[18] = jj_gen;
                             jj_consume_token(-1);
                             throw new ParseException();
                     }
@@ -1211,7 +1203,7 @@ public class SimGrid {
                     jj_consume_token(SimGridConstants.aspas);
                     t2 = largura_banda();
                     jj_consume_token(SimGridConstants.aspas);
-                    switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+                    switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                         case SimGridConstants.NAME:
                             jj_consume_token(SimGridConstants.NAME);
                             jj_consume_token(SimGridConstants.igual);
@@ -1237,20 +1229,20 @@ public class SimGrid {
                             jj_consume_token(SimGridConstants.aspas);
                             break;
                         default:
-                            SimGrid.jj_la1[19] = SimGrid.jj_gen;
+                            jj_la1[19] = jj_gen;
                             jj_consume_token(-1);
                             throw new ParseException();
                     }
                     break;
                 default:
-                    SimGrid.jj_la1[20] = SimGrid.jj_gen;
+                    jj_la1[20] = jj_gen;
                     jj_consume_token(-1);
                     throw new ParseException();
             }
             jj_consume_token(SimGridConstants.barra);
             jj_consume_token(SimGridConstants.maior);
             var found = false;
-            for (final var testen : SimGrid.networks) {
+            for (final var testen : networks) {
                 if (t1.equals(testen.getID())) {
                     addErroSem(InterpretadorSimGrid.getFileName()
                                + ": Erro na linha "
@@ -1265,7 +1257,7 @@ public class SimGrid {
             }
             if (!found) {
                 n.setAtributos(t1, t2, t3);
-                SimGrid.networks.add(n);
+                networks.add(n);
             }
         } catch (final ParseException e) {
             final var t4 = getToken(1);
@@ -1284,7 +1276,7 @@ public class SimGrid {
             jj_consume_token(SimGridConstants.ROUTE);
             final String t2;
             final String t1;
-            switch ((SimGrid.jj_ntk == -1) ? jj_ntk() : SimGrid.jj_ntk) {
+            switch ((jj_ntk == -1) ? jj_ntk() : jj_ntk) {
                 case SimGridConstants.SRC:
                     jj_consume_token(SimGridConstants.SRC);
                     jj_consume_token(SimGridConstants.igual);
@@ -1310,20 +1302,20 @@ public class SimGrid {
                     jj_consume_token(SimGridConstants.aspas);
                     break;
                 default:
-                    SimGrid.jj_la1[21] = SimGrid.jj_gen;
+                    jj_la1[21] = jj_gen;
                     jj_consume_token(-1);
                     throw new ParseException();
             }
             final var t     = getToken(1);
             var       found = false;
-            for (final var s : SimGrid.servers) {
+            for (final var s : servers) {
                 if (t1.equals(s.getID())) {
                     found = true;
                     break;
                 }
             }
             if (!found) {
-                for (final var m : SimGrid.masters) {
+                for (final var m : masters) {
                     if (t1.equals(m.getID())) {
                         found = true;
                         break;
@@ -1342,13 +1334,13 @@ public class SimGrid {
             }
             found = false;
             final var tt = getToken(1);
-            for (final var m : SimGrid.masters) {
+            for (final var m : masters) {
                 if (t2.equals(m.getID())) {
                     found = true;
                     break;
                 }
             }
-            for (final var s : SimGrid.servers) {
+            for (final var s : servers) {
                 if (t2.equals(s.getID())) {
                     found = true;
                     break;
@@ -1375,10 +1367,10 @@ public class SimGrid {
                 jj_consume_token(SimGridConstants.igual);
                 jj_consume_token(SimGridConstants.aspas);
                 final var t3 = rede_ID();
-                for (final var n : SimGrid.networks) {
+                for (final var n : networks) {
                     if (t3.equals(n.getID())) {
                         Route achou = null;
-                        for (final var rot : SimGrid.routes) {
+                        for (final var rot : routes) {
                             if (rot.getID().equals(t3)) {
                                 achou = rot;
                             }
@@ -1387,22 +1379,22 @@ public class SimGrid {
                             if (achou.getSrc().equals(inicio)) {
                                 achou.setRoute(achou.getNet(), inicio, t2);
                             } else if (achou.getDst().equals(inicio)) {
-                                SimGrid.net++;
+                                net++;
                                 final var novo = new Route();
                                 novo.setAtributos(t3, n.getBand(), n.getLatency());
-                                novo.setRoute(SimGrid.net, inicio, t2);
-                                SimGrid.routes.add(novo);
+                                novo.setRoute(net, inicio, t2);
+                                routes.add(novo);
                             } else {
                                 achou.setInternet(true);
                             }
                         } else {
-                            SimGrid.net++;
+                            net++;
                             final var novo = new Route();
                             novo.setAtributos(t3, n.getBand(), n.getLatency());
-                            novo.setRoute(SimGrid.net, inicio, t2);
-                            SimGrid.routes.add(novo);
+                            novo.setRoute(net, inicio, t2);
+                            routes.add(novo);
                         }
-                        for (final var rot : SimGrid.routes) {
+                        for (final var rot : routes) {
                             if (rot.getID().equals(inicio)) {
                                 rot.setRoute(rot.getNet(), rot.getSrc(), t3);
                             }
@@ -1434,13 +1426,13 @@ public class SimGrid {
             jj_consume_token(SimGridConstants.ROUTE);
             jj_consume_token(SimGridConstants.maior);
             final List<String> itemRede = new ArrayList<>();
-            for (final var net : SimGrid.networks) {
+            for (final var net : networks) {
                 itemRede.add(net.getID());
             }
-            for (final var net : SimGrid.routes) {
+            for (final var net : routes) {
                 //Testando se origem é uma máquina
                 if (!itemRede.contains(net.getSrc()) && itemRede.contains(net.getDst())) {
-                    for (final var destino : SimGrid.routes) {
+                    for (final var destino : routes) {
                         if (destino.getID().equals(net.getDst())) {
                             destino.setInternet(true);
                         }
@@ -1448,17 +1440,17 @@ public class SimGrid {
                 }
                 //Testando se destino é uma máquina
                 if (itemRede.contains(net.getSrc()) && !itemRede.contains(net.getDst())) {
-                    for (final var origem : SimGrid.routes) {
+                    for (final var origem : routes) {
                         if (origem.getID().equals(net.getSrc())) {
                             origem.setInternet(true);
                         }
                     }
                 }
             }
-            for (final var net : SimGrid.routes) {
-                for (final var linkOrigem : SimGrid.routes) {
+            for (final var net : routes) {
+                for (final var linkOrigem : routes) {
                     if (!linkOrigem.isInternet() && net.getSrc().equals(linkOrigem.getID())) {
-                        for (final var linkDestino : SimGrid.routes) {
+                        for (final var linkDestino : routes) {
                             if (!linkDestino.isInternet() && net
                                 .getDst()
                                 .equals(linkDestino.getID())) {
@@ -1702,8 +1694,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_1 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_1();
         } catch (final LookaheadSuccess ls) {
@@ -1714,8 +1706,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_2 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_2();
         } catch (final LookaheadSuccess ls) {
@@ -1726,8 +1718,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_3 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_3();
         } catch (final LookaheadSuccess ls) {
@@ -1738,8 +1730,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_4 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_4();
         } catch (final LookaheadSuccess ls) {
@@ -1750,8 +1742,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_5 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_5();
         } catch (final LookaheadSuccess ls) {
@@ -1762,8 +1754,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_6 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_6();
         } catch (final LookaheadSuccess ls) {
@@ -1774,8 +1766,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_7 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_7();
         } catch (final LookaheadSuccess ls) {
@@ -1786,8 +1778,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_8 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_8();
         } catch (final LookaheadSuccess ls) {
@@ -1798,8 +1790,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_9 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_9();
         } catch (final LookaheadSuccess ls) {
@@ -1810,8 +1802,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_10 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_10();
         } catch (final LookaheadSuccess ls) {
@@ -1822,8 +1814,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_11 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_11();
         } catch (final LookaheadSuccess ls) {
@@ -1834,8 +1826,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_12 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_12();
         } catch (final LookaheadSuccess ls) {
@@ -1846,8 +1838,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_13 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_13();
         } catch (final LookaheadSuccess ls) {
@@ -1858,8 +1850,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_14 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_14();
         } catch (final LookaheadSuccess ls) {
@@ -1870,8 +1862,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_15 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_15();
         } catch (final LookaheadSuccess ls) {
@@ -1882,8 +1874,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_16 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_16();
         } catch (final LookaheadSuccess ls) {
@@ -1894,8 +1886,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_17 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_17();
         } catch (final LookaheadSuccess ls) {
@@ -1906,8 +1898,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_18 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_18();
         } catch (final LookaheadSuccess ls) {
@@ -1918,8 +1910,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_19 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_19();
         } catch (final LookaheadSuccess ls) {
@@ -1930,8 +1922,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_20 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_20();
         } catch (final LookaheadSuccess ls) {
@@ -1942,8 +1934,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_21 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_21();
         } catch (final LookaheadSuccess ls) {
@@ -1954,8 +1946,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_22 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_22();
         } catch (final LookaheadSuccess ls) {
@@ -1966,8 +1958,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_23 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_23();
         } catch (final LookaheadSuccess ls) {
@@ -1978,8 +1970,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_24 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_24();
         } catch (final LookaheadSuccess ls) {
@@ -1990,8 +1982,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_25 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_25();
         } catch (final LookaheadSuccess ls) {
@@ -2002,8 +1994,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_26 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_26();
         } catch (final LookaheadSuccess ls) {
@@ -2014,8 +2006,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_27 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_27();
         } catch (final LookaheadSuccess ls) {
@@ -2026,8 +2018,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_28 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_28();
         } catch (final LookaheadSuccess ls) {
@@ -2038,8 +2030,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_29 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_29();
         } catch (final LookaheadSuccess ls) {
@@ -2050,8 +2042,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_30 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_30();
         } catch (final LookaheadSuccess ls) {
@@ -2062,8 +2054,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_31 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_31();
         } catch (final LookaheadSuccess ls) {
@@ -2074,8 +2066,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_32 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_32();
         } catch (final LookaheadSuccess ls) {
@@ -2086,8 +2078,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_33 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_33();
         } catch (final LookaheadSuccess ls) {
@@ -2098,8 +2090,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_34 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_34();
         } catch (final LookaheadSuccess ls) {
@@ -2110,8 +2102,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_35 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_35();
         } catch (final LookaheadSuccess ls) {
@@ -2122,8 +2114,8 @@ public class SimGrid {
     }
 
     private static boolean jj_2_36 (final int xla) {
-        SimGrid.jj_la      = xla;
-        SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.token;
+        jj_la      = xla;
+        jj_lastpos = jj_scanpos = token;
         try {
             return !jj_3_36();
         } catch (final LookaheadSuccess ls) {
@@ -2142,11 +2134,11 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_16 () {
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_3_18()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             if (jj_3_19()) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 return jj_3_20();
             }
         }
@@ -2166,9 +2158,9 @@ public class SimGrid {
             return true;
         }
         while (true) {
-            final var xsp = SimGrid.jj_scanpos;
+            final var xsp = jj_scanpos;
             if (jj_3_16()) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 break;
             }
         }
@@ -2423,17 +2415,17 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_42 () {
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_3R_55()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             if (jj_3R_56()) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 if (jj_3R_57()) {
-                    SimGrid.jj_scanpos = xsp;
+                    jj_scanpos = xsp;
                     if (jj_3R_58()) {
-                        SimGrid.jj_scanpos = xsp;
+                        jj_scanpos = xsp;
                         if (jj_3R_59()) {
-                            SimGrid.jj_scanpos = xsp;
+                            jj_scanpos = xsp;
                             return jj_3R_60();
                         }
                     }
@@ -2492,27 +2484,27 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_54 () {
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_3R_61()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             if (jj_3R_62()) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 if (jj_3R_63()) {
-                    SimGrid.jj_scanpos = xsp;
+                    jj_scanpos = xsp;
                     if (jj_3R_64()) {
-                        SimGrid.jj_scanpos = xsp;
+                        jj_scanpos = xsp;
                         if (jj_3R_65()) {
-                            SimGrid.jj_scanpos = xsp;
+                            jj_scanpos = xsp;
                             if (jj_3R_66()) {
-                                SimGrid.jj_scanpos = xsp;
+                                jj_scanpos = xsp;
                                 if (jj_3R_67()) {
-                                    SimGrid.jj_scanpos = xsp;
+                                    jj_scanpos = xsp;
                                     if (jj_3R_68()) {
-                                        SimGrid.jj_scanpos = xsp;
+                                        jj_scanpos = xsp;
                                         if (jj_3R_69()) {
-                                            SimGrid.jj_scanpos = xsp;
+                                            jj_scanpos = xsp;
                                             if (jj_3R_70()) {
-                                                SimGrid.jj_scanpos = xsp;
+                                                jj_scanpos = xsp;
                                                 return jj_3R_71();
                                             }
                                         }
@@ -2610,27 +2602,27 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_31 () {
-        var xsp = SimGrid.jj_scanpos;
+        var xsp = jj_scanpos;
         if (jj_3R_43()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             if (jj_3R_44()) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 if (jj_3R_45()) {
-                    SimGrid.jj_scanpos = xsp;
+                    jj_scanpos = xsp;
                     if (jj_3R_46()) {
-                        SimGrid.jj_scanpos = xsp;
+                        jj_scanpos = xsp;
                         if (jj_3R_47()) {
-                            SimGrid.jj_scanpos = xsp;
+                            jj_scanpos = xsp;
                             if (jj_3R_48()) {
-                                SimGrid.jj_scanpos = xsp;
+                                jj_scanpos = xsp;
                                 if (jj_3R_49()) {
-                                    SimGrid.jj_scanpos = xsp;
+                                    jj_scanpos = xsp;
                                     if (jj_3R_50()) {
-                                        SimGrid.jj_scanpos = xsp;
+                                        jj_scanpos = xsp;
                                         if (jj_3R_51()) {
-                                            SimGrid.jj_scanpos = xsp;
+                                            jj_scanpos = xsp;
                                             if (jj_3R_52()) {
-                                                SimGrid.jj_scanpos = xsp;
+                                                jj_scanpos = xsp;
                                                 if (jj_3R_53()) {
                                                     return true;
                                                 }
@@ -2645,9 +2637,9 @@ public class SimGrid {
             }
         }
         while (true) {
-            xsp = SimGrid.jj_scanpos;
+            xsp = jj_scanpos;
             if (jj_3R_54()) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 break;
             }
         }
@@ -2806,9 +2798,9 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_24 () {
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_3R_38()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             return jj_3R_39();
         }
         return false;
@@ -2830,9 +2822,9 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_23 () {
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_3R_36()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             return jj_3R_37();
         }
         return false;
@@ -2854,9 +2846,9 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_22 () {
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_3R_34()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             return jj_3R_35();
         }
         return false;
@@ -2874,9 +2866,9 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_21 () {
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_3R_32()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             return jj_3R_33();
         }
         return false;
@@ -2924,17 +2916,17 @@ public class SimGrid {
         if (jj_scan_token(SimGridConstants.aspas)) {
             return true;
         }
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_scan_token(19)) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             if (jj_scan_token(20)) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 if (jj_scan_token(21)) {
-                    SimGrid.jj_scanpos = xsp;
+                    jj_scanpos = xsp;
                     if (jj_scan_token(22)) {
-                        SimGrid.jj_scanpos = xsp;
+                        jj_scanpos = xsp;
                         if (jj_scan_token(23)) {
-                            SimGrid.jj_scanpos = xsp;
+                            jj_scanpos = xsp;
                             return jj_scan_token(24);
                         }
                     }
@@ -3078,15 +3070,15 @@ public class SimGrid {
     }
 
     private static boolean jj_3R_15 () {
-        final var xsp = SimGrid.jj_scanpos;
+        final var xsp = jj_scanpos;
         if (jj_3R_26()) {
-            SimGrid.jj_scanpos = xsp;
+            jj_scanpos = xsp;
             if (jj_3R_27()) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 if (jj_3R_28()) {
-                    SimGrid.jj_scanpos = xsp;
+                    jj_scanpos = xsp;
                     if (jj_3R_29()) {
-                        SimGrid.jj_scanpos = xsp;
+                        jj_scanpos = xsp;
                         return jj_3R_30();
                     }
                 }
@@ -3136,9 +3128,9 @@ public class SimGrid {
             return true;
         }
         while (true) {
-            final var xsp = SimGrid.jj_scanpos;
+            final var xsp = jj_scanpos;
             if (jj_3R_25()) {
-                SimGrid.jj_scanpos = xsp;
+                jj_scanpos = xsp;
                 break;
             }
         }
@@ -3178,69 +3170,69 @@ public class SimGrid {
      */
     private static void ReInit (final InputStream stream, final String encoding) {
         try {
-            SimGrid.jj_input_stream.ReInit(stream, encoding, 1, 1);
+            jj_input_stream.ReInit(stream, encoding, 1, 1);
         } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        SimGridTokenManager.ReInit(SimGrid.jj_input_stream);
-        SimGrid.token  = new Token();
-        SimGrid.jj_ntk = -1;
-        SimGrid.jj_gen = 0;
+        SimGridTokenManager.ReInit(jj_input_stream);
+        token  = new Token();
+        jj_ntk = -1;
+        jj_gen = 0;
         for (var i = 0; i < 22; i++) {
-            SimGrid.jj_la1[i] = -1;
+            jj_la1[i] = -1;
         }
-        for (var i = 0; i < SimGrid.jj_2_rtns.length; i++) {
-            SimGrid.jj_2_rtns[i] = new JJCalls();
+        for (var i = 0; i < jj_2_rtns.length; i++) {
+            jj_2_rtns[i] = new JJCalls();
         }
     }
 
     private static Token jj_consume_token (final int kind)
         throws ParseException {
         final Token oldToken;
-        if ((oldToken = SimGrid.token).next != null) {
-            SimGrid.token = SimGrid.token.next;
+        if ((oldToken = token).next != null) {
+            token = token.next;
         } else {
-            SimGrid.token = SimGrid.token.next = SimGridTokenManager.getNextToken();
+            token = token.next = SimGridTokenManager.getNextToken();
         }
-        SimGrid.jj_ntk = -1;
-        if (SimGrid.token.kind == kind) {
-            SimGrid.jj_gen++;
-            ++SimGrid.jj_gc;
-            if (SimGrid.jj_gc > 100) {
-                SimGrid.jj_gc = 0;
-                for (var i = 0; i < SimGrid.jj_2_rtns.length; i++) {
-                    var c = SimGrid.jj_2_rtns[i];
+        jj_ntk = -1;
+        if (token.kind == kind) {
+            jj_gen++;
+            ++jj_gc;
+            if (jj_gc > 100) {
+                jj_gc = 0;
+                for (var i = 0; i < jj_2_rtns.length; i++) {
+                    var c = jj_2_rtns[i];
                     while (c != null) {
-                        if (c.gen < SimGrid.jj_gen) {
+                        if (c.gen < jj_gen) {
                             c.first = null;
                         }
                         c = c.next;
                     }
                 }
             }
-            return SimGrid.token;
+            return token;
         }
-        SimGrid.token   = oldToken;
-        SimGrid.jj_kind = kind;
+        token   = oldToken;
+        jj_kind = kind;
         throw generateParseException();
     }
 
     private static boolean jj_scan_token (final int kind) {
-        if (SimGrid.jj_scanpos == SimGrid.jj_lastpos) {
-            SimGrid.jj_la--;
-            if (SimGrid.jj_scanpos.next == null) {
-                SimGrid.jj_lastpos      = SimGrid.jj_scanpos =
-                SimGrid.jj_scanpos.next = SimGridTokenManager.getNextToken();
+        if (jj_scanpos == jj_lastpos) {
+            jj_la--;
+            if (jj_scanpos.next == null) {
+                jj_lastpos      = jj_scanpos =
+                jj_scanpos.next = SimGridTokenManager.getNextToken();
             } else {
-                SimGrid.jj_lastpos = SimGrid.jj_scanpos = SimGrid.jj_scanpos.next;
+                jj_lastpos = jj_scanpos = jj_scanpos.next;
             }
         } else {
-            SimGrid.jj_scanpos = SimGrid.jj_scanpos.next;
+            jj_scanpos = jj_scanpos.next;
         }
-        if (SimGrid.jj_rescan) {
+        if (jj_rescan) {
             var i   = 0;
-            var tok = SimGrid.token;
-            while (tok != null && tok != SimGrid.jj_scanpos) {
+            var tok = token;
+            while (tok != null && tok != jj_scanpos) {
                 i++;
                 tok = tok.next;
             }
@@ -3248,11 +3240,11 @@ public class SimGrid {
                 jj_add_error_token(kind, i);
             }
         }
-        if (SimGrid.jj_scanpos.kind != kind) {
+        if (jj_scanpos.kind != kind) {
             return true;
         }
-        if (SimGrid.jj_la == 0 && SimGrid.jj_scanpos == SimGrid.jj_lastpos) {
-            throw SimGrid.jj_ls;
+        if (jj_la == 0 && jj_scanpos == jj_lastpos) {
+            throw jj_ls;
         }
         return false;
     }
@@ -3261,21 +3253,21 @@ public class SimGrid {
      * Get the next Token.
      */
     private static Token getNextToken () {
-        if (SimGrid.token.next != null) {
-            SimGrid.token = SimGrid.token.next;
+        if (token.next != null) {
+            token = token.next;
         } else {
-            SimGrid.token = SimGrid.token.next = SimGridTokenManager.getNextToken();
+            token = token.next = SimGridTokenManager.getNextToken();
         }
-        SimGrid.jj_ntk = -1;
-        SimGrid.jj_gen++;
-        return SimGrid.token;
+        jj_ntk = -1;
+        jj_gen++;
+        return token;
     }
 
     /**
      * Get the specific Token.
      */
     private static Token getToken (final int index) {
-        var t = SimGrid.token;
+        var t = token;
         for (var i = 0; i < index; i++) {
             if (t.next != null) {
                 t = t.next;
@@ -3287,12 +3279,12 @@ public class SimGrid {
     }
 
     private static int jj_ntk () {
-        if ((SimGrid.jj_nt = SimGrid.token.next) == null) {
+        if ((jj_nt = token.next) == null) {
             return (
-                SimGrid.jj_ntk = (SimGrid.token.next = SimGridTokenManager.getNextToken()).kind
+                jj_ntk = (token.next = SimGridTokenManager.getNextToken()).kind
             );
         } else {
-            return (SimGrid.jj_ntk = SimGrid.jj_nt.kind);
+            return (jj_ntk = jj_nt.kind);
         }
     }
 
@@ -3300,27 +3292,27 @@ public class SimGrid {
         if (pos >= 100) {
             return;
         }
-        if (pos == SimGrid.jj_endpos + 1) {
-            SimGrid.jj_lasttokens[SimGrid.jj_endpos] = kind;
-            SimGrid.jj_endpos++;
-        } else if (SimGrid.jj_endpos != 0) {
-            SimGrid.jj_expentry = new int[SimGrid.jj_endpos];
-            System.arraycopy(SimGrid.jj_lasttokens, 0, SimGrid.jj_expentry, 0, SimGrid.jj_endpos);
+        if (pos == jj_endpos + 1) {
+            jj_lasttokens[jj_endpos] = kind;
+            jj_endpos++;
+        } else if (jj_endpos != 0) {
+            jj_expentry = new int[jj_endpos];
+            System.arraycopy(jj_lasttokens, 0, jj_expentry, 0, jj_endpos);
             jj_entries_loop:
-            for (Iterator<?> it = SimGrid.jj_expentries.iterator(); it.hasNext(); ) {
+            for (Iterator<?> it = jj_expentries.iterator(); it.hasNext(); ) {
                 final var oldentry = (int[]) (it.next());
-                if (oldentry.length == SimGrid.jj_expentry.length) {
-                    for (var i = 0; i < SimGrid.jj_expentry.length; i++) {
-                        if (oldentry[i] != SimGrid.jj_expentry[i]) {
+                if (oldentry.length == jj_expentry.length) {
+                    for (var i = 0; i < jj_expentry.length; i++) {
+                        if (oldentry[i] != jj_expentry[i]) {
                             continue jj_entries_loop;
                         }
                     }
-                    SimGrid.jj_expentries.add(SimGrid.jj_expentry);
+                    jj_expentries.add(jj_expentry);
                     break;
                 }
             }
             if (pos != 0) {
-                SimGrid.jj_lasttokens[(SimGrid.jj_endpos = pos) - 1] = kind;
+                jj_lasttokens[(jj_endpos = pos) - 1] = kind;
             }
         }
     }
@@ -3329,19 +3321,19 @@ public class SimGrid {
      * Generate ParseException.
      */
     public static ParseException generateParseException () {
-        SimGrid.jj_expentries.clear();
+        jj_expentries.clear();
         final var la1tokens = new boolean[48];
-        if (SimGrid.jj_kind >= 0) {
-            la1tokens[SimGrid.jj_kind] = true;
-            SimGrid.jj_kind            = -1;
+        if (jj_kind >= 0) {
+            la1tokens[jj_kind] = true;
+            jj_kind            = -1;
         }
         for (var i = 0; i < 22; i++) {
-            if (SimGrid.jj_la1[i] == SimGrid.jj_gen) {
+            if (jj_la1[i] == jj_gen) {
                 for (var j = 0; j < 32; j++) {
-                    if ((SimGrid.jj_la1_0[i] & (1 << j)) != 0) {
+                    if ((jj_la1_0[i] & (1 << j)) != 0) {
                         la1tokens[j] = true;
                     }
-                    if ((SimGrid.jj_la1_1[i] & (1 << j)) != 0) {
+                    if ((jj_la1_1[i] & (1 << j)) != 0) {
                         la1tokens[32 + j] = true;
                     }
                 }
@@ -3349,30 +3341,30 @@ public class SimGrid {
         }
         for (var i = 0; i < 48; i++) {
             if (la1tokens[i]) {
-                SimGrid.jj_expentry    = new int[1];
-                SimGrid.jj_expentry[0] = i;
-                SimGrid.jj_expentries.add(SimGrid.jj_expentry);
+                jj_expentry    = new int[1];
+                jj_expentry[0] = i;
+                jj_expentries.add(jj_expentry);
             }
         }
-        SimGrid.jj_endpos = 0;
+        jj_endpos = 0;
         jj_rescan_token();
         jj_add_error_token(0, 0);
-        final var exptokseq = new int[SimGrid.jj_expentries.size()][];
-        for (var i = 0; i < SimGrid.jj_expentries.size(); i++) {
-            exptokseq[i] = SimGrid.jj_expentries.get(i);
+        final var exptokseq = new int[jj_expentries.size()][];
+        for (var i = 0; i < jj_expentries.size(); i++) {
+            exptokseq[i] = jj_expentries.get(i);
         }
-        return new ParseException(SimGrid.token, exptokseq, SimGridConstants.tokenImage);
+        return new ParseException(token, exptokseq, SimGridConstants.tokenImage);
     }
 
     private static void jj_rescan_token () {
-        SimGrid.jj_rescan = true;
+        jj_rescan = true;
         for (var i = 0; i < 36; i++) {
             try {
-                var p = SimGrid.jj_2_rtns[i];
+                var p = jj_2_rtns[i];
                 do {
-                    if (p.gen > SimGrid.jj_gen) {
-                        SimGrid.jj_la      = p.arg;
-                        SimGrid.jj_lastpos = SimGrid.jj_scanpos = p.first;
+                    if (p.gen > jj_gen) {
+                        jj_la      = p.arg;
+                        jj_lastpos = jj_scanpos = p.first;
                         switch (i) {
                             case 0:
                                 jj_3_1();
@@ -3489,20 +3481,20 @@ public class SimGrid {
             } catch (final LookaheadSuccess ls) {
             }
         }
-        SimGrid.jj_rescan = false;
+        jj_rescan = false;
     }
 
     private static void jj_save (final int index, final int xla) {
-        var p = SimGrid.jj_2_rtns[index];
-        while (p.gen > SimGrid.jj_gen) {
+        var p = jj_2_rtns[index];
+        while (p.gen > jj_gen) {
             if (p.next == null) {
                 p = p.next = new JJCalls();
                 break;
             }
             p = p.next;
         }
-        p.gen   = SimGrid.jj_gen + xla - SimGrid.jj_la;
-        p.first = SimGrid.token;
+        p.gen   = jj_gen + xla - jj_la;
+        p.first = token;
         p.arg   = xla;
     }
 
@@ -3545,8 +3537,8 @@ public class SimGrid {
         return true;
     }
 
-    public IconicoXML getModelo () {
-        final var  xml      = new IconicoXML();
+    public IconicModelDocumentBuilder getModelo () {
+        final var xml = new IconicModelDocumentBuilder();
         final List usuarios = new ArrayList();
         usuarios.add("user1");
         final Map<String, Double> perfil = new HashMap<>();
@@ -3557,7 +3549,7 @@ public class SimGrid {
         var       local  = 0;
         var       global = 0;
         final var maq    = new HashMap<String, Integer>();
-        for (final var s : SimGrid.servers) {
+        for (final var s : servers) {
             maq.put(s.getID(), global);
             xml.addMachine(
                 x, y, local, global, s.getID(),
@@ -3569,7 +3561,7 @@ public class SimGrid {
             local++;
             global++;
         }
-        for (final var r : SimGrid.routes) {
+        for (final var r : routes) {
             if (r.isInternet()) {
                 maq.put(r.getID(), global);
                 xml.addInternet(x, y, local, global, r.getID(),
@@ -3579,12 +3571,12 @@ public class SimGrid {
                 global++;
             }
         }
-        for (final var m : SimGrid.masters) {
+        for (final var m : masters) {
             maq.put(m.getID(), global);
             local++;
             global++;
         }
-        for (final var m : SimGrid.masters) {
+        for (final var m : masters) {
             final Collection<Integer> slv = new ArrayList<>();
             for (final var escravo : m.getEscravos()) {
                 slv.add(maq.get(escravo));
@@ -3595,7 +3587,7 @@ public class SimGrid {
                 "user1", 1, 0.0, 0.0, true, slv, 0.0
             );
         }
-        for (final var r : SimGrid.routes) {
+        for (final var r : routes) {
             if (!r.isInternet()) {
                 xml.addLink(x, y, x, y, local, global, r.getID(),
                             Double.valueOf(r.getBand()), 0, Double.valueOf(r.getLatency()),
@@ -3605,7 +3597,7 @@ public class SimGrid {
                 global++;
             }
         }
-        for (final var m : SimGrid.masters) {
+        for (final var m : masters) {
             xml.addLoadNo("app0", "user1", m.getID(), Integer.valueOf(m.getNumtarefas()),
                           Double.valueOf(m.getMaxcomp()), Double.valueOf(m.getMincomp()),
                           Double.valueOf(m.getMaxcomm()), Double.valueOf(m.getMincomm())
@@ -3615,11 +3607,11 @@ public class SimGrid {
     }
 
     private int contaErrosSint () {
-        return SimGrid.contaErrosSint;
+        return contaErrosSint;
     }
 
     private int contaErrosSem () {
-        return SimGrid.contaErrosSem;
+        return contaErrosSem;
     }
 
     private void addErro (final String msg) {
@@ -3627,25 +3619,25 @@ public class SimGrid {
     }
 
     private String getErrosSint () {
-        return SimGrid.errosSint + "\u005cn";
+        return errosSint + "\u005cn";
     }
 
     private String getErrosSem () {
-        return SimGrid.errosSem + "\u005cn";
+        return errosSem + "\u005cn";
     }
 
     public void reset () {
-        Formatter file = null;
-        SimGrid.net            = 0;
-        SimGrid.contaErrosSint = 0;
-        SimGrid.contaErrosSem  = 0;
-        SimGrid.errosSint      = "\u005cnErros sint\u00e1ticos:\u005cn";
-        SimGrid.errosSem       = "\u005cnErros sem\u00e2nticos:\u005cn";
+        final Formatter file = null;
+        net            = 0;
+        contaErrosSint = 0;
+        contaErrosSem  = 0;
+        errosSint      = "\u005cnErros sint\u00e1ticos:\u005cn";
+        errosSem       = "\u005cnErros sem\u00e2nticos:\u005cn";
         this.erros             = "";
-        SimGrid.masters        = new ArrayList<>();
-        SimGrid.servers        = new ArrayList<>();
-        SimGrid.networks       = new ArrayList<>();
-        SimGrid.routes         = new ArrayList<>();
+        masters        = new ArrayList<>();
+        servers        = new ArrayList<>();
+        networks       = new ArrayList<>();
+        routes         = new ArrayList<>();
         SimGridTokenManager.reset();
     }
 

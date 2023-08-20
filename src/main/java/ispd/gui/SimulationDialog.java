@@ -1,40 +1,20 @@
 package ispd.gui;
 
-import static ispd.gui.utils.ButtonBuilder.basicButton;
+import static ispd.gui.utils.ButtonBuilder.*;
 
-import ispd.arquivo.xml.IconicoXML;
-import ispd.gui.results.ResultsDialog;
-import ispd.gui.utils.Fonts.Arial;
-import ispd.motor.ProgressoSimulacao;
-import ispd.motor.SimulacaoSequencial;
-import ispd.motor.SimulacaoSequencialCloud;
-import ispd.motor.Simulation;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.metricas.Metricas;
-import java.awt.Color;
-import java.awt.Frame;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import ispd.arquivo.xml.*;
+import ispd.gui.results.*;
+import ispd.gui.utils.*;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.metricas.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.DebugGraphics;
-import javax.swing.GroupLayout;
-import javax.swing.JDialog;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.WindowConstants;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import java.util.*;
+import java.util.logging.*;
+import javax.swing.*;
+import javax.swing.text.*;
 import org.w3c.dom.Document;
 
 /**
@@ -90,13 +70,14 @@ public class SimulationDialog extends JDialog implements Runnable {
             List<Tarefa> tasks = null;
             if (this.gridOrCloud == PickModelTypeDialog.GRID) {
                 final RedeDeFilas queueNetwork =
-                    IconicoXML.readQueueNetworkFromModel(this.model);
+                    GridQueueNetworkFactory.fromDocument(this.model);
                 this.incrementProgress(10);//[10%] --> 35%
                 this.progressTracker.println("OK", Color.green);
                 //criar tarefas
                 this.progressTracker.print("Creating tasks.");
                 this.progressTracker.print(" -> ");
-                tasks = IconicoXML.readWorkloadGeneratorFromModel(this.model).makeTaskList(queueNetwork);
+                tasks = WorkloadGeneratorFactory
+                    .fromDocument(this.model).makeTaskList(queueNetwork);
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
@@ -136,13 +117,14 @@ public class SimulationDialog extends JDialog implements Runnable {
                 janelaResultados.setVisible(true);
             } else if (this.gridOrCloud == PickModelTypeDialog.IAAS) {
                 final RedeDeFilasCloud cloudQueueNetwork =
-                    IconicoXML.readCloudQueueNetworkFromModel(this.model);
+                    CloudQueueNetworkFactory.fromDocument(this.model);
                 this.incrementProgress(10);//[10%] --> 35%
                 this.progressTracker.println("OK", Color.green);
                 //criar tarefas
                 this.progressTracker.print("Creating tasks.");
                 this.progressTracker.print(" -> ");
-                tasks = IconicoXML.readWorkloadGeneratorFromModel(this.model).makeTaskList(cloudQueueNetwork);
+                tasks = WorkloadGeneratorFactory
+                    .fromDocument(this.model).makeTaskList(cloudQueueNetwork);
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
@@ -199,7 +181,7 @@ public class SimulationDialog extends JDialog implements Runnable {
 
         this.notificationArea = new JTextPane();
         this.notificationArea.setEditable(false);
-        this.notificationArea.setFont(Arial.BOLD_11);
+        this.notificationArea.setFont(Fonts.Arial.BOLD_11);
 
         this.makeLayoutAndPack();
     }

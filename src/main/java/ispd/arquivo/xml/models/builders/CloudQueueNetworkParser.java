@@ -1,5 +1,6 @@
 package ispd.arquivo.xml.models.builders;
 
+import ispd.arquivo.xml.*;
 import ispd.arquivo.xml.utils.*;
 import ispd.motor.filas.*;
 import ispd.motor.filas.servidores.*;
@@ -11,7 +12,7 @@ import java.util.*;
  * Class to build a cloud queue network from a model in a {@link WrappedDocument}. The usage is the
  * same as in {@link GridQueueNetworkParser}.
  *
- * @see ispd.arquivo.xml.IconicoXML
+ * @see IconicModelDocumentBuilder
  * @see GridQueueNetworkParser
  */
 public class CloudQueueNetworkParser extends GridQueueNetworkParser {
@@ -152,9 +153,9 @@ public class CloudQueueNetworkParser extends GridQueueNetworkParser {
         final CentroServico slave
     ) {
         final var theMaster = (CS_VMM) master;
-        if (slave instanceof CS_Processamento proc) {
+        if (slave instanceof final CS_Processamento proc) {
             theMaster.addEscravo(proc);
-            if (slave instanceof CS_MaquinaCloud machine) {
+            if (slave instanceof final CS_MaquinaCloud machine) {
                 machine.addMestre(theMaster);
             }
         } else if (slave instanceof CS_Switch) {

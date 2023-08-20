@@ -1,10 +1,8 @@
 package ispd.arquivo.interpretador.simgrid;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import javax.swing.JOptionPane;
-import org.w3c.dom.Document;
+import java.io.*;
+import javax.swing.*;
+import org.w3c.dom.*;
 
 public class InterpretadorSimGrid {
 
@@ -13,11 +11,11 @@ public class InterpretadorSimGrid {
     private Document modelo = null;
 
     public static String getFileName () {
-        return InterpretadorSimGrid.fname;
+        return fname;
     }
 
     private void setFileName (final File f) {
-        InterpretadorSimGrid.fname = f.getName();
+        fname = f.getName();
     }
 
     public void interpreta (final File file1, final File file2) {
@@ -34,7 +32,7 @@ public class InterpretadorSimGrid {
                 SimGrid.modelo();
                 final var error = parser.resultadoParser();
                 if (!error) {
-                    this.modelo = parser.getModelo().getDescricao();
+                    this.modelo = parser.getModelo().finishDocument();
                 }
                 parser.reset();
             } catch (final ParseException ex) {

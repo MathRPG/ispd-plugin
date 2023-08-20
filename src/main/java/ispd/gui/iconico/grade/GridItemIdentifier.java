@@ -5,12 +5,12 @@ public class GridItemIdentifier {
     /**
      * It represents the {@link GridItem} local identifier.
      */
-    private Integer localId;
+    private final Integer localId;
 
     /**
      * It represents the {@link GridItem} global identifier.
      */
-    private Integer globalId;
+    private final Integer globalId;
 
     /**
      * It represents the {@link GridItem} name identifier.
@@ -18,7 +18,7 @@ public class GridItemIdentifier {
     private String name;
 
     /**
-     * Constructor of {@link GridItemIdentifier} which specifies the local, global and name
+     * Constructor of  which specifies the local, global and name
      * identifiers.
      *
      * @param localId
@@ -44,32 +44,12 @@ public class GridItemIdentifier {
     }
 
     /**
-     * It sets the local identifier
-     *
-     * @param localId
-     *     the local identifier to be set
-     */
-    public void setLocalId (final Integer localId) {
-        this.localId = localId;
-    }
-
-    /**
      * Returns the global identifier
      *
      * @return the global identifier
      */
     public Integer getGlobalId () {
         return this.globalId;
-    }
-
-    /**
-     * It sets the global identifier
-     *
-     * @param globalId
-     *     the global identifier to be set
-     */
-    public void setGlobalId (final Integer globalId) {
-        this.globalId = globalId;
     }
 
     /**
