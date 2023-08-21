@@ -1,83 +1,29 @@
 package ispd.gui;
 
-import ispd.arquivo.exportador.Exportador;
-import ispd.arquivo.interpretador.gridsim.InterpretadorGridSim;
-import ispd.arquivo.interpretador.simgrid.InterpretadorSimGrid;
+import ispd.arquivo.exportador.*;
+import ispd.arquivo.interpretador.gridsim.*;
+import ispd.arquivo.interpretador.simgrid.*;
 import ispd.arquivo.xml.*;
-import ispd.gui.auxiliar.Corner;
-import ispd.gui.auxiliar.HtmlPane;
-import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.gui.configuracao.JPanelConfigIcon;
-import ispd.gui.configuracao.SimplePanel;
-import ispd.gui.iconico.grade.Cluster;
-import ispd.gui.iconico.grade.DesenhoGrade;
-import ispd.gui.iconico.grade.GridItem;
-import ispd.gui.iconico.grade.Machine;
-import ispd.gui.iconico.grade.VirtualMachine;
-import ispd.gui.policy.CloudSchedulingPolicyManagementWindow;
-import ispd.gui.policy.GenericPolicyManagementWindow;
-import ispd.gui.policy.GridSchedulingPolicyManagementWindow;
-import ispd.gui.policy.PolicyGeneratorWindow;
-import ispd.gui.policy.VmAllocationPolicyManagementWindow;
-import ispd.gui.utils.ButtonBuilder;
-import ispd.utils.FileUtils;
-import ispd.utils.constants.FileExtensions;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.HeadlessException;
-import java.awt.Toolkit;
-import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutStyle;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-import javax.swing.filechooser.FileView;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
+import ispd.gui.auxiliar.*;
+import ispd.gui.configuracao.*;
+import ispd.gui.iconico.grade.*;
+import ispd.gui.policy.*;
+import ispd.gui.utils.*;
+import ispd.utils.*;
+import ispd.utils.constants.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.logging.*;
+import javax.imageio.*;
+import javax.swing.*;
+import javax.swing.filechooser.*;
+import javax.xml.parsers.*;
+import org.w3c.dom.*;
+import org.xml.sax.*;
 
 public class MainWindow extends JFrame implements KeyListener {
 
@@ -248,7 +194,7 @@ public class MainWindow extends JFrame implements KeyListener {
     private final MultipleExtensionFileFilter fileFilter =
         new MultipleExtensionFileFilter(
             this.translate("Iconic Model of Simulation"),
-            MainWindow.ALL_FILE_EXTENSIONS,
+            ALL_FILE_EXTENSIONS,
             true
         );
 
@@ -676,7 +622,7 @@ public class MainWindow extends JFrame implements KeyListener {
         this.setTitle(this.translate("nomePrograma"));
         this.setIconImage(Toolkit
                               .getDefaultToolkit()
-                              .getImage(getResourceOrThrow(MainWindow.ISPD_LOGO_FILE_PATH)));
+                              .getImage(getResourceOrThrow(ISPD_LOGO_FILE_PATH)));
         this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         this.addWindowListener(new IspdWindowAdapter());
     }
@@ -730,8 +676,8 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private void initNotificationArea () {
         this.jTextAreaNotification.setEditable(false);
-        this.jTextAreaNotification.setColumns(MainWindow.NOTIFICATION_AREA_COLS);
-        this.jTextAreaNotification.setRows(MainWindow.NOTIFICATION_AREA_ROWS);
+        this.jTextAreaNotification.setColumns(NOTIFICATION_AREA_COLS);
+        this.jTextAreaNotification.setRows(NOTIFICATION_AREA_ROWS);
         this.jTextAreaNotification.setBorder(null);
     }
 
@@ -872,11 +818,11 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void jMenuItemEnglishActionPerformed (final ActionEvent evt) {
-        this.setLanguage(MainWindow.LOCALE_EN_US);
+        this.setLanguage(LOCALE_EN_US);
     }
 
     private void jMenuItemPortugueseActionPerformed (final ActionEvent evt) {
-        this.setLanguage(MainWindow.LOCALE_PT_BR);
+        this.setLanguage(LOCALE_PT_BR);
     }
 
     private void setLanguage (final Locale locale) {
@@ -1006,7 +952,6 @@ public class MainWindow extends JFrame implements KeyListener {
             this,
             true,
             this.drawingArea.getGrade(),
-            this.drawingArea.makeDescriptiveModel(),
             this.words,
             this.modelType
         );
@@ -1052,7 +997,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
         this.configureFileFilterAndChooser(
             "Iconic Model of Simulation",
-            MainWindow.ISPD_FILE_EXTENSIONS,
+            ISPD_FILE_EXTENSIONS,
             true
         );
 
@@ -1529,7 +1474,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private JDialog LoadingScreen () {
         final var window = new JDialog(this, "Carregando");
-        window.setSize(MainWindow.LOADING_SCREEN_WIDTH, MainWindow.LOADING_SCREEN_HEIGHT);
+        window.setSize(LOADING_SCREEN_WIDTH, LOADING_SCREEN_HEIGHT);
         window.add(new JLabel("Carregando..."), BorderLayout.CENTER);
         final var progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
@@ -1894,7 +1839,7 @@ public class MainWindow extends JFrame implements KeyListener {
                 return null;
             }
 
-            final var imgURL = MainWindow.class.getResource(MainWindow.ISPD_LOGO_FILE_PATH);
+            final var imgURL = MainWindow.class.getResource(ISPD_LOGO_FILE_PATH);
 
             if (imgURL == null) {
                 return null;

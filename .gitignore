@@ -11,10 +11,6 @@
 # Directory for user-generated scheduling and allocation policies
 /policies/
 
-# Files generated during iconic to simulable model conversion
-/modeloiconico
-/modelosimulavel
-
 # User preferences file
 /configuration.xml
 

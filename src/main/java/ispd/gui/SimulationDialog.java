@@ -6,11 +6,8 @@ import ispd.arquivo.xml.*;
 import ispd.gui.results.*;
 import ispd.gui.utils.*;
 import ispd.motor.*;
-import ispd.motor.filas.*;
-import ispd.motor.metricas.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.List;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
@@ -23,8 +20,6 @@ import org.w3c.dom.Document;
 public class SimulationDialog extends JDialog implements Runnable {
 
     private final MutableAttributeSet colorConfig = new SimpleAttributeSet();
-
-    private final String modelAsText;
 
     private final Document model;
 
@@ -43,14 +38,16 @@ public class SimulationDialog extends JDialog implements Runnable {
     private int progressPercent = 0;
 
     public SimulationDialog (
-        final Frame parent, final boolean modal, final Document model, final String modelAsText,
-        final ResourceBundle translator, final int gridOrCloud
+        final Frame parent,
+        final boolean modal,
+        final Document model,
+        final ResourceBundle translator,
+        final int gridOrCloud
     ) {
         super(parent, modal);
         this.translator  = translator;
         this.gridOrCloud = gridOrCloud;
         this.model       = model;
-        this.modelAsText = modelAsText;
         this.initComponents();
         this.addWindowListener(new SomeWindowAdapter());
     }
@@ -62,31 +59,27 @@ public class SimulationDialog extends JDialog implements Runnable {
             //0%
             //Verifica se foi construido modelo na area de desenho
             this.progressTracker.validarInicioSimulacao(this.model);//[5%] --> 5%
-            //Constrói e verifica modelos icônicos e simuláveis
-            this.progressTracker.AnalisarModelos(this.modelAsText);//[20%] --> 25%
-            //criar grade
+
             this.progressTracker.print("Mounting network queue.");
             this.progressTracker.print(" -> ");
-            List<Tarefa> tasks = null;
+
             if (this.gridOrCloud == PickModelTypeDialog.GRID) {
-                final RedeDeFilas queueNetwork =
-                    GridQueueNetworkFactory.fromDocument(this.model);
+                final var queueNetwork = GridQueueNetworkFactory.fromDocument(this.model);
                 this.incrementProgress(10);//[10%] --> 35%
                 this.progressTracker.println("OK", Color.green);
                 //criar tarefas
                 this.progressTracker.print("Creating tasks.");
                 this.progressTracker.print(" -> ");
-                tasks = WorkloadGeneratorFactory
+                final var tasks = WorkloadGeneratorFactory
                     .fromDocument(this.model).makeTaskList(queueNetwork);
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
-                final Simulation sim =
-                    new SimulacaoSequencial(
-                        this.progressTracker,
-                        queueNetwork,
-                        tasks
-                    );//[10%] --> 55 %
+                final var sim = new SimulacaoSequencial(
+                    this.progressTracker,
+                    queueNetwork,
+                    tasks
+                );//[10%] --> 55 %
                 //Realiza asimulação
                 this.progressTracker.println("Simulating.");
                 //recebe instante de tempo em milissegundos ao iniciar a
@@ -99,9 +92,8 @@ public class SimulationDialog extends JDialog implements Runnable {
                 // da simulação
                 final double t2 = System.currentTimeMillis();
                 //Calcula tempo de simulação em segundos
-                final double tempototal = (t2 - t1) / 1000;
                 //Obter Resultados
-                final Metricas metrica = sim.getMetrics();
+                final var metrica = sim.getMetrics();
                 //[5%] --> 90%
                 //Apresentar resultados
                 this.progressTracker.print("Showing results.");
@@ -110,25 +102,26 @@ public class SimulationDialog extends JDialog implements Runnable {
                     new ResultsDialog(null, metrica, queueNetwork, tasks);
                 this.incrementProgress(10);//[10%] --> 100%
                 this.progressTracker.println("OK", Color.green);
-                this.progressTracker.println("Simulation Execution Time = "
-                                             + tempototal
-                                             + "seconds");
+                final var tempototal = (t2 - t1) / 1000;
+                this.progressTracker.println(
+                    "Simulation Execution Time = " + tempototal + "seconds");
                 janelaResultados.setLocationRelativeTo(this);
                 janelaResultados.setVisible(true);
             } else if (this.gridOrCloud == PickModelTypeDialog.IAAS) {
-                final RedeDeFilasCloud cloudQueueNetwork =
-                    CloudQueueNetworkFactory.fromDocument(this.model);
+
+                final var cloudQueueNetwork = CloudQueueNetworkFactory.fromDocument(this.model);
+
                 this.incrementProgress(10);//[10%] --> 35%
                 this.progressTracker.println("OK", Color.green);
                 //criar tarefas
                 this.progressTracker.print("Creating tasks.");
                 this.progressTracker.print(" -> ");
-                tasks = WorkloadGeneratorFactory
+                final var tasks = WorkloadGeneratorFactory
                     .fromDocument(this.model).makeTaskList(cloudQueueNetwork);
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
-                final Simulation sim =
+                final var sim =
                     new SimulacaoSequencialCloud(
                         this.progressTracker,
                         cloudQueueNetwork,
@@ -146,20 +139,19 @@ public class SimulationDialog extends JDialog implements Runnable {
                 // da simulação
                 final double t2 = System.currentTimeMillis();
                 //Calcula tempo de simulação em segundos
-                final double tempototal = (t2 - t1) / 1000;
                 //Obter Resultados
-                final Metricas metrica = sim.getCloudMetrics();
+                final var metrica = sim.getCloudMetrics();
                 //[5%] --> 90%
                 //Apresentar resultados
                 this.progressTracker.print("Showing results.");
                 this.progressTracker.print(" -> ");
-                final Window janelaResultados = new CloudResultsDialog(null
-                    , metrica, cloudQueueNetwork, tasks);
+                final var janelaResultados =
+                    new CloudResultsDialog(null, metrica, cloudQueueNetwork, tasks);
                 this.incrementProgress(10);//[10%] --> 100%
                 this.progressTracker.println("OK", Color.green);
-                this.progressTracker.println("Simulation Execution Time = "
-                                             + tempototal
-                                             + "seconds");
+                final var tempototal = (t2 - t1) / 1000;
+                this.progressTracker.println(
+                    "Simulation Execution Time = " + tempototal + "seconds");
                 janelaResultados.setLocationRelativeTo(this);
                 janelaResultados.setVisible(true);
             }

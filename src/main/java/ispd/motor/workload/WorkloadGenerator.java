@@ -1,8 +1,7 @@
 package ispd.motor.workload;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import java.util.List;
+import ispd.motor.filas.*;
+import java.util.*;
 
 /**
  * Represents a workload generator from some data source.<br> Workloads are represented as a
@@ -32,14 +31,9 @@ public interface WorkloadGenerator {
      * Outputs the current workload generator configuration, formatted appropriately for inclusion
      * in an iconic model file. For a more
      * <i>human-readable</i> representation, use {@link #toString()}.<br>
-     * Odd formatting choices can be attributed to backwards compatibility with how the
-     * {@link ispd.arquivo.interpretador.internal.iconic.InterpretadorIconico iconic model
-     * interpreter} parses workload configurations from files.
      *
      * @return iconic-model fitting string representation of how the generator is currently
      * configured.
-     *
-     * @see ispd.arquivo.interpretador.internal.iconic.InterpretadorIconico Iconic model interpreter
      */
     String formatForIconicModel ();
 
