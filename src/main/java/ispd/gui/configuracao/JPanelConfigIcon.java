@@ -26,19 +26,19 @@ public class JPanelConfigIcon extends JPanel {
     private final ResourceBundle words = getBundle();
 
     private final VariedRowTable machineTable =
-        this.createTableWith(MachineVariedRowTable::new, () -> new MachineTable());
+        this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
 
     private final VariedRowTable iassMachineTable =
-        this.createTableWith(IaasMachineVariedRowTable::new, () -> new MachineTableIaaS());
+        this.createTableWith(IaasMachineVariedRowTable::new, MachineTableIaaS::new);
 
     private final VariedRowTable clusterTable =
-        this.createTableWith(ClusterVariedRowTable::new, () -> new ClusterTable());
+        this.createTableWith(ClusterVariedRowTable::new, ClusterTable::new);
 
     private final VariedRowTable iassClusterTable =
-        this.createTableWith(IaasClusterVariedRowTable::new, () -> new ClusterTableIaaS());
+        this.createTableWith(IaasClusterVariedRowTable::new, ClusterTableIaaS::new);
 
     private final VariedRowTable linkTable =
-        this.createTableWith(LinkVariedRowTable::new, () -> new LinkTable());
+        this.createTableWith(LinkVariedRowTable::new, LinkTable::new);
 
     private PolicyManager schedulers = null;
 
