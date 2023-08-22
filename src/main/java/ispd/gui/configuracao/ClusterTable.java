@@ -7,7 +7,6 @@ import ispd.policy.managers.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import org.jetbrains.annotations.*;
 
 public class ClusterTable extends AbstractTableModel {
 
@@ -106,14 +105,10 @@ public class ClusterTable extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case TYPE -> this.getString("Properties");
-            case VALUE -> this.getString("Values");
+            case TYPE -> getText("Properties");
+            case VALUE -> getText("Values");
             default -> null;
         };
-    }
-
-    private @NotNull String getString (final String Properties) {
-        return getText(Properties);
     }
 
     @Override
@@ -158,17 +153,17 @@ public class ClusterTable extends AbstractTableModel {
 
     private String getColumnTypeName (final int rowIndex) {
         return switch (rowIndex) {
-            case TableRows.LABEL -> this.getString("Label");
-            case TableRows.OWNER -> this.getString("Owner");
-            case TableRows.NODES -> this.getString("Number of nodes");
-            case TableRows.PROCESSORS -> this.getString("Computing power");
+            case TableRows.LABEL -> getText("Label");
+            case TableRows.OWNER -> getText("Owner");
+            case TableRows.NODES -> getText("Number of nodes");
+            case TableRows.PROCESSORS -> getText("Computing power");
             case TableRows.RAM -> "Primary Storage";
             case TableRows.HARD_DISK -> "Secondary Storage";
             case TableRows.CORES -> "Cores";
-            case TableRows.BANDWIDTH -> this.getString("Bandwidth");
-            case TableRows.LATENCY -> this.getString("Latency");
-            case TableRows.MASTER -> this.getString("Master");
-            case TableRows.SCHEDULER -> this.getString("Scheduling algorithm");
+            case TableRows.BANDWIDTH -> getText("Bandwidth");
+            case TableRows.LATENCY -> getText("Latency");
+            case TableRows.MASTER -> getText("Master");
+            case TableRows.SCHEDULER -> getText("Scheduling algorithm");
             case TableRows.ENERGY -> "Energy consumption Per Node";
             default -> null;
         };
