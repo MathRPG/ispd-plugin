@@ -22,13 +22,13 @@ public class TextSupplier {
         this.logger = Objects.requireNonNull(logger);
     }
 
-    public static String getText (final String key) {
+    public static @Nls String getText (final @NonNls String key) {
         return theInstance
             .map(ins -> ins.getBundleText(key))
-            .orElseThrow(MissingInstanceException::new);
+            .orElseThrow(MissingSupplierException::new);
     }
 
-    private static @NotNull @NonNls String keyMissingMessage (final String key) {
+    private static @NotNull String keyMissingMessage (final String key) {
         return MessageFormat.format(MISSING_KEY_TEXT_FORMAT, key);
     }
 
@@ -36,26 +36,30 @@ public class TextSupplier {
         setInstance(bundle, DEFAULT_LOGGER);
     }
 
-    public static void setInstance (final @NotNull ResourceBundle bundle, final Logger logger) {
+    public static void setInstance (
+        final @NotNull ResourceBundle bundle,
+        final @NotNull Logger logger
+    ) {
         theInstance = Optional.of(new TextSupplier(bundle, logger));
     }
 
-    private void emitMissingKeyWarning (final String key) {
+    private void logMissingKeyWarning (final String key) {
         this.logger.warning(() -> keyMissingMessage(key));
     }
 
     private String getBundleText (final String key) {
-        if (!this.bundle.containsKey(key)) {
-            this.emitMissingKeyWarning(key);
-            return key;
-        }
-
-        return this.bundle.getString(key);
+        return Optional.of(key)
+            .filter(this.bundle::containsKey)
+            .map(this.bundle::getString)
+            .orElseGet(() -> {
+                this.logMissingKeyWarning(key);
+                return key;
+            });
     }
 
-    public static class MissingInstanceException extends IllegalStateException {
+    public static class MissingSupplierException extends IllegalStateException {
 
-        private MissingInstanceException () {
+        private MissingSupplierException () {
             super("Attempting to call .getText() without call to .setInstance() first.");
         }
     }

@@ -22,7 +22,7 @@ class TextSupplierTest {
     @BeforeAll
     static void givenNoBundle_whenGetText_thenThrowsMissingResourceException () {
         assertThrowsExactly(
-            TextSupplier.MissingInstanceException.class,
+            TextSupplier.MissingSupplierException.class,
             () -> TextSupplier.getText(KEY)
         );
     }
