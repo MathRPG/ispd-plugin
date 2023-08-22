@@ -167,7 +167,7 @@ public class SimulationDialog extends JDialog implements Runnable {
 
     private void initComponents () {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.setTitle(this.translate("Running Simulation"));
+        this.setTitle(getText("Running Simulation"));
 
         this.progressBar = new JProgressBar();
         this.progressBar.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
@@ -179,13 +179,9 @@ public class SimulationDialog extends JDialog implements Runnable {
         this.makeLayoutAndPack();
     }
 
-    private String translate (final String word) {
-        return getText(word);
-    }
-
     private void makeLayoutAndPack () {
         final var scrollPane   = new JScrollPane(this.notificationArea);
-        final var cancelButton = basicButton(this.translate("Cancel"), this::onCancel);
+        final var cancelButton = basicButton(getText("Cancel"), this::onCancel);
 
         final var layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
@@ -292,7 +288,7 @@ public class SimulationDialog extends JDialog implements Runnable {
                 return text;
             }
 
-            return SimulationDialog.this.translate(text);
+            return getText(text);
         }
     }
 }
