@@ -33,7 +33,10 @@ class TextSupplierTest {
 
     @Test
     void givenNullBundle_whenSetInstance_thenThrowsNullPointerException () {
-        assertThrows(NullPointerException.class, () -> TextSupplier.setInstance(null));
+        assertThrows(
+            NullPointerException.class,
+            () -> TextSupplier.setInstance(null)
+        );
     }
 
     @Test
@@ -75,9 +78,7 @@ class TextSupplierTest {
         }
 
         @Override
-        protected Object handleGetObject (
-            final @NotNull String s
-        ) {
+        protected Object handleGetObject (final @NotNull String s) {
             return this.map.get(s);
         }
 
