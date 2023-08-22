@@ -284,7 +284,7 @@ public class SimulationDialog extends JDialog implements Runnable {
         }
 
         private String tryTranslate (final String text) {
-            if (!SimulationDialog.this.translator.containsKey(text)) {
+            if (!getBundle().containsKey(text)) {
                 return text;
             }
 
