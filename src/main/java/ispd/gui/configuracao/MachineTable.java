@@ -194,10 +194,6 @@ public class MachineTable extends AbstractTableModel {
         return this.schedulers;
     }
 
-    public void setPalavras (final ResourceBundle palavras) {
-        this.fireTableStructureChanged();
-    }
-
     private class ButtonActionListener implements ActionListener {
 
         @Override
