@@ -1,5 +1,7 @@
 package ispd.gui.policy;
 
+import static ispd.gui.BundleManager.*;
+
 import ispd.arquivo.interpretador.gerador.*;
 import ispd.gui.*;
 import ispd.gui.auxiliar.*;
@@ -28,7 +30,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private final PolicyManager manager;
 
-    private final ResourceBundle words = BundleManager.getBundle();
+    private final ResourceBundle words = getBundle();
 
     private final JFileChooser fileChooser =
         this.configuredFileChooser();
@@ -109,7 +111,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     protected String translate (final String cut) {
-        return this.words.getString(cut);
+        return getText(cut);
     }
 
     private void configureMenuBar () {
