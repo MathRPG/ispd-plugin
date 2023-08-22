@@ -1,55 +1,23 @@
 package ispd.gui.policy;
 
-import static ispd.gui.utils.ButtonBuilder.aButton;
-import static ispd.gui.utils.ButtonBuilder.basicButton;
+import static ispd.gui.BundleManager.*;
+import static ispd.gui.utils.ButtonBuilder.*;
 
-import ispd.arquivo.interpretador.gerador.InterpretadorGerador;
-import ispd.gui.utils.Fonts.ComicSansMS;
-import ispd.gui.utils.Fonts.Tahoma;
-import ispd.gui.utils.Fonts.Verdana;
-import ispd.policy.PolicyManager;
-import ispd.utils.NameValidator;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.text.NumberFormat;
-import java.util.LinkedList;
+import ispd.arquivo.interpretador.gerador.*;
+import ispd.gui.utils.Fonts;
+import ispd.policy.*;
+import ispd.utils.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.text.*;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.LayoutStyle;
-import javax.swing.border.TitledBorder;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.Document;
-import javax.swing.text.NumberFormatter;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import java.util.*;
+import java.util.logging.*;
+import java.util.stream.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.text.*;
 
 public class PolicyGeneratorWindow extends JDialog {
 
@@ -93,11 +61,11 @@ public class PolicyGeneratorWindow extends JDialog {
 
     private LinkedList<String> formula = this.tFormula;
 
-    private int buttonType = PolicyGeneratorWindow.START;
+    private int buttonType = START;
 
-    private int tButtonType = PolicyGeneratorWindow.START;
+    private int tButtonType = START;
 
-    private int rButtonType = PolicyGeneratorWindow.START;
+    private int rButtonType = START;
 
     private int parentAccount = 0;
 
@@ -239,49 +207,49 @@ public class PolicyGeneratorWindow extends JDialog {
                 BorderFactory.createLineBorder(Color.BLACK),
                 this.translate("Advanced") + " - " + this.translate("Tasks distribution order"),
                 TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                Fonts.ComicSansMS.BOLD_12
             )
         );
-        this.jPanelPasso4.setPreferredSize(PolicyGeneratorWindow.PANEL_PREFERRED_SIZE);
+        this.jPanelPasso4.setPreferredSize(PANEL_PREFERRED_SIZE);
 
         final JLabel jLabelP4Formula = new JLabel();
-        jLabelP4Formula.setFont(ComicSansMS.PLAIN_11);
+        jLabelP4Formula.setFont(Fonts.ComicSansMS.PLAIN_11);
 
         jLabelP4Formula.setText(this.translate("Formula:"));
 
         this.jTextFieldP4Formula = new JTextField();
         this.jTextFieldP4Formula.setEditable(false);
-        this.jTextFieldP4Formula.setFont(Verdana.BOLD_11);
+        this.jTextFieldP4Formula.setFont(Fonts.Verdana.BOLD_11);
         this.jTextFieldP4Formula.setText("Random");
 
         final JPanel jPanel1 = new JPanel();
         jPanel1.setBorder(BorderFactory.createTitledBorder(this.translate("Operators and precedence")));
 
         final var button11 = basicButton("+", this::jButtonP4AddActionPerformed);
-        button11.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button11.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4Add = button11;
-        jButtonP4Add.setMinimumSize(PolicyGeneratorWindow.MINIMUM_BUTTON_SIZE);
+        jButtonP4Add.setMinimumSize(MINIMUM_BUTTON_SIZE);
 
         final var button10 = basicButton("-", this::jButtonP4SubActionPerformed);
-        button10.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button10.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4Sub = button10;
 
         final var button9 = basicButton("(", this::jButtonP4AbreParentActionPerformed);
-        button9.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button9.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4AbreParent = button9;
 
         final var button8 = basicButton(")", this::jButtonP4FechaParentActionPerformed);
-        button8.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button8.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4FechaParent = button8;
 
         final var button7 = basicButton("/", this::jButtonP4DivActionPerformed);
-        button7.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button7.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4Div = button7;
 
         final var button6 = basicButton("*", this::jButtonP4MultActionPerformed);
-        button6.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button6.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4Mult = button6;
-        jButtonP4Mult.setMinimumSize(PolicyGeneratorWindow.MINIMUM_BUTTON_SIZE);
+        jButtonP4Mult.setMinimumSize(MINIMUM_BUTTON_SIZE);
 
         final JButton jButtonP4Voltar = basicButton("←", this::jButtonP4VoltarActionPerformed);
 
@@ -683,42 +651,42 @@ public class PolicyGeneratorWindow extends JDialog {
                 this.translate("Resource aloccation order"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                Fonts.ComicSansMS.BOLD_12
             ));
-        this.jPanelPasso5.setPreferredSize(PolicyGeneratorWindow.PANEL_PREFERRED_SIZE);
+        this.jPanelPasso5.setPreferredSize(PANEL_PREFERRED_SIZE);
 
         final JLabel jLabelP5Formula = new JLabel();
-        jLabelP5Formula.setFont(ComicSansMS.PLAIN_11);
+        jLabelP5Formula.setFont(Fonts.ComicSansMS.PLAIN_11);
 
         jLabelP5Formula.setText(this.translate("Formula:"));
 
         this.jTextFieldP5Formula = new JTextField();
         this.jTextFieldP5Formula.setEditable(false);
-        this.jTextFieldP5Formula.setFont(Verdana.BOLD_11);
+        this.jTextFieldP5Formula.setFont(Fonts.Verdana.BOLD_11);
         this.jTextFieldP5Formula.setText("Random");
 
         final JPanel jPanel4 = new JPanel();
         jPanel4.setBorder(BorderFactory.createTitledBorder(this.translate("Operators and precedence")));
 
         final var button5 = basicButton("+", this::jButtonP5AddActionPerformed);
-        button5.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
-        button5.setMinimumSize(PolicyGeneratorWindow.MINIMUM_BUTTON_SIZE);
+        button5.setMaximumSize(MAXIMUM_BUTTON_SIZE);
+        button5.setMinimumSize(MINIMUM_BUTTON_SIZE);
 
         final var button4 = basicButton("-", this::jButtonP5SubActionPerformed);
-        button4.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button4.setMaximumSize(MAXIMUM_BUTTON_SIZE);
 
         final var button3 = basicButton("(", this::jButtonP5AbreParentActionPerformed);
-        button3.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button3.setMaximumSize(MAXIMUM_BUTTON_SIZE);
 
         final var button2 = basicButton(")", this::jButtonP5FechaParentActionPerformed);
-        button2.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button2.setMaximumSize(MAXIMUM_BUTTON_SIZE);
 
         final var button1 = basicButton("/", this::jButtonP5DivActionPerformed);
-        button1.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button1.setMaximumSize(MAXIMUM_BUTTON_SIZE);
 
         final var button = basicButton("*", this::jButtonP5MultActionPerformed);
-        button.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
-        button.setMinimumSize(PolicyGeneratorWindow.MINIMUM_BUTTON_SIZE);
+        button.setMaximumSize(MAXIMUM_BUTTON_SIZE);
+        button.setMinimumSize(MINIMUM_BUTTON_SIZE);
 
         final JButton jButtonP5Voltar = basicButton("←", this::jButtonP4VoltarActionPerformed);
 
@@ -1135,7 +1103,7 @@ public class PolicyGeneratorWindow extends JDialog {
                 this.translate("Scheduling options"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                Fonts.ComicSansMS.BOLD_12
             ));
 
         final JPanel jPanel7 = new JPanel();
@@ -1284,7 +1252,7 @@ public class PolicyGeneratorWindow extends JDialog {
                 this.translate("Restrictions"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                Fonts.ComicSansMS.BOLD_12
             ));
 
         final JSeparator jSeparatorP6 = new JSeparator();
@@ -1395,11 +1363,11 @@ public class PolicyGeneratorWindow extends JDialog {
                 this.translate("Finish"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                Fonts.ComicSansMS.BOLD_12
             ));
 
         this.jTextPaneP7Gramatica = new JTextPane();
-        this.jTextPaneP7Gramatica.setFont(Tahoma.BOLD_12);
+        this.jTextPaneP7Gramatica.setFont(Fonts.Tahoma.BOLD_12);
 
         final JScrollPane jScrollPane3 = new JScrollPane();
         jScrollPane3.setViewportView(this.jTextPaneP7Gramatica);
@@ -1444,7 +1412,7 @@ public class PolicyGeneratorWindow extends JDialog {
         jPanelPassos.setBorder(new javax.swing.border.MatteBorder(null));
 
         final JLabel jLabelPassos = new JLabel();
-        jLabelPassos.setFont(ComicSansMS.BOLD_12);
+        jLabelPassos.setFont(Fonts.ComicSansMS.BOLD_12);
 
         jLabelPassos.setText("<html><b>"
                              + this.translate("Steps")
@@ -1605,7 +1573,7 @@ public class PolicyGeneratorWindow extends JDialog {
                 this.translate("Generator type"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                Fonts.ComicSansMS.BOLD_12
             ));
 
         this.jOpSimples = new JRadioButton();
@@ -1685,7 +1653,7 @@ public class PolicyGeneratorWindow extends JDialog {
                 this.translate("Enter the characteristics"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                Fonts.ComicSansMS.BOLD_12
             ));
 
         final JLabel jLabelP2Informacao = new JLabel();
@@ -1907,11 +1875,11 @@ public class PolicyGeneratorWindow extends JDialog {
                 this.translate("Enter the name of the scheduler"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                Fonts.ComicSansMS.BOLD_12
             ));
 
         final JLabel jLabelP1NomeEsc = new JLabel();
-        jLabelP1NomeEsc.setFont(ComicSansMS.PLAIN_11);
+        jLabelP1NomeEsc.setFont(Fonts.ComicSansMS.PLAIN_11);
         jLabelP1NomeEsc.setText(this.translate("Scheduler name"));
 
         this.jTextFieldP1NomeEsc = new JTextField();
@@ -1919,7 +1887,7 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jTextFieldP1NomeEsc.addKeyListener(new SchedulerNameKeyAdapter());
 
         final JLabel jLabelP1LocalArq = new JLabel();
-        jLabelP1LocalArq.setFont(ComicSansMS.PLAIN_11);
+        jLabelP1LocalArq.setFont(Fonts.ComicSansMS.PLAIN_11);
         jLabelP1LocalArq.setText(this.translate("File"));
 
         this.jTextFieldP1LocalArq = new JTextField();
@@ -1930,7 +1898,7 @@ public class PolicyGeneratorWindow extends JDialog {
         jSeparatorP1.setForeground(Color.BLACK);
 
         this.jLabelP1Informacao = new JLabel();
-        this.jLabelP1Informacao.setForeground(PolicyGeneratorWindow.FOREGROUND_RED);
+        this.jLabelP1Informacao.setForeground(FOREGROUND_RED);
 
         final GroupLayout jPanelPasso1Layout =
             new GroupLayout(this.jPanelPasso1);
@@ -2106,7 +2074,7 @@ public class PolicyGeneratorWindow extends JDialog {
     }
 
     private String translate (final String text) {
-        return this.translator.getString(text);
+        return getText(text);
     }
 
     private void onNextClick (final ActionEvent evt) {
@@ -2275,26 +2243,26 @@ public class PolicyGeneratorWindow extends JDialog {
     private void jButtonP4VoltarActionPerformed (final ActionEvent evt) {
         final String operador = "+ - / * ";
         if (!this.formula.isEmpty()) {
-            if (this.buttonType == PolicyGeneratorWindow.OPEN_BRACKET) {
+            if (this.buttonType == OPEN_BRACKET) {
                 this.parentAccount--;
-            } else if (this.buttonType == PolicyGeneratorWindow.CLOSE_BRACKET) {
+            } else if (this.buttonType == CLOSE_BRACKET) {
                 this.parentAccount++;
             }
             this.formula.removeLast();
             if (this.formula.isEmpty()) {
-                this.buttonType    = PolicyGeneratorWindow.START;
+                this.buttonType    = START;
                 this.parentAccount = 0;
             } else if (operador.contains(this.formula.getLast())) {
-                this.buttonType = PolicyGeneratorWindow.OPERATOR;
+                this.buttonType = OPERATOR;
             } else if (this.formula.getLast().contains("(")) {
-                this.buttonType = PolicyGeneratorWindow.OPEN_BRACKET;
+                this.buttonType = OPEN_BRACKET;
             } else if (this.formula.getLast().contains(")")) {
-                this.buttonType = PolicyGeneratorWindow.CLOSE_BRACKET;
+                this.buttonType = CLOSE_BRACKET;
             } else {
-                this.buttonType = PolicyGeneratorWindow.VARIABLE;
+                this.buttonType = VARIABLE;
             }
         } else {
-            this.buttonType    = PolicyGeneratorWindow.START;
+            this.buttonType    = START;
             this.parentAccount = 0;
         }
         this.escreverFormula();
@@ -2329,12 +2297,12 @@ public class PolicyGeneratorWindow extends JDialog {
     }
 
     private void jButtonP4AbreParentActionPerformed (final ActionEvent evt) {
-        if (this.buttonType == PolicyGeneratorWindow.START
-            || this.buttonType == PolicyGeneratorWindow.OPERATOR
+        if (this.buttonType == START
+            || this.buttonType == OPERATOR
             ||
-            this.buttonType == PolicyGeneratorWindow.OPEN_BRACKET) {
+            this.buttonType == OPEN_BRACKET) {
             this.parentAccount++;
-            this.buttonType = PolicyGeneratorWindow.OPEN_BRACKET;
+            this.buttonType = OPEN_BRACKET;
             this.formula.add("(");
         }
         this.escreverFormula();
@@ -2342,11 +2310,11 @@ public class PolicyGeneratorWindow extends JDialog {
 
     private void jButtonP4FechaParentActionPerformed (final ActionEvent evt) {
         if (this.parentAccount != 0 && (
-            this.buttonType == PolicyGeneratorWindow.VARIABLE ||
-            this.buttonType == PolicyGeneratorWindow.CLOSE_BRACKET
+            this.buttonType == VARIABLE ||
+            this.buttonType == CLOSE_BRACKET
         )) {
             this.parentAccount--;
-            this.buttonType = PolicyGeneratorWindow.CLOSE_BRACKET;
+            this.buttonType = CLOSE_BRACKET;
             this.formula.add(")");
         }
         this.escreverFormula();
@@ -2610,24 +2578,24 @@ public class PolicyGeneratorWindow extends JDialog {
     }
 
     private void pressionarOperador (final String token) {
-        if (this.buttonType == PolicyGeneratorWindow.VARIABLE ||
-            this.buttonType == PolicyGeneratorWindow.CLOSE_BRACKET) {
-            this.buttonType = PolicyGeneratorWindow.OPERATOR;
+        if (this.buttonType == VARIABLE ||
+            this.buttonType == CLOSE_BRACKET) {
+            this.buttonType = OPERATOR;
             this.formula.add(token);
-        } else if (this.buttonType == PolicyGeneratorWindow.OPERATOR) {
+        } else if (this.buttonType == OPERATOR) {
             this.formula.set(this.formula.size() - 1, token);
         }
         this.escreverFormula();
     }
 
     private void pressionarVariavel (final String token) {
-        if (this.buttonType == PolicyGeneratorWindow.START
-            || this.buttonType == PolicyGeneratorWindow.OPERATOR
+        if (this.buttonType == START
+            || this.buttonType == OPERATOR
             ||
-            this.buttonType == PolicyGeneratorWindow.OPEN_BRACKET) {
-            this.buttonType = PolicyGeneratorWindow.VARIABLE;
+            this.buttonType == OPEN_BRACKET) {
+            this.buttonType = VARIABLE;
             this.formula.add(token);
-        } else if (this.buttonType == PolicyGeneratorWindow.VARIABLE) {
+        } else if (this.buttonType == VARIABLE) {
             this.formula.set(this.formula.size() - 1, token);
         }
         this.escreverFormula();
