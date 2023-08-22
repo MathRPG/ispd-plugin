@@ -51,8 +51,6 @@ public class DesenhoGrade extends DrawingArea {
 
     private final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
-    private ResourceBundle translator = getBundle();
-
     /**
      * (GRID, IAAS ou PAAS)
      */
@@ -752,7 +750,6 @@ public class DesenhoGrade extends DrawingArea {
     }
 
     public void setTranslator (final ResourceBundle translator) {
-        this.translator = translator;
         this.initTexts();
     }
 
