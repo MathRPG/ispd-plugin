@@ -1,19 +1,12 @@
 package ispd.gui.configuracao;
 
-import ispd.gui.iconico.grade.GridItem;
-import ispd.gui.iconico.grade.Machine;
-import ispd.policy.managers.CloudSchedulingPolicyManager;
-import ispd.policy.managers.VmAllocationPolicyManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
+import ispd.gui.iconico.grade.*;
+import ispd.policy.managers.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import org.jetbrains.annotations.*;
 
 public class MachineTableIaaS extends AbstractTableModel {
 
@@ -64,7 +57,7 @@ public class MachineTableIaaS extends AbstractTableModel {
         );
 
     private final JComboBox<String> users =
-        toolTippedComboBox(MachineTableIaaS.NO_USERS, "Select the resource owner");
+        toolTippedComboBox(NO_USERS, "Select the resource owner");
 
     private final JComboBox<String> allocators = toolTippedComboBox(
         VmAllocationPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
@@ -90,24 +83,24 @@ public class MachineTableIaaS extends AbstractTableModel {
 
     @Override
     public int getRowCount () {
-        return MachineTableIaaS.ROW_COUNT;
+        return ROW_COUNT;
     }
 
     @Override
     public int getColumnCount () {
-        return MachineTableIaaS.COLUMN_COUNT;
+        return COLUMN_COUNT;
     }
 
     @Override
     public Object getValueAt (final int rowIndex, final int columnIndex) {
         switch (columnIndex) {
-            case MachineTableIaaS.TYPE -> {
+            case TYPE -> {
                 final var name = this.returnNameForIndex(rowIndex);
                 if (name != null) {
                     return name;
                 }
             }
-            case MachineTableIaaS.VALUE -> {
+            case VALUE -> {
                 final var val = this.getValueForMachine(rowIndex);
                 if (val != null) {
                     return val;
@@ -120,25 +113,29 @@ public class MachineTableIaaS extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case MachineTableIaaS.TYPE -> this.words.getString("Properties");
-            case MachineTableIaaS.VALUE -> this.words.getString("Values");
+            case TYPE -> this.getString("Properties");
+            case VALUE -> this.getString("Values");
             default -> null;
         };
     }
 
+    private @NotNull String getString (final String Properties) {
+        return this.words.getString(Properties);
+    }
+
     @Override
     public boolean isCellEditable (final int rowIndex, final int columnIndex) {
-        return columnIndex != MachineTableIaaS.TYPE;
+        return columnIndex != TYPE;
     }
 
     @Override
     public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
-        if (columnIndex != MachineTableIaaS.VALUE || this.machine == null) {
+        if (columnIndex != VALUE || this.machine == null) {
             return;
         }
 
         this.setValueAtIndex(aValue, rowIndex);
-        this.fireTableCellUpdated(rowIndex, MachineTableIaaS.VALUE);
+        this.fireTableCellUpdated(rowIndex, VALUE);
     }
 
     private JButton setButton () {
@@ -164,21 +161,20 @@ public class MachineTableIaaS extends AbstractTableModel {
 
     private String returnNameForIndex (final int rowIndex) {
         return switch (rowIndex) {
-            case MachineTableIaaS.LABEL -> this.words.getString("Label");
-            case MachineTableIaaS.OWNER -> this.words.getString("Owner");
-            case MachineTableIaaS.PROCESSOR -> "%s (Mflop/s)".formatted(this.words.getString(
-                "Computing power"));
-            case MachineTableIaaS.LOAD_FACTOR -> this.words.getString("Load Factor");
-            case MachineTableIaaS.RAM -> "Primary Storage";
-            case MachineTableIaaS.DISK -> "Secondary Storage";
-            case MachineTableIaaS.CORES -> "Cores";
-            case MachineTableIaaS.VMM -> "VMM";
-            case MachineTableIaaS.SCHEDULER -> this.words.getString("Scheduling algorithm");
-            case MachineTableIaaS.SLAVE -> "Slave Nodes";
-            case MachineTableIaaS.COST_PER_PROCESSOR -> "Cost per Processing";
-            case MachineTableIaaS.COST_PER_MEMORY -> "Cost per Memory";
-            case MachineTableIaaS.COST_PER_DISK -> "Cost per Disk";
-            case MachineTableIaaS.VMM_POLICY -> "VMM allocated policy";
+            case LABEL -> this.getString("Label");
+            case OWNER -> this.getString("Owner");
+            case PROCESSOR -> "%s (Mflop/s)".formatted(this.getString("Computing power"));
+            case LOAD_FACTOR -> this.getString("Load Factor");
+            case RAM -> "Primary Storage";
+            case DISK -> "Secondary Storage";
+            case CORES -> "Cores";
+            case VMM -> "VMM";
+            case SCHEDULER -> this.getString("Scheduling algorithm");
+            case SLAVE -> "Slave Nodes";
+            case COST_PER_PROCESSOR -> "Cost per Processing";
+            case COST_PER_MEMORY -> "Cost per Memory";
+            case COST_PER_DISK -> "Cost per Disk";
+            case VMM_POLICY -> "VMM allocated policy";
             default -> null;
         };
     }
@@ -186,54 +182,54 @@ public class MachineTableIaaS extends AbstractTableModel {
     private Object getValueForMachine (final int rowIndex) {
         if (this.machine == null) {
             return switch (rowIndex) {
-                case MachineTableIaaS.OWNER -> this.users;
-                case MachineTableIaaS.SCHEDULER -> this.schedulers;
-                case MachineTableIaaS.SLAVE -> this.slaves;
-                case MachineTableIaaS.VMM_POLICY -> this.allocators;
+                case OWNER -> this.users;
+                case SCHEDULER -> this.schedulers;
+                case SLAVE -> this.slaves;
+                case VMM_POLICY -> this.allocators;
                 default -> "null";
             };
         }
 
         return switch (rowIndex) {
-            case MachineTableIaaS.LABEL -> this.machine.getId().getName();
-            case MachineTableIaaS.OWNER -> this.users;
-            case MachineTableIaaS.PROCESSOR -> this.machine.getComputationalPower();
-            case MachineTableIaaS.LOAD_FACTOR -> this.machine.getLoadFactor();
-            case MachineTableIaaS.RAM -> this.machine.getRam();
-            case MachineTableIaaS.DISK -> this.machine.getHardDisk();
-            case MachineTableIaaS.CORES -> this.machine.getCoreCount();
-            case MachineTableIaaS.VMM -> this.machine.isMaster();
-            case MachineTableIaaS.SCHEDULER -> this.schedulers;
-            case MachineTableIaaS.SLAVE -> this.slaves;
-            case MachineTableIaaS.COST_PER_PROCESSOR -> this.machine.getCostPerProcessing();
-            case MachineTableIaaS.COST_PER_MEMORY -> this.machine.getCostPerMemory();
-            case MachineTableIaaS.COST_PER_DISK -> this.machine.getCostPerDisk();
-            case MachineTableIaaS.VMM_POLICY -> this.allocators;
+            case LABEL -> this.machine.getId().getName();
+            case OWNER -> this.users;
+            case PROCESSOR -> this.machine.getComputationalPower();
+            case LOAD_FACTOR -> this.machine.getLoadFactor();
+            case RAM -> this.machine.getRam();
+            case DISK -> this.machine.getHardDisk();
+            case CORES -> this.machine.getCoreCount();
+            case VMM -> this.machine.isMaster();
+            case SCHEDULER -> this.schedulers;
+            case SLAVE -> this.slaves;
+            case COST_PER_PROCESSOR -> this.machine.getCostPerProcessing();
+            case COST_PER_MEMORY -> this.machine.getCostPerMemory();
+            case COST_PER_DISK -> this.machine.getCostPerDisk();
+            case VMM_POLICY -> this.allocators;
             default -> null;
         };
     }
 
     private void setValueAtIndex (final Object aValue, final int rowIndex) {
         switch (rowIndex) {
-            case MachineTableIaaS.LABEL -> this.machine.getId().setName(aValue.toString());
-            case MachineTableIaaS.OWNER -> this.machine.setOwner(this.users
+            case LABEL -> this.machine.getId().setName(aValue.toString());
+            case OWNER -> this.machine.setOwner(this.users
                                                                      .getSelectedItem()
                                                                      .toString());
-            case MachineTableIaaS.PROCESSOR -> this.machine.setComputationalPower(Double.valueOf(
+            case PROCESSOR -> this.machine.setComputationalPower(Double.valueOf(
                 aValue.toString()));
-            case MachineTableIaaS.LOAD_FACTOR -> this.machine.setLoadFactor(Double.valueOf(aValue.toString()));
-            case MachineTableIaaS.RAM -> this.machine.setRam(Double.valueOf(aValue.toString()));
-            case MachineTableIaaS.DISK -> this.machine.setHardDisk(Double.valueOf(aValue.toString()));
-            case MachineTableIaaS.CORES -> this.machine.setCoreCount(Integer.valueOf(aValue.toString()));
-            case MachineTableIaaS.VMM -> this.machine.setMaster(Boolean.valueOf(aValue.toString()));
-            case MachineTableIaaS.SCHEDULER -> this.machine.setSchedulingAlgorithm(
+            case LOAD_FACTOR -> this.machine.setLoadFactor(Double.valueOf(aValue.toString()));
+            case RAM -> this.machine.setRam(Double.valueOf(aValue.toString()));
+            case DISK -> this.machine.setHardDisk(Double.valueOf(aValue.toString()));
+            case CORES -> this.machine.setCoreCount(Integer.valueOf(aValue.toString()));
+            case VMM -> this.machine.setMaster(Boolean.valueOf(aValue.toString()));
+            case SCHEDULER -> this.machine.setSchedulingAlgorithm(
                 this.schedulers.getSelectedItem().toString());
-            case MachineTableIaaS.COST_PER_PROCESSOR -> this.machine.setCostPerProcessing(
+            case COST_PER_PROCESSOR -> this.machine.setCostPerProcessing(
                 Double.valueOf(aValue.toString()));
-            case MachineTableIaaS.COST_PER_MEMORY -> this.machine.setCostPerMemory(Double.valueOf(
+            case COST_PER_MEMORY -> this.machine.setCostPerMemory(Double.valueOf(
                 aValue.toString()));
-            case MachineTableIaaS.COST_PER_DISK -> this.machine.setCostPerDisk(Double.valueOf(aValue.toString()));
-            case MachineTableIaaS.VMM_POLICY -> this.machine.setVmmAllocationPolicy(
+            case COST_PER_DISK -> this.machine.setCostPerDisk(Double.valueOf(aValue.toString()));
+            case VMM_POLICY -> this.machine.setVmmAllocationPolicy(
                 this.allocators.getSelectedItem().toString());
         }
     }
