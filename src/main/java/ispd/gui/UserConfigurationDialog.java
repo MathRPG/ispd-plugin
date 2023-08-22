@@ -1,27 +1,15 @@
 package ispd.gui;
 
-import static ispd.gui.utils.ButtonBuilder.aButton;
-import static ispd.gui.utils.ButtonBuilder.basicButton;
+import static ispd.gui.BundleManager.*;
+import static ispd.gui.utils.ButtonBuilder.*;
 
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.awt.*;
+import java.awt.event.*;
+import java.net.*;
 import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.Vector;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JToolBar;
-import javax.swing.table.DefaultTableModel;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 /**
  * Window to add and remove users from modeled simulation.
@@ -81,7 +69,7 @@ public class UserConfigurationDialog extends JDialog {
                         .nonFocusable()
                         .withIcon(new ImageIcon(this.getResource(
                             "/ispd/gui/imagens/insert-object.png")))
-                        .withSize(UserConfigurationDialog.BUTTON_PREFERRED_SIZE)
+                        .withSize(BUTTON_PREFERRED_SIZE)
                         .withCenterBottomTextPosition()
                         .build());
 
@@ -89,7 +77,7 @@ public class UserConfigurationDialog extends JDialog {
                         .nonFocusable()
                         .withIcon(new ImageIcon(this.getResource(
                             "/ispd/gui/imagens/window-close.png")))
-                        .withSize(UserConfigurationDialog.BUTTON_PREFERRED_SIZE)
+                        .withSize(BUTTON_PREFERRED_SIZE)
                         .withCenterBottomTextPosition()
                         .build());
 
@@ -156,7 +144,7 @@ public class UserConfigurationDialog extends JDialog {
     }
 
     private String translate (final String word) {
-        return this.translator.getString(word);
+        return getText(word);
     }
 
     private void onAddClick (final ActionEvent evt) {
