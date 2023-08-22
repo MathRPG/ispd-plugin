@@ -810,14 +810,14 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void jMenuItemEnglishActionPerformed (final ActionEvent evt) {
-        this.setLanguage(LOCALE_EN_US);
+        this.setLanguage();
     }
 
     private void jMenuItemPortugueseActionPerformed (final ActionEvent evt) {
-        this.setLanguage(LOCALE_PT_BR);
+        this.setLanguage();
     }
 
-    private void setLanguage (final Locale locale) {
+    private void setLanguage () {
         this.words = getBundle();
         this.initTexts();
         if (this.drawingArea != null) {
