@@ -10,7 +10,7 @@ public enum TextSupplier {
 
     private static final Logger LOGGER = Logger.getLogger(TextSupplier.class.getName());
 
-    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("text.gui");
+    private static ResourceBundle BUNDLE = ResourceBundle.getBundle("text.gui");
 
     public static String getText (final String key) {
         if (!BUNDLE.containsKey(key)) {
@@ -33,5 +33,6 @@ public enum TextSupplier {
 
     public static void setInstance (final @NotNull ResourceBundle bundle) {
         Objects.requireNonNull(bundle);
+        BUNDLE = bundle;
     }
 }
