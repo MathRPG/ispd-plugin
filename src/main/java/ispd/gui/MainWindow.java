@@ -179,6 +179,13 @@ public class MainWindow extends JFrame implements KeyListener {
         .nonFocusable()
         .build();
 
+    private final MultipleExtensionFileFilter fileFilter =
+        new MultipleExtensionFileFilter(
+            getText("Iconic Model of Simulation"),
+            ALL_FILE_EXTENSIONS,
+            true
+        );
+
     private JPanelConfigIcon jPanelSettings;
 
     /**
@@ -186,14 +193,7 @@ public class MainWindow extends JFrame implements KeyListener {
      */
     private int modelType = 0;
 
-    private ResourceBundle words = getBundle();
-
-    private final MultipleExtensionFileFilter fileFilter =
-        new MultipleExtensionFileFilter(
-            getText("Iconic Model of Simulation"),
-            ALL_FILE_EXTENSIONS,
-            true
-        );
+    private final ResourceBundle words = getBundle();
 
     private boolean currentFileHasUnsavedChanges = false;
 
@@ -542,19 +542,19 @@ public class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemSimGrid.setText(getText("SimGrid model"));
         this.jMenuItemSimGrid.setToolTipText(
             getText("Open model from "
-                                  + "the "
-                                  + "specification "
-                                  + "files of "
-                                  + "Simgrid"));
+                    + "the "
+                    + "specification "
+                    + "files of "
+                    + "Simgrid"));
         this.jMenuItemSimGrid.addActionListener(this::jMenuItemSimGridActionPerformed);
         this.jMenuImport.add(this.jMenuItemSimGrid);
         this.jMenuItemGridSim.setText(getText("GridSim model"));
         this.jMenuItemGridSim.setToolTipText(
             getText("Open model from "
-                                  + "the "
-                                  + "specification "
-                                  + "files of "
-                                  + "GridSim"));
+                    + "the "
+                    + "specification "
+                    + "files of "
+                    + "GridSim"));
         this.jMenuItemGridSim.addActionListener(this::jMenuItemGridSimActionPerformed);
         this.jMenuImport.add(this.jMenuItemGridSim);
         this.jMenuFile.add(this.jMenuImport);
@@ -806,16 +806,9 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void jMenuItemEnglishActionPerformed (final ActionEvent evt) {
-        this.setLanguage();
     }
 
     private void jMenuItemPortugueseActionPerformed (final ActionEvent evt) {
-        this.setLanguage();
-    }
-
-    private void setLanguage () {
-        this.words = getBundle();
-        this.initTexts();
     }
 
     private void iconButtonOnClick (
@@ -1656,106 +1649,6 @@ public class MainWindow extends JFrame implements KeyListener {
 
     public JPanelConfigIcon getjPanelConfiguracao () {
         return this.jPanelSettings;
-    }
-
-    private void initTexts () {
-        this.jScrollPaneSideBar.setBorder(BorderFactory.createTitledBorder(getText(
-            "Settings")));
-        this.jScrollPaneProperties.setBorder(BorderFactory.createTitledBorder(getText(
-            "Properties")));
-        this.jScrollPaneNotificationBar.setBorder(BorderFactory.createTitledBorder(getText(
-            "Notifications")));
-
-        this.jToggleButtonMachine.setToolTipText(getText(
-            "Selects machine icon for add to the model"));
-        this.jToggleButtonNetwork.setToolTipText(getText(
-            "Selects network icon for add to the model"));
-        this.jToggleButtonCluster.setToolTipText(getText(
-            "Selects cluster icon for add to the model"));
-        this.jToggleButtonInternet.setToolTipText(getText(
-            "Selects internet icon for add to the model"));
-        this.jButtonTasks.setToolTipText(getText("Selects insertion model of tasks"));
-        this.jButtonUsers.setToolTipText(getText("Add and remove users to the model"));
-        this.jButtonSimulate.setText(getText("Simulate"));
-        this.jButtonSimulate.setToolTipText(getText("Starts the simulation"));
-
-        this.jButtonInjectFaults.setText(getText("Simulate"));
-        this.jButtonInjectFaults.setToolTipText("Select the faults");
-
-        this.jMenuFile.setText(getText("File"));
-        this.jMenuItemNew.setText(getText("New"));
-        this.jMenuItemNew.setToolTipText(getText("Starts a new model"));
-        this.jMenuItemOpen.setText(getText("Open"));
-        this.jMenuItemOpen.setToolTipText(getText("Opens an existing model"));
-        this.jMenuItemSave.setText(getText("Save"));
-        this.jMenuItemSave.setToolTipText(getText("Save the open model"));
-        this.jMenuImport.setText(getText("Import"));
-        this.jMenuItemSimGrid.setText(getText("SimGrid model"));
-        this.jMenuItemSimGrid.setToolTipText(getText(
-            "Open model from the specification files of Simgrid"));
-        this.jMenuExport.setText(getText("Export"));
-        this.jMenuItemToJPG.setText(getText("to JPG"));
-        this.jMenuItemToJPG.setToolTipText(getText(
-            "Creates a jpg file with the model image"));
-        this.jMenuItemToTxt.setText(getText("to TXT"));
-        this.jMenuItemToTxt.setToolTipText(getText(
-            "Creates a file in plain text with the model data according to the grammar of the iconic model"));
-        this.jMenuLanguage.setText(getText("Language"));
-        this.jMenuItemEnglish.setText(getText("English"));
-        this.jMenuItemPortuguese.setText(getText("Portuguese"));
-        this.jMenuItemClose.setText(getText("Close"));
-        this.jMenuItemClose.setToolTipText(getText("Closes the currently open model"));
-        this.jMenuItemExit.setText(getText("Exit"));
-        this.jMenuItemExit.setToolTipText(getText("Closes the program"));
-
-        this.jMenuEdit.setText(getText("Edit"));
-        this.jMenuItemCopy.setText(getText("Copy"));
-        this.jMenuItemPaste.setText(getText("Paste"));
-        this.jMenuItemDelete.setText(getText("Delete"));
-        this.jMenuItemCompare.setText(getText("Match network settings"));
-        this.jMenuItemCompare.setToolTipText(
-            getText(
-                "Matches the settings of icons of networks according to a selected icon"));
-
-        this.jMenuShow.setText(getText("View"));
-        this.jCheckBoxMenuConnectedItem.setText(getText("Show Connected Nodes"));
-        this.jCheckBoxMenuConnectedItem.setToolTipText(
-            getText(
-                "Displays in the settings area, the list of nodes connected for the selected icon"));
-        this.jCheckBoxIndirectMenuItem.setText(getText(
-            "Show Indirectly Connected Nodes"));
-        this.jCheckBoxIndirectMenuItem.setToolTipText(getText(
-            "Displays in the settings area, the list of nodes connected through the internet icon, to the icon "
-            +
-            "selected"));
-        this.jCheckBoxMenuSchedulableItem.setText(getText("Show Schedulable Nodes"));
-        this.jCheckBoxMenuSchedulableItem.setToolTipText(getText(
-            "Displays in the settings area, the list of nodes schedulable for the selected icon"));
-        this.jCheckBoxMenuGridItem.setText(getText("Drawing grid"));
-        this.jCheckBoxMenuGridItem.setToolTipText(getText(
-            "Displays grid in the drawing area"));
-        this.jCheckBoxRulerMenuItem.setText(getText("Drawing rule"));
-        this.jCheckBoxRulerMenuItem.setToolTipText(getText(
-            "Displays rule in the drawing area"));
-
-        this.jMenuTools.setText(getText("Tools"));
-        this.jMenuItemManage.setText(getText("Manage Schedulers"));
-        this.jMenuItemGenerate.setText(getText("Generate Scheduler"));
-
-        this.jMenuHelp.setText(getText("Help"));
-        this.jMenuItemHelp.setText(getText("Help"));
-        this.jMenuItemHelp.setToolTipText(getText("Help"));
-        this.jMenuItemAbout.setText(getText("About")
-                                    + " "
-                                    + getText(
-            "nomePrograma"));
-        this.jMenuItemAbout.setToolTipText(getText("About")
-                                           + " "
-                                           + getText(
-            "nomePrograma"));
-
-        this.jPanelSimple.setText(getText("No icon selected."));
-        this.jPanelSettings.setPalavras(this.words);
     }
 
     private void refreshEdits () {
