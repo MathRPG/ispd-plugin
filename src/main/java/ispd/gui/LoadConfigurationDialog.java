@@ -5,7 +5,7 @@ import static ispd.gui.utils.ButtonBuilder.*;
 
 import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
-import ispd.gui.utils.*;
+import ispd.gui.utils.fonts.*;
 import ispd.motor.workload.*;
 import ispd.motor.workload.impl.*;
 import ispd.utils.*;
@@ -1075,7 +1075,7 @@ public class LoadConfigurationDialog extends JDialog {
         final var jLabel21 = new JLabel(getText("Notifications"));
 
         this.jTextNotification.setColumns(20);
-        this.jTextNotification.setFont(Fonts.Tahoma.PLAIN_11);
+        this.jTextNotification.setFont(Tahoma.PLAIN_MEDIUM);
         this.jTextNotification.setRows(5);
         this.jTextNotification.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 

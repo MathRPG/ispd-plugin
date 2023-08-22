@@ -1,10 +1,8 @@
 package ispd.gui.results;
 
-import ispd.gui.utils.Fonts.CourierNew;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
-import ispd.motor.metricas.Metricas;
+import ispd.gui.utils.fonts.*;
+import ispd.motor.metricas.*;
+import javax.swing.*;
 
 /**
  * A {@link ResultsTasksPane} is a class that represents a pane containing the
@@ -32,7 +30,7 @@ public class ResultsTasksPane extends JScrollPane {
         textArea.setEditable(false);
         textArea.setColumns(20);
         textArea.setRows(5);
-        textArea.setFont(CourierNew.BOLD_14);
+        textArea.setFont(CourierNew.BOLD);
         textArea.setText(this.makeTasksResultsText(metrics));
     }
 

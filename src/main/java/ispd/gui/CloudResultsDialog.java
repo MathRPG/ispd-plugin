@@ -1,74 +1,33 @@
 package ispd.gui;
 
-import ispd.arquivo.SalvarResultadosHTML;
-import ispd.arquivo.interpretador.cargas.TaskTraceSerializer;
-import ispd.gui.auxiliar.HtmlPane;
-import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.gui.auxiliar.UserOperationTime;
-import ispd.gui.utils.Fonts;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
-import ispd.motor.metricas.Metricas;
-import ispd.motor.metricas.MetricasAlocacao;
-import ispd.motor.metricas.MetricasComunicacao;
-import ispd.motor.metricas.MetricasCusto;
-import ispd.motor.metricas.MetricasGlobais;
-import ispd.motor.metricas.MetricasProcessamento;
-import ispd.motor.metricas.MetricasUsuarios;
-import ispd.utils.constants.FileExtensions;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import ispd.arquivo.*;
+import ispd.arquivo.interpretador.cargas.*;
+import ispd.gui.auxiliar.*;
+import ispd.gui.utils.fonts.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.metricas.*;
+import ispd.utils.constants.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import java.io.*;
+import java.net.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Stream;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JToolBar;
-import javax.swing.LayoutStyle;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-import javax.swing.table.DefaultTableModel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.AbstractXYItemRenderer;
-import org.jfree.chart.renderer.xy.XYStepAreaRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
+import java.util.*;
+import java.util.logging.*;
+import java.util.stream.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import org.jfree.chart.*;
+import org.jfree.chart.axis.*;
+import org.jfree.chart.labels.*;
+import org.jfree.chart.plot.*;
+import org.jfree.chart.renderer.xy.*;
+import org.jfree.data.category.*;
+import org.jfree.data.general.*;
+import org.jfree.data.xy.*;
 
 public class CloudResultsDialog extends JDialog {
 
@@ -642,7 +601,7 @@ public class CloudResultsDialog extends JDialog {
 
         this.jTextAreaGlobal.setEditable(false);
         this.jTextAreaGlobal.setColumns(20);
-        this.jTextAreaGlobal.setFont(Fonts.CourierNew.BOLD_14); //
+        this.jTextAreaGlobal.setFont(CourierNew.BOLD); //
 
         this.jTextAreaGlobal.setRows(5);
         jScrollPaneGobal.setViewportView(this.jTextAreaGlobal);
@@ -720,7 +679,7 @@ public class CloudResultsDialog extends JDialog {
 
         this.jTextAreaTarefa.setColumns(20);
         this.jTextAreaTarefa.setEditable(false);
-        this.jTextAreaTarefa.setFont(Fonts.CourierNew.PLAIN_14); //
+        this.jTextAreaTarefa.setFont(CourierNew.PLAIN); //
 
         this.jTextAreaTarefa.setRows(5);
         jScrollPaneTarefa.setViewportView(this.jTextAreaTarefa);
@@ -729,7 +688,7 @@ public class CloudResultsDialog extends JDialog {
 
         this.jTextAreaUsuario.setColumns(20);
         this.jTextAreaUsuario.setEditable(false);
-        this.jTextAreaUsuario.setFont(Fonts.CourierNew.PLAIN_14); //
+        this.jTextAreaUsuario.setFont(CourierNew.PLAIN); //
 
         this.jTextAreaUsuario.setRows(5);
         this.jScrollPaneUsuario.setViewportView(this.jTextAreaUsuario);
@@ -1432,8 +1391,8 @@ public class CloudResultsDialog extends JDialog {
             .map(chart -> chart
                 .getChart()
                 .createBufferedImage(
-                    CloudResultsDialog.BUFFERED_IMAGE_WIDTH,
-                    CloudResultsDialog.BUFFERED_IMAGE_HEIGHT
+                    BUFFERED_IMAGE_WIDTH,
+                    BUFFERED_IMAGE_HEIGHT
                 ))
             .toArray(BufferedImage[]::new);
 

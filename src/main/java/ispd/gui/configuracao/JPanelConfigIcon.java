@@ -4,7 +4,7 @@ import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.*;
 import ispd.gui.iconico.grade.*;
-import ispd.gui.utils.*;
+import ispd.gui.utils.fonts.*;
 import ispd.policy.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -49,7 +49,7 @@ public class JPanelConfigIcon extends JPanel {
 
     private static JLabel makeTitleLabel () {
         final JLabel label = new JLabel("Machine icon configuration");
-        label.setFont(Fonts.Tahoma.BOLD_12);
+        label.setFont(Tahoma.BOLD_LARGE);
         return label;
     }
 

@@ -1,19 +1,9 @@
 package ispd.gui;
 
-import ispd.gui.utils.Fonts.Tahoma;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.WindowConstants;
+import ispd.gui.utils.fonts.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 public class PickSimulationFaultsDialog extends JFrame {
 
@@ -95,7 +85,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         panelJSelecionarFalhas.setMaximumSize(new Dimension(159, 32769));
         panelJSelecionarFalhas.setOpaque(false);
 
-        this.ckbOmissao.setFont(Tahoma.BOLD_11);
+        this.ckbOmissao.setFont(Tahoma.BOLD_MEDIUM);
         this.ckbOmissao.setText("Omission");
         this.ckbOmissao.addActionListener(this::ckbOmissaoActionPerformed);
 
@@ -104,7 +94,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.cbkOmissaoSoftware.setText("Software");
         this.cbkOmissaoSoftware.setEnabled(false);
 
-        this.cbxEnvelhecimento.setFont(Tahoma.BOLD_11);
+        this.cbxEnvelhecimento.setFont(Tahoma.BOLD_MEDIUM);
         this.cbxEnvelhecimento.setText("Aging related");
         this.cbxEnvelhecimento.addActionListener(this::cbxEnvelhecimentoActionPerformed);
 
@@ -114,7 +104,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.cbxHDCheio.setText("Full HD");
         this.cbxHDCheio.setEnabled(false);
 
-        this.cbxFalhaResposta.setFont(Tahoma.BOLD_11);
+        this.cbxFalhaResposta.setFont(Tahoma.BOLD_MEDIUM);
         this.cbxFalhaResposta.setText("Response faults");
         this.cbxFalhaResposta.addActionListener(this::cbxFalhaRespostaActionPerformed);
 
@@ -124,7 +114,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.cbxEstado.setText("State transimission");
         this.cbxEstado.setEnabled(false);
 
-        this.cbxInteracao.setFont(Tahoma.BOLD_11);
+        this.cbxInteracao.setFont(Tahoma.BOLD_MEDIUM);
         this.cbxInteracao.setText("Interaction");
         this.cbxInteracao.addActionListener(this::cbxInteracaoActionPerformed);
 
@@ -134,7 +124,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.cbxInterdependencia.setText("Service interdependence");
         this.cbxInterdependencia.setEnabled(false);
 
-        this.cbxDiversas.setFont(Tahoma.BOLD_11);
+        this.cbxDiversas.setFont(Tahoma.BOLD_MEDIUM);
         this.cbxDiversas.setText("Miscellaneous");
         this.cbxDiversas.addActionListener(this::cbxDiversasActionPerformed);
 
@@ -144,7 +134,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.cbxDesenhoIncorreto.setText("Incorrect desing");
         this.cbxDesenhoIncorreto.setEnabled(false);
 
-        cbxTempoResposta.setFont(Tahoma.BOLD_11);
+        cbxTempoResposta.setFont(Tahoma.BOLD_MEDIUM);
         cbxTempoResposta.setText("Timing faults");
         cbxTempoResposta.addActionListener(this::cbxTempoRespostaActionPerformed);
 
@@ -158,7 +148,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         this.cbxIncompatibilidade.setToolTipText("");
         this.cbxIncompatibilidade.setEnabled(false);
 
-        this.cbxSoftware.setFont(Tahoma.BOLD_11);
+        this.cbxSoftware.setFont(Tahoma.BOLD_MEDIUM);
         this.cbxSoftware.setText("Software");
         this.cbxSoftware.addActionListener(this::cbxSoftwareActionPerformed);
 
@@ -356,7 +346,7 @@ public class PickSimulationFaultsDialog extends JFrame {
         jButtonSelecionarFalhas.setText("Select the faults and return to the Main screen");
         jButtonSelecionarFalhas.addActionListener(this::jButtonSelecionarFalhasActionPerformed);
 
-        jLabel22.setFont(Tahoma.BOLD_11);
+        jLabel22.setFont(Tahoma.BOLD_MEDIUM);
         jLabel22.setText("Select Faults");
 
         final GroupLayout layout = new GroupLayout(this.getContentPane());

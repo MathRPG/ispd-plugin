@@ -5,7 +5,7 @@ import static ispd.gui.utils.ButtonBuilder.*;
 
 import ispd.arquivo.xml.*;
 import ispd.gui.results.*;
-import ispd.gui.utils.*;
+import ispd.gui.utils.fonts.*;
 import ispd.motor.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -170,7 +170,7 @@ public class SimulationDialog extends JDialog implements Runnable {
 
         this.notificationArea = new JTextPane();
         this.notificationArea.setEditable(false);
-        this.notificationArea.setFont(Fonts.Arial.BOLD_11);
+        this.notificationArea.setFont(Arial.BOLD);
 
         this.makeLayoutAndPack();
     }
