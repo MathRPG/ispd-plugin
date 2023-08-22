@@ -1,5 +1,7 @@
 package ispd.gui.iconico.grade;
 
+import static ispd.gui.BundleManager.*;
+
 import ispd.arquivo.xml.*;
 import ispd.gui.*;
 import ispd.gui.iconico.Icon;
@@ -49,7 +51,7 @@ public class DesenhoGrade extends DrawingArea {
 
     private final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
-    private ResourceBundle translator = BundleManager.getBundle();
+    private ResourceBundle translator = getBundle();
 
     /**
      * (GRID, IAAS ou PAAS)
@@ -354,7 +356,7 @@ public class DesenhoGrade extends DrawingArea {
     }
 
     private String translate (final String text) {
-        return BundleManager.getText(text);
+        return getText(text);
     }
 
     public HashSet<VirtualMachine> getVirtualMachines () {
