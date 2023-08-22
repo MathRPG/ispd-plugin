@@ -25,10 +25,7 @@ public class ClusterTable extends AbstractTableModel {
 
     private Cluster cluster = null;
 
-    private ResourceBundle words;
-
-    ClusterTable (final ResourceBundle words) {
-        this.words = words;
+    ClusterTable () {
     }
 
     @Override
@@ -174,7 +171,6 @@ public class ClusterTable extends AbstractTableModel {
     }
 
     public void setPalavras (final ResourceBundle words) {
-        this.words = words;
         this.fireTableStructureChanged();
     }
 
