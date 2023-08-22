@@ -24,7 +24,7 @@ public class GuiApplication implements Application {
 
         setGuiLookAndFeel();
 
-        final var mainWindow = buildMainWindow();
+        final var mainWindow = new MainWindow();
 
         exceptionLogger.setParentComponent(mainWindow);
 
@@ -40,12 +40,6 @@ public class GuiApplication implements Application {
                        UnsupportedLookAndFeelException e) {
             LOGGER.severe(e::getLocalizedMessage);
         }
-    }
-
-    private static MainWindow buildMainWindow () {
-        final var gui = new MainWindow();
-        gui.setLocationRelativeTo(null);
-        return gui;
     }
 
     @Override
