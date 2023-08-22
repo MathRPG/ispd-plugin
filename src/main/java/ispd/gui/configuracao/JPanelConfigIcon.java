@@ -1,5 +1,7 @@
 package ispd.gui.configuracao;
 
+import static ispd.gui.BundleManager.*;
+
 import ispd.gui.*;
 import ispd.gui.iconico.grade.*;
 import ispd.gui.utils.*;
@@ -21,7 +23,7 @@ public class JPanelConfigIcon extends JPanel {
 
     private final JScrollPane jScrollPane = new JScrollPane();
 
-    private ResourceBundle words = BundleManager.getBundle();
+    private ResourceBundle words = getBundle();
 
     private final VariedRowTable machineTable =
         this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
@@ -165,7 +167,7 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     private String translate (final String text) {
-        return this.words.getString(text);
+        return getText(text);
     }
 
     private LinkTable getTabelaLink () {
