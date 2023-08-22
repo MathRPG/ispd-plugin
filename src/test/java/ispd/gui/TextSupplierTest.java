@@ -40,13 +40,13 @@ class TextSupplierTest {
     void givenNullLogger_whenSetInstance_thenThrowsNullPointerException () {
         assertThrows(
             NullPointerException.class,
-            () -> TextSupplier.setInstance(MapResourceBundle.EMPTY, null)
+            () -> TextSupplier.setInstance(MapBundle.EMPTY, null)
         );
     }
 
     @Test
     void givenBundleWithKey_whenGetText_returnsValueInBundle () {
-        final var bundle = new MapResourceBundle(Map.of(KEY, VALUE));
+        final var bundle = new MapBundle(Map.of(KEY, VALUE));
 
         TextSupplier.setInstance(bundle);
 
@@ -57,20 +57,19 @@ class TextSupplierTest {
     void givenBundleWithoutKey_whenGetText_thenLogsWarningAndReturnsKey () {
         final var logger = mock(Logger.class);
 
-        TextSupplier.setInstance(MapResourceBundle.EMPTY, logger);
+        TextSupplier.setInstance(MapBundle.EMPTY, logger);
 
         assertThat(TextSupplier.getText(KEY), is(KEY));
         verify(logger, times(1)).warning(anyStringSupplier());
     }
 
-    private static final class MapResourceBundle extends ResourceBundle {
+    private static final class MapBundle extends ResourceBundle {
 
-        private static final MapResourceBundle EMPTY =
-            new MapResourceBundle(emptyMap());
+        private static final ResourceBundle EMPTY = new MapBundle(emptyMap());
 
         private final Map<String, String> map;
 
-        private MapResourceBundle (final Map<String, String> map) {
+        private MapBundle (final Map<String, String> map) {
             super();
             this.map = map;
         }
