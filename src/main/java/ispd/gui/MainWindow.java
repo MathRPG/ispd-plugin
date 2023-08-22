@@ -40,10 +40,6 @@ public class MainWindow extends JFrame implements KeyListener {
         FileExtensions.WORKLOAD_MODEL
     };
 
-    private static final Locale LOCALE_EN_US = new Locale("en", "US");
-
-    private static final Locale LOCALE_PT_BR = new Locale("pt", "BR");
-
     private static final String ISPD_LOGO_FILE_PATH = "imagens/Logo_iSPD_25.png";
 
     private static final int NOTIFICATION_AREA_COLS = 20;
