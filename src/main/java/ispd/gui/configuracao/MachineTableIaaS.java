@@ -67,12 +67,9 @@ public class MachineTableIaaS extends AbstractTableModel {
 
     private final JList<GridItem> slaveList = new JList<>();
 
-    private ResourceBundle words;
-
     private Machine machine = null;
 
-    public MachineTableIaaS (final ResourceBundle words) {
-        this.words = words;
+    public MachineTableIaaS () {
         new CheckListRenderer(this.slaveList);
     }
 
@@ -240,7 +237,6 @@ public class MachineTableIaaS extends AbstractTableModel {
     }
 
     public void setPalavras (final ResourceBundle words) {
-        this.words = words;
         this.fireTableStructureChanged();
     }
 

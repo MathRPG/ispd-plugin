@@ -29,7 +29,7 @@ public class JPanelConfigIcon extends JPanel {
         this.createTableWith(MachineVariedRowTable::new, t -> new MachineTable());
 
     private final VariedRowTable iassMachineTable =
-        this.createTableWith(IaasMachineVariedRowTable::new, MachineTableIaaS::new);
+        this.createTableWith(IaasMachineVariedRowTable::new, t -> new MachineTableIaaS());
 
     private final VariedRowTable clusterTable =
         this.createTableWith(ClusterVariedRowTable::new, ClusterTable::new);
