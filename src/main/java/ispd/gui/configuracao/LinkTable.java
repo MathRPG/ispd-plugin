@@ -5,7 +5,6 @@ import static ispd.gui.BundleManager.*;
 import ispd.gui.iconico.grade.*;
 import java.util.*;
 import javax.swing.table.*;
-import org.jetbrains.annotations.*;
 
 public class LinkTable extends AbstractTableModel {
 
@@ -66,14 +65,10 @@ public class LinkTable extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case TYPE -> this.getString("Properties");
-            case VALUE -> this.getString("Values");
+            case TYPE -> getText("Properties");
+            case VALUE -> getText("Values");
             default -> null;
         };
-    }
-
-    private @NotNull String getString (final String Properties) {
-        return getText(Properties);
     }
 
     @Override
@@ -97,10 +92,10 @@ public class LinkTable extends AbstractTableModel {
 
     private String getRowName (final int rowIndex) {
         return switch (rowIndex) {
-            case LABEL -> this.getString("Label");
-            case BANDWIDTH -> this.getString("Bandwidth");
-            case LATENCY -> this.getString("Latency");
-            case LOAD_FACTOR -> this.getString("Load Factor");
+            case LABEL -> getText("Label");
+            case BANDWIDTH -> getText("Bandwidth");
+            case LATENCY -> getText("Latency");
+            case LOAD_FACTOR -> getText("Load Factor");
             default -> null;
         };
     }
