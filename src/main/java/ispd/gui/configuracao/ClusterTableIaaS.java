@@ -8,7 +8,6 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import org.jetbrains.annotations.*;
 
 public class ClusterTableIaaS extends AbstractTableModel {
 
@@ -90,15 +89,11 @@ public class ClusterTableIaaS extends AbstractTableModel {
     public String getColumnName (final int columnIndex) {
         switch (columnIndex) {
             case TYPE:
-                return this.getString("Properties");
+                return getText("Properties");
             case VALUE:
-                return this.getString("Values");
+                return getText("Values");
         }
         return null;
-    }
-
-    private @NotNull String getString (final String properties) {
-        return getText(properties);
     }
 
     @Override
@@ -152,17 +147,17 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private String nameForRow (final int rowIndex) {
         return switch (rowIndex) {
-            case TableRows.LABEL -> this.getString("Label");
-            case TableRows.OWNER -> this.getString("Owner");
-            case TableRows.NODES -> this.getString("Number of nodes");
-            case TableRows.PROCESSORS -> this.getString("Computing power");
+            case TableRows.LABEL -> getText("Label");
+            case TableRows.OWNER -> getText("Owner");
+            case TableRows.NODES -> getText("Number of nodes");
+            case TableRows.PROCESSORS -> getText("Computing power");
             case TableRows.CORES -> "Cores";
             case TableRows.MEMORY -> "Primary Storage";
             case TableRows.DISK -> "Secondary Storage";
-            case TableRows.BANDWIDTH -> this.getString("Bandwidth");
-            case TableRows.LATENCY -> this.getString("Latency");
+            case TableRows.BANDWIDTH -> getText("Bandwidth");
+            case TableRows.LATENCY -> getText("Latency");
             case TableRows.VMM -> "VMM";
-            case TableRows.SCHEDULER -> this.getString("Scheduling algorithm");
+            case TableRows.SCHEDULER -> getText("Scheduling algorithm");
             case TableRows.COST_PER_PROCESSOR -> "Cost per Processing";
             case TableRows.COST_PER_MEMORY -> "Cost per Memory";
             case TableRows.COST_PER_DISK -> "Cost per Disk";
