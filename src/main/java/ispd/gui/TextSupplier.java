@@ -5,40 +5,58 @@ import java.util.*;
 import java.util.logging.*;
 import org.jetbrains.annotations.*;
 
-public enum TextSupplier {
-    ;
+public class TextSupplier {
 
-    private static ResourceBundle BUNDLE = null;
+    private static final String MISSING_KEY_TEXT = "Missing text for key \"{0}\"";
 
-    private static Logger LOGGER = null;
+    private static final Logger DEFAULT_LOGGER = Logger.getLogger(TextSupplier.class.getName());
 
-    public static String getText (final String key) {
-        if (BUNDLE == null) {
-            throw new MissingResourceException("", "", "");
-        }
+    private static Optional<TextSupplier> theInstance = Optional.empty();
 
-        if (!BUNDLE.containsKey(key)) {
-            emitMissingKeyWarning(key);
-            return key;
-        }
+    private final ResourceBundle bundle;
 
-        return BUNDLE.getString(key);
+    private final Logger logger;
+
+    private TextSupplier (final ResourceBundle bundle, final Logger logger) {
+        this.bundle = Objects.requireNonNull(bundle);
+        this.logger = logger;
     }
 
-    private static void emitMissingKeyWarning (final String key) {
-        LOGGER.warning(() -> keyMissingMessage(key));
+    public static String getText (final String key) {
+        return theInstance
+            .map(i -> i.getBundleText(key))
+            .orElseThrow(MissingInstanceException::new);
     }
 
     private static @NotNull @NonNls String keyMissingMessage (final String key) {
-        return MessageFormat.format("Missing text for key \"{0}\"", key);
+        return MessageFormat.format(MISSING_KEY_TEXT, key);
     }
 
     public static void setInstance (final @NotNull ResourceBundle bundle) {
-        setInstance(bundle, Logger.getLogger(TextSupplier.class.getName()));
+        setInstance(bundle, DEFAULT_LOGGER);
     }
 
-    public static void setInstance (final ResourceBundle bundle, final Logger logger) {
-        BUNDLE = Objects.requireNonNull(bundle);
-        LOGGER = logger;
+    public static void setInstance (final @NotNull ResourceBundle bundle, final Logger logger) {
+        theInstance = Optional.of(new TextSupplier(bundle, logger));
+    }
+
+    private void emitMissingKeyWarning (final String key) {
+        this.logger.warning(() -> keyMissingMessage(key));
+    }
+
+    private String getBundleText (final String key) {
+        if (!this.bundle.containsKey(key)) {
+            this.emitMissingKeyWarning(key);
+            return key;
+        }
+
+        return this.bundle.getString(key);
+    }
+
+    public static class MissingInstanceException extends IllegalStateException {
+
+        private MissingInstanceException () {
+            super("Attempting to call .getText() without call to .setInstance() first.");
+        }
     }
 }

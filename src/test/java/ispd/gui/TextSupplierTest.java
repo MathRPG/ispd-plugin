@@ -20,7 +20,10 @@ class TextSupplierTest {
 
     @BeforeAll
     static void givenNoBundle_whenGetText_thenThrowsMissingResourceException () {
-        assertThrows(MissingResourceException.class, () -> TextSupplier.getText(KEY));
+        assertThrowsExactly(
+            TextSupplier.MissingInstanceException.class,
+            () -> TextSupplier.getText(KEY)
+        );
     }
 
     private static Supplier<String> anyStringSupplier () {
