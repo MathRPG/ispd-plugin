@@ -51,8 +51,6 @@ public class LoadConfigurationDialog extends JDialog {
 
     private final Vector<String> tableColumn = new Vector<>(7);
 
-    private final ResourceBundle translator;
-
     private File file = null;
 
     private JComboBox comboBoxSchedulers;
@@ -137,11 +135,9 @@ public class LoadConfigurationDialog extends JDialog {
 
     LoadConfigurationDialog (
         final Frame parent, final boolean modal, final Object[] users, final Object[] schedulers,
-        final WorkloadGenerator loadGenerator, final ResourceBundle translator
+        final WorkloadGenerator loadGenerator
     ) {
         super(parent, modal);
-
-        this.translator = translator;
 
         this.users = new Vector<>(0);
         for (final var user : users) {

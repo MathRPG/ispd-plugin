@@ -884,8 +884,7 @@ public class MainWindow extends JFrame implements KeyListener {
             true,
             this.drawingArea.getUsuarios().toArray(),
             this.drawingArea.getNosEscalonadores().toArray(),
-            this.drawingArea.getLoadConfiguration(),
-            this.words
+            this.drawingArea.getLoadConfiguration()
         );
 
         this.showSubWindow(loadConfigWindow);
