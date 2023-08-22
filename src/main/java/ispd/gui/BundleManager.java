@@ -10,4 +10,8 @@ public enum BundleManager {
     public static ResourceBundle getBundle () {
         return BUNDLE;
     }
+
+    static String translate (final String s) {
+        return BUNDLE.getString(s);
+    }
 }
