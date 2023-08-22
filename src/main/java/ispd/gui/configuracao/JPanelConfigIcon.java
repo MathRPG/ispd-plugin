@@ -6,7 +6,6 @@ import ispd.gui.*;
 import ispd.gui.iconico.grade.*;
 import ispd.gui.utils.fonts.*;
 import ispd.policy.*;
-import java.awt.*;
 import java.awt.event.*;
 import java.util.function.*;
 import javax.swing.*;
@@ -48,7 +47,7 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     private static JLabel makeTitleLabel () {
-        final JLabel label = new JLabel("Machine icon configuration");
+        final var label = new JLabel("Machine icon configuration");
         label.setFont(Tahoma.BOLD_LARGE);
         return label;
     }
@@ -168,13 +167,13 @@ public class JPanelConfigIcon extends JPanel {
     public void setIcone (final GridItem icon, final Iterable<String> users, final int choice) {
         if (choice == PickModelTypeDialog.GRID) {
             if (!this.schedulers.listarRemovidos().isEmpty()) {
-                for (final Object escal : this.schedulers.listarRemovidos()) {
+                for (final var escal : this.schedulers.listarRemovidos()) {
                     this.getTabelaMaquina().getEscalonadores().removeItem(escal);
                 }
                 this.schedulers.listarRemovidos().clear();
             }
             if (!this.schedulers.listarAdicionados().isEmpty()) {
-                for (final Object escal : this.schedulers.listarAdicionados()) {
+                for (final var escal : this.schedulers.listarAdicionados()) {
                     this.getTabelaMaquina().getEscalonadores().addItem(escal);
                 }
                 this.schedulers.listarAdicionados().clear();
@@ -196,14 +195,14 @@ public class JPanelConfigIcon extends JPanel {
             }
         } else if (choice == PickModelTypeDialog.IAAS) {
             if (!this.cloudSchedulers.listarRemovidos().isEmpty()) {
-                for (final Object escal : this.cloudSchedulers.listarRemovidos()) {
+                for (final var escal : this.cloudSchedulers.listarRemovidos()) {
                     this.getTabelaMaquinaIaaS().getEscalonadores().removeItem(escal);
                     this.getTabelaClusterIaaS().getEscalonadores().removeItem(escal);
                 }
                 this.cloudSchedulers.listarRemovidos().clear();
             }
             if (!this.cloudSchedulers.listarAdicionados().isEmpty()) {
-                for (final Object escal : this.cloudSchedulers.listarAdicionados()) {
+                for (final var escal : this.cloudSchedulers.listarAdicionados()) {
                     this.getTabelaMaquinaIaaS().getEscalonadores().addItem(escal);
                     this.getTabelaClusterIaaS().getEscalonadores().addItem(escal);
                 }
@@ -211,14 +210,14 @@ public class JPanelConfigIcon extends JPanel {
             }
 
             if (!this.allocators.listarRemovidos().isEmpty()) {
-                for (final Object alloc : this.allocators.listarRemovidos()) {
+                for (final var alloc : this.allocators.listarRemovidos()) {
                     this.getTabelaMaquinaIaaS().getAlocadores().removeItem(alloc);
                     this.getTabelaClusterIaaS().getAlocadores().removeItem(alloc);
                 }
                 this.allocators.listarRemovidos().clear();
             }
             if (!this.allocators.listarAdicionados().isEmpty()) {
-                for (final Object alloc : this.allocators.listarAdicionados()) {
+                for (final var alloc : this.allocators.listarAdicionados()) {
                     this.getTabelaMaquinaIaaS().getAlocadores().addItem(alloc);
                     this.getTabelaClusterIaaS().getAlocadores().addItem(alloc);
                 }
@@ -270,9 +269,9 @@ public class JPanelConfigIcon extends JPanel {
         }
 
         public String getToolTipText (final MouseEvent e) {
-            final Point p        = e.getPoint();
-            final int   rowIndex = this.rowAtPoint(p);
-            final int   colIndex = this.columnAtPoint(p);
+            final var p        = e.getPoint();
+            final var rowIndex = this.rowAtPoint(p);
+            final var colIndex = this.columnAtPoint(p);
             return this.getToolTip(rowIndex, colIndex);
         }
 
@@ -291,10 +290,10 @@ public class JPanelConfigIcon extends JPanel {
     private static class IaasMachineVariedRowTable extends VariedRowTable {
 
         public String getToolTipText (final MouseEvent e) {
-            String      tip      = null;
-            final Point p        = e.getPoint();
-            final int   rowIndex = this.rowAtPoint(p);
-            final int   colIndex = this.columnAtPoint(p);
+            String    tip      = null;
+            final var p        = e.getPoint();
+            final var rowIndex = this.rowAtPoint(p);
+            final var colIndex = this.columnAtPoint(p);
 
             try {
                 if (colIndex == 1) {
@@ -338,10 +337,10 @@ public class JPanelConfigIcon extends JPanel {
     private static class ClusterVariedRowTable extends VariedRowTable {
 
         public String getToolTipText (final MouseEvent e) {
-            String      tip      = null;
-            final Point p        = e.getPoint();
-            final int   rowIndex = this.rowAtPoint(p);
-            final int   colIndex = this.columnAtPoint(p);
+            String    tip      = null;
+            final var p        = e.getPoint();
+            final var rowIndex = this.rowAtPoint(p);
+            final var colIndex = this.columnAtPoint(p);
 
             try {
                 if (colIndex == 1) {
@@ -383,10 +382,10 @@ public class JPanelConfigIcon extends JPanel {
     private static class IaasClusterVariedRowTable extends VariedRowTable {
 
         public String getToolTipText (final MouseEvent e) {
-            String      tip      = null;
-            final Point p        = e.getPoint();
-            final int   rowIndex = this.rowAtPoint(p);
-            final int   colIndex = this.columnAtPoint(p);
+            String    tip      = null;
+            final var p        = e.getPoint();
+            final var rowIndex = this.rowAtPoint(p);
+            final var colIndex = this.columnAtPoint(p);
 
             try {
                 if (colIndex == 1) {
@@ -435,29 +434,21 @@ public class JPanelConfigIcon extends JPanel {
 
     private static class LinkVariedRowTable extends VariedRowTable {
 
-        public String getToolTipText (final MouseEvent e) {
-            String      tip      = null;
-            final Point p        = e.getPoint();
-            final int   rowIndex = this.rowAtPoint(p);
-            final int   colIndex = this.columnAtPoint(p);
+        @Override
+        public String getToolTipText (final MouseEvent event) {
+            final var p = event.getPoint();
 
-            try {
-                if (colIndex == 1) {
-                    if (rowIndex == 0) {
-                        tip = "Insert the label name of the resource";
-                    } else if (rowIndex == 1) {
-                        tip = "Insert the latency time of the resource in seconds";
-                    } else if (rowIndex == 2) {
-                        tip =
-                            "Insert the percentage of background communication in decimal notation";
-                    } else if (rowIndex == 3) {
-                        tip = "Insert the amount of bandwidth of the resource in seconds";
-                    }
-                }
-            } catch (final RuntimeException ignored) {
+            if (this.columnAtPoint(p) != 1) {
+                return null;
             }
 
-            return tip;
+            return switch (this.rowAtPoint(p)) {
+                case 0 -> "Insert the label name of the resource";
+                case 1 -> "Insert the latency time of the resource in seconds";
+                case 2 -> "Insert the percentage of background communication in decimal notation";
+                case 3 -> "Insert the amount of bandwidth of the resource in seconds";
+                default -> null;
+            };
         }
     }
 }
