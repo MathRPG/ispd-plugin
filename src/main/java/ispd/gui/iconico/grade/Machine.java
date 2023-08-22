@@ -1,12 +1,11 @@
 package ispd.gui.iconico.grade;
 
-import ispd.policy.allocation.vm.VmMaster;
-import java.awt.Image;
-import java.util.ArrayList;
-import java.util.HashSet;
+import static ispd.gui.BundleManager.*;
+
+import ispd.policy.allocation.vm.*;
+import java.awt.*;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class Machine extends VertexGridItem {
 
@@ -128,14 +127,20 @@ public class Machine extends VertexGridItem {
             "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: " +
             "%s%s"
         ).formatted(
-            translator.getString("Local ID:"), this.id.getLocalId(),
-            translator.getString("Global ID:"), this.id.getGlobalId(),
-            translator.getString("Label"), this.id.getName(),
-            translator.getString("X-coordinate:"), this.getX(),
-            translator.getString("Y-coordinate:"), this.getY(),
-            translator.getString("Computing power"),
+            getText("Local ID:"),
+            this.id.getLocalId(),
+            getText("Global ID:"),
+            this.id.getGlobalId(),
+            getText("Label"),
+            this.id.getName(),
+            getText("X-coordinate:"),
+            this.getX(),
+            getText("Y-coordinate:"),
+            this.getY(),
+            getText("Computing power"),
             this.computationalPower,
-            translator.getString("Load Factor"), this.loadFactor,
+            getText("Load Factor"),
+            this.loadFactor,
             this.describeRole(translator)
         );
     }
