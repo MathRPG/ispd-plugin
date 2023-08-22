@@ -45,8 +45,6 @@ public class PolicyGeneratorWindow extends JDialog {
 
     private final LinkedList<String> rFormula = new SpacedPrintList();
 
-    private final ResourceBundle translator;
-
     private final JScrollPane jScrollPanePrincipal = new JScrollPane();
 
     private final PolicyManager manager;
@@ -184,12 +182,11 @@ public class PolicyGeneratorWindow extends JDialog {
     private JTextPane jTextPaneP7Gramatica;
 
     public PolicyGeneratorWindow (
-        final Frame parent, final boolean modal, final String path, final ResourceBundle translator,
+        final Frame parent, final boolean modal, final String path,
         final PolicyManager manager
     ) {
         super(parent, modal);
         this.path       = path;
-        this.translator = translator;
         this.initComponents();
         this.manager = manager;
         this.jScrollPanePrincipal.setViewportView(this.jPanelPasso1);

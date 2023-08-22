@@ -1332,7 +1332,7 @@ public class MainWindow extends JFrame implements KeyListener {
         final var path    = manager.directory().getAbsolutePath();
 
         final var policyGenerator =
-            new PolicyGeneratorWindow(this, true, path, this.words, manager);
+            new PolicyGeneratorWindow(this, true, path, manager);
 
         this.showSubWindow(policyGenerator);
 
