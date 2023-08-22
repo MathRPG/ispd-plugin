@@ -11,7 +11,7 @@ public enum BundleManager {
         return BUNDLE;
     }
 
-    static String getText (final String key) {
+    public static String getText (final String key) {
         return BUNDLE.getString(key);
     }
 }
