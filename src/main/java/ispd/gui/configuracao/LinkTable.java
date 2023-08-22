@@ -1,10 +1,9 @@
 package ispd.gui.configuracao;
 
-import ispd.gui.iconico.grade.GridItem;
-import ispd.gui.iconico.grade.Internet;
-import ispd.gui.iconico.grade.Link;
-import java.util.ResourceBundle;
-import javax.swing.table.AbstractTableModel;
+import ispd.gui.iconico.grade.*;
+import java.util.*;
+import javax.swing.table.*;
+import org.jetbrains.annotations.*;
 
 public class LinkTable extends AbstractTableModel {
 
@@ -34,24 +33,24 @@ public class LinkTable extends AbstractTableModel {
 
     @Override
     public int getRowCount () {
-        return LinkTable.ROW_COUNT;
+        return ROW_COUNT;
     }
 
     @Override
     public int getColumnCount () {
-        return LinkTable.COLUMN_COUNT;
+        return COLUMN_COUNT;
     }
 
     @Override
     public Object getValueAt (final int rowIndex, final int columnIndex) {
         switch (columnIndex) {
-            case LinkTable.TYPE -> {
+            case TYPE -> {
                 final var name = this.getRowName(rowIndex);
                 if (name != null) {
                     return name;
                 }
             }
-            case LinkTable.VALUE -> {
+            case VALUE -> {
                 final var value = this.getRowValue(rowIndex);
                 if (value != null) {
                     return value;
@@ -65,25 +64,29 @@ public class LinkTable extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case LinkTable.TYPE -> this.words.getString("Properties");
-            case LinkTable.VALUE -> this.words.getString("Values");
+            case TYPE -> this.getString("Properties");
+            case VALUE -> this.getString("Values");
             default -> null;
         };
     }
 
+    private @NotNull String getString (final String Properties) {
+        return this.words.getString(Properties);
+    }
+
     @Override
     public boolean isCellEditable (final int rowIndex, final int columnIndex) {
-        return columnIndex != LinkTable.TYPE;
+        return columnIndex != TYPE;
     }
 
     @Override
     public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
-        if (columnIndex != LinkTable.VALUE || this.link == null) {
+        if (columnIndex != VALUE || this.link == null) {
             return;
         }
 
         this.updateValue(aValue, rowIndex);
-        this.fireTableCellUpdated(rowIndex, LinkTable.VALUE);
+        this.fireTableCellUpdated(rowIndex, VALUE);
     }
 
     public void setLink (final GridItem link) {
@@ -92,10 +95,10 @@ public class LinkTable extends AbstractTableModel {
 
     private String getRowName (final int rowIndex) {
         return switch (rowIndex) {
-            case LinkTable.LABEL -> this.words.getString("Label");
-            case LinkTable.BANDWIDTH -> this.words.getString("Bandwidth");
-            case LinkTable.LATENCY -> this.words.getString("Latency");
-            case LinkTable.LOAD_FACTOR -> this.words.getString("Load Factor");
+            case LABEL -> this.getString("Label");
+            case BANDWIDTH -> this.getString("Bandwidth");
+            case LATENCY -> this.getString("Latency");
+            case LOAD_FACTOR -> this.getString("Load Factor");
             default -> null;
         };
     }
@@ -106,24 +109,24 @@ public class LinkTable extends AbstractTableModel {
         }
 
         switch (rowIndex) {
-            case LinkTable.LABEL:
+            case LABEL:
                 return this.link.getId().getName();
 
-            case LinkTable.BANDWIDTH:
+            case BANDWIDTH:
                 if (this.link instanceof Link) {
                     return ((Link) this.link).getBandwidth();
                 } else {
                     return ((Internet) this.link).getBandwidth();
                 }
 
-            case LinkTable.LATENCY:
+            case LATENCY:
                 if (this.link instanceof Link) {
                     return ((Link) this.link).getLatency();
                 } else {
                     return ((Internet) this.link).getLatency();
                 }
 
-            case LinkTable.LOAD_FACTOR:
+            case LOAD_FACTOR:
                 if (this.link instanceof Link) {
                     return ((Link) this.link).getLoadFactor();
                 } else {
@@ -136,7 +139,7 @@ public class LinkTable extends AbstractTableModel {
 
     private void updateValue (final Object aValue, final int rowIndex) {
 
-        if (rowIndex == LinkTable.LABEL) {
+        if (rowIndex == LABEL) {
             this.link.getId().setName(aValue.toString());
             return;
         }
@@ -144,21 +147,21 @@ public class LinkTable extends AbstractTableModel {
         final var value = Double.parseDouble(aValue.toString());
 
         switch (rowIndex) {
-            case LinkTable.BANDWIDTH:
+            case BANDWIDTH:
                 if (this.link instanceof Link) {
                     ((Link) this.link).setBandwidth(value);
                 } else {
                     ((Internet) this.link).setBandwidth(value);
                 }
                 break;
-            case LinkTable.LATENCY:
+            case LATENCY:
                 if (this.link instanceof Link) {
                     ((Link) this.link).setLatency(value);
                 } else {
                     ((Internet) this.link).setLatency(value);
                 }
                 break;
-            case LinkTable.LOAD_FACTOR:
+            case LOAD_FACTOR:
                 if (this.link instanceof Link) {
                     ((Link) this.link).setLoadFactor(value);
                 } else {
