@@ -1,21 +1,33 @@
 package ispd.gui;
 
+import java.text.*;
 import java.util.*;
+import java.util.logging.*;
+import org.jetbrains.annotations.*;
 
 public enum BundleManager {
     ;
 
+    private static final Logger LOGGER = Logger.getLogger(BundleManager.class.getName());
+
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("text.gui");
 
     public static String getText (final String key) {
+        if (!BUNDLE.containsKey(key)) {
+            emitMissingKeyWarning(key);
+            return key;
+        }
+
         return BUNDLE.getString(key);
     }
 
-    public static String tryGetText (final String text) {
-        if (!BUNDLE.containsKey(text)) {
-            return text;
+    private static void emitMissingKeyWarning (final String key) {
+        if (LOGGER.isLoggable(Level.WARNING)) {
+            LOGGER.warning(keyMissingMessage(key));
         }
+    }
 
-        return getText(text);
+    private static @NotNull @NonNls String keyMissingMessage (final String key) {
+        return MessageFormat.format("Missing text for key \"{0}\"", key);
     }
 }
