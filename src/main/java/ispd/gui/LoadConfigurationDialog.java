@@ -1,10 +1,11 @@
 package ispd.gui;
 
+import static ispd.gui.BundleManager.*;
 import static ispd.gui.utils.ButtonBuilder.*;
 
 import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
-import ispd.gui.utils.Fonts;
+import ispd.gui.utils.*;
 import ispd.motor.workload.*;
 import ispd.motor.workload.impl.*;
 import ispd.utils.*;
@@ -177,7 +178,7 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private String translate (final String text) {
-        return this.translator.getString(text);
+        return getText(text);
     }
 
     private void initComponents () {
