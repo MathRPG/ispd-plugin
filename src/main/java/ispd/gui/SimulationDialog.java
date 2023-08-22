@@ -277,7 +277,7 @@ public class SimulationDialog extends JDialog implements Runnable {
                 final var config = SimulationDialog.this.colorConfig;
 
                 StyleConstants.setForeground(config, Optional.ofNullable(cor).orElse(Color.black));
-                doc.insertString(doc.getLength(), tryTranslate(text), config);
+                doc.insertString(doc.getLength(), tryGetText(text), config);
             } catch (final BadLocationException ex) {
                 Logger.getLogger(SimulationDialog.class.getName()).log(Level.SEVERE, null, ex);
             }
