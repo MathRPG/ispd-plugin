@@ -354,7 +354,7 @@ public class DesenhoGrade extends DrawingArea {
     }
 
     private String translate (final String text) {
-        return this.translator.getString(text);
+        return BundleManager.getText(text);
     }
 
     public HashSet<VirtualMachine> getVirtualMachines () {
