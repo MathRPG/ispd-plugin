@@ -26,7 +26,7 @@ public class JPanelConfigIcon extends JPanel {
     private final ResourceBundle words = getBundle();
 
     private final VariedRowTable machineTable =
-        this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
+        this.createTableWith(MachineVariedRowTable::new, t -> new MachineTable());
 
     private final VariedRowTable iassMachineTable =
         this.createTableWith(IaasMachineVariedRowTable::new, MachineTableIaaS::new);

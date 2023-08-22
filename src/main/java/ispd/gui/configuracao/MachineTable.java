@@ -50,12 +50,9 @@ public class MachineTable extends AbstractTableModel {
 
     private final JList<GridItem> slaveList = new JList<>();
 
-    private ResourceBundle words;
-
     private Machine machine = null;
 
-    public MachineTable (final ResourceBundle words) {
-        this.words = words;
+    public MachineTable () {
         new CheckListRenderer(this.slaveList);
     }
 
@@ -198,7 +195,6 @@ public class MachineTable extends AbstractTableModel {
     }
 
     public void setPalavras (final ResourceBundle palavras) {
-        this.words = palavras;
         this.fireTableStructureChanged();
     }
 
