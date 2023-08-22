@@ -30,4 +30,8 @@ public enum TextSupplier {
     private static @NotNull @NonNls String keyMissingMessage (final String key) {
         return MessageFormat.format("Missing text for key \"{0}\"", key);
     }
+
+    public static void setInstance (final @NotNull ResourceBundle bundle) {
+        Objects.requireNonNull(bundle);
+    }
 }
