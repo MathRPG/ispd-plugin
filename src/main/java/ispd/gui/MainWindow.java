@@ -1403,7 +1403,6 @@ public class MainWindow extends JFrame implements KeyListener {
             this,
             true,
             this.drawingArea.getUsuarios(),
-            this.words,
             this.drawingArea.getProfiles()
         );
 

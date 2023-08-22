@@ -18,8 +18,6 @@ public class UserConfigurationDialog extends JDialog {
 
     private static final Dimension BUTTON_PREFERRED_SIZE = new Dimension(45, 45);
 
-    private final ResourceBundle translator;
-
     private final Vector<Vector> users;
 
     private final Vector<String> profiles;
@@ -34,7 +32,6 @@ public class UserConfigurationDialog extends JDialog {
         final Frame parent,
         final boolean modal,
         final Set<? super String> users,
-        final ResourceBundle translator,
         final Map<String, Double> profiles
     ) {
         super(parent, modal);
@@ -53,7 +50,6 @@ public class UserConfigurationDialog extends JDialog {
         }
 
         this.userSet = users;
-        this.translator = translator;
         this.initComponents();
     }
 
