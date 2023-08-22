@@ -592,10 +592,12 @@ public class MainWindow extends JFrame implements KeyListener {
         this.jMenuFile.add(new JPopupMenu.Separator());
         this.jMenuLanguage.setText(getText("Language"));
         this.jMenuItemEnglish.setText(getText("English"));
-        this.jMenuItemEnglish.addActionListener(this::jMenuItemEnglishActionPerformed);
+        this.jMenuItemEnglish.addActionListener(evt -> {
+        });
         this.jMenuLanguage.add(this.jMenuItemEnglish);
         this.jMenuItemPortuguese.setText(getText("Portuguese"));
-        this.jMenuItemPortuguese.addActionListener(this::jMenuItemPortugueseActionPerformed);
+        this.jMenuItemPortuguese.addActionListener(evt -> {
+        });
         this.jMenuLanguage.add(this.jMenuItemPortuguese);
         this.jMenuFile.add(this.jMenuLanguage);
         this.jMenuFile.add(new JPopupMenu.Separator());
@@ -803,12 +805,6 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private void jMenuItemAboutActionPerformed (final ActionEvent evt) {
         this.showSubWindow(new AboutDialog(this, true));
-    }
-
-    private void jMenuItemEnglishActionPerformed (final ActionEvent evt) {
-    }
-
-    private void jMenuItemPortugueseActionPerformed (final ActionEvent evt) {
     }
 
     private void iconButtonOnClick (
