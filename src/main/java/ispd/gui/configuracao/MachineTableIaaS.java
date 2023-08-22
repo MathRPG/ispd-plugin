@@ -8,7 +8,6 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import org.jetbrains.annotations.*;
 
 public class MachineTableIaaS extends AbstractTableModel {
 
@@ -115,14 +114,10 @@ public class MachineTableIaaS extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case TYPE -> this.getString("Properties");
-            case VALUE -> this.getString("Values");
+            case TYPE -> getText("Properties");
+            case VALUE -> getText("Values");
             default -> null;
         };
-    }
-
-    private @NotNull String getString (final String Properties) {
-        return getText(Properties);
     }
 
     @Override
@@ -163,15 +158,15 @@ public class MachineTableIaaS extends AbstractTableModel {
 
     private String returnNameForIndex (final int rowIndex) {
         return switch (rowIndex) {
-            case LABEL -> this.getString("Label");
-            case OWNER -> this.getString("Owner");
-            case PROCESSOR -> "%s (Mflop/s)".formatted(this.getString("Computing power"));
-            case LOAD_FACTOR -> this.getString("Load Factor");
+            case LABEL -> getText("Label");
+            case OWNER -> getText("Owner");
+            case PROCESSOR -> "%s (Mflop/s)".formatted(getText("Computing power"));
+            case LOAD_FACTOR -> getText("Load Factor");
             case RAM -> "Primary Storage";
             case DISK -> "Secondary Storage";
             case CORES -> "Cores";
             case VMM -> "VMM";
-            case SCHEDULER -> this.getString("Scheduling algorithm");
+            case SCHEDULER -> getText("Scheduling algorithm");
             case SLAVE -> "Slave Nodes";
             case COST_PER_PROCESSOR -> "Cost per Processing";
             case COST_PER_MEMORY -> "Cost per Memory";
