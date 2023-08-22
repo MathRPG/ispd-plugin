@@ -5,7 +5,7 @@ import java.util.*;
 public enum BundleManager {
     ;
 
-    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("ispd.idioma.Idioma");
+    private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("ispd.idioma.gui");
 
     public static ResourceBundle getBundle () {
         return BUNDLE;
