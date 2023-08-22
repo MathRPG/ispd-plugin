@@ -7,9 +7,9 @@ import org.jetbrains.annotations.*;
 
 public class TextSupplier {
 
-    private static final String MISSING_KEY_TEXT = "Missing text for key \"{0}\"";
-
     private static final Logger DEFAULT_LOGGER = Logger.getLogger(TextSupplier.class.getName());
+
+    private static final String MISSING_KEY_TEXT_FORMAT = "Missing text for key \"{0}\"";
 
     private static Optional<TextSupplier> theInstance = Optional.empty();
 
@@ -24,12 +24,12 @@ public class TextSupplier {
 
     public static String getText (final String key) {
         return theInstance
-            .map(i -> i.getBundleText(key))
+            .map(ins -> ins.getBundleText(key))
             .orElseThrow(MissingInstanceException::new);
     }
 
     private static @NotNull @NonNls String keyMissingMessage (final String key) {
-        return MessageFormat.format(MISSING_KEY_TEXT, key);
+        return MessageFormat.format(MISSING_KEY_TEXT_FORMAT, key);
     }
 
     public static void setInstance (final @NotNull ResourceBundle bundle) {
