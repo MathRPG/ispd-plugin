@@ -1,8 +1,10 @@
 package ispd.gui.iconico.grade;
 
-import ispd.policy.allocation.vm.VmMaster;
-import java.awt.Image;
-import java.util.ResourceBundle;
+import static ispd.gui.BundleManager.*;
+
+import ispd.policy.allocation.vm.*;
+import java.awt.*;
+import java.util.*;
 
 public class Cluster extends VertexGridItem {
 
@@ -126,25 +128,25 @@ public class Cluster extends VertexGridItem {
     @Override
     public String makeDescription (final ResourceBundle translator) {
         return "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %d<br>%s: %s<br>%s: %s<br>%s: %s<br>%s: %s".formatted(
-            translator.getString("Local ID:"),
+            getText("Local ID:"),
             this.id.getLocalId(),
-            translator.getString("Global ID:"),
+            getText("Global ID:"),
             this.id.getGlobalId(),
-            translator.getString("Label"),
+            getText("Label"),
             this.id.getName(),
-            translator.getString("X-coordinate:"),
+            getText("X-coordinate:"),
             this.getX(),
-            translator.getString("Y-coordinate:"),
+            getText("Y-coordinate:"),
             this.getY(),
-            translator.getString("Number of slaves"),
+            getText("Number of slaves"),
             this.slaveCount,
-            translator.getString("Computing power"),
+            getText("Computing power"),
             this.computationalPower,
-            translator.getString("Bandwidth"),
+            getText("Bandwidth"),
             this.bandwidth,
-            translator.getString("Latency"),
+            getText("Latency"),
             this.latency,
-            translator.getString("Scheduling algorithm"),
+            getText("Scheduling algorithm"),
             this.schedulingAlgorithm
         );
     }
