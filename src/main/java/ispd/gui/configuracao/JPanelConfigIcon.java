@@ -151,23 +151,19 @@ public class JPanelConfigIcon extends JPanel {
 
     public void setIcone (final GridItem icon) {
         if (icon instanceof Link) {
-            final String text = this.translate("Network icon configuration");
+            final String text = getText("Network icon configuration");
             this.jLabelTitle.setText(text);
             System.out.printf("%s - %s%n", this.words.getLocale(), text);
         } else if (icon instanceof Internet) {
-            this.jLabelTitle.setText(this.translate("Internet icon configuration"));
+            this.jLabelTitle.setText(getText("Internet icon configuration"));
         }
         this.jLabelIconName.setText(
             "%s#: %d".formatted(
-                this.translate("Configuration for the icon"),
+                getText("Configuration for the icon"),
                 icon.getId().getGlobalId()
             ));
         this.getTabelaLink().setLink(icon);
         this.jScrollPane.setViewportView(this.linkTable);
-    }
-
-    private String translate (final String text) {
-        return getText(text);
     }
 
     private LinkTable getTabelaLink () {
@@ -190,16 +186,16 @@ public class JPanelConfigIcon extends JPanel {
             }
             this.jLabelIconName.setText(
                 "%s#: %d".formatted(
-                    this.translate("Configuration for the icon"),
+                    getText("Configuration for the icon"),
                     icon.getId().getGlobalId()
                 ));
             if (icon instanceof Machine) {
-                this.jLabelTitle.setText(this.translate("Machine icon configuration"));
+                this.jLabelTitle.setText(getText("Machine icon configuration"));
                 this.getTabelaMaquina().setMaquina((Machine) icon, users);
                 this.jScrollPane.setViewportView(this.machineTable);
             }
             if (icon instanceof Cluster) {
-                this.jLabelTitle.setText(this.translate("Cluster icon configuration"));
+                this.jLabelTitle.setText(getText("Cluster icon configuration"));
                 this.getTabelaCluster().setCluster((Cluster) icon, users);
                 this.jScrollPane.setViewportView(this.clusterTable);
             }
@@ -236,16 +232,16 @@ public class JPanelConfigIcon extends JPanel {
 
             this.jLabelIconName.setText(
                 "%s#: %d".formatted(
-                    this.translate("Configuration for the icon"),
+                    getText("Configuration for the icon"),
                     icon.getId().getGlobalId()
                 ));
             if (icon instanceof Machine) {
-                this.jLabelTitle.setText(this.translate("Machine icon configuration"));
+                this.jLabelTitle.setText(getText("Machine icon configuration"));
                 this.getTabelaMaquinaIaaS().setMaquina((Machine) icon, users);
                 this.jScrollPane.setViewportView(this.iassMachineTable);
             }
             if (icon instanceof Cluster) {
-                this.jLabelTitle.setText(this.translate("Cluster icon configuration"));
+                this.jLabelTitle.setText(getText("Cluster icon configuration"));
                 this.getTabelaClusterIaaS().setCluster((Cluster) icon, users);
                 this.jScrollPane.setViewportView(this.iassClusterTable);
             }
