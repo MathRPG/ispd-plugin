@@ -8,11 +8,15 @@ import org.jetbrains.annotations.*;
 public enum TextSupplier {
     ;
 
-    private static final Logger LOGGER = Logger.getLogger(TextSupplier.class.getName());
+    private static ResourceBundle BUNDLE = null;
 
-    private static ResourceBundle BUNDLE = ResourceBundle.getBundle("text.gui");
+    private static Logger LOGGER = null;
 
     public static String getText (final String key) {
+        if (BUNDLE == null) {
+            throw new MissingResourceException("", "", "");
+        }
+
         if (!BUNDLE.containsKey(key)) {
             emitMissingKeyWarning(key);
             return key;
@@ -22,9 +26,7 @@ public enum TextSupplier {
     }
 
     private static void emitMissingKeyWarning (final String key) {
-        if (LOGGER.isLoggable(Level.WARNING)) {
-            LOGGER.warning(keyMissingMessage(key));
-        }
+        LOGGER.warning(() -> keyMissingMessage(key));
     }
 
     private static @NotNull @NonNls String keyMissingMessage (final String key) {
@@ -32,7 +34,11 @@ public enum TextSupplier {
     }
 
     public static void setInstance (final @NotNull ResourceBundle bundle) {
-        Objects.requireNonNull(bundle);
-        BUNDLE = bundle;
+        setInstance(bundle, Logger.getLogger(TextSupplier.class.getName()));
+    }
+
+    public static void setInstance (final ResourceBundle bundle, final Logger logger) {
+        BUNDLE = Objects.requireNonNull(bundle);
+        LOGGER = logger;
     }
 }

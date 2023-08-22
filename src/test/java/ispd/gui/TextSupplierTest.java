@@ -3,38 +3,61 @@ package ispd.gui;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.any;
+import static org.mockito.BDDMockito.*;
 
 import java.util.*;
+import java.util.function.*;
+import java.util.logging.*;
 import org.jetbrains.annotations.*;
 import org.junit.jupiter.api.*;
 
 class TextSupplierTest {
 
+    private static final String KEY = "key";
+
+    private static final String VALUE = "value";
+
+    @BeforeAll
+    static void givenNoBundle_whenGetText_thenThrowsMissingResourceException () {
+        assertThrows(MissingResourceException.class, () -> TextSupplier.getText(KEY));
+    }
+
+    private static Supplier<String> anyStringSupplier () {
+        return any();
+    }
+
     @Test
-    void givenNullBundle_whenConstructed_thenThrowsNpe () {
+    void givenNullBundle_whenSetInstance_thenThrowsNullPointerException () {
         assertThrows(NullPointerException.class, () -> TextSupplier.setInstance(null));
     }
 
     @Test
-    void givenBundleWithKey_whenGetText_returnsTextInBundle () {
-        final var key    = "key";
-        final var value  = "value";
-        final var bundle = this.bundleFromMap(Map.of(key, value));
+    void givenBundleWithKey_whenGetText_returnsValueInBundle () {
+        final var bundle = new MapResourceBundle(Map.of(KEY, VALUE));
 
         TextSupplier.setInstance(bundle);
 
-        assertThat(TextSupplier.getText(key), is(value));
+        assertThat(TextSupplier.getText(KEY), is(VALUE));
     }
 
-    private ResourceBundle bundleFromMap (final Map<String, String> map) {
-        return new MapResourceBundle(map);
+    @Test
+    void givenBundleWithoutKey_whenGetText_thenLogsWarningAndReturnsKey () {
+        final var bundle = new MapResourceBundle(Collections.emptyMap());
+        final var logger = mock(Logger.class);
+
+        TextSupplier.setInstance(bundle, logger);
+
+        assertThat(TextSupplier.getText(KEY), is(KEY));
+        verify(logger, times(1)).warning(anyStringSupplier());
     }
 
-    private static class MapResourceBundle extends ResourceBundle {
+    private static final class MapResourceBundle extends ResourceBundle {
 
         private final Map<String, String> map;
 
-        public MapResourceBundle (final Map<String, String> map) {
+        private MapResourceBundle (final Map<String, String> map) {
+            super();
             this.map = map;
         }
 
