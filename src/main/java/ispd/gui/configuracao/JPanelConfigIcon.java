@@ -26,19 +26,19 @@ public class JPanelConfigIcon extends JPanel {
     private final ResourceBundle words = getBundle();
 
     private final VariedRowTable machineTable =
-        this.createTableWith(MachineVariedRowTable::new, t -> new MachineTable());
+        this.createTableWith(MachineVariedRowTable::new, () -> new MachineTable());
 
     private final VariedRowTable iassMachineTable =
-        this.createTableWith(IaasMachineVariedRowTable::new, t -> new MachineTableIaaS());
+        this.createTableWith(IaasMachineVariedRowTable::new, () -> new MachineTableIaaS());
 
     private final VariedRowTable clusterTable =
-        this.createTableWith(ClusterVariedRowTable::new, t -> new ClusterTable());
+        this.createTableWith(ClusterVariedRowTable::new, () -> new ClusterTable());
 
     private final VariedRowTable iassClusterTable =
-        this.createTableWith(IaasClusterVariedRowTable::new, t -> new ClusterTableIaaS());
+        this.createTableWith(IaasClusterVariedRowTable::new, () -> new ClusterTableIaaS());
 
     private final VariedRowTable linkTable =
-        this.createTableWith(LinkVariedRowTable::new, t -> new LinkTable());
+        this.createTableWith(LinkVariedRowTable::new, () -> new LinkTable());
 
     private PolicyManager schedulers = null;
 
@@ -101,10 +101,10 @@ public class JPanelConfigIcon extends JPanel {
 
     private VariedRowTable createTableWith (
         final Supplier<? extends VariedRowTable> makeTable,
-        final Function<? super ResourceBundle, ? extends TableModel> makeModel
+        final Supplier<? extends TableModel> makeModel
     ) {
         final var t = makeTable.get();
-        t.setModel(makeModel.apply(this.words));
+        t.setModel(makeModel.get());
         t.setRowHeight(ROW_HEIGHT);
         return t;
     }
