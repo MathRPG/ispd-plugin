@@ -1,7 +1,9 @@
 package ispd.gui.iconico.grade;
 
-import java.awt.Image;
-import java.util.ResourceBundle;
+import static ispd.gui.BundleManager.*;
+
+import java.awt.*;
+import java.util.*;
 
 public class Internet extends VertexGridItem {
 
@@ -21,7 +23,7 @@ public class Internet extends VertexGridItem {
     private double loadFactor;
 
     /**
-     * Constructor of {@link Internet} which specifies the x-coordinate and y-coordinate (in
+     * Constructor of  which specifies the x-coordinate and y-coordinate (in
      * cartesian coordinates), the local and global identifiers.
      *
      * @param x
@@ -50,28 +52,25 @@ public class Internet extends VertexGridItem {
         return (
             "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: %s<br>%s: %s"
         ).formatted(
-            translator.getString("Local ID:"),
+            getText("Local ID:"),
             this.id.getLocalId(),
-            translator.getString("Global ID:"),
+            getText("Global ID:"),
             this.id.getGlobalId(),
-            translator.getString("Label"),
+            getText("Label"),
             this.id.getName(),
-            translator.getString("X-coordinate:"),
+            getText("X-coordinate:"),
             this.getX(),
-            translator.getString("Y-coordinate:"),
+            getText("Y-coordinate:"),
             this.getY(),
-            translator.getString("Bandwidth"),
+            getText("Bandwidth"),
             this.bandwidth,
-            translator.getString("Latency"),
+            getText("Latency"),
             this.latency,
-            translator.getString("Load Factor"),
+            getText("Load Factor"),
             this.loadFactor
         );
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public Internet makeCopy (
         final int mousePosX,
