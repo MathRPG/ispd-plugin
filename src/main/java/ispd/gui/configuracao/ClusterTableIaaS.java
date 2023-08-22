@@ -38,10 +38,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private Cluster cluster = null;
 
-    private ResourceBundle words;
-
-    ClusterTableIaaS (final ResourceBundle words) {
-        this.words = words;
+    ClusterTableIaaS () {
     }
 
     private static JComboBox<Object> makeComboBox (
@@ -205,7 +202,6 @@ public class ClusterTableIaaS extends AbstractTableModel {
     }
 
     public void setPalavras (final ResourceBundle words) {
-        this.words = words;
         this.fireTableStructureChanged();
     }
 
