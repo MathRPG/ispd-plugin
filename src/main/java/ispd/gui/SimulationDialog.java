@@ -270,6 +270,14 @@ public class SimulationDialog extends JDialog implements Runnable {
             SimulationDialog.this.incrementProgress(n);
         }
 
+        private static String tryTranslate (final String text) {
+            if (!getBundle().containsKey(text)) {
+                return text;
+            }
+
+            return getText(text);
+        }
+
         @Override
         public void print (final String text, final Color cor) {
             try {
@@ -277,18 +285,10 @@ public class SimulationDialog extends JDialog implements Runnable {
                 final var config = SimulationDialog.this.colorConfig;
 
                 StyleConstants.setForeground(config, Optional.ofNullable(cor).orElse(Color.black));
-                doc.insertString(doc.getLength(), this.tryTranslate(text), config);
+                doc.insertString(doc.getLength(), tryTranslate(text), config);
             } catch (final BadLocationException ex) {
                 Logger.getLogger(SimulationDialog.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-
-        private String tryTranslate (final String text) {
-            if (!getBundle().containsKey(text)) {
-                return text;
-            }
-
-            return getText(text);
         }
     }
 }
