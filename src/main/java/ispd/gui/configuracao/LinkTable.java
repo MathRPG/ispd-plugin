@@ -3,7 +3,6 @@ package ispd.gui.configuracao;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.grade.*;
-import java.util.*;
 import javax.swing.table.*;
 
 public class LinkTable extends AbstractTableModel {
@@ -160,9 +159,5 @@ public class LinkTable extends AbstractTableModel {
                 }
                 break;
         }
-    }
-
-    public void setPalavras (final ResourceBundle words) {
-        this.fireTableStructureChanged();
     }
 }
