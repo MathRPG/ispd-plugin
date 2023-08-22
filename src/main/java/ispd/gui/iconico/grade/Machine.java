@@ -218,12 +218,12 @@ public class Machine extends VertexGridItem {
      */
     private String describeRole (final ResourceBundle translator) {
         if (!this.master) {
-            return "<br>" + translator.getString("Slave");
+            return "<br>" + getText("Slave");
         }
 
         return "<br>%s<br>%s: %s".formatted(
-            translator.getString("Master"),
-            translator.getString("Scheduling algorithm"),
+            getText("Master"),
+            getText("Scheduling algorithm"),
             this.schedulingAlgorithm
         );
     }
