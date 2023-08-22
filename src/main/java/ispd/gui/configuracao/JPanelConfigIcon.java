@@ -151,9 +151,7 @@ public class JPanelConfigIcon extends JPanel {
 
     public void setIcone (final GridItem icon) {
         if (icon instanceof Link) {
-            final String text = getText("Network icon configuration");
-            this.jLabelTitle.setText(text);
-            System.out.printf("%s - %s%n", this.words.getLocale(), text);
+            this.jLabelTitle.setText(getText("Network icon configuration"));
         } else if (icon instanceof Internet) {
             this.jLabelTitle.setText(getText("Internet icon configuration"));
         }
