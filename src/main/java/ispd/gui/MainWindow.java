@@ -192,7 +192,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private final MultipleExtensionFileFilter fileFilter =
         new MultipleExtensionFileFilter(
-            this.translate("Iconic Model of Simulation"),
+            translate("Iconic Model of Simulation"),
             ALL_FILE_EXTENSIONS,
             true
         );
@@ -205,16 +205,16 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private final AbstractButton jButtonTasks = ButtonBuilder
         .aButton(getImage("/ispd/gui/imagens/botao_tarefas.gif"), this::jButtonTaskActionPerformed)
-        .withToolTip(this.translate("Selects insertion model of tasks"))
+        .withToolTip(translate("Selects insertion model of tasks"))
         .withCenterBottomTextPosition()
         .disabled()
         .nonFocusable()
         .build();
 
     private final AbstractButton jButtonSimulate = ButtonBuilder
-        .aButton(this.translate("Simulate"), this::jButtonSimulateActionPerformed)
+        .aButton(translate("Simulate"), this::jButtonSimulateActionPerformed)
         .withIcon(getImage("/ispd/gui/imagens" + "/system-run.png"))
-        .withToolTip(this.translate("Starts the " + "simulation"))
+        .withToolTip(translate("Starts the " + "simulation"))
         .withCenterBottomTextPosition()
         .disabled()
         .nonFocusable()
@@ -222,7 +222,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
     private final AbstractButton jButtonUsers = ButtonBuilder
         .aButton(getImage("/ispd/gui/imagens/system-users.png"), this::jButtonUsersActionPerformed)
-        .withToolTip(this.translate("Add and remove users to the model"))
+        .withToolTip(translate("Add and remove users to the model"))
         .withCenterBottomTextPosition()
         .disabled()
         .nonFocusable()
@@ -343,36 +343,44 @@ public class MainWindow extends JFrame implements KeyListener {
         this.initMenuHelp();
     }
 
+    private static String translate (final String s) {
+        return BundleManager.getBundle().getString(s);
+    }
+
     private void initPanels () {
         this.jPanelSettings = new JPanelConfigIcon();
         this.jPanelSettings.setEscalonadores(this.jFrameManager.getManager());
         this.jPanelSettings.setEscalonadoresCloud(this.jFrameCloudManager.getManager());
         this.jPanelSettings.setAlocadores(this.jFrameAllocManager.getManager());
 
-        this.jPanelSimple.setText(this.translate("No icon selected."));
+        this.jPanelSimple.setText(translate("No icon selected."));
 
         this.jScrollPaneSideBar.setBorder(BorderFactory.createTitledBorder("Settings"));
 
-        this.jScrollPaneNotificationBar.setBorder(BorderFactory.createTitledBorder(this.translate(
+        this.jScrollPaneNotificationBar.setBorder(BorderFactory.createTitledBorder(translate(
             "Notifications")));
         this.jScrollPaneNotificationBar.setViewportView(this.jTextAreaNotification);
 
-        this.jScrollPaneProperties.setBorder(BorderFactory.createTitledBorder(this.translate(
+        this.jScrollPaneProperties.setBorder(BorderFactory.createTitledBorder(translate(
             "Properties")));
         this.jScrollPaneProperties.setViewportView(this.jPanelProperties);
     }
 
     private void initMenuHelp () {
-        this.jMenuHelp.setText(this.translate("Help"));
+        this.jMenuHelp.setText(translate("Help"));
         this.jMenuItemHelp.setIcon(getImage("/ispd/gui/imagens" + "/help-faq.png"));
-        this.jMenuItemHelp.setText(this.translate("Help"));
-        this.jMenuItemHelp.setToolTipText(this.translate("Help"));
+        this.jMenuItemHelp.setText(translate("Help"));
+        this.jMenuItemHelp.setToolTipText(translate("Help"));
         this.jMenuItemHelp.addActionListener(this::jMenuItemHelpActionPerformed);
         this.jMenuHelp.add(this.jMenuItemHelp);
         this.jMenuHelp.add(new JPopupMenu.Separator());
         this.jMenuItemAbout.setIcon(getImage("/ispd/gui/imagens" + "/help-about.png"));
         final var aboutProgramText =
-            String.format("%s %s", this.translate("About"), this.translate("nomePrograma"));
+            String.format(
+                "%s %s",
+                translate("About"),
+                translate("nomePrograma")
+            );
         this.jMenuItemAbout.setText(aboutProgramText);
         this.jMenuItemAbout.setToolTipText(aboutProgramText);
         this.jMenuItemAbout.addActionListener(this::jMenuItemAboutActionPerformed);
@@ -380,12 +388,12 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void initMenuTools () {
-        this.jMenuTools.setText(this.translate("Tools"));
+        this.jMenuTools.setText(translate("Tools"));
         this.jMenuTools.addActionListener(this::jMenuToolsActionPerformed);
-        this.jMenuItemManage.setText(this.translate("Manage Schedulers"));
+        this.jMenuItemManage.setText(translate("Manage Schedulers"));
         this.jMenuItemManage.addActionListener(this::jMenuItemManageActionPerformed);
         this.jMenuTools.add(this.jMenuItemManage);
-        this.jMenuItemGenerate.setText(this.translate("Generate Scheduler"));
+        this.jMenuItemGenerate.setText(translate("Generate Scheduler"));
         this.jMenuItemGenerate.addActionListener(this::jMenuItemGenerateActionPerformed);
         this.jMenuTools.add(this.jMenuItemGenerate);
         this.jMenuItemManageCloud.setText("Manage Cloud Schedulers");
@@ -397,29 +405,31 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void initMenuShow () {
-        this.jMenuShow.setText(this.translate("View"));
-        this.jCheckBoxMenuConnectedItem.setText(this.translate("Show " + "Connected " + "Nodes"));
-        this.jCheckBoxMenuConnectedItem.setToolTipText(this.translate(
+        this.jMenuShow.setText(translate("View"));
+        this.jCheckBoxMenuConnectedItem.setText(translate("Show "
+                                                          + "Connected "
+                                                          + "Nodes"));
+        this.jCheckBoxMenuConnectedItem.setToolTipText(translate(
             "Displays in the settings area, the list of nodes connected "
             + "for the selected icon"));
         this.jCheckBoxMenuConnectedItem.setEnabled(false);
         this.jCheckBoxMenuConnectedItem.addActionListener(this::jCheckBoxMenuItemConnectedActionPerformed);
         this.jMenuShow.add(this.jCheckBoxMenuConnectedItem);
-        this.jCheckBoxIndirectMenuItem.setText(this.translate("Show "
-                                                              + "Indirectly "
-                                                              + "Connected "
-                                                              + "Nodes"));
-        this.jCheckBoxIndirectMenuItem.setToolTipText(this.translate(
+        this.jCheckBoxIndirectMenuItem.setText(translate("Show "
+                                                         + "Indirectly "
+                                                         + "Connected "
+                                                         + "Nodes"));
+        this.jCheckBoxIndirectMenuItem.setToolTipText(translate(
             "Displays in the settings area, the list of nodes connected " +
             "through the internet icon, to the icon selected"));
         this.jCheckBoxIndirectMenuItem.setEnabled(false);
         this.jCheckBoxIndirectMenuItem.addActionListener(this::jCheckBoxMenuItemIndirectActionPerformed);
         this.jMenuShow.add(this.jCheckBoxIndirectMenuItem);
         this.jCheckBoxMenuSchedulableItem.setSelected(true);
-        this.jCheckBoxMenuSchedulableItem.setText(this.translate("Show "
-                                                                 + "Schedulable"
-                                                                 + " Nodes"));
-        this.jCheckBoxMenuSchedulableItem.setToolTipText(this.translate(
+        this.jCheckBoxMenuSchedulableItem.setText(translate("Show "
+                                                            + "Schedulable"
+                                                            + " Nodes"));
+        this.jCheckBoxMenuSchedulableItem.setToolTipText(translate(
             "Displays in the settings area, the list of nodes schedulable" +
             " for the selected icon"));
         this.jCheckBoxMenuSchedulableItem.setEnabled(false);
@@ -430,11 +440,11 @@ public class MainWindow extends JFrame implements KeyListener {
             InputEvent.CTRL_DOWN_MASK
         ));
         this.jCheckBoxMenuGridItem.setSelected(true);
-        this.jCheckBoxMenuGridItem.setText(this.translate("Drawing grid"));
-        this.jCheckBoxMenuGridItem.setToolTipText(this.translate("Displays "
-                                                                 + "grid in the"
-                                                                 + " drawing "
-                                                                 + "area"));
+        this.jCheckBoxMenuGridItem.setText(translate("Drawing grid"));
+        this.jCheckBoxMenuGridItem.setToolTipText(translate("Displays "
+                                                            + "grid in the"
+                                                            + " drawing "
+                                                            + "area"));
         this.jCheckBoxMenuGridItem.addActionListener(this::jCheckBoxMenuItemGradeActionPerformed);
         this.jMenuShow.add(this.jCheckBoxMenuGridItem);
         this.jCheckBoxRulerMenuItem.setAccelerator(KeyStroke.getKeyStroke(
@@ -442,21 +452,21 @@ public class MainWindow extends JFrame implements KeyListener {
             InputEvent.CTRL_DOWN_MASK
         ));
         this.jCheckBoxRulerMenuItem.setSelected(true);
-        this.jCheckBoxRulerMenuItem.setText(this.translate("Drawing rule"));
+        this.jCheckBoxRulerMenuItem.setText(translate("Drawing rule"));
         this.jCheckBoxRulerMenuItem.setToolTipText(
-            this.translate("Displays " + "rule in " + "the " + "drawing " + "area"));
+            translate("Displays " + "rule in " + "the " + "drawing " + "area"));
         this.jCheckBoxRulerMenuItem.addActionListener(this::jCheckBoxMenuItemRulerActionPerformed);
         this.jMenuShow.add(this.jCheckBoxRulerMenuItem);
     }
 
     private void initMenuEdit () {
-        this.jMenuEdit.setText(this.translate("Edit"));
+        this.jMenuEdit.setText(translate("Edit"));
         this.jMenuItemCopy.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_C,
             InputEvent.CTRL_DOWN_MASK
         ));
         this.jMenuItemCopy.setIcon(getImage("/ispd/gui/imagens" + "/edit-copy.png"));
-        this.jMenuItemCopy.setText(this.translate("Copy"));
+        this.jMenuItemCopy.setText(translate("Copy"));
         this.jMenuItemCopy.setEnabled(false);
         this.jMenuItemCopy.addActionListener(this::jMenuItemCopyActionPerformed);
         this.jMenuEdit.add(this.jMenuItemCopy);
@@ -465,19 +475,20 @@ public class MainWindow extends JFrame implements KeyListener {
             InputEvent.CTRL_DOWN_MASK
         ));
         this.jMenuItemPaste.setIcon(getImage("/ispd/gui/imagens" + "/edit-paste.png"));
-        this.jMenuItemPaste.setText(this.translate("Paste"));
+        this.jMenuItemPaste.setText(translate("Paste"));
         this.jMenuItemPaste.setEnabled(false);
         this.jMenuItemPaste.addActionListener(this::jMenuItemPasteActionPerformed);
         this.jMenuEdit.add(this.jMenuItemPaste);
         this.jMenuItemDelete.setIcon(getImage("/ispd/gui/imagens" + "/edit-delete.png"));
-        this.jMenuItemDelete.setText(this.translate("Delete"));
+        this.jMenuItemDelete.setText(translate("Delete"));
         this.jMenuItemDelete.setEnabled(false);
         this.jMenuItemDelete.addActionListener(this::jMenuItemDeleteActionPerformed);
         this.jMenuEdit.add(this.jMenuItemDelete);
-        this.jMenuItemCompare.setText(this.translate("Match network settings"));
+        this.jMenuItemCompare.setText(translate("Match network settings"));
         this.jMenuItemCompare.setToolTipText(
-            this.translate("Matches the settings of icons of networks according to a selected icon"));
-        this.jMenuItemCompare.setActionCommand(this.translate("Match network settings"));
+            translate(
+                "Matches the settings of icons of networks according to a selected icon"));
+        this.jMenuItemCompare.setActionCommand(translate("Match network settings"));
         this.jMenuItemCompare.setEnabled(false);
         this.jMenuItemCompare.addActionListener(this::jMenuItemCompareActionPerformed);
         this.jMenuEdit.add(this.jMenuItemCompare);
@@ -492,15 +503,15 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void initMenuFile () {
-        this.jMenuFile.setText(this.translate("File"));
+        this.jMenuFile.setText(translate("File"));
         this.jMenuFile.addActionListener(this::jMenuFileActionPerformed);
         this.jMenuItemNew.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_N,
             InputEvent.CTRL_DOWN_MASK
         ));
         this.jMenuItemNew.setIcon(getImage("/ispd/gui/imagens" + "/insert-object_1.png"));
-        this.jMenuItemNew.setText(this.translate("New"));
-        this.jMenuItemNew.setToolTipText(this.translate("Starts a new model"));
+        this.jMenuItemNew.setText(translate("New"));
+        this.jMenuItemNew.setToolTipText(translate("Starts a new model"));
         this.jMenuItemNew.addActionListener(this::jMenuItemNovoActionPerformed);
         this.jMenuFile.add(this.jMenuItemNew);
         this.jMenuItemOpen.setAccelerator(KeyStroke.getKeyStroke(
@@ -508,8 +519,8 @@ public class MainWindow extends JFrame implements KeyListener {
             InputEvent.CTRL_DOWN_MASK
         ));
         this.jMenuItemOpen.setIcon(getImage("/ispd/gui/imagens" + "/document-open.png"));
-        this.jMenuItemOpen.setText(this.translate("Open"));
-        this.jMenuItemOpen.setToolTipText(this.translate("Opens an existing " + "model"));
+        this.jMenuItemOpen.setText(translate("Open"));
+        this.jMenuItemOpen.setToolTipText(translate("Opens an existing " + "model"));
         this.jMenuItemOpen.addActionListener(this::jMenuItemOpenActionPerformed);
         this.jMenuFile.add(this.jMenuItemOpen);
         this.jMenuItemSave.setAccelerator(KeyStroke.getKeyStroke(
@@ -517,12 +528,12 @@ public class MainWindow extends JFrame implements KeyListener {
             InputEvent.CTRL_DOWN_MASK
         ));
         this.jMenuItemSave.setIcon(getImage("/ispd/gui/imagens" + "/document-save_1.png"));
-        this.jMenuItemSave.setText(this.translate("Save"));
-        this.jMenuItemSave.setToolTipText(this.translate("Save the open " + "model"));
+        this.jMenuItemSave.setText(translate("Save"));
+        this.jMenuItemSave.setToolTipText(translate("Save the open " + "model"));
         this.jMenuItemSave.setEnabled(false);
         this.jMenuItemSave.addActionListener(this::jMenuItemSaveActionPerformed);
         this.jMenuFile.add(this.jMenuItemSave);
-        this.jMenuItemSaveAs.setText(this.translate("Save as..."));
+        this.jMenuItemSaveAs.setText(translate("Save as..."));
         this.jMenuItemSaveAs.setEnabled(false);
         this.jMenuItemSaveAs.addActionListener(this::jMenuItemSaveAsActionPerformed);
         this.jMenuFile.add(this.jMenuItemSaveAs);
@@ -534,34 +545,35 @@ public class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemOpenResult.addActionListener(this::jMenuItemOpenResultActionPerformed);
         this.jMenuFile.add(this.jMenuItemOpenResult);
         this.jMenuImport.setIcon(getImage("/ispd/gui/imagens" + "/document-import.png"));
-        this.jMenuImport.setText(this.translate("Import"));
-        this.jMenuItemSimGrid.setText(this.translate("SimGrid model"));
+        this.jMenuImport.setText(translate("Import"));
+        this.jMenuItemSimGrid.setText(translate("SimGrid model"));
         this.jMenuItemSimGrid.setToolTipText(
-            this.translate("Open model from "
-                           + "the "
-                           + "specification "
-                           + "files of "
-                           + "Simgrid"));
+            translate("Open model from "
+                                 + "the "
+                                 + "specification "
+                                 + "files of "
+                                 + "Simgrid"));
         this.jMenuItemSimGrid.addActionListener(this::jMenuItemSimGridActionPerformed);
         this.jMenuImport.add(this.jMenuItemSimGrid);
-        this.jMenuItemGridSim.setText(this.translate("GridSim model"));
+        this.jMenuItemGridSim.setText(translate("GridSim model"));
         this.jMenuItemGridSim.setToolTipText(
-            this.translate("Open model from "
-                           + "the "
-                           + "specification "
-                           + "files of "
-                           + "GridSim"));
+            translate("Open model from "
+                                 + "the "
+                                 + "specification "
+                                 + "files of "
+                                 + "GridSim"));
         this.jMenuItemGridSim.addActionListener(this::jMenuItemGridSimActionPerformed);
         this.jMenuImport.add(this.jMenuItemGridSim);
         this.jMenuFile.add(this.jMenuImport);
         this.jMenuExport.setIcon(getImage("/ispd/gui/imagens/document-export.png"));
-        this.jMenuExport.setText(this.translate("Export"));
+        this.jMenuExport.setText(translate("Export"));
         this.jMenuItemToJPG.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_J,
             InputEvent.CTRL_DOWN_MASK
         ));
-        this.jMenuItemToJPG.setText(this.translate("to JPG"));
-        this.jMenuItemToJPG.setToolTipText(this.translate("Creates a jpg file with the model image"));
+        this.jMenuItemToJPG.setText(translate("to JPG"));
+        this.jMenuItemToJPG.setToolTipText(translate(
+            "Creates a jpg file with the model image"));
         this.jMenuItemToJPG.setEnabled(false);
         this.jMenuItemToJPG.addActionListener(this::jMenuItemToJPGActionPerformed);
         this.jMenuExport.add(this.jMenuItemToJPG);
@@ -569,8 +581,8 @@ public class MainWindow extends JFrame implements KeyListener {
             KeyEvent.VK_T,
             InputEvent.CTRL_DOWN_MASK
         ));
-        this.jMenuItemToTxt.setText(this.translate("to TXT"));
-        this.jMenuItemToTxt.setToolTipText(this.translate(
+        this.jMenuItemToTxt.setText(translate("to TXT"));
+        this.jMenuItemToTxt.setToolTipText(translate(
             "Creates a file in plain text with the model data according to the grammar of the iconic model"));
         this.jMenuItemToTxt.setEnabled(false);
         this.jMenuItemToTxt.addActionListener(this::jMenuItemToTxtActionPerformed);
@@ -585,11 +597,11 @@ public class MainWindow extends JFrame implements KeyListener {
         this.jMenuExport.add(this.jMenuItemToGridSim);
         this.jMenuFile.add(this.jMenuExport);
         this.jMenuFile.add(new JPopupMenu.Separator());
-        this.jMenuLanguage.setText(this.translate("Language"));
-        this.jMenuItemEnglish.setText(this.translate("English"));
+        this.jMenuLanguage.setText(translate("Language"));
+        this.jMenuItemEnglish.setText(translate("English"));
         this.jMenuItemEnglish.addActionListener(this::jMenuItemEnglishActionPerformed);
         this.jMenuLanguage.add(this.jMenuItemEnglish);
-        this.jMenuItemPortuguese.setText(this.translate("Portuguese"));
+        this.jMenuItemPortuguese.setText(translate("Portuguese"));
         this.jMenuItemPortuguese.addActionListener(this::jMenuItemPortugueseActionPerformed);
         this.jMenuLanguage.add(this.jMenuItemPortuguese);
         this.jMenuFile.add(this.jMenuLanguage);
@@ -599,10 +611,10 @@ public class MainWindow extends JFrame implements KeyListener {
             InputEvent.CTRL_DOWN_MASK
         ));
         this.jMenuItemClose.setIcon(getImage("/ispd/gui/imagens" + "/document-close.png"));
-        this.jMenuItemClose.setText(this.translate("Close"));
-        this.jMenuItemClose.setToolTipText(this.translate("Closes the "
-                                                          + "currently open "
-                                                          + "model"));
+        this.jMenuItemClose.setText(translate("Close"));
+        this.jMenuItemClose.setToolTipText(translate("Closes the "
+                                                     + "currently open "
+                                                     + "model"));
         this.jMenuItemClose.setEnabled(false);
         this.jMenuItemClose.addActionListener(this::jMenuItemCloseActionPerformed);
         this.jMenuFile.add(this.jMenuItemClose);
@@ -611,19 +623,10 @@ public class MainWindow extends JFrame implements KeyListener {
             InputEvent.ALT_DOWN_MASK
         ));
         this.jMenuItemExit.setIcon(getImage("/ispd/gui/imagens" + "/window-close.png"));
-        this.jMenuItemExit.setText(this.translate("Exit"));
-        this.jMenuItemExit.setToolTipText(this.translate("Closes the program"));
+        this.jMenuItemExit.setText(translate("Exit"));
+        this.jMenuItemExit.setToolTipText(translate("Closes the program"));
         this.jMenuItemExit.addActionListener(this::jMenuItemExitActionPerformed);
         this.jMenuFile.add(this.jMenuItemExit);
-    }
-
-    private void initWindowProperties () {
-        this.setTitle(this.translate("nomePrograma"));
-        this.setIconImage(Toolkit
-                              .getDefaultToolkit()
-                              .getImage(getResourceOrThrow(ISPD_LOGO_FILE_PATH)));
-        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new IspdWindowAdapter());
     }
 
     private void initToolBarAndButtons () {
@@ -657,20 +660,13 @@ public class MainWindow extends JFrame implements KeyListener {
         this.jToolBar.add(this.jButtonInjectFaults);
     }
 
-    private void initButton (
-        final AbstractButton button,
-        final String iconPath,
-        final String toolTip,
-        final ActionListener onClick
-    ) {
-        button.setIcon(getImage(iconPath));
-        button.setToolTipText(this.translate(toolTip));
-        button.setEnabled(false);
-        button.setFocusable(false);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        button.setVerticalTextPosition(SwingConstants.BOTTOM);
-        button.addActionListener(onClick);
-        this.jToolBar.add(button);
+    private void initWindowProperties () {
+        this.setTitle(translate("nomePrograma"));
+        this.setIconImage(Toolkit
+                              .getDefaultToolkit()
+                              .getImage(getResourceOrThrow(ISPD_LOGO_FILE_PATH)));
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        this.addWindowListener(new IspdWindowAdapter());
     }
 
     private void initNotificationArea () {
@@ -839,16 +835,20 @@ public class MainWindow extends JFrame implements KeyListener {
         this.updateDrawingAreaButton(clickedButton, drawingIndex, notificationText);
     }
 
-    private void updateDrawingAreaButton (
-        final AbstractButton clickedButton, final int drawingIndex, final String notificationText
+    private void initButton (
+        final AbstractButton button,
+        final String iconPath,
+        final String toolTip,
+        final ActionListener onClick
     ) {
-        if (!clickedButton.isSelected()) {
-            this.drawingArea.setIconeSelecionado(null);
-            return;
-        }
-
-        this.drawingArea.setIconeSelecionado(drawingIndex);
-        this.appendNotificacao(this.translate(notificationText));
+        button.setIcon(getImage(iconPath));
+        button.setToolTipText(translate(toolTip));
+        button.setEnabled(false);
+        button.setFocusable(false);
+        button.setHorizontalTextPosition(SwingConstants.CENTER);
+        button.setVerticalTextPosition(SwingConstants.BOTTOM);
+        button.addActionListener(onClick);
+        this.jToolBar.add(button);
     }
 
     private void deselectOtherButtons (final AbstractButton button) {
@@ -924,22 +924,30 @@ public class MainWindow extends JFrame implements KeyListener {
         this.drawingArea.setUsers(loadConfigWindow.getUsuarios());
     }
 
-    public void modificar () {
-        final var newTitle = String.format(
-            "%s [%s] - %s", this.getOpenFileNameOrDefault(), this.translate("modified"),
-            this.translate("nomePrograma")
-        );
+    private void updateDrawingAreaButton (
+        final AbstractButton clickedButton, final int drawingIndex, final String notificationText
+    ) {
+        if (!clickedButton.isSelected()) {
+            this.drawingArea.setIconeSelecionado(null);
+            return;
+        }
 
-        this.setTitle(newTitle);
-        this.currentFileHasUnsavedChanges = true;
+        this.drawingArea.setIconeSelecionado(drawingIndex);
+        this.appendNotificacao(translate(notificationText));
     }
 
     private String getOpenFileNameOrDefault () {
         return (this.openFile == null) ? "New_Model.ims" : this.openFile.getName();
     }
 
-    private String translate (final String s) {
-        return this.words.getString(s);
+    public void modificar () {
+        final var newTitle = String.format(
+            "%s [%s] - %s", this.getOpenFileNameOrDefault(), translate("modified"),
+            translate("nomePrograma")
+        );
+
+        this.setTitle(newTitle);
+        this.currentFileHasUnsavedChanges = true;
     }
 
     private void jMenuItem1ActionPerformed (final ActionEvent evt) {
@@ -957,7 +965,7 @@ public class MainWindow extends JFrame implements KeyListener {
 
         simulationWindow.iniciarSimulacao();
         this.showSubWindow(simulationWindow);
-        this.appendNotificacao(this.translate("Simulate button added."));
+        this.appendNotificacao(translate("Simulate button added."));
     }
 
     public void appendNotificacao (final String notificationText) {
@@ -1009,8 +1017,8 @@ public class MainWindow extends JFrame implements KeyListener {
         if (!hasValidIspdFileExtension(file)) {
             JOptionPane.showMessageDialog(
                 null,
-                this.translate("Invalid file"),
-                this.translate("WARNING"),
+                translate("Invalid file"),
+                translate("WARNING"),
                 JOptionPane.PLAIN_MESSAGE
             );
             return;
@@ -1027,11 +1035,11 @@ public class MainWindow extends JFrame implements KeyListener {
     private void processFileOpeningException (final Throwable ex) {
         Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         final var message =
-            String.format("%s\n%s", this.translate("Error opening file."), ex.getMessage());
+            String.format("%s\n%s", translate("Error opening file."), ex.getMessage());
         JOptionPane.showMessageDialog(
             null,
             message,
-            this.translate("WARNING"),
+            translate("WARNING"),
             JOptionPane.PLAIN_MESSAGE
         );
     }
@@ -1051,7 +1059,7 @@ public class MainWindow extends JFrame implements KeyListener {
         this.jScrollPaneSideBar.setViewportView(null);
         this.jPanelProperties.setText("");
         this.jScrollPaneDrawingArea.setViewportView(this.drawingArea);
-        this.appendNotificacao(this.translate(message));
+        this.appendNotificacao(translate(message));
         this.openEditing(file);
     }
 
@@ -1087,7 +1095,9 @@ public class MainWindow extends JFrame implements KeyListener {
         this.configureFileFilterAndChooser("XML File", new String[] { ".xml" }, true);
 
         JOptionPane.showMessageDialog(
-            null, this.translate("Select the application file."), this.translate("WARNING"),
+            null,
+            translate("Select the application file."),
+            translate("WARNING"),
             JOptionPane.PLAIN_MESSAGE
         );
 
@@ -1097,8 +1107,8 @@ public class MainWindow extends JFrame implements KeyListener {
 
         final var appFile = this.jFileChooser.getSelectedFile();
 
-        JOptionPane.showMessageDialog(null, this.translate("Select the platform file."),
-                                      this.translate("WARNING"),
+        JOptionPane.showMessageDialog(null, translate("Select the platform file."),
+                                      translate("WARNING"),
                                       JOptionPane.PLAIN_MESSAGE
         );
 
@@ -1121,8 +1131,8 @@ public class MainWindow extends JFrame implements KeyListener {
             if (model == null) {
                 JOptionPane.showMessageDialog(
                     null,
-                    String.format("%s\n", this.translate("File not found.")),
-                    this.translate("WARNING"),
+                    String.format("%s\n", translate("File not found.")),
+                    translate("WARNING"),
                     JOptionPane.PLAIN_MESSAGE
                 );
                 return;
@@ -1131,11 +1141,15 @@ public class MainWindow extends JFrame implements KeyListener {
             this.openModel(model);
         } catch (final HeadlessException e) {
             final var message =
-                String.format("%s\n%s", this.translate("Error opening file."), e.getMessage());
+                String.format(
+                    "%s\n%s",
+                    translate("Error opening file."),
+                    e.getMessage()
+                );
             JOptionPane.showMessageDialog(
                 null,
                 message,
-                this.translate("WARNING"),
+                translate("WARNING"),
                 JOptionPane.PLAIN_MESSAGE
             );
         }
@@ -1151,7 +1165,7 @@ public class MainWindow extends JFrame implements KeyListener {
     private void configureFileFilterAndChooser (
         final String description, final String[] extensions, final boolean shouldAcceptAllFiles
     ) {
-        this.fileFilter.setDescricao(this.translate(description));
+        this.fileFilter.setDescricao(translate(description));
         this.fileFilter.setExtensao(extensions);
         this.jFileChooser.setAcceptAllFileFilterUsed(shouldAcceptAllFiles);
     }
@@ -1193,7 +1207,7 @@ public class MainWindow extends JFrame implements KeyListener {
         this.jScrollPaneDrawingArea.setViewportView(null);
         this.jScrollPaneSideBar.setViewportView(null);
         this.jPanelProperties.setText("");
-        this.appendNotificacao(this.translate("model closed"));
+        this.appendNotificacao(translate("model closed"));
         this.closeEditing();
     }
 
@@ -1247,7 +1261,7 @@ public class MainWindow extends JFrame implements KeyListener {
             drawingAreaSetter.accept(isSelected);
         }
         if (event != null) {
-            this.appendNotificacao(this.translate(text));
+            this.appendNotificacao(translate(text));
         }
     }
 
@@ -1396,7 +1410,7 @@ public class MainWindow extends JFrame implements KeyListener {
     private void saveDrawingAreaToFile (final File file) {
         final var doc = this.drawingArea.getGrade();
         ManipuladorXML.writeModelToFile(doc, file);
-        this.appendNotificacao(this.translate("model saved"));
+        this.appendNotificacao(translate("model saved"));
     }
 
     private void jButtonUsersActionPerformed (final ActionEvent evt) {
@@ -1462,8 +1476,8 @@ public class MainWindow extends JFrame implements KeyListener {
         } catch (final Exception e) {
             JOptionPane.showMessageDialog(
                 null,
-                this.translate("Error opening file.") + "\n" + e.getMessage(),
-                this.translate("WARNING"),
+                translate("Error opening file.") + "\n" + e.getMessage(),
+                translate("WARNING"),
                 JOptionPane.PLAIN_MESSAGE
             );
         }
@@ -1486,11 +1500,11 @@ public class MainWindow extends JFrame implements KeyListener {
         final var interpreter = new InterpretadorGridSim();
 
         if (!file.exists()) {
-            final var message = String.format("%s\n", this.translate("File not found."));
+            final var message = String.format("%s\n", translate("File not found."));
             JOptionPane.showMessageDialog(
                 null,
                 message,
-                this.translate("WARNING"),
+                translate("WARNING"),
                 JOptionPane.PLAIN_MESSAGE
             );
             return;
@@ -1536,7 +1550,7 @@ public class MainWindow extends JFrame implements KeyListener {
             new Exportador(this.drawingArea.getGrade()).toGridSim(file);
             JOptionPane.showMessageDialog(
                 this,
-                this.translate("model saved"),
+                translate("model saved"),
                 "Done",
                 JOptionPane.INFORMATION_MESSAGE
             );
@@ -1544,7 +1558,7 @@ public class MainWindow extends JFrame implements KeyListener {
             JOptionPane.showMessageDialog(
                 this,
                 ex.getMessage(),
-                this.translate("WARNING"),
+                translate("WARNING"),
                 JOptionPane.ERROR_MESSAGE
             );
         }
@@ -1572,11 +1586,15 @@ public class MainWindow extends JFrame implements KeyListener {
             HtmlPane.openDefaultBrowser(new URL(path));
         } catch (final IOException e) {
             final var message =
-                String.format("%s\n%s", this.translate("Error opening file."), e.getMessage());
+                String.format(
+                    "%s\n%s",
+                    translate("Error opening file."),
+                    e.getMessage()
+                );
             JOptionPane.showMessageDialog(
                 null,
                 message,
-                this.translate("WARNING"),
+                translate("WARNING"),
                 JOptionPane.PLAIN_MESSAGE
             );
         }
@@ -1647,98 +1665,106 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void initTexts () {
-        this.jScrollPaneSideBar.setBorder(BorderFactory.createTitledBorder(this.translate("Settings")));
-        this.jScrollPaneProperties.setBorder(BorderFactory.createTitledBorder(this.translate(
+        this.jScrollPaneSideBar.setBorder(BorderFactory.createTitledBorder(translate(
+            "Settings")));
+        this.jScrollPaneProperties.setBorder(BorderFactory.createTitledBorder(translate(
             "Properties")));
-        this.jScrollPaneNotificationBar.setBorder(BorderFactory.createTitledBorder(this.translate(
+        this.jScrollPaneNotificationBar.setBorder(BorderFactory.createTitledBorder(translate(
             "Notifications")));
 
-        this.jToggleButtonMachine.setToolTipText(this.translate(
+        this.jToggleButtonMachine.setToolTipText(translate(
             "Selects machine icon for add to the model"));
-        this.jToggleButtonNetwork.setToolTipText(this.translate(
+        this.jToggleButtonNetwork.setToolTipText(translate(
             "Selects network icon for add to the model"));
-        this.jToggleButtonCluster.setToolTipText(this.translate(
+        this.jToggleButtonCluster.setToolTipText(translate(
             "Selects cluster icon for add to the model"));
-        this.jToggleButtonInternet.setToolTipText(this.translate(
+        this.jToggleButtonInternet.setToolTipText(translate(
             "Selects internet icon for add to the model"));
-        this.jButtonTasks.setToolTipText(this.translate("Selects insertion model of tasks"));
-        this.jButtonUsers.setToolTipText(this.translate("Add and remove users to the model"));
-        this.jButtonSimulate.setText(this.translate("Simulate"));
-        this.jButtonSimulate.setToolTipText(this.translate("Starts the simulation"));
+        this.jButtonTasks.setToolTipText(translate("Selects insertion model of tasks"));
+        this.jButtonUsers.setToolTipText(translate("Add and remove users to the model"));
+        this.jButtonSimulate.setText(translate("Simulate"));
+        this.jButtonSimulate.setToolTipText(translate("Starts the simulation"));
 
-        this.jButtonInjectFaults.setText(this.translate("Simulate"));
+        this.jButtonInjectFaults.setText(translate("Simulate"));
         this.jButtonInjectFaults.setToolTipText("Select the faults");
 
-        this.jMenuFile.setText(this.translate("File"));
-        this.jMenuItemNew.setText(this.translate("New"));
-        this.jMenuItemNew.setToolTipText(this.translate("Starts a new model"));
-        this.jMenuItemOpen.setText(this.translate("Open"));
-        this.jMenuItemOpen.setToolTipText(this.translate("Opens an existing model"));
-        this.jMenuItemSave.setText(this.translate("Save"));
-        this.jMenuItemSave.setToolTipText(this.translate("Save the open model"));
-        this.jMenuImport.setText(this.translate("Import"));
-        this.jMenuItemSimGrid.setText(this.translate("SimGrid model"));
-        this.jMenuItemSimGrid.setToolTipText(this.translate(
+        this.jMenuFile.setText(translate("File"));
+        this.jMenuItemNew.setText(translate("New"));
+        this.jMenuItemNew.setToolTipText(translate("Starts a new model"));
+        this.jMenuItemOpen.setText(translate("Open"));
+        this.jMenuItemOpen.setToolTipText(translate("Opens an existing model"));
+        this.jMenuItemSave.setText(translate("Save"));
+        this.jMenuItemSave.setToolTipText(translate("Save the open model"));
+        this.jMenuImport.setText(translate("Import"));
+        this.jMenuItemSimGrid.setText(translate("SimGrid model"));
+        this.jMenuItemSimGrid.setToolTipText(translate(
             "Open model from the specification files of Simgrid"));
-        this.jMenuExport.setText(this.translate("Export"));
-        this.jMenuItemToJPG.setText(this.translate("to JPG"));
-        this.jMenuItemToJPG.setToolTipText(this.translate("Creates a jpg file with the model image"));
-        this.jMenuItemToTxt.setText(this.translate("to TXT"));
-        this.jMenuItemToTxt.setToolTipText(this.translate(
+        this.jMenuExport.setText(translate("Export"));
+        this.jMenuItemToJPG.setText(translate("to JPG"));
+        this.jMenuItemToJPG.setToolTipText(translate(
+            "Creates a jpg file with the model image"));
+        this.jMenuItemToTxt.setText(translate("to TXT"));
+        this.jMenuItemToTxt.setToolTipText(translate(
             "Creates a file in plain text with the model data according to the grammar of the iconic model"));
-        this.jMenuLanguage.setText(this.translate("Language"));
-        this.jMenuItemEnglish.setText(this.translate("English"));
-        this.jMenuItemPortuguese.setText(this.translate("Portuguese"));
-        this.jMenuItemClose.setText(this.translate("Close"));
-        this.jMenuItemClose.setToolTipText(this.translate("Closes the currently open model"));
-        this.jMenuItemExit.setText(this.translate("Exit"));
-        this.jMenuItemExit.setToolTipText(this.translate("Closes the program"));
+        this.jMenuLanguage.setText(translate("Language"));
+        this.jMenuItemEnglish.setText(translate("English"));
+        this.jMenuItemPortuguese.setText(translate("Portuguese"));
+        this.jMenuItemClose.setText(translate("Close"));
+        this.jMenuItemClose.setToolTipText(translate("Closes the currently open model"));
+        this.jMenuItemExit.setText(translate("Exit"));
+        this.jMenuItemExit.setToolTipText(translate("Closes the program"));
 
-        this.jMenuEdit.setText(this.translate("Edit"));
-        this.jMenuItemCopy.setText(this.translate("Copy"));
-        this.jMenuItemPaste.setText(this.translate("Paste"));
-        this.jMenuItemDelete.setText(this.translate("Delete"));
-        this.jMenuItemCompare.setText(this.translate("Match network settings"));
+        this.jMenuEdit.setText(translate("Edit"));
+        this.jMenuItemCopy.setText(translate("Copy"));
+        this.jMenuItemPaste.setText(translate("Paste"));
+        this.jMenuItemDelete.setText(translate("Delete"));
+        this.jMenuItemCompare.setText(translate("Match network settings"));
         this.jMenuItemCompare.setToolTipText(
-            this.translate("Matches the settings of icons of networks according to a selected icon"));
+            translate(
+                "Matches the settings of icons of networks according to a selected icon"));
 
-        this.jMenuShow.setText(this.translate("View"));
-        this.jCheckBoxMenuConnectedItem.setText(this.translate("Show Connected Nodes"));
+        this.jMenuShow.setText(translate("View"));
+        this.jCheckBoxMenuConnectedItem.setText(translate("Show Connected Nodes"));
         this.jCheckBoxMenuConnectedItem.setToolTipText(
-            this.translate(
+            translate(
                 "Displays in the settings area, the list of nodes connected for the selected icon"));
-        this.jCheckBoxIndirectMenuItem.setText(this.translate("Show Indirectly Connected Nodes"));
-        this.jCheckBoxIndirectMenuItem.setToolTipText(this.translate(
+        this.jCheckBoxIndirectMenuItem.setText(translate(
+            "Show Indirectly Connected Nodes"));
+        this.jCheckBoxIndirectMenuItem.setToolTipText(translate(
             "Displays in the settings area, the list of nodes connected through the internet icon, to the icon "
             +
             "selected"));
-        this.jCheckBoxMenuSchedulableItem.setText(this.translate("Show Schedulable Nodes"));
-        this.jCheckBoxMenuSchedulableItem.setToolTipText(this.translate(
+        this.jCheckBoxMenuSchedulableItem.setText(translate("Show Schedulable Nodes"));
+        this.jCheckBoxMenuSchedulableItem.setToolTipText(translate(
             "Displays in the settings area, the list of nodes schedulable for the selected icon"));
-        this.jCheckBoxMenuGridItem.setText(this.translate("Drawing grid"));
-        this.jCheckBoxMenuGridItem.setToolTipText(this.translate("Displays grid in the drawing area"));
-        this.jCheckBoxRulerMenuItem.setText(this.translate("Drawing rule"));
-        this.jCheckBoxRulerMenuItem.setToolTipText(this.translate(
+        this.jCheckBoxMenuGridItem.setText(translate("Drawing grid"));
+        this.jCheckBoxMenuGridItem.setToolTipText(translate(
+            "Displays grid in the drawing area"));
+        this.jCheckBoxRulerMenuItem.setText(translate("Drawing rule"));
+        this.jCheckBoxRulerMenuItem.setToolTipText(translate(
             "Displays rule in the drawing area"));
 
-        this.jMenuTools.setText(this.translate("Tools"));
-        this.jMenuItemManage.setText(this.translate("Manage Schedulers"));
-        this.jMenuItemGenerate.setText(this.translate("Generate Scheduler"));
+        this.jMenuTools.setText(translate("Tools"));
+        this.jMenuItemManage.setText(translate("Manage Schedulers"));
+        this.jMenuItemGenerate.setText(translate("Generate Scheduler"));
 
-        this.jMenuHelp.setText(this.translate("Help"));
-        this.jMenuItemHelp.setText(this.translate("Help"));
-        this.jMenuItemHelp.setToolTipText(this.translate("Help"));
-        this.jMenuItemAbout.setText(this.translate("About") + " " + this.translate("nomePrograma"));
-        this.jMenuItemAbout.setToolTipText(this.translate("About") + " " + this.translate(
+        this.jMenuHelp.setText(translate("Help"));
+        this.jMenuItemHelp.setText(translate("Help"));
+        this.jMenuItemHelp.setToolTipText(translate("Help"));
+        this.jMenuItemAbout.setText(translate("About") + " " + translate(
+            "nomePrograma"));
+        this.jMenuItemAbout.setToolTipText(translate("About")
+                                           + " "
+                                           + translate(
             "nomePrograma"));
 
-        this.jPanelSimple.setText(this.translate("No icon selected."));
+        this.jPanelSimple.setText(translate("No icon selected."));
         this.jPanelSettings.setPalavras(this.words);
     }
 
     private void refreshEdits () {
         final var newTitle = String.format(
-            "%s - %s", this.getOpenFileNameOrDefault(), this.translate("nomePrograma")
+            "%s - %s", this.getOpenFileNameOrDefault(), translate("nomePrograma")
         );
 
         this.setTitle(newTitle);
@@ -1759,7 +1785,7 @@ public class MainWindow extends JFrame implements KeyListener {
     private int getChoiceForSavingChanges () {
         final var message = String.format(
             "%s %s",
-            this.translate("Do you want to save changes to"),
+            translate("Do you want to save changes to"),
             this.getOpenFileNameOrDefault()
         );
 
@@ -1787,7 +1813,7 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void closeEditing () {
-        this.setTitle(this.translate("nomePrograma"));
+        this.setTitle(translate("nomePrograma"));
         this.openFile = null;
         this.disableInteractables();
         this.currentFileHasUnsavedChanges = false;
