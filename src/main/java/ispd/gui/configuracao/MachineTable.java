@@ -8,7 +8,6 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
-import org.jetbrains.annotations.*;
 
 public class MachineTable extends AbstractTableModel {
 
@@ -93,14 +92,10 @@ public class MachineTable extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case TYPE -> this.translate("Properties");
-            case VALUE -> this.translate("Values");
+            case TYPE -> getText("Properties");
+            case VALUE -> getText("Values");
             default -> null;
         };
-    }
-
-    private @NotNull String translate (final String Properties) {
-        return getText(Properties);
     }
 
     @Override
@@ -139,15 +134,15 @@ public class MachineTable extends AbstractTableModel {
 
     private String returnNameForIndex (final int rowIndex) {
         return switch (rowIndex) {
-            case LABEL -> this.translate("Label");
-            case OWNER -> this.translate("Owner");
-            case PROCESSOR -> "%s (Mflop/s)".formatted(this.translate("Computing power"));
-            case LOAD_FACTOR -> this.translate("Load Factor");
+            case LABEL -> getText("Label");
+            case OWNER -> getText("Owner");
+            case PROCESSOR -> "%s (Mflop/s)".formatted(getText("Computing power"));
+            case LOAD_FACTOR -> getText("Load Factor");
             case RAM -> "Primary Storage";
             case DISK -> "Secondary Storage";
             case CORES -> "Cores";
-            case MASTER -> this.translate("Master");
-            case SCHEDULER -> this.translate("Scheduling algorithm");
+            case MASTER -> getText("Master");
+            case SCHEDULER -> getText("Scheduling algorithm");
             case SLAVE -> "Slave Nodes";
             case ENERGY -> "Energy consumption";
             default -> null;
