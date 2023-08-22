@@ -1,5 +1,6 @@
 package ispd.gui;
 
+import static java.util.Collections.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,6 +37,14 @@ class TextSupplierTest {
     }
 
     @Test
+    void givenNullLogger_whenSetInstance_thenThrowsNullPointerException () {
+        assertThrows(
+            NullPointerException.class,
+            () -> TextSupplier.setInstance(MapResourceBundle.EMPTY, null)
+        );
+    }
+
+    @Test
     void givenBundleWithKey_whenGetText_returnsValueInBundle () {
         final var bundle = new MapResourceBundle(Map.of(KEY, VALUE));
 
@@ -46,16 +55,18 @@ class TextSupplierTest {
 
     @Test
     void givenBundleWithoutKey_whenGetText_thenLogsWarningAndReturnsKey () {
-        final var bundle = new MapResourceBundle(Collections.emptyMap());
         final var logger = mock(Logger.class);
 
-        TextSupplier.setInstance(bundle, logger);
+        TextSupplier.setInstance(MapResourceBundle.EMPTY, logger);
 
         assertThat(TextSupplier.getText(KEY), is(KEY));
         verify(logger, times(1)).warning(anyStringSupplier());
     }
 
     private static final class MapResourceBundle extends ResourceBundle {
+
+        private static final MapResourceBundle EMPTY =
+            new MapResourceBundle(emptyMap());
 
         private final Map<String, String> map;
 
@@ -73,7 +84,7 @@ class TextSupplierTest {
 
         @Override
         public @NotNull Enumeration<String> getKeys () {
-            return Collections.enumeration(this.map.keySet());
+            return enumeration(this.map.keySet());
         }
     }
 }

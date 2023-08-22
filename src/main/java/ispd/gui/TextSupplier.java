@@ -19,7 +19,7 @@ public class TextSupplier {
 
     private TextSupplier (final ResourceBundle bundle, final Logger logger) {
         this.bundle = Objects.requireNonNull(bundle);
-        this.logger = logger;
+        this.logger = Objects.requireNonNull(logger);
     }
 
     public static String getText (final String key) {
