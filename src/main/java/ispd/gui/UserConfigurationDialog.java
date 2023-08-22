@@ -60,12 +60,12 @@ public class UserConfigurationDialog extends JDialog {
     private void initComponents () {
 
         this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        this.setTitle(this.translate("Manage Users"));
+        this.setTitle(getText("Manage Users"));
         this.setResizable(false);
 
         final JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
-        toolbar.add(aButton(this.translate("Add"), this::onAddClick)
+        toolbar.add(aButton(getText("Add"), this::onAddClick)
                         .nonFocusable()
                         .withIcon(new ImageIcon(this.getResource(
                             "/ispd/gui/imagens/insert-object.png")))
@@ -73,7 +73,7 @@ public class UserConfigurationDialog extends JDialog {
                         .withCenterBottomTextPosition()
                         .build());
 
-        toolbar.add(aButton(this.translate("Remove"), this::onRemoveClick)
+        toolbar.add(aButton(getText("Remove"), this::onRemoveClick)
                         .nonFocusable()
                         .withIcon(new ImageIcon(this.getResource(
                             "/ispd/gui/imagens/window-close.png")))
@@ -81,7 +81,7 @@ public class UserConfigurationDialog extends JDialog {
                         .withCenterBottomTextPosition()
                         .build());
 
-        final var jButtonOk = basicButton(this.translate("OK"), (e) -> this.setVisible(false));
+        final var jButtonOk = basicButton(getText("OK"), (e) -> this.setVisible(false));
 
         this.table = new JTable();
         this.table.setModel(new SomeDefaultTableModel(this.users, this.profiles));
@@ -143,15 +143,11 @@ public class UserConfigurationDialog extends JDialog {
         this.pack();
     }
 
-    private String translate (final String word) {
-        return getText(word);
-    }
-
     private void onAddClick (final ActionEvent evt) {
         final String add = JOptionPane.showInputDialog(
             this,
-            this.translate("Enter the name"),
-            this.translate("Add"),
+            getText("Enter the name"),
+            getText("Add"),
             JOptionPane.QUESTION_MESSAGE
         );
 
@@ -176,15 +172,14 @@ public class UserConfigurationDialog extends JDialog {
 
     private void onRemoveClick (final ActionEvent evt) {
         if (this.table.getSelectedRow() == -1) {
-            JOptionPane.showMessageDialog(this, this.translate("A user should be selected"));
+            JOptionPane.showMessageDialog(this, getText("A user should be selected"));
             return;
         }
 
         final var profile = this.table.getValueAt(this.table.getSelectedRow(), 0).toString();
         final int choice = JOptionPane.showConfirmDialog(
             this,
-            "%s%s".formatted(this.translate(
-                "Are you sure want delete this user:"), profile),
+            "%s%s".formatted(getText("Are you sure want delete this user:"), profile),
             null,
             JOptionPane.YES_NO_OPTION,
             JOptionPane.WARNING_MESSAGE
