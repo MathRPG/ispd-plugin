@@ -937,7 +937,6 @@ public class MainWindow extends JFrame implements KeyListener {
             this,
             true,
             this.drawingArea.getGrade(),
-            this.words,
             this.modelType
         );
 

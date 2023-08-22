@@ -24,8 +24,6 @@ public class SimulationDialog extends JDialog implements Runnable {
 
     private final Document model;
 
-    private final ResourceBundle translator;
-
     private final ProgressoSimulacao progressTracker = new BasicProgressTracker();
 
     private final int gridOrCloud;
@@ -42,11 +40,9 @@ public class SimulationDialog extends JDialog implements Runnable {
         final Frame parent,
         final boolean modal,
         final Document model,
-        final ResourceBundle translator,
         final int gridOrCloud
     ) {
         super(parent, modal);
-        this.translator  = translator;
         this.gridOrCloud = gridOrCloud;
         this.model       = model;
         this.initComponents();
