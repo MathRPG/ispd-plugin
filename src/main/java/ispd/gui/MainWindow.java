@@ -188,12 +188,7 @@ public class MainWindow extends JFrame implements KeyListener {
      */
     private int modelType = 0;
 
-    private ResourceBundle words =
-        getBundle();
-
-    private static ResourceBundle getBundle () {
-        return ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
-    }
+    private ResourceBundle words = BundleManager.getBundle();
 
     private final MultipleExtensionFileFilter fileFilter =
         new MultipleExtensionFileFilter(
