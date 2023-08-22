@@ -5,7 +5,7 @@ import java.util.*;
 public enum BundleManager {
     ;
 
-    public static ResourceBundle getBundle () {
-        return ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
+    public static ResourceBundle getBundle (final Locale locale) {
+        return ResourceBundle.getBundle("ispd.idioma.Idioma", locale);
     }
 }

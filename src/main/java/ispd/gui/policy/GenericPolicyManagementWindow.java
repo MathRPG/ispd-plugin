@@ -29,7 +29,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     private final PolicyManager manager;
 
     private final ResourceBundle words =
-        BundleManager.getBundle();
+        BundleManager.getBundle(Locale.getDefault());
 
     private final JFileChooser fileChooser =
         this.configuredFileChooser();
