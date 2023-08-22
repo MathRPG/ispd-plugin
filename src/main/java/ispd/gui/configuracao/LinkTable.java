@@ -26,10 +26,7 @@ public class LinkTable extends AbstractTableModel {
 
     private GridItem link = null;
 
-    private ResourceBundle words;
-
-    public LinkTable (final ResourceBundle words) {
-        this.words = words;
+    public LinkTable () {
     }
 
     @Override
@@ -169,7 +166,6 @@ public class LinkTable extends AbstractTableModel {
     }
 
     public void setPalavras (final ResourceBundle words) {
-        this.words = words;
         this.fireTableStructureChanged();
     }
 }

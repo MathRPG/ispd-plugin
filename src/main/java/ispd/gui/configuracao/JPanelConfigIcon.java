@@ -38,7 +38,7 @@ public class JPanelConfigIcon extends JPanel {
         this.createTableWith(IaasClusterVariedRowTable::new, t -> new ClusterTableIaaS());
 
     private final VariedRowTable linkTable =
-        this.createTableWith(LinkVariedRowTable::new, LinkTable::new);
+        this.createTableWith(LinkVariedRowTable::new, t -> new LinkTable());
 
     private PolicyManager schedulers = null;
 
