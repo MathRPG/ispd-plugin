@@ -3,7 +3,6 @@ package ispd.gui.policy;
 import static ispd.gui.BundleManager.*;
 
 import ispd.arquivo.interpretador.gerador.*;
-import ispd.gui.*;
 import ispd.gui.auxiliar.*;
 import ispd.gui.utils.*;
 import ispd.policy.*;
@@ -105,13 +104,9 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var chooser = new JFileChooser();
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setFileFilter(new MultipleExtensionFileFilter(
-            this.translate("Java Source Files (. java)"), FileExtensions.JAVA_SOURCE, true
+            getText("Java Source Files (. java)"), FileExtensions.JAVA_SOURCE, true
         ));
         return chooser;
-    }
-
-    protected String translate (final String cut) {
-        return getText(cut);
     }
 
     private void configureMenuBar () {
@@ -187,9 +182,10 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private JList<String> makePolicyList () {
         final var list = new JList<String>();
+        final String cut = this.getPolicyListTitle();
         list.setBorder(BorderFactory.createTitledBorder(
             null,
-            this.translate(this.getPolicyListTitle()),
+            getText(cut),
             TitledBorder.CENTER,
             TitledBorder.DEFAULT_POSITION
         ));
@@ -346,7 +342,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private JMenu makeMenu (final String name, final Component... items) {
         final var menu = new JMenu();
-        menu.setText(this.translate(name));
+        menu.setText(getText(name));
 
         for (final var item : items) {
             menu.add(item);
@@ -366,7 +362,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
             itemName, imagePath,
             action, acceleratorKey
         );
-        item.setToolTipText(this.translate(toolTip));
+        item.setToolTipText(getText(toolTip));
         return item;
     }
 
@@ -391,7 +387,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     ) {
         final var item = new JMenuItem();
         item.setIcon(new ImageIcon(this.getResource(imagePath)));
-        item.setText(this.translate(itemName));
+        item.setText(getText(itemName));
         item.addActionListener(action);
         return item;
     }
@@ -424,7 +420,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final ActionListener action
     ) {
         return ButtonBuilder.aButton(new ImageIcon(this.getResource(iconPath)), action)
-            .withToolTip(this.translate(helpText))
+            .withToolTip(getText(helpText))
             .withCenterBottomTextPosition()
             .nonFocusable()
             .build();
@@ -567,9 +563,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private void updateTitleWithFileName (final String fileName) {
-        final var afterFileName = this.hasPendingChanges
-                                  ? " [%s] ".formatted(this.translate("modified"))
-                                  : " ";
+        final String afterFileName;
+        afterFileName = this.hasPendingChanges ? " [%s] ".formatted(getText("modified")) : " ";
 
         this.setTitle("%s.java%s- %s".formatted(
             fileName, afterFileName,
@@ -578,7 +573,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     protected String getTranslatedWindowTitle () {
-        return this.translate(this.getWindowTitle());
+        return getText(this.getWindowTitle());
     }
 
     private void onSave (final ActionEvent evt) {
@@ -708,7 +703,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final int choice = JOptionPane.showConfirmDialog(
             this,
             "%s %s.java".formatted(
-                this.translate("Do you want to save changes to"),
+                getText("Do you want to save changes to"),
                 this.currentlyOpenFileName.get()
             )
         );
