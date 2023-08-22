@@ -1,5 +1,7 @@
 package ispd.gui.configuracao;
 
+import static ispd.gui.BundleManager.*;
+
 import ispd.gui.iconico.grade.*;
 import ispd.policy.managers.*;
 import java.io.*;
@@ -96,7 +98,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
     }
 
     private @NotNull String getString (final String properties) {
-        return this.words.getString(properties);
+        return getText(properties);
     }
 
     @Override
