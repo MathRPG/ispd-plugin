@@ -8,7 +8,6 @@ import ispd.gui.utils.*;
 import ispd.policy.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import java.util.function.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -22,8 +21,6 @@ public class JPanelConfigIcon extends JPanel {
     private final JLabel jLabelTitle = makeTitleLabel();
 
     private final JScrollPane jScrollPane = new JScrollPane();
-
-    private final ResourceBundle words = getBundle();
 
     private final VariedRowTable machineTable =
         this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
