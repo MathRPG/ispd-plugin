@@ -108,8 +108,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenu jMenuTools = new JMenu();
 
-    private final JMenu jMenuLanguage = new JMenu();
-
     private final JMenu jMenuImport = new JMenu();
 
     private final JMenuItem jMenuItemOpen = new JMenuItem();
@@ -128,15 +126,11 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenuItem jMenuItemManage = new JMenuItem();
 
-    private final JMenuItem jMenuItemEnglish = new JMenuItem();
-
     private final JMenuItem jMenuItemNew = new JMenuItem();
 
     private final JMenuItem jMenuItemSort = new JMenuItem();
 
     private final JMenuItem jMenuItemPaste = new JMenuItem();
-
-    private final JMenuItem jMenuItemPortuguese = new JMenuItem();
 
     private final JMenuItem jMenuItemExit = new JMenuItem();
 
@@ -588,17 +582,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemToGridSim.addActionListener(this::jMenuItemToGridSimActionPerformed);
         this.jMenuExport.add(this.jMenuItemToGridSim);
         this.jMenuFile.add(this.jMenuExport);
-        this.jMenuFile.add(new JPopupMenu.Separator());
-        this.jMenuLanguage.setText(getText("Language"));
-        this.jMenuItemEnglish.setText(getText("English"));
-        this.jMenuItemEnglish.addActionListener(evt -> {
-        });
-        this.jMenuLanguage.add(this.jMenuItemEnglish);
-        this.jMenuItemPortuguese.setText(getText("Portuguese"));
-        this.jMenuItemPortuguese.addActionListener(evt -> {
-        });
-        this.jMenuLanguage.add(this.jMenuItemPortuguese);
-        this.jMenuFile.add(this.jMenuLanguage);
         this.jMenuFile.add(new JPopupMenu.Separator());
         this.jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_F4,
@@ -1623,7 +1606,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void updateDrawingVms (final VmConfiguration vmConfigWindow) {
-
         this.drawingArea.setUsers(vmConfigWindow.atualizaUsuarios());
         this.drawingArea.setVirtualMachines(vmConfigWindow.getMaqVirtuais());
     }
