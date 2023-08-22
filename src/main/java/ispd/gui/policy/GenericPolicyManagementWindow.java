@@ -1,57 +1,22 @@
 package ispd.gui.policy;
 
-import ispd.arquivo.interpretador.gerador.InterpretadorGerador;
-import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.gui.auxiliar.TextEditorStyle;
-import ispd.gui.utils.ButtonBuilder;
-import ispd.policy.PolicyManager;
-import ispd.utils.NameValidator;
-import ispd.utils.constants.FileExtensions;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.net.URL;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutStyle;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.text.BadLocationException;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
+import ispd.arquivo.interpretador.gerador.*;
+import ispd.gui.*;
+import ispd.gui.auxiliar.*;
+import ispd.gui.utils.*;
+import ispd.policy.*;
+import ispd.utils.*;
+import ispd.utils.constants.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import javax.swing.undo.*;
 
 public abstract class GenericPolicyManagementWindow extends JFrame {
 
@@ -64,7 +29,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     private final PolicyManager manager;
 
     private final ResourceBundle words =
-        ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
+        BundleManager.getBundle();
 
     private final JFileChooser fileChooser =
         this.configuredFileChooser();
@@ -84,7 +49,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         this.setAlwaysOnTop(true);
         this.setFocusable(false);
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getResource(
-            GenericPolicyManagementWindow.ICON_IMAGE_PATH
+            ICON_IMAGE_PATH
         )));
 
         this.configureMenuBar();
