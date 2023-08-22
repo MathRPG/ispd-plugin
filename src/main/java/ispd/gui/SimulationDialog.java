@@ -270,14 +270,6 @@ public class SimulationDialog extends JDialog implements Runnable {
             SimulationDialog.this.incrementProgress(n);
         }
 
-        private static String tryTranslate (final String text) {
-            if (!getBundle().containsKey(text)) {
-                return text;
-            }
-
-            return getText(text);
-        }
-
         @Override
         public void print (final String text, final Color cor) {
             try {
