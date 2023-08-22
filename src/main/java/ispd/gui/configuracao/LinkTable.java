@@ -26,9 +26,6 @@ public class LinkTable extends AbstractTableModel {
 
     private GridItem link = null;
 
-    public LinkTable () {
-    }
-
     @Override
     public int getRowCount () {
         return ROW_COUNT;
