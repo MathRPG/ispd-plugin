@@ -5,7 +5,6 @@ import static ispd.gui.TextSupplier.*;
 import ispd.gui.iconico.grade.*;
 import ispd.policy.managers.*;
 import java.io.*;
-import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -37,9 +36,6 @@ public class ClusterTableIaaS extends AbstractTableModel {
         );
 
     private Cluster cluster = null;
-
-    ClusterTableIaaS () {
-    }
 
     private static JComboBox<Object> makeComboBox (
         final String[] comboBoxArg,
@@ -199,10 +195,6 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     JComboBox getAlocadores () {
         return this.vmmPolicies;
-    }
-
-    public void setPalavras (final ResourceBundle words) {
-        this.fireTableStructureChanged();
     }
 
     private static class TableRows implements Serializable {
