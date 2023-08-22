@@ -1,10 +1,11 @@
 package ispd.gui.configuracao;
 
-import ispd.gui.iconico.grade.Cluster;
-import ispd.policy.managers.GridSchedulingPolicyManager;
-import java.util.ResourceBundle;
-import javax.swing.JComboBox;
-import javax.swing.table.AbstractTableModel;
+import ispd.gui.iconico.grade.*;
+import ispd.policy.managers.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
+import org.jetbrains.annotations.*;
 
 public class ClusterTable extends AbstractTableModel {
 
@@ -31,12 +32,12 @@ public class ClusterTable extends AbstractTableModel {
 
     @Override
     public int getRowCount () {
-        return ClusterTable.ROW_COUNT;
+        return ROW_COUNT;
     }
 
     @Override
     public int getColumnCount () {
-        return ClusterTable.COLUMN_COUNT;
+        return COLUMN_COUNT;
     }
 
     /**
@@ -54,12 +55,12 @@ public class ClusterTable extends AbstractTableModel {
     @Override
     public Object getValueAt (final int rowIndex, final int columnIndex) {
         switch (columnIndex) {
-            case ClusterTable.TYPE:
+            case TYPE:
                 final var typeName = this.getColumnTypeName(rowIndex);
                 if (typeName != null) {
                     return typeName;
                 }
-            case ClusterTable.VALUE:
+            case VALUE:
                 if (this.cluster != null) {
                     switch (rowIndex) {
                         case TableRows.LABEL:
@@ -103,20 +104,24 @@ public class ClusterTable extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case ClusterTable.TYPE -> this.words.getString("Properties");
-            case ClusterTable.VALUE -> this.words.getString("Values");
+            case TYPE -> this.getString("Properties");
+            case VALUE -> this.getString("Values");
             default -> null;
         };
     }
 
+    private @NotNull String getString (final String Properties) {
+        return this.words.getString(Properties);
+    }
+
     @Override
     public boolean isCellEditable (final int rowIndex, final int columnIndex) {
-        return columnIndex != ClusterTable.TYPE;
+        return columnIndex != TYPE;
     }
 
     @Override
     public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
-        if (!(columnIndex == ClusterTable.VALUE && this.cluster != null)) {
+        if (!(columnIndex == VALUE && this.cluster != null)) {
             return;
         }
 
@@ -136,7 +141,7 @@ public class ClusterTable extends AbstractTableModel {
                 this.schedulers.getSelectedItem().toString());
         }
 
-        this.fireTableCellUpdated(rowIndex, ClusterTable.VALUE);
+        this.fireTableCellUpdated(rowIndex, VALUE);
     }
 
     void setCluster (final Cluster cluster, final Iterable<?> users) {
@@ -151,17 +156,17 @@ public class ClusterTable extends AbstractTableModel {
 
     private String getColumnTypeName (final int rowIndex) {
         return switch (rowIndex) {
-            case TableRows.LABEL -> this.words.getString("Label");
-            case TableRows.OWNER -> this.words.getString("Owner");
-            case TableRows.NODES -> this.words.getString("Number of nodes");
-            case TableRows.PROCESSORS -> this.words.getString("Computing power");
+            case TableRows.LABEL -> this.getString("Label");
+            case TableRows.OWNER -> this.getString("Owner");
+            case TableRows.NODES -> this.getString("Number of nodes");
+            case TableRows.PROCESSORS -> this.getString("Computing power");
             case TableRows.RAM -> "Primary Storage";
             case TableRows.HARD_DISK -> "Secondary Storage";
             case TableRows.CORES -> "Cores";
-            case TableRows.BANDWIDTH -> this.words.getString("Bandwidth");
-            case TableRows.LATENCY -> this.words.getString("Latency");
-            case TableRows.MASTER -> this.words.getString("Master");
-            case TableRows.SCHEDULER -> this.words.getString("Scheduling algorithm");
+            case TableRows.BANDWIDTH -> this.getString("Bandwidth");
+            case TableRows.LATENCY -> this.getString("Latency");
+            case TableRows.MASTER -> this.getString("Master");
+            case TableRows.SCHEDULER -> this.getString("Scheduling algorithm");
             case TableRows.ENERGY -> "Energy consumption Per Node";
             default -> null;
         };
