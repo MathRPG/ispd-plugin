@@ -11,7 +11,7 @@ public enum BundleManager {
         return BUNDLE;
     }
 
-    static String translate (final String s) {
-        return BUNDLE.getString(s);
+    static String getText (final String key) {
+        return BUNDLE.getString(key);
     }
 }
