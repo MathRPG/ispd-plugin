@@ -193,8 +193,6 @@ public class MainWindow extends JFrame implements KeyListener {
      */
     private int modelType = 0;
 
-    private final ResourceBundle words = getBundle();
-
     private boolean currentFileHasUnsavedChanges = false;
 
     private File openFile = null;
