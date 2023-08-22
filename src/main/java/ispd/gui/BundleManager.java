@@ -15,7 +15,7 @@ public enum BundleManager {
         return BUNDLE.getString(key);
     }
 
-    static String tryTranslate (final String text) {
+    public static String tryTranslate (final String text) {
         if (!BUNDLE.containsKey(text)) {
             return text;
         }
