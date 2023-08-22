@@ -1,6 +1,6 @@
 package ispd.gui.iconico.grade;
 
-import static ispd.gui.BundleManager.*;
+import static ispd.gui.TextSupplier.*;
 
 import ispd.arquivo.xml.*;
 import ispd.gui.*;

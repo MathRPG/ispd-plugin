@@ -5,10 +5,10 @@ import java.util.*;
 import java.util.logging.*;
 import org.jetbrains.annotations.*;
 
-public enum BundleManager {
+public enum TextSupplier {
     ;
 
-    private static final Logger LOGGER = Logger.getLogger(BundleManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TextSupplier.class.getName());
 
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("text.gui");
 

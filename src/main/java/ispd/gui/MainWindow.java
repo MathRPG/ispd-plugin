@@ -1,6 +1,6 @@
 package ispd.gui;
 
-import static ispd.gui.BundleManager.*;
+import static ispd.gui.TextSupplier.*;
 
 import ispd.arquivo.exportador.*;
 import ispd.arquivo.interpretador.gridsim.*;

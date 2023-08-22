@@ -1,6 +1,6 @@
 package ispd.gui.iconico.grade;
 
-import static ispd.gui.BundleManager.*;
+import static ispd.gui.TextSupplier.*;
 
 import ispd.policy.allocation.vm.*;
 import java.awt.*;

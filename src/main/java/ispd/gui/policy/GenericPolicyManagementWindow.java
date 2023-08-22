@@ -1,6 +1,6 @@
 package ispd.gui.policy;
 
-import static ispd.gui.BundleManager.*;
+import static ispd.gui.TextSupplier.*;
 
 import ispd.arquivo.interpretador.gerador.*;
 import ispd.gui.auxiliar.*;

@@ -1,6 +1,6 @@
 package ispd.gui.configuracao;
 
-import static ispd.gui.BundleManager.*;
+import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.grade.*;
 import ispd.policy.managers.*;

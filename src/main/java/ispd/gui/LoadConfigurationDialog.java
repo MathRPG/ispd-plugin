@@ -1,6 +1,6 @@
 package ispd.gui;
 
-import static ispd.gui.BundleManager.*;
+import static ispd.gui.TextSupplier.*;
 import static ispd.gui.utils.ButtonBuilder.*;
 
 import ispd.arquivo.xml.*;
