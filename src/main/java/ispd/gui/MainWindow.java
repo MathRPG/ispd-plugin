@@ -825,7 +825,7 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void setLanguage (final Locale locale) {
-        this.words = ResourceBundle.getBundle("ispd.idioma.Idioma", locale);
+        this.words = BundleManager.getBundle(locale);
         this.initTexts();
         if (this.drawingArea != null) {
             this.drawingArea.setTranslator(this.words);

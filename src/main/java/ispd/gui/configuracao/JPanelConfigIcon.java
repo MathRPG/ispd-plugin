@@ -1,24 +1,15 @@
 package ispd.gui.configuracao;
 
-import ispd.gui.PickModelTypeDialog;
-import ispd.gui.iconico.grade.Cluster;
-import ispd.gui.iconico.grade.GridItem;
-import ispd.gui.iconico.grade.Internet;
-import ispd.gui.iconico.grade.Link;
-import ispd.gui.iconico.grade.Machine;
-import ispd.gui.utils.Fonts.Tahoma;
-import ispd.policy.PolicyManager;
-import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import javax.swing.GroupLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.table.TableModel;
+import ispd.gui.*;
+import ispd.gui.iconico.grade.*;
+import ispd.gui.utils.Fonts;
+import ispd.policy.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.function.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 public class JPanelConfigIcon extends JPanel {
 
@@ -31,7 +22,7 @@ public class JPanelConfigIcon extends JPanel {
     private final JScrollPane jScrollPane = new JScrollPane();
 
     private ResourceBundle words =
-        ResourceBundle.getBundle("ispd.idioma.Idioma", new Locale("en", "US"));
+        BundleManager.getBundle(new Locale("en", "US"));
 
     private final VariedRowTable machineTable =
         this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
@@ -60,7 +51,7 @@ public class JPanelConfigIcon extends JPanel {
 
     private static JLabel makeTitleLabel () {
         final JLabel label = new JLabel("Machine icon configuration");
-        label.setFont(Tahoma.BOLD_12);
+        label.setFont(Fonts.Tahoma.BOLD_12);
         return label;
     }
 
@@ -113,7 +104,7 @@ public class JPanelConfigIcon extends JPanel {
     ) {
         final var t = makeTable.get();
         t.setModel(makeModel.apply(this.words));
-        t.setRowHeight(JPanelConfigIcon.ROW_HEIGHT);
+        t.setRowHeight(ROW_HEIGHT);
         return t;
     }
 
@@ -289,10 +280,10 @@ public class JPanelConfigIcon extends JPanel {
         };
 
         private static String getRowToolTip (final int rowIndex) {
-            if (rowIndex >= MachineVariedRowTable.TOOL_TIPS.length) {
+            if (rowIndex >= TOOL_TIPS.length) {
                 return null;
             }
-            return MachineVariedRowTable.TOOL_TIPS[rowIndex];
+            return TOOL_TIPS[rowIndex];
         }
 
         public String getToolTipText (final MouseEvent e) {
