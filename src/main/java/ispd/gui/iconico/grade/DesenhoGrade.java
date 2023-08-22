@@ -749,7 +749,7 @@ public class DesenhoGrade extends DrawingArea {
         }
     }
 
-    public void setTranslator (final ResourceBundle translator) {
+    public void setTranslator () {
         this.initTexts();
     }
 

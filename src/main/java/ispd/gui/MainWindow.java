@@ -817,7 +817,7 @@ public class MainWindow extends JFrame implements KeyListener {
         this.words = getBundle();
         this.initTexts();
         if (this.drawingArea != null) {
-            this.drawingArea.setTranslator(this.words);
+            this.drawingArea.setTranslator();
         }
     }
 
