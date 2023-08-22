@@ -236,10 +236,6 @@ public class MachineTableIaaS extends AbstractTableModel {
         return this.allocators;
     }
 
-    public void setPalavras (final ResourceBundle words) {
-        this.fireTableStructureChanged();
-    }
-
     private class ButtonActionListener implements ActionListener {
 
         @Override
