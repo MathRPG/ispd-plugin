@@ -141,7 +141,7 @@ public class Machine extends VertexGridItem {
             this.computationalPower,
             getText("Load Factor"),
             this.loadFactor,
-            this.describeRole(translator)
+            this.describeRole()
         );
     }
 
@@ -211,12 +211,9 @@ public class Machine extends VertexGridItem {
     /**
      * It describes this machine's role relative if it is a master.
      *
-     * @param translator
-     *     the translator containing the translated messages
-     *
      * @return the described machine role
      */
-    private String describeRole (final ResourceBundle translator) {
+    private String describeRole () {
         if (!this.master) {
             return "<br>" + getText("Slave");
         }
