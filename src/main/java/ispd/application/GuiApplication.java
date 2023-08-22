@@ -1,12 +1,9 @@
 package ispd.application;
 
-import ispd.gui.LogExceptions;
-import ispd.gui.MainWindow;
-import ispd.gui.SplashWindow;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import ispd.gui.*;
+import java.util.*;
+import java.util.logging.*;
+import javax.swing.*;
 
 public class GuiApplication implements Application {
 
@@ -36,12 +33,12 @@ public class GuiApplication implements Application {
 
     private static void setGuiLookAndFeel () {
         try {
-            UIManager.setLookAndFeel(GuiApplication.LOOK_AND_FEEL);
+            UIManager.setLookAndFeel(LOOK_AND_FEEL);
         } catch (final ClassNotFoundException |
                        IllegalAccessException |
                        InstantiationException |
                        UnsupportedLookAndFeelException e) {
-            logThrowableSeverely(e);
+            LOGGER.severe(e::getLocalizedMessage);
         }
     }
 
@@ -51,12 +48,10 @@ public class GuiApplication implements Application {
         return gui;
     }
 
-    private static void logThrowableSeverely (final Throwable t) {
-        GuiApplication.LOGGER.log(Level.SEVERE, null, t);
-    }
-
     @Override
     public void run () {
+        TextSupplier.setInstance(ResourceBundle.getBundle("text.gui"));
+
         openGui();
     }
 }
