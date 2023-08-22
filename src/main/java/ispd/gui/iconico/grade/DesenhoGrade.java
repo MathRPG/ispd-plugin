@@ -749,10 +749,6 @@ public class DesenhoGrade extends DrawingArea {
         }
     }
 
-    public void setTranslator () {
-        this.initTexts();
-    }
-
     public List<String> getNosEscalonadores () {
         final List<String> machines = new ArrayList<>(0);
         for (final var icon : this.vertices) {
