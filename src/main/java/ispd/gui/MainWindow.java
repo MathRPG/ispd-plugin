@@ -27,7 +27,7 @@ import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
-public class MainWindow extends JFrame implements KeyListener {
+public final class MainWindow extends JFrame implements KeyListener {
 
     private static final int LOADING_SCREEN_WIDTH = 200;
 
@@ -265,6 +265,7 @@ public class MainWindow extends JFrame implements KeyListener {
         this.initComponents();
         this.addKeyListeners();
         this.buildLayoutAndPack();
+        this.setLocationRelativeTo(null);
     }
 
     private static URL getResourceOrThrow (final String resourcePath) {
