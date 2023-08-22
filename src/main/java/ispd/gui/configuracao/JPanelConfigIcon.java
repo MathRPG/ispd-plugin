@@ -23,7 +23,7 @@ public class JPanelConfigIcon extends JPanel {
 
     private final JScrollPane jScrollPane = new JScrollPane();
 
-    private ResourceBundle words = getBundle();
+    private final ResourceBundle words = getBundle();
 
     private final VariedRowTable machineTable =
         this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
@@ -250,15 +250,6 @@ public class JPanelConfigIcon extends JPanel {
 
     public String getTitle () {
         return this.jLabelTitle.getText();
-    }
-
-    public void setPalavras (final ResourceBundle words) {
-        this.words = words;
-        ((MachineTable) this.machineTable.getModel()).setPalavras(words);
-        ((MachineTableIaaS) this.iassMachineTable.getModel()).setPalavras(words);
-        ((ClusterTable) this.clusterTable.getModel()).setPalavras(words);
-        ((ClusterTableIaaS) this.iassClusterTable.getModel()).setPalavras(words);
-        ((LinkTable) this.linkTable.getModel()).setPalavras(words);
     }
 
     private static class MachineVariedRowTable extends VariedRowTable {
