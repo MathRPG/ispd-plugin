@@ -1,5 +1,7 @@
 package ispd.gui.configuracao;
 
+import static ispd.gui.BundleManager.*;
+
 import ispd.gui.iconico.grade.*;
 import ispd.policy.managers.*;
 import java.awt.event.*;
@@ -120,7 +122,7 @@ public class MachineTableIaaS extends AbstractTableModel {
     }
 
     private @NotNull String getString (final String Properties) {
-        return this.words.getString(Properties);
+        return getText(Properties);
     }
 
     @Override
