@@ -1,7 +1,6 @@
 package ispd.gui.iconico.grade;
 
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public interface GridItem {
 
@@ -15,7 +14,7 @@ public interface GridItem {
     /**
      * Returns the inbound connections.
      * <p>
-     * The inbound connections are those {@link GridItem}s whose edges are incident to this grid
+     * The inbound connections are those s whose edges are incident to this grid
      * item.
      *
      * @return the inbound connections
@@ -25,7 +24,7 @@ public interface GridItem {
     /**
      * Returns the outbound connections.
      * <p>
-     * The outbound connections are those {@link GridItem}s whose edges are incident from this grid
+     * The outbound connections are those s whose edges are incident from this grid
      * item.
      *
      * @return the outbound connections
@@ -35,12 +34,9 @@ public interface GridItem {
     /**
      * It makes the grid item description relative to the specified translator.
      *
-     * @param translator
-     *     the translator containing the translated messages
-     *
      * @return the grid item description
      */
-    String makeDescription (ResourceBundle translator);
+    String makeDescription ();
 
     /**
      * It returns a copy of this grid item relative to the specified parameters.
@@ -54,15 +50,15 @@ public interface GridItem {
      * @param localId
      *     the local identifier
      *
-     * @return a copy of this {@link GridItem}
+     * @return a copy of this
      */
     GridItem makeCopy (int mousePosX, int mousePosY, int globalId, int localId);
 
     /**
-     * Returns {@code true} since this {@link GridItem} is configured. Otherwise, {@code false} is
+     * Returns {@code true} since this  is configured. Otherwise, {@code false} is
      * returned.
      *
-     * @return {@code true} since this {@link GridItem} is configured; otherwise, {@code false}.
+     * @return {@code true} since this  is configured; otherwise, {@code false}.
      */
     boolean isConfigured ();
 }

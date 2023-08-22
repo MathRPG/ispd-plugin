@@ -401,7 +401,7 @@ public class DesenhoGrade extends DrawingArea {
 
     private void setLabelAtributos (final GridItem icon) {
         final var text = new StringBuilder("<html>");
-        text.append(icon.makeDescription(this.translator));
+        text.append(icon.makeDescription());
         if (this.shouldPrintDirectConnections && icon instanceof Vertex) {
             text.append("<br>").append(getText("Output Connection:"));
             for (final var i : icon.getOutboundConnections()) {

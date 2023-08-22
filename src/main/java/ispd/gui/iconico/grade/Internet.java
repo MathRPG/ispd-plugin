@@ -3,7 +3,6 @@ package ispd.gui.iconico.grade;
 import static ispd.gui.BundleManager.*;
 
 import java.awt.*;
-import java.util.*;
 
 public class Internet extends VertexGridItem {
 
@@ -42,13 +41,10 @@ public class Internet extends VertexGridItem {
     /**
      * Return the internet attributes.
      *
-     * @param translator
-     *     the resource bundle containing the translation messages
-     *
      * @return the internet attributes
      */
     @Override
-    public String makeDescription (final ResourceBundle translator) {
+    public String makeDescription () {
         return (
             "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: %s<br>%s: %s"
         ).formatted(

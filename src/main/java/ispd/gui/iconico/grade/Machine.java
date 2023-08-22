@@ -116,13 +116,10 @@ public class Machine extends VertexGridItem {
     /**
      * Returns the machine attributes.
      *
-     * @param translator
-     *     the resource bundle containing the translation messages
-     *
      * @return the machine attributes
      */
     @Override
-    public String makeDescription (final ResourceBundle translator) {
+    public String makeDescription () {
         return (
             "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: " +
             "%s%s"

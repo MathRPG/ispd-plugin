@@ -187,13 +187,10 @@ public class Link extends EdgeGridItem {
     /**
      * Returns the link attributes.
      *
-     * @param translator
-     *     the translator containing the translation messages
-     *
      * @return the link attributes
      */
     @Override
-    public String makeDescription (final ResourceBundle translator) {
+    public String makeDescription () {
         return (
             "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s %d<br>%s " +
             "%d<br>%s: %s<br>%s: %s<br>%s: %s"
