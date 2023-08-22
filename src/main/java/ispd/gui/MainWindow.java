@@ -188,7 +188,7 @@ public class MainWindow extends JFrame implements KeyListener {
      */
     private int modelType = 0;
 
-    private ResourceBundle words = BundleManager.getBundle(Locale.getDefault());
+    private ResourceBundle words = BundleManager.getBundle();
 
     private final MultipleExtensionFileFilter fileFilter =
         new MultipleExtensionFileFilter(
@@ -825,7 +825,7 @@ public class MainWindow extends JFrame implements KeyListener {
     }
 
     private void setLanguage (final Locale locale) {
-        this.words = BundleManager.getBundle(locale);
+        this.words = BundleManager.getBundle();
         this.initTexts();
         if (this.drawingArea != null) {
             this.drawingArea.setTranslator(this.words);

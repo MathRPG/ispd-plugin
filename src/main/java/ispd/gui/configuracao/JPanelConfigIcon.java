@@ -2,7 +2,7 @@ package ispd.gui.configuracao;
 
 import ispd.gui.*;
 import ispd.gui.iconico.grade.*;
-import ispd.gui.utils.Fonts;
+import ispd.gui.utils.*;
 import ispd.policy.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -21,8 +21,7 @@ public class JPanelConfigIcon extends JPanel {
 
     private final JScrollPane jScrollPane = new JScrollPane();
 
-    private ResourceBundle words =
-        BundleManager.getBundle(new Locale("en", "US"));
+    private ResourceBundle words = BundleManager.getBundle();
 
     private final VariedRowTable machineTable =
         this.createTableWith(MachineVariedRowTable::new, MachineTable::new);
