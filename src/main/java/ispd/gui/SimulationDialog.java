@@ -1,5 +1,6 @@
 package ispd.gui;
 
+import static ispd.gui.BundleManager.*;
 import static ispd.gui.utils.ButtonBuilder.*;
 
 import ispd.arquivo.xml.*;
@@ -179,7 +180,7 @@ public class SimulationDialog extends JDialog implements Runnable {
     }
 
     private String translate (final String word) {
-        return this.translator.getString(word);
+        return getText(word);
     }
 
     private void makeLayoutAndPack () {
