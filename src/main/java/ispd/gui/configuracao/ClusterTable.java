@@ -4,7 +4,6 @@ import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.grade.*;
 import ispd.policy.managers.*;
-import java.util.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -24,9 +23,6 @@ public class ClusterTable extends AbstractTableModel {
     private final JComboBox<Object> users = new JComboBox<>();
 
     private Cluster cluster = null;
-
-    ClusterTable () {
-    }
 
     @Override
     public int getRowCount () {
@@ -168,10 +164,6 @@ public class ClusterTable extends AbstractTableModel {
 
     public JComboBox<Object> getEscalonadores () {
         return this.schedulers;
-    }
-
-    public void setPalavras (final ResourceBundle words) {
-        this.fireTableStructureChanged();
     }
 
     private static class TableRows {
