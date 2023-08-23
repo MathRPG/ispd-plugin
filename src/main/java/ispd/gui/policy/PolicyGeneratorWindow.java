@@ -1,55 +1,23 @@
 package ispd.gui.policy;
 
-import static ispd.gui.utils.ButtonBuilder.aButton;
-import static ispd.gui.utils.ButtonBuilder.basicButton;
+import static ispd.gui.TextSupplier.*;
+import static ispd.gui.utils.ButtonBuilder.*;
 
-import ispd.arquivo.interpretador.gerador.InterpretadorGerador;
-import ispd.gui.utils.Fonts.ComicSansMS;
-import ispd.gui.utils.Fonts.Tahoma;
-import ispd.gui.utils.Fonts.Verdana;
-import ispd.policy.PolicyManager;
-import ispd.utils.NameValidator;
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.text.NumberFormat;
-import java.util.LinkedList;
+import ispd.arquivo.interpretador.gerador.*;
+import ispd.gui.utils.fonts.*;
+import ispd.policy.*;
+import ispd.utils.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.text.*;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
-import javax.swing.LayoutStyle;
-import javax.swing.border.TitledBorder;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.Document;
-import javax.swing.text.NumberFormatter;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import java.util.*;
+import java.util.logging.*;
+import java.util.stream.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.text.*;
 
 public class PolicyGeneratorWindow extends JDialog {
 
@@ -77,8 +45,6 @@ public class PolicyGeneratorWindow extends JDialog {
 
     private final LinkedList<String> rFormula = new SpacedPrintList();
 
-    private final ResourceBundle translator;
-
     private final JScrollPane jScrollPanePrincipal = new JScrollPane();
 
     private final PolicyManager manager;
@@ -93,11 +59,11 @@ public class PolicyGeneratorWindow extends JDialog {
 
     private LinkedList<String> formula = this.tFormula;
 
-    private int buttonType = PolicyGeneratorWindow.START;
+    private int buttonType = START;
 
-    private int tButtonType = PolicyGeneratorWindow.START;
+    private int tButtonType = START;
 
-    private int rButtonType = PolicyGeneratorWindow.START;
+    private int rButtonType = START;
 
     private int parentAccount = 0;
 
@@ -216,12 +182,11 @@ public class PolicyGeneratorWindow extends JDialog {
     private JTextPane jTextPaneP7Gramatica;
 
     public PolicyGeneratorWindow (
-        final Frame parent, final boolean modal, final String path, final ResourceBundle translator,
+        final Frame parent, final boolean modal, final String path,
         final PolicyManager manager
     ) {
         super(parent, modal);
         this.path       = path;
-        this.translator = translator;
         this.initComponents();
         this.manager = manager;
         this.jScrollPanePrincipal.setViewportView(this.jPanelPasso1);
@@ -237,51 +202,51 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPasso4.setBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                this.translate("Advanced") + " - " + this.translate("Tasks distribution order"),
+                getText("Advanced") + " - " + getText("Tasks distribution order"),
                 TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                ComicSansMS.BOLD
             )
         );
-        this.jPanelPasso4.setPreferredSize(PolicyGeneratorWindow.PANEL_PREFERRED_SIZE);
+        this.jPanelPasso4.setPreferredSize(PANEL_PREFERRED_SIZE);
 
         final JLabel jLabelP4Formula = new JLabel();
-        jLabelP4Formula.setFont(ComicSansMS.PLAIN_11);
+        jLabelP4Formula.setFont(ComicSansMS.PLAIN);
 
-        jLabelP4Formula.setText(this.translate("Formula:"));
+        jLabelP4Formula.setText(getText("Formula:"));
 
         this.jTextFieldP4Formula = new JTextField();
         this.jTextFieldP4Formula.setEditable(false);
-        this.jTextFieldP4Formula.setFont(Verdana.BOLD_11);
+        this.jTextFieldP4Formula.setFont(Verdana.BOLD);
         this.jTextFieldP4Formula.setText("Random");
 
         final JPanel jPanel1 = new JPanel();
-        jPanel1.setBorder(BorderFactory.createTitledBorder(this.translate("Operators and precedence")));
+        jPanel1.setBorder(BorderFactory.createTitledBorder(getText("Operators and precedence")));
 
         final var button11 = basicButton("+", this::jButtonP4AddActionPerformed);
-        button11.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button11.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4Add = button11;
-        jButtonP4Add.setMinimumSize(PolicyGeneratorWindow.MINIMUM_BUTTON_SIZE);
+        jButtonP4Add.setMinimumSize(MINIMUM_BUTTON_SIZE);
 
         final var button10 = basicButton("-", this::jButtonP4SubActionPerformed);
-        button10.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button10.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4Sub = button10;
 
         final var button9 = basicButton("(", this::jButtonP4AbreParentActionPerformed);
-        button9.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button9.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4AbreParent = button9;
 
         final var button8 = basicButton(")", this::jButtonP4FechaParentActionPerformed);
-        button8.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button8.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4FechaParent = button8;
 
         final var button7 = basicButton("/", this::jButtonP4DivActionPerformed);
-        button7.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button7.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4Div = button7;
 
         final var button6 = basicButton("*", this::jButtonP4MultActionPerformed);
-        button6.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button6.setMaximumSize(MAXIMUM_BUTTON_SIZE);
         final JButton jButtonP4Mult = button6;
-        jButtonP4Mult.setMinimumSize(PolicyGeneratorWindow.MINIMUM_BUTTON_SIZE);
+        jButtonP4Mult.setMinimumSize(MINIMUM_BUTTON_SIZE);
 
         final JButton jButtonP4Voltar = basicButton("←", this::jButtonP4VoltarActionPerformed);
 
@@ -394,45 +359,45 @@ public class PolicyGeneratorWindow extends JDialog {
         );
 
         final JPanel jPanel2 = new JPanel();
-        jPanel2.setBorder(BorderFactory.createTitledBorder(this.translate("Variables")));
+        jPanel2.setBorder(BorderFactory.createTitledBorder(getText("Variables")));
 
         final JButton jButtonP4TComputacao = aButton(
-            this.translate("Computational size") + " - TCP",
+            getText("Computational size") + " - TCP",
             this::jButtonP4TComputacaoActionPerformed
         )
-            .withToolTip(this.translate("Computational size"))
+            .withToolTip(getText("Computational size"))
             .build();
 
         final JButton jButtonP4TComunicacao = aButton(
-            this.translate("Communication size") + " - TC",
+            getText("Communication size") + " - TC",
             this::jButtonP4TComunicacaoActionPerformed
         )
-            .withToolTip(this.translate("Communication size"))
+            .withToolTip(getText("Communication size"))
             .build();
 
         final JButton jButtonP4NTSubmetidas = aButton(
-            this.translate("Number of submitted tasks") + " - NTS",
+            getText("Number of submitted tasks") + " - NTS",
             this::jButtonP4NTSubmetidasActionPerformed
         )
-            .withToolTip(this.translate("Number of submitted tasks by the user"))
+            .withToolTip(getText("Number of submitted tasks by the user"))
             .build();
 
         final JButton jButtonP4NTConcluidas = aButton(
-            this.translate("Number of completed tasks") + " - NTC",
+            getText("Number of completed tasks") + " - NTC",
             this::jButtonP4NTConcluidasActionPerformed
         )
             .withToolTip("Número de tarefas concluídas do usuário")
             .build();
 
         final JButton jButtonP4PComputUser = aButton(
-            this.translate("User's computational power") + " - PCU",
+            getText("User's computational power") + " - PCU",
             this::jButtonP4PComputUserActionPerformed
         )
-            .withToolTip(this.translate("Computational power given by the user to grid"))
+            .withToolTip(getText("Computational power given by the user to grid"))
             .build();
 
         final JButton jButtonP4Const = aButton("Const", this::jButtonP4ConstActionPerformed)
-            .withToolTip(this.translate("Numerical constant"))
+            .withToolTip(getText("Numerical constant"))
             .build();
 
         this.jFormattedTextP4DigitaConst = new JFormattedTextField();
@@ -441,10 +406,10 @@ public class PolicyGeneratorWindow extends JDialog {
 
         final JButton jButtonP4PTempoCriacao =
             aButton(
-                this.translate("Task creation time") + " - TCR",
+                getText("Task creation time") + " - TCR",
                 this::jButtonP4PTempoCriacaoActionPerformed
             )
-                .withToolTip(this.translate("Task creation time"))
+                .withToolTip(getText("Task creation time"))
                 .build();
 
         final GroupLayout jPanel2Layout = new GroupLayout(jPanel2);
@@ -527,29 +492,29 @@ public class PolicyGeneratorWindow extends JDialog {
         );
 
         final JPanel jPanel3 = new JPanel();
-        jPanel3.setBorder(BorderFactory.createTitledBorder(this.translate("Order")));
+        jPanel3.setBorder(BorderFactory.createTitledBorder(getText("Order")));
 
         this.jRadioButtonP4Crescente = new JRadioButton();
-        this.jRadioButtonP4Crescente.setText(this.translate("Crescent"));
+        this.jRadioButtonP4Crescente.setText(getText("Crescent"));
 
-        this.jRadioButtonP4Crescente.setToolTipText(this.translate(
+        this.jRadioButtonP4Crescente.setToolTipText(getText(
             "This option schedules by the generated formula in crescent order"));
 
         this.jRadioButtonP4Crescente.addActionListener(this::jRadioButtonP4CrescenteActionPerformed);
 
         this.jRadioButtonP4Decrescente = new JRadioButton();
-        this.jRadioButtonP4Decrescente.setText(this.translate("Decrescent"));
+        this.jRadioButtonP4Decrescente.setText(getText("Decrescent"));
 
-        this.jRadioButtonP4Decrescente.setToolTipText(this.translate(
+        this.jRadioButtonP4Decrescente.setToolTipText(getText(
             "This option schedules by the generated formula in decrescent order"));
 
         this.jRadioButtonP4Decrescente.addActionListener(this::jRadioButtonP4DecrescenteActionPerformed);
 
         this.jRadioButtonP4Random = new JRadioButton();
         this.jRadioButtonP4Random.setSelected(true);
-        this.jRadioButtonP4Random.setText(this.translate("Random"));
+        this.jRadioButtonP4Random.setText(getText("Random"));
 
-        this.jRadioButtonP4Random.setToolTipText(this.translate("This option schedules randomly"));
+        this.jRadioButtonP4Random.setToolTipText(getText("This option schedules randomly"));
         this.jRadioButtonP4Random.addActionListener(this::jRadioButtonP4RandomActionPerformed);
 
         this.jRadioButtonP4FIFO = new JRadioButton();
@@ -679,46 +644,46 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPasso5.setBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                this.translate("Advanced") + " - " +
-                this.translate("Resource aloccation order"),
+                getText("Advanced") + " - " +
+                getText("Resource aloccation order"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                ComicSansMS.BOLD
             ));
-        this.jPanelPasso5.setPreferredSize(PolicyGeneratorWindow.PANEL_PREFERRED_SIZE);
+        this.jPanelPasso5.setPreferredSize(PANEL_PREFERRED_SIZE);
 
         final JLabel jLabelP5Formula = new JLabel();
-        jLabelP5Formula.setFont(ComicSansMS.PLAIN_11);
+        jLabelP5Formula.setFont(ComicSansMS.PLAIN);
 
-        jLabelP5Formula.setText(this.translate("Formula:"));
+        jLabelP5Formula.setText(getText("Formula:"));
 
         this.jTextFieldP5Formula = new JTextField();
         this.jTextFieldP5Formula.setEditable(false);
-        this.jTextFieldP5Formula.setFont(Verdana.BOLD_11);
+        this.jTextFieldP5Formula.setFont(Verdana.BOLD);
         this.jTextFieldP5Formula.setText("Random");
 
         final JPanel jPanel4 = new JPanel();
-        jPanel4.setBorder(BorderFactory.createTitledBorder(this.translate("Operators and precedence")));
+        jPanel4.setBorder(BorderFactory.createTitledBorder(getText("Operators and precedence")));
 
         final var button5 = basicButton("+", this::jButtonP5AddActionPerformed);
-        button5.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
-        button5.setMinimumSize(PolicyGeneratorWindow.MINIMUM_BUTTON_SIZE);
+        button5.setMaximumSize(MAXIMUM_BUTTON_SIZE);
+        button5.setMinimumSize(MINIMUM_BUTTON_SIZE);
 
         final var button4 = basicButton("-", this::jButtonP5SubActionPerformed);
-        button4.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button4.setMaximumSize(MAXIMUM_BUTTON_SIZE);
 
         final var button3 = basicButton("(", this::jButtonP5AbreParentActionPerformed);
-        button3.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button3.setMaximumSize(MAXIMUM_BUTTON_SIZE);
 
         final var button2 = basicButton(")", this::jButtonP5FechaParentActionPerformed);
-        button2.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button2.setMaximumSize(MAXIMUM_BUTTON_SIZE);
 
         final var button1 = basicButton("/", this::jButtonP5DivActionPerformed);
-        button1.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
+        button1.setMaximumSize(MAXIMUM_BUTTON_SIZE);
 
         final var button = basicButton("*", this::jButtonP5MultActionPerformed);
-        button.setMaximumSize(PolicyGeneratorWindow.MAXIMUM_BUTTON_SIZE);
-        button.setMinimumSize(PolicyGeneratorWindow.MINIMUM_BUTTON_SIZE);
+        button.setMaximumSize(MAXIMUM_BUTTON_SIZE);
+        button.setMinimumSize(MINIMUM_BUTTON_SIZE);
 
         final JButton jButtonP5Voltar = basicButton("←", this::jButtonP4VoltarActionPerformed);
 
@@ -839,45 +804,45 @@ public class PolicyGeneratorWindow extends JDialog {
         );
 
         final JPanel jPanel5 = new JPanel();
-        jPanel5.setBorder(BorderFactory.createTitledBorder(this.translate("Variables")));
+        jPanel5.setBorder(BorderFactory.createTitledBorder(getText("Variables")));
 
         final JButton jButtonP5PProcessamento = aButton(
-            this.translate("Processing power") + " - PP",
+            getText("Processing power") + " - PP",
             this::jButtonP5PProcessamentoActionPerformed
         )
-            .withToolTip(this.translate("Resource processing power"))
+            .withToolTip(getText("Resource processing power"))
             .build();
 
         final JButton jButtonP5LinkComunicacao = aButton(
-            this.translate("Communication link") + " - LC",
+            getText("Communication link") + " - LC",
             this::jButtonP5LinkComunicacaoActionPerformed
         )
-            .withToolTip(this.translate("Band of the communication link"))
+            .withToolTip(getText("Band of the communication link"))
             .build();
 
         final JButton jButtonP5TCompTarefa = aButton(
-            this.translate("Task computational size") + " - TCT",
+            getText("Task computational size") + " - TCT",
             this::jButtonP5TCompTarefaActionPerformed
         )
-            .withToolTip(this.translate("Computational size of the submitted task"))
+            .withToolTip(getText("Computational size of the submitted task"))
             .build();
 
         final JButton jButtonP5NumTExec = aButton(
-            "%s - NTE".formatted(this.translate("Number of running taks")),
+            "%s - NTE".formatted(getText("Number of running taks")),
             this::jButtonP5NumTExecActionPerformed
         )
-            .withToolTip(this.translate("Number of running tasks in the resource"))
+            .withToolTip(getText("Number of running tasks in the resource"))
             .build();
 
         final JButton jButtonP5TComunTarefa = aButton(
-            this.translate("Task communication size") + " - TCMT",
+            getText("Task communication size") + " - TCMT",
             this::jButtonP5TComunTarefaActionPerformed
         )
-            .withToolTip(this.translate("Commnication size of the submmited task"))
+            .withToolTip(getText("Commnication size of the submmited task"))
             .build();
 
         final JButton jButtonP5Const1 = aButton("Const", this::jButtonP5Const1ActionPerformed)
-            .withToolTip(this.translate("Numerical constant"))
+            .withToolTip(getText("Numerical constant"))
             .build();
 
         this.jFormattedTextP5DigitaConst = new JFormattedTextField();
@@ -885,7 +850,7 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jFormattedTextP5DigitaConst.setText("1");
 
         final JButton jButtonP5MflopExec = basicButton(
-            this.translate("Running Mflops") + " - MFE",
+            getText("Running Mflops") + " - MFE",
             this::jButtonP5MflopExecActionPerformed
         );
 
@@ -972,29 +937,29 @@ public class PolicyGeneratorWindow extends JDialog {
         );
 
         final JPanel jPanel6 = new JPanel();
-        jPanel6.setBorder(BorderFactory.createTitledBorder(this.translate("Order")));
+        jPanel6.setBorder(BorderFactory.createTitledBorder(getText("Order")));
 
         this.jRadioButtonP5Crescente = new JRadioButton();
-        this.jRadioButtonP5Crescente.setText(this.translate("Crescent"));
+        this.jRadioButtonP5Crescente.setText(getText("Crescent"));
 
-        this.jRadioButtonP5Crescente.setToolTipText(this.translate(
+        this.jRadioButtonP5Crescente.setToolTipText(getText(
             "This option schedules by the generated formula in crescent order"));
 
         this.jRadioButtonP5Crescente.addActionListener(this::jRadioButtonP5CrescenteActionPerformed);
 
         this.jRadioButtonP5Decrescente = new JRadioButton();
-        this.jRadioButtonP5Decrescente.setText(this.translate("Decrescent"));
+        this.jRadioButtonP5Decrescente.setText(getText("Decrescent"));
 
-        this.jRadioButtonP5Decrescente.setToolTipText(this.translate(
+        this.jRadioButtonP5Decrescente.setToolTipText(getText(
             "This option schedules by the generated formula in decrescent order"));
 
         this.jRadioButtonP5Decrescente.addActionListener(this::jRadioButtonP5DecrescenteActionPerformed);
 
         this.jRadioButtonP5Random = new JRadioButton();
         this.jRadioButtonP5Random.setSelected(true);
-        this.jRadioButtonP5Random.setText(this.translate("Random"));
+        this.jRadioButtonP5Random.setText(getText("Random"));
 
-        this.jRadioButtonP5Random.setToolTipText(this.translate("This option schedules randomly"));
+        this.jRadioButtonP5Random.setToolTipText(getText("This option schedules randomly"));
         this.jRadioButtonP5Random.addActionListener(this::jRadioButtonP5RandomActionPerformed);
 
         this.jRadioButtonP5FIFO = new JRadioButton();
@@ -1131,21 +1096,21 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPassoSimples.setBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                this.translate("Simple") + " - " +
-                this.translate("Scheduling options"),
+                getText("Simple") + " - " +
+                getText("Scheduling options"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                ComicSansMS.BOLD
             ));
 
         final JPanel jPanel7 = new JPanel();
         jPanel7.setBorder(BorderFactory.createTitledBorder(
             new javax.swing.border.LineBorder(Color.BLACK, 1, true),
-            this.translate("Resource Scheduler")
+            getText("Resource Scheduler")
         ));
 
         this.jListRecurso = new JList<>();
-        this.jListRecurso.setBorder(BorderFactory.createTitledBorder(this.translate(
+        this.jListRecurso.setBorder(BorderFactory.createTitledBorder(getText(
             "Select the policy used:")));
         this.jListRecurso.setModel(new SimpleResourceModel());
         this.jListRecurso.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -1184,11 +1149,11 @@ public class PolicyGeneratorWindow extends JDialog {
         final JPanel jPanel8 = new JPanel();
         jPanel8.setBorder(BorderFactory.createTitledBorder(
             new javax.swing.border.LineBorder(Color.BLACK, 1, true),
-            this.translate("Task Scheduler")
+            getText("Task Scheduler")
         ));
 
         this.jListTarefa = new JList<>();
-        this.jListTarefa.setBorder(BorderFactory.createTitledBorder(this.translate(
+        this.jListTarefa.setBorder(BorderFactory.createTitledBorder(getText(
             "Select the policy used:")));
         this.jListTarefa.setModel(new SimpleTaskModel());
         this.jListTarefa.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -1281,10 +1246,10 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPasso6.setBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                this.translate("Restrictions"),
+                getText("Restrictions"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                ComicSansMS.BOLD
             ));
 
         final JSeparator jSeparatorP6 = new JSeparator();
@@ -1292,21 +1257,20 @@ public class PolicyGeneratorWindow extends JDialog {
 
         this.jRadioButtonP6SemRestricao = new JRadioButton();
         this.jRadioButtonP6SemRestricao.setSelected(true);
-        this.jRadioButtonP6SemRestricao.setText(this.translate("No restrictions"));
+        this.jRadioButtonP6SemRestricao.setText(getText("No restrictions"));
         this.jRadioButtonP6SemRestricao.addActionListener(this::jRadioButtonP6SemRestricaoActionPerformed);
 
         this.jRadioButtonP6PorRecurso = new JRadioButton();
-        this.jRadioButtonP6PorRecurso.setText(this.translate(
+        this.jRadioButtonP6PorRecurso.setText(getText(
             "Limit the number of tasks submitted by resource"));
         this.jRadioButtonP6PorRecurso.addActionListener(this::jRadioButtonP6PorRecursoActionPerformed);
 
         this.jRadioButtonP6PorUsuario = new JRadioButton();
-        this.jRadioButtonP6PorUsuario.setText(this.translate(
-            "Limit the number of tasks submitted by user"));
+        this.jRadioButtonP6PorUsuario.setText(getText("Limit the number of tasks submitted by user"));
         this.jRadioButtonP6PorUsuario.addActionListener(this::jRadioButtonP6PorUsuarioActionPerformed);
 
         this.jLabelP6_1 = new JLabel();
-        this.jLabelP6_1.setText(this.translate("The scheduler stop when there are more than"));
+        this.jLabelP6_1.setText(getText("The scheduler stop when there are more than"));
 
         this.jLabelP6_1.setEnabled(false);
 
@@ -1318,7 +1282,7 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jTextFieldP6Num.setEnabled(false);
 
         this.jLabelP6_2 = new JLabel();
-        this.jLabelP6_2.setText(this.translate("tasks in all resources."));
+        this.jLabelP6_2.setText(getText("tasks in all resources."));
         this.jLabelP6_2.setEnabled(false);
 
         final GroupLayout jPanelPasso6Layout = new GroupLayout(this.jPanelPasso6);
@@ -1392,14 +1356,14 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPasso7.setBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                this.translate("Finish"),
+                getText("Finish"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                ComicSansMS.BOLD
             ));
 
         this.jTextPaneP7Gramatica = new JTextPane();
-        this.jTextPaneP7Gramatica.setFont(Tahoma.BOLD_12);
+        this.jTextPaneP7Gramatica.setFont(Tahoma.BOLD_LARGE);
 
         final JScrollPane jScrollPane3 = new JScrollPane();
         jScrollPane3.setViewportView(this.jTextPaneP7Gramatica);
@@ -1431,7 +1395,7 @@ public class PolicyGeneratorWindow extends JDialog {
         );
 
         this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        this.setTitle(this.translate("New Scheduler"));
+        this.setTitle(getText("New Scheduler"));
         this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         this.setIconImage(
             Toolkit
@@ -1444,41 +1408,41 @@ public class PolicyGeneratorWindow extends JDialog {
         jPanelPassos.setBorder(new javax.swing.border.MatteBorder(null));
 
         final JLabel jLabelPassos = new JLabel();
-        jLabelPassos.setFont(ComicSansMS.BOLD_12);
+        jLabelPassos.setFont(ComicSansMS.BOLD);
 
         jLabelPassos.setText("<html><b>"
-                             + this.translate("Steps")
+                             + getText("Steps")
                              + "<br"
                              + ">----------------</b></html>");
 
         this.jLabelPasso1 = new JLabel();
-        this.jLabelPasso1.setText("1 - " + this.translate("Enter the name"));
+        this.jLabelPasso1.setText("1 - " + getText("Enter the name"));
 
         this.jLabelPasso2 = new JLabel();
-        this.jLabelPasso2.setText("2 - " + this.translate("Characteristics"));
+        this.jLabelPasso2.setText("2 - " + getText("Characteristics"));
         this.jLabelPasso2.setEnabled(false);
 
         this.jLabelPasso3 = new JLabel();
-        this.jLabelPasso3.setText("3 - " + this.translate("Generator type"));
+        this.jLabelPasso3.setText("3 - " + getText("Generator type"));
 
         this.jLabelPasso3.setEnabled(false);
 
         this.jLabelPasso4 = new JLabel();
-        this.jLabelPasso4.setText("4 - " + this.translate("Task Scheduler"));
+        this.jLabelPasso4.setText("4 - " + getText("Task Scheduler"));
 
         this.jLabelPasso4.setEnabled(false);
 
         this.jLabelPasso5 = new JLabel();
-        this.jLabelPasso5.setText("5 - " + this.translate("Resource Scheduler"));
+        this.jLabelPasso5.setText("5 - " + getText("Resource Scheduler"));
         this.jLabelPasso5.setEnabled(false);
 
         this.jLabelPasso6 = new JLabel();
-        this.jLabelPasso6.setText("6 - " + this.translate("Restrictions"));
+        this.jLabelPasso6.setText("6 - " + getText("Restrictions"));
 
         this.jLabelPasso6.setEnabled(false);
 
         this.jLabelPasso7 = new JLabel();
-        this.jLabelPasso7.setText("7 - " + this.translate("Finish"));
+        this.jLabelPasso7.setText("7 - " + getText("Finish"));
 
         this.jLabelPasso7.setEnabled(false);
 
@@ -1538,24 +1502,24 @@ public class PolicyGeneratorWindow extends JDialog {
         jPanelControle.setBorder(BorderFactory.createEtchedBorder());
 
         this.buttonPrevious = aButton(
-            "< %s".formatted(this.translate("Back")),
+            "< %s".formatted(getText("Back")),
             this::onPreviousClick
         )
             .disabled()
             .build();
 
         this.buttonNext = aButton(
-            "%s >".formatted(this.translate("Next")),
+            "%s >".formatted(getText("Next")),
             this::onNextClick
         )
-            .withActionCommand("%s >".formatted(this.translate("Next")))
+            .withActionCommand("%s >".formatted(getText("Next")))
             .build();
 
-        this.buttonFinish = aButton(this.translate("Finish"), this::onFinishClick)
+        this.buttonFinish = aButton(getText("Finish"), this::onFinishClick)
             .disabled()
             .build();
 
-        final var cancel = basicButton(this.translate("Cancel"), this::onCancelClick);
+        final var cancel = basicButton(getText("Cancel"), this::onCancelClick);
 
         final GroupLayout jPanelControleLayout = new GroupLayout(jPanelControle);
         jPanelControle.setLayout(jPanelControleLayout);
@@ -1602,30 +1566,29 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPasso3.setBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                this.translate("Generator type"),
+                getText("Generator type"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                ComicSansMS.BOLD
             ));
 
         this.jOpSimples = new JRadioButton();
         this.jOpSimples.setSelected(true);
-        this.jOpSimples.setText(this.translate("Simple"));
+        this.jOpSimples.setText(getText("Simple"));
         this.jOpSimples.addActionListener(this::jOpSimplesActionPerformed);
 
         this.jOpAvancada = new JRadioButton();
-        this.jOpAvancada.setText(this.translate("Advanced"));
+        this.jOpAvancada.setText(getText("Advanced"));
         this.jOpAvancada.addActionListener(this::jOpAvancadaActionPerformed);
 
         final JLabel jLabel3 = new JLabel();
-        jLabel3.setText(this.translate("Select a option of scheduler generator:"));
+        jLabel3.setText(getText("Select a option of scheduler generator:"));
 
         final JLabel jLabel4 = new JLabel();
-        jLabel4.setText(this.translate(
-            "This option provides common standards of scheduling policies"));
+        jLabel4.setText(getText("This option provides common standards of scheduling policies"));
 
         final JLabel jLabel5 = new JLabel();
-        jLabel5.setText(this.translate(
+        jLabel5.setText(getText(
             "This option allows to create scheduling policies through mathematical formulation"));
 
         final GroupLayout jPanelPasso3Layout = new GroupLayout(this.jPanelPasso3);
@@ -1682,43 +1645,43 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPasso2.setBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                this.translate("Enter the characteristics"),
+                getText("Enter the characteristics"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                ComicSansMS.BOLD
             ));
 
         final JLabel jLabelP2Informacao = new JLabel();
-        jLabelP2Informacao.setText(this.translate("Search for information:"));
+        jLabelP2Informacao.setText(getText("Search for information:"));
 
         this.jRadioButtonP2Estatica = new JRadioButton();
-        this.jRadioButtonP2Estatica.setText(this.translate("Static"));
+        this.jRadioButtonP2Estatica.setText(getText("Static"));
         this.jRadioButtonP2Estatica.addActionListener(this::jRadioButtonP2EstaticaActionPerformed);
         this.jRadioButtonP2Estatica.setSelected(true);
 
         this.jRadioButtonP2Dinamica = new JRadioButton();
-        this.jRadioButtonP2Dinamica.setText(this.translate("Dynamic"));
+        this.jRadioButtonP2Dinamica.setText(getText("Dynamic"));
         this.jRadioButtonP2Dinamica.addActionListener(this::jRadioButtonP2DinamicaActionPerformed);
 
         this.jLabelP2Forma = new JLabel();
-        this.jLabelP2Forma.setText(this.translate("How to refresh:"));
+        this.jLabelP2Forma.setText(getText("How to refresh:"));
         this.jLabelP2Forma.setEnabled(false);
 
         this.jRadioButtonP2Tempo = new JRadioButton();
         this.jRadioButtonP2Tempo.setSelected(true);
-        this.jRadioButtonP2Tempo.setText(this.translate("Time interval"));
-        this.jRadioButtonP2Tempo.setToolTipText(this.translate(
+        this.jRadioButtonP2Tempo.setText(getText("Time interval"));
+        this.jRadioButtonP2Tempo.setToolTipText(getText(
             "Variables will be refreshed after the passing of specified time"));
         this.jRadioButtonP2Tempo.setEnabled(false);
         this.jRadioButtonP2Tempo.addActionListener(this::jRadioButtonP2TempoActionPerformed);
 
         this.jRadioButtonP2Chegada = new JRadioButton();
-        this.jRadioButtonP2Chegada.setText(this.translate("Task arrival"));
+        this.jRadioButtonP2Chegada.setText(getText("Task arrival"));
         this.jRadioButtonP2Chegada.setEnabled(false);
         this.jRadioButtonP2Chegada.addActionListener(this::jRadioButtonP2ChegadaActionPerformed);
 
         this.jRadioButtonP2Saida = new JRadioButton();
-        this.jRadioButtonP2Saida.setText(this.translate("Task output"));
+        this.jRadioButtonP2Saida.setText(getText("Task output"));
         this.jRadioButtonP2Saida.setEnabled(false);
         this.jRadioButtonP2Saida.addActionListener(this::jRadioButtonP2SaidaActionPerformed);
 
@@ -1729,22 +1692,22 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jFormattedTextFieldP2Tempo.setEnabled(false);
 
         final JLabel jLabelP2Topologia = new JLabel();
-        jLabelP2Topologia.setText(this.translate("Topology:"));
+        jLabelP2Topologia.setText(getText("Topology:"));
         jLabelP2Topologia.setVisible(false);
 
         this.jRadioButtonP2Centralizada = new JRadioButton();
         this.jRadioButtonP2Centralizada.setSelected(true);
-        this.jRadioButtonP2Centralizada.setText(this.translate("Centralized"));
+        this.jRadioButtonP2Centralizada.setText(getText("Centralized"));
         this.jRadioButtonP2Centralizada.addActionListener(this::jRadioButtonP2CentralizadaActionPerformed);
         this.jRadioButtonP2Centralizada.setVisible(false);
 
         this.jRadioButtonP2Distribuida = new JRadioButton();
-        this.jRadioButtonP2Distribuida.setText(this.translate("Distributed"));
+        this.jRadioButtonP2Distribuida.setText(getText("Distributed"));
         this.jRadioButtonP2Distribuida.addActionListener(this::jRadioButtonP2DistribuidaActionPerformed);
         this.jRadioButtonP2Distribuida.setVisible(false);
 
         this.jRadioButtonP2concluida = new JRadioButton();
-        this.jRadioButtonP2concluida.setText(this.translate("Task completed"));
+        this.jRadioButtonP2concluida.setText(getText("Task completed"));
         this.jRadioButtonP2concluida.setEnabled(false);
         this.jRadioButtonP2concluida.addActionListener(this::jRadioButtonP2concluidaActionPerformed);
 
@@ -1904,23 +1867,23 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jPanelPasso1.setBorder(
             BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(Color.BLACK),
-                this.translate("Enter the name of the scheduler"),
+                getText("Enter the name of the scheduler"),
                 TitledBorder.DEFAULT_JUSTIFICATION,
                 TitledBorder.DEFAULT_POSITION,
-                ComicSansMS.BOLD_12
+                ComicSansMS.BOLD
             ));
 
         final JLabel jLabelP1NomeEsc = new JLabel();
-        jLabelP1NomeEsc.setFont(ComicSansMS.PLAIN_11);
-        jLabelP1NomeEsc.setText(this.translate("Scheduler name"));
+        jLabelP1NomeEsc.setFont(ComicSansMS.PLAIN);
+        jLabelP1NomeEsc.setText(getText("Scheduler name"));
 
         this.jTextFieldP1NomeEsc = new JTextField();
         this.jTextFieldP1NomeEsc.setText("NewScheduler");
         this.jTextFieldP1NomeEsc.addKeyListener(new SchedulerNameKeyAdapter());
 
         final JLabel jLabelP1LocalArq = new JLabel();
-        jLabelP1LocalArq.setFont(ComicSansMS.PLAIN_11);
-        jLabelP1LocalArq.setText(this.translate("File"));
+        jLabelP1LocalArq.setFont(ComicSansMS.PLAIN);
+        jLabelP1LocalArq.setText(getText("File"));
 
         this.jTextFieldP1LocalArq = new JTextField();
         this.jTextFieldP1LocalArq.setEditable(false);
@@ -1930,7 +1893,7 @@ public class PolicyGeneratorWindow extends JDialog {
         jSeparatorP1.setForeground(Color.BLACK);
 
         this.jLabelP1Informacao = new JLabel();
-        this.jLabelP1Informacao.setForeground(PolicyGeneratorWindow.FOREGROUND_RED);
+        this.jLabelP1Informacao.setForeground(FOREGROUND_RED);
 
         final GroupLayout jPanelPasso1Layout =
             new GroupLayout(this.jPanelPasso1);
@@ -2075,7 +2038,7 @@ public class PolicyGeneratorWindow extends JDialog {
 
     private void startStepOne () {
         if (this.jTextFieldP1NomeEsc.getText().isEmpty()) {
-            this.jLabelP1Informacao.setText(this.translate("Provide a valid name for a Java class"));
+            this.jLabelP1Informacao.setText(getText("Provide a valid name for a Java class"));
             this.jTextFieldP1LocalArq.setText("");
             this.buttonNext.setEnabled(false);
         } else if (NameValidator.isValidClassName(this.jTextFieldP1NomeEsc.getText())) {
@@ -2088,7 +2051,7 @@ public class PolicyGeneratorWindow extends JDialog {
 
             this.buttonNext.setEnabled(true);
         } else {
-            this.jLabelP1Informacao.setText(this.translate("The class name is invalid"));
+            this.jLabelP1Informacao.setText(getText("The class name is invalid"));
             this.buttonNext.setEnabled(false);
         }
         final var file =
@@ -2100,13 +2063,9 @@ public class PolicyGeneratorWindow extends JDialog {
         if (file.exists()) {
             this.jLabelP1Informacao.setText("%s\n%s".formatted(
                 this.jLabelP1Informacao.getText(),
-                this.translate("This scheduler name already exists")
+                getText("This scheduler name already exists")
             ));
         }
-    }
-
-    private String translate (final String text) {
-        return this.translator.getString(text);
     }
 
     private void onNextClick (final ActionEvent evt) {
@@ -2275,26 +2234,26 @@ public class PolicyGeneratorWindow extends JDialog {
     private void jButtonP4VoltarActionPerformed (final ActionEvent evt) {
         final String operador = "+ - / * ";
         if (!this.formula.isEmpty()) {
-            if (this.buttonType == PolicyGeneratorWindow.OPEN_BRACKET) {
+            if (this.buttonType == OPEN_BRACKET) {
                 this.parentAccount--;
-            } else if (this.buttonType == PolicyGeneratorWindow.CLOSE_BRACKET) {
+            } else if (this.buttonType == CLOSE_BRACKET) {
                 this.parentAccount++;
             }
             this.formula.removeLast();
             if (this.formula.isEmpty()) {
-                this.buttonType    = PolicyGeneratorWindow.START;
+                this.buttonType    = START;
                 this.parentAccount = 0;
             } else if (operador.contains(this.formula.getLast())) {
-                this.buttonType = PolicyGeneratorWindow.OPERATOR;
+                this.buttonType = OPERATOR;
             } else if (this.formula.getLast().contains("(")) {
-                this.buttonType = PolicyGeneratorWindow.OPEN_BRACKET;
+                this.buttonType = OPEN_BRACKET;
             } else if (this.formula.getLast().contains(")")) {
-                this.buttonType = PolicyGeneratorWindow.CLOSE_BRACKET;
+                this.buttonType = CLOSE_BRACKET;
             } else {
-                this.buttonType = PolicyGeneratorWindow.VARIABLE;
+                this.buttonType = VARIABLE;
             }
         } else {
-            this.buttonType    = PolicyGeneratorWindow.START;
+            this.buttonType    = START;
             this.parentAccount = 0;
         }
         this.escreverFormula();
@@ -2329,12 +2288,12 @@ public class PolicyGeneratorWindow extends JDialog {
     }
 
     private void jButtonP4AbreParentActionPerformed (final ActionEvent evt) {
-        if (this.buttonType == PolicyGeneratorWindow.START
-            || this.buttonType == PolicyGeneratorWindow.OPERATOR
+        if (this.buttonType == START
+            || this.buttonType == OPERATOR
             ||
-            this.buttonType == PolicyGeneratorWindow.OPEN_BRACKET) {
+            this.buttonType == OPEN_BRACKET) {
             this.parentAccount++;
-            this.buttonType = PolicyGeneratorWindow.OPEN_BRACKET;
+            this.buttonType = OPEN_BRACKET;
             this.formula.add("(");
         }
         this.escreverFormula();
@@ -2342,11 +2301,11 @@ public class PolicyGeneratorWindow extends JDialog {
 
     private void jButtonP4FechaParentActionPerformed (final ActionEvent evt) {
         if (this.parentAccount != 0 && (
-            this.buttonType == PolicyGeneratorWindow.VARIABLE ||
-            this.buttonType == PolicyGeneratorWindow.CLOSE_BRACKET
+            this.buttonType == VARIABLE ||
+            this.buttonType == CLOSE_BRACKET
         )) {
             this.parentAccount--;
-            this.buttonType = PolicyGeneratorWindow.CLOSE_BRACKET;
+            this.buttonType = CLOSE_BRACKET;
             this.formula.add(")");
         }
         this.escreverFormula();
@@ -2577,7 +2536,7 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jLabelP6_1.setEnabled(true);
         this.jTextFieldP6Num.setEnabled(true);
         this.jLabelP6_2.setEnabled(true);
-        this.jLabelP6_2.setText(this.translate("tasks in all resources."));
+        this.jLabelP6_2.setText(getText("tasks in all resources."));
     }
 
     private void jRadioButtonP6PorUsuarioActionPerformed (final ActionEvent evt) {
@@ -2587,7 +2546,7 @@ public class PolicyGeneratorWindow extends JDialog {
         this.jLabelP6_1.setEnabled(true);
         this.jTextFieldP6Num.setEnabled(true);
         this.jLabelP6_2.setEnabled(true);
-        this.jLabelP6_2.setText(this.translate("tasks by all user."));
+        this.jLabelP6_2.setText(getText("tasks by all user."));
     }
 
     private void setEnableDinamica (final boolean b) {
@@ -2610,24 +2569,24 @@ public class PolicyGeneratorWindow extends JDialog {
     }
 
     private void pressionarOperador (final String token) {
-        if (this.buttonType == PolicyGeneratorWindow.VARIABLE ||
-            this.buttonType == PolicyGeneratorWindow.CLOSE_BRACKET) {
-            this.buttonType = PolicyGeneratorWindow.OPERATOR;
+        if (this.buttonType == VARIABLE ||
+            this.buttonType == CLOSE_BRACKET) {
+            this.buttonType = OPERATOR;
             this.formula.add(token);
-        } else if (this.buttonType == PolicyGeneratorWindow.OPERATOR) {
+        } else if (this.buttonType == OPERATOR) {
             this.formula.set(this.formula.size() - 1, token);
         }
         this.escreverFormula();
     }
 
     private void pressionarVariavel (final String token) {
-        if (this.buttonType == PolicyGeneratorWindow.START
-            || this.buttonType == PolicyGeneratorWindow.OPERATOR
+        if (this.buttonType == START
+            || this.buttonType == OPERATOR
             ||
-            this.buttonType == PolicyGeneratorWindow.OPEN_BRACKET) {
-            this.buttonType = PolicyGeneratorWindow.VARIABLE;
+            this.buttonType == OPEN_BRACKET) {
+            this.buttonType = VARIABLE;
             this.formula.add(token);
-        } else if (this.buttonType == PolicyGeneratorWindow.VARIABLE) {
+        } else if (this.buttonType == VARIABLE) {
             this.formula.set(this.formula.size() - 1, token);
         }
         this.escreverFormula();
@@ -2793,7 +2752,7 @@ public class PolicyGeneratorWindow extends JDialog {
                 "The most computational power resource",
                 "Resource with less workload",
                 "Resource with better communication link"
-            ).map(PolicyGeneratorWindow.this::translate)
+            ).map(text -> getText(text))
             .toList();
 
         public int getSize () {
@@ -2808,12 +2767,12 @@ public class PolicyGeneratorWindow extends JDialog {
     private class SimpleTaskModel extends AbstractListModel<String> {
 
         private final List<String> strings = Stream.of(
-            PolicyGeneratorWindow.this.translate("FIFO (First In, First Out)"),
+            getText("FIFO (First In, First Out)"),
             this.translateAndMerge("Largest Task First", "(Cost of Processing)"),
             this.translateAndMerge("Lowest Task First", "(Cost of Processing)"),
             this.translateAndMerge("Largest Task First", "(Cost of Communication)"),
             this.translateAndMerge("Lowest Task First", "(Cost of Communication)"),
-            PolicyGeneratorWindow.this.translate("User with Less Use of Grid First")
+            getText("User with Less Use of Grid First")
         ).toList();
 
         public int getSize () {
@@ -2826,8 +2785,8 @@ public class PolicyGeneratorWindow extends JDialog {
 
         private String translateAndMerge (final String s1, final String s2) {
             return "%s %s".formatted(
-                PolicyGeneratorWindow.this.translate(s1),
-                PolicyGeneratorWindow.this.translate(s2)
+                getText(s1),
+                getText(s2)
             );
         }
     }

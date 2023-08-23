@@ -1,10 +1,11 @@
 package ispd.gui;
 
+import static ispd.gui.TextSupplier.*;
 import static ispd.gui.utils.ButtonBuilder.*;
 
 import ispd.arquivo.xml.*;
 import ispd.gui.results.*;
-import ispd.gui.utils.*;
+import ispd.gui.utils.fonts.*;
 import ispd.motor.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -23,8 +24,6 @@ public class SimulationDialog extends JDialog implements Runnable {
 
     private final Document model;
 
-    private final ResourceBundle translator;
-
     private final ProgressoSimulacao progressTracker = new BasicProgressTracker();
 
     private final int gridOrCloud;
@@ -41,11 +40,9 @@ public class SimulationDialog extends JDialog implements Runnable {
         final Frame parent,
         final boolean modal,
         final Document model,
-        final ResourceBundle translator,
         final int gridOrCloud
     ) {
         super(parent, modal);
-        this.translator  = translator;
         this.gridOrCloud = gridOrCloud;
         this.model       = model;
         this.initComponents();
@@ -166,25 +163,21 @@ public class SimulationDialog extends JDialog implements Runnable {
 
     private void initComponents () {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.setTitle(this.translate("Running Simulation"));
+        this.setTitle(getText("Running Simulation"));
 
         this.progressBar = new JProgressBar();
         this.progressBar.setDebugGraphicsOptions(DebugGraphics.NONE_OPTION);
 
         this.notificationArea = new JTextPane();
         this.notificationArea.setEditable(false);
-        this.notificationArea.setFont(Fonts.Arial.BOLD_11);
+        this.notificationArea.setFont(Arial.BOLD);
 
         this.makeLayoutAndPack();
     }
 
-    private String translate (final String word) {
-        return this.translator.getString(word);
-    }
-
     private void makeLayoutAndPack () {
         final var scrollPane   = new JScrollPane(this.notificationArea);
-        final var cancelButton = basicButton(this.translate("Cancel"), this::onCancel);
+        final var cancelButton = basicButton(getText("Cancel"), this::onCancel);
 
         final var layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
@@ -280,18 +273,10 @@ public class SimulationDialog extends JDialog implements Runnable {
                 final var config = SimulationDialog.this.colorConfig;
 
                 StyleConstants.setForeground(config, Optional.ofNullable(cor).orElse(Color.black));
-                doc.insertString(doc.getLength(), this.tryTranslate(text), config);
+                doc.insertString(doc.getLength(), getText(text), config);
             } catch (final BadLocationException ex) {
                 Logger.getLogger(SimulationDialog.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-
-        private String tryTranslate (final String text) {
-            if (!SimulationDialog.this.translator.containsKey(text)) {
-                return text;
-            }
-
-            return SimulationDialog.this.translate(text);
         }
     }
 }

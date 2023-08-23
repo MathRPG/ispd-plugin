@@ -336,10 +336,4 @@ class TerminalApplicationCharacterizationTest {
 
         verify(this.outStream, Approvals.NAMES.withParameters(load));
     }
-
-    @Disabled
-    @Test
-    void playGround () {
-
-    }
 }

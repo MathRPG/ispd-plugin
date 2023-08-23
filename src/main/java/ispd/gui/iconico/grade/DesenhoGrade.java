@@ -1,5 +1,7 @@
 package ispd.gui.iconico.grade;
 
+import static ispd.gui.TextSupplier.*;
+
 import ispd.arquivo.xml.*;
 import ispd.gui.*;
 import ispd.gui.iconico.Icon;
@@ -48,9 +50,6 @@ public class DesenhoGrade extends DrawingArea {
     private final Cursor crossHairCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
     private final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-
-    private ResourceBundle translator =
-        ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
 
     /**
      * (GRID, IAAS ou PAAS)
@@ -146,8 +145,8 @@ public class DesenhoGrade extends DrawingArea {
             final var text = "WARNING";
             JOptionPane.showMessageDialog(
                 null,
-                this.translate("No icon selected."),
-                this.translate(text),
+                getText("No icon selected."),
+                getText(text),
                 JOptionPane.WARNING_MESSAGE
             );
         } else if (this.selectedIcons.size() == 1) {
@@ -178,7 +177,7 @@ public class DesenhoGrade extends DrawingArea {
             ((GridItem) temp.getDestination()).getOutboundConnections().add(temp);
             this.selectedIcons.add(temp);
             this.edges.add(temp);
-            this.mainWindow.appendNotificacao(this.translate("Network connection added."));
+            this.mainWindow.appendNotificacao(getText("Network connection added."));
             this.mainWindow.modificar();
             this.setLabelAtributos(temp);
         }
@@ -189,15 +188,15 @@ public class DesenhoGrade extends DrawingArea {
         if (this.selectedIcons.isEmpty()) {
             JOptionPane.showMessageDialog(
                 null,
-                this.translate("No icon selected."),
-                this.translate("WARNING"),
+                getText("No icon selected."),
+                getText("WARNING"),
                 JOptionPane.WARNING_MESSAGE
             );
         } else {
             final var opcao = JOptionPane.showConfirmDialog(
                 null,
-                this.translate("Remove this icon?"),
-                this.translate("Remove"),
+                getText("Remove this icon?"),
+                getText("Remove"),
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE
             );
@@ -247,7 +246,7 @@ public class DesenhoGrade extends DrawingArea {
         }
         this.selectedIcons.clear();
         this.selectedIcons.add(link);
-        this.mainWindow.appendNotificacao(this.translate("Network connection added."));
+        this.mainWindow.appendNotificacao(getText("Network connection added."));
         this.mainWindow.modificar();
         this.setLabelAtributos(link);
     }
@@ -289,17 +288,17 @@ public class DesenhoGrade extends DrawingArea {
             case MACHINE -> {
                 vertice = new Machine(x, y, this.vertexCount, this.iconCount, 0.0);
                 vertice.getId();
-                this.mainWindow.appendNotificacao(this.translate("Machine icon added."));
+                this.mainWindow.appendNotificacao(getText("Machine icon added."));
             }
             case CLUSTER -> {
                 vertice = new Cluster(x, y, this.vertexCount, this.iconCount, 0.0);
                 vertice.getId();
-                this.mainWindow.appendNotificacao(this.translate("Cluster icon added."));
+                this.mainWindow.appendNotificacao(getText("Cluster icon added."));
             }
             case INTERNET -> {
                 vertice = new Internet(x, y, this.vertexCount, this.iconCount);
                 vertice.getId();
-                this.mainWindow.appendNotificacao(this.translate("Internet icon added."));
+                this.mainWindow.appendNotificacao(getText("Internet icon added."));
             }
         }
         if (vertice != null) {
@@ -343,19 +342,15 @@ public class DesenhoGrade extends DrawingArea {
     //utilizado para inserir novo valor nas Strings dos componentes
     private void initTexts () {
         this.setPopupButtonText(
-            this.translate("Remove"),
-            this.translate("Copy"),
-            this.translate("Turn Over"),
-            this.translate("Paste")
+            getText("Remove"),
+            getText("Copy"),
+            getText("Turn Over"),
+            getText("Paste")
         );
         this.setErrorText(
-            this.translate("You must click an icon."),
-            this.translate("WARNING")
+            getText("You must click an icon."),
+            getText("WARNING")
         );
-    }
-
-    private String translate (final String text) {
-        return this.translator.getString(text);
     }
 
     public HashSet<VirtualMachine> getVirtualMachines () {
@@ -404,14 +399,14 @@ public class DesenhoGrade extends DrawingArea {
 
     private void setLabelAtributos (final GridItem icon) {
         final var text = new StringBuilder("<html>");
-        text.append(icon.makeDescription(this.translator));
+        text.append(icon.makeDescription());
         if (this.shouldPrintDirectConnections && icon instanceof Vertex) {
-            text.append("<br>").append(this.translate("Output Connection:"));
+            text.append("<br>").append(getText("Output Connection:"));
             for (final var i : icon.getOutboundConnections()) {
                 final var saida = (GridItem) ((Edge) i).getDestination();
                 text.append("<br>").append(saida.getId().getName());
             }
-            text.append("<br>").append(this.translate("Input Connection:"));
+            text.append("<br>").append(getText("Input Connection:"));
             for (final var i : icon.getInboundConnections()) {
                 final var entrada = (GridItem) ((Edge) i).getSource();
                 text.append("<br>").append(entrada.getId().getName());
@@ -419,34 +414,34 @@ public class DesenhoGrade extends DrawingArea {
         }
         if (this.shouldPrintDirectConnections && icon instanceof Edge) {
             for (final var i : icon.getInboundConnections()) {
-                text.append("<br>").append(this.translate("Source Node:")).append(" ")
+                text.append("<br>").append(getText("Source Node:")).append(" ")
                     .append(i.getInboundConnections());
             }
             for (final var i : icon.getInboundConnections()) {
-                text.append("<br>").append(this.translate("Destination Node:")).append(" ")
+                text.append("<br>").append(getText("Destination Node:")).append(" ")
                     .append(i.getOutboundConnections());
             }
         }
         if (this.shouldPrintIndirectConnections && icon instanceof final Machine I) {
             final var listaEntrada = I.connectedInboundNodes();
             final var listaSaida   = I.connectedOutboundNodes();
-            text.append("<br>").append(this.translate("Output Nodes Indirectly Connected:"));
+            text.append("<br>").append(getText("Output Nodes Indirectly Connected:"));
             for (final var i : listaSaida) {
                 text.append("<br>").append(i.getId().getGlobalId());
             }
-            text.append("<br>").append(this.translate("Input Nodes Indirectly Connected:"));
+            text.append("<br>").append(getText("Input Nodes Indirectly Connected:"));
             for (final var i : listaEntrada) {
                 text.append("<br>").append(i.getId().getGlobalId());
             }
         }
         if (this.shouldPrintSchedulableNodes && icon instanceof final Machine I) {
-            text.append("<br>").append(this.translate("Schedulable Nodes:"));
+            text.append("<br>").append(getText("Schedulable Nodes:"));
             for (final var i : I.connectedSchedulableNodes()) {
                 text.append("<br>").append(i.getId().getGlobalId());
             }
             if (I.isMaster()) {
                 final var escravos = ((Machine) icon).getSlaves();
-                text.append("<br>").append(this.translate("Slave Nodes:"));
+                text.append("<br>").append(getText("Slave Nodes:"));
                 for (final var i : escravos) {
                     text.append("<br>").append(i.getId().getName());
                 }
@@ -705,8 +700,8 @@ public class DesenhoGrade extends DrawingArea {
         if (this.selectedIcons.size() != 1) {
             JOptionPane.showMessageDialog(
                 null,
-                this.translate("Please select a network icon"),
-                this.translate("WARNING"),
+                getText("Please select a network icon"),
+                getText("WARNING"),
                 JOptionPane.WARNING_MESSAGE
             );
             return;
@@ -752,11 +747,6 @@ public class DesenhoGrade extends DrawingArea {
                 currentY += distanceBetweenIcons;
             }
         }
-    }
-
-    public void setTranslator (final ResourceBundle translator) {
-        this.translator = translator;
-        this.initTexts();
     }
 
     public List<String> getNosEscalonadores () {

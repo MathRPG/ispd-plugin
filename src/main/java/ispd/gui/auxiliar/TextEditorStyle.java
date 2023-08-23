@@ -1,43 +1,14 @@
 package ispd.gui.auxiliar;
 
-import ispd.gui.utils.Fonts.Monospaced;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.swing.AbstractAction;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.KeyStroke;
-import javax.swing.ListSelectionModel;
-import javax.swing.SwingConstants;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
-import javax.swing.text.Element;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
+import ispd.gui.utils.fonts.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.logging.*;
+import java.util.regex.*;
+import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
 
 /**
  * Text style to visualize Java code. After instantiation, the method
@@ -81,7 +52,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         "Mensagens.DEVOLVER_COM_PREEMPCAO", "Mensagens.ATUALIZAR"
     };
 
-    private static final Font font = Monospaced.BOLD_12;
+    private static final Font font = Monospaced.BOLD;
 
     private final Element rootElement = this.getDefaultRootElement();
 
@@ -189,13 +160,13 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         switch (text) {
             case "\n" -> {
                 final var tabs =
-                    TextEditorStyle.TAB_AS_SPACES.repeat(this.calculateScopeDepthUntil(offset));
+                    TAB_AS_SPACES.repeat(this.calculateScopeDepthUntil(offset));
                 super.insertString(offset, "\n" + tabs, this.style);
                 this.insertLines(1);
             }
             case "\t" -> super.insertString(
                 offset,
-                ispd.gui.auxiliar.TextEditorStyle.TAB_AS_SPACES,
+                TAB_AS_SPACES,
                 this.style
             );
             case "}" -> {
@@ -244,7 +215,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
     }
 
     private JList<String> makeAutoCompleteList () {
-        final var acl = new JList<>(TextEditorStyle.AUTOCOMPLETE_STRINGS);
+        final var acl = new JList<>(AUTOCOMPLETE_STRINGS);
         acl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         acl.addMouseListener(new AutoCompleteMouseAdapter());
         acl.addKeyListener(new AutoCompleteKeyAdapter());
@@ -283,7 +254,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
 
     private void insertPastedText (final int offset, final String str, final AttributeSet attr)
         throws BadLocationException {
-        final var spaces = str.replaceAll("\t", TextEditorStyle.TAB_AS_SPACES);
+        final var spaces = str.replaceAll("\t", TAB_AS_SPACES);
         final int total  = countMatches(spaces);
         this.insertLines(total);
         super.insertString(offset, spaces, attr);
@@ -295,9 +266,9 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         int       depth      = 0;
 
         for (int i = 0; i < textBefore.length(); i++) {
-            if (textBefore.charAt(i) == TextEditorStyle.OPEN_BRACKET) {
+            if (textBefore.charAt(i) == OPEN_BRACKET) {
                 depth++;
-            } else if (textBefore.charAt(i) == TextEditorStyle.CLOSE_BRACKET) {
+            } else if (textBefore.charAt(i) == CLOSE_BRACKET) {
                 depth--;
             }
         }
@@ -315,7 +286,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         throws BadLocationException {
         final String text = this.getText(0, offset);
         super.insertString(offset, str, this.style);
-        if (text.substring(offset - 4).equals(TextEditorStyle.TAB_AS_SPACES)) {
+        if (text.substring(offset - 4).equals(TAB_AS_SPACES)) {
             super.remove(offset - 4, 4);
         }
     }
@@ -325,7 +296,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         this.lineCount -= total;
         for (int i = 0; i < total; i++) {
             final int end = this.lineCountBar.getText().length();
-            final int pos = this.lineCountBar.getText().lastIndexOf(TextEditorStyle.NEW_LINE, end);
+            final int pos = this.lineCountBar.getText().lastIndexOf(NEW_LINE, end);
             this.lineCountBar.getDocument().remove(pos, end - pos);
         }
     }
@@ -357,14 +328,14 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         lcb.setEnabled(false);
         lcb.setMargin(new Insets(-2, 0, 0, 0));
         lcb.setColumns(1);
-        lcb.setFont(this.font);
+        lcb.setFont(font);
         lcb.setText("1");
         lcb.setBackground(Color.lightGray);
         return lcb;
     }
 
     public Font getFont () {
-        return this.font;
+        return font;
     }
 
     public Component getCursor () {
@@ -425,7 +396,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         StyleConstants.setForeground(this.style, this.numberStyle);
 
         {
-            final Pattern p = Pattern.compile(TextEditorStyle.NUMBER_MATCHER);
+            final Pattern p = Pattern.compile(NUMBER_MATCHER);
             final Matcher m = p.matcher(text);
             while (m.find()) {
                 this.setCharacterAttributes(m.start(), m.end() - m.start(),
@@ -436,7 +407,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         }
 
         StyleConstants.setForeground(this.style, this.stringStyle);
-        for (final String keyword : TextEditorStyle.STRING_MATCHERS) {
+        for (final String keyword : STRING_MATCHERS) {
             final Pattern p = Pattern.compile(keyword);
             final Matcher m = p.matcher(text);
 
@@ -496,10 +467,10 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
         component.addCaretListener(this);
         component.getInputMap().put(
             KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, InputEvent.CTRL_DOWN_MASK),
-            TextEditorStyle.AUTOCOMPLETE_ACTION_KEY
+            AUTOCOMPLETE_ACTION_KEY
         );
         component.getActionMap().put(
-            TextEditorStyle.AUTOCOMPLETE_ACTION_KEY,
+            AUTOCOMPLETE_ACTION_KEY,
             new TextPaneAction(component)
         );
     }
@@ -524,7 +495,7 @@ public class TextEditorStyle extends DefaultStyledDocument implements CaretListe
 
         final var text = this.getText(dotPosition - 1, 1);
         return (int) Arrays
-            .stream(TextEditorStyle.AUTOCOMPLETE_STRINGS)
+            .stream(AUTOCOMPLETE_STRINGS)
             .takeWhile(s -> !s.startsWith(text))
             .count();
     }

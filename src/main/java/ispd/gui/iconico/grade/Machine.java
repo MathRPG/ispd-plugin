@@ -1,12 +1,11 @@
 package ispd.gui.iconico.grade;
 
-import ispd.policy.allocation.vm.VmMaster;
-import java.awt.Image;
-import java.util.ArrayList;
-import java.util.HashSet;
+import static ispd.gui.TextSupplier.*;
+
+import ispd.policy.allocation.vm.*;
+import java.awt.*;
 import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 public class Machine extends VertexGridItem {
 
@@ -117,26 +116,29 @@ public class Machine extends VertexGridItem {
     /**
      * Returns the machine attributes.
      *
-     * @param translator
-     *     the resource bundle containing the translation messages
-     *
      * @return the machine attributes
      */
     @Override
-    public String makeDescription (final ResourceBundle translator) {
+    public String makeDescription () {
         return (
             "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s: %s<br>%s: " +
             "%s%s"
         ).formatted(
-            translator.getString("Local ID:"), this.id.getLocalId(),
-            translator.getString("Global ID:"), this.id.getGlobalId(),
-            translator.getString("Label"), this.id.getName(),
-            translator.getString("X-coordinate:"), this.getX(),
-            translator.getString("Y-coordinate:"), this.getY(),
-            translator.getString("Computing power"),
+            getText("Local ID:"),
+            this.id.getLocalId(),
+            getText("Global ID:"),
+            this.id.getGlobalId(),
+            getText("Label"),
+            this.id.getName(),
+            getText("X-coordinate:"),
+            this.getX(),
+            getText("Y-coordinate:"),
+            this.getY(),
+            getText("Computing power"),
             this.computationalPower,
-            translator.getString("Load Factor"), this.loadFactor,
-            this.describeRole(translator)
+            getText("Load Factor"),
+            this.loadFactor,
+            this.describeRole()
         );
     }
 
@@ -206,19 +208,16 @@ public class Machine extends VertexGridItem {
     /**
      * It describes this machine's role relative if it is a master.
      *
-     * @param translator
-     *     the translator containing the translated messages
-     *
      * @return the described machine role
      */
-    private String describeRole (final ResourceBundle translator) {
+    private String describeRole () {
         if (!this.master) {
-            return "<br>" + translator.getString("Slave");
+            return "<br>" + getText("Slave");
         }
 
         return "<br>%s<br>%s: %s".formatted(
-            translator.getString("Master"),
-            translator.getString("Scheduling algorithm"),
+            getText("Master"),
+            getText("Scheduling algorithm"),
             this.schedulingAlgorithm
         );
     }

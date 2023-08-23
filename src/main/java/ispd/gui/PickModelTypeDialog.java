@@ -1,16 +1,10 @@
 package ispd.gui;
 
-import ispd.gui.utils.ButtonBuilder;
-import ispd.gui.utils.Fonts.Tahoma;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.GroupLayout;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.WindowConstants;
+import ispd.gui.utils.*;
+import ispd.gui.utils.fonts.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 public class PickModelTypeDialog extends JDialog {
 
@@ -50,7 +44,7 @@ public class PickModelTypeDialog extends JDialog {
 
     private void initWindowProperties () {
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.setFont(Tahoma.PLAIN_12);
+        this.setFont(Tahoma.PLAIN_LARGE);
     }
 
     private void gridButtonClicked (final ActionEvent evt) {
@@ -165,15 +159,15 @@ public class PickModelTypeDialog extends JDialog {
 
     private int getChoiceForSelectedButton () {
         if (this.jRadioGrid.isSelected()) {
-            return PickModelTypeDialog.GRID;
+            return GRID;
         }
 
         if (this.jRadioIaaS.isSelected()) {
-            return PickModelTypeDialog.IAAS;
+            return IAAS;
         }
 
         if (this.jRadioPaaS.isSelected()) {
-            return PickModelTypeDialog.PAAS;
+            return PAAS;
         }
 
         return this.choice;

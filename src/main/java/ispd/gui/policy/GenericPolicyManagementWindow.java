@@ -1,57 +1,23 @@
 package ispd.gui.policy;
 
-import ispd.arquivo.interpretador.gerador.InterpretadorGerador;
-import ispd.gui.auxiliar.MultipleExtensionFileFilter;
-import ispd.gui.auxiliar.TextEditorStyle;
-import ispd.gui.utils.ButtonBuilder;
-import ispd.policy.PolicyManager;
-import ispd.utils.NameValidator;
-import ispd.utils.constants.FileExtensions;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.net.URL;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import javax.swing.BorderFactory;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.LayoutStyle;
-import javax.swing.ListSelectionModel;
-import javax.swing.border.TitledBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.UndoableEditEvent;
-import javax.swing.text.BadLocationException;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
-import javax.swing.undo.UndoManager;
+import static ispd.gui.TextSupplier.*;
+
+import ispd.arquivo.interpretador.gerador.*;
+import ispd.gui.auxiliar.*;
+import ispd.gui.utils.*;
+import ispd.policy.*;
+import ispd.utils.*;
+import ispd.utils.constants.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.event.*;
+import javax.swing.text.*;
+import javax.swing.undo.*;
 
 public abstract class GenericPolicyManagementWindow extends JFrame {
 
@@ -63,11 +29,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private final PolicyManager manager;
 
-    private final ResourceBundle words =
-        ResourceBundle.getBundle("ispd.idioma.Idioma", Locale.getDefault());
-
-    private final JFileChooser fileChooser =
-        this.configuredFileChooser();
+    private final JFileChooser fileChooser = this.configuredFileChooser();
 
     private final JList<String> policyList = this.makePolicyList();
 
@@ -84,7 +46,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         this.setAlwaysOnTop(true);
         this.setFocusable(false);
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(this.getResource(
-            GenericPolicyManagementWindow.ICON_IMAGE_PATH
+            ICON_IMAGE_PATH
         )));
 
         this.configureMenuBar();
@@ -139,13 +101,9 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final var chooser = new JFileChooser();
         chooser.setAcceptAllFileFilterUsed(false);
         chooser.setFileFilter(new MultipleExtensionFileFilter(
-            this.translate("Java Source Files (. java)"), FileExtensions.JAVA_SOURCE, true
+            getText("Java Source Files (. java)"), FileExtensions.JAVA_SOURCE, true
         ));
         return chooser;
-    }
-
-    protected String translate (final String cut) {
-        return this.words.getString(cut);
     }
 
     private void configureMenuBar () {
@@ -221,9 +179,10 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private JList<String> makePolicyList () {
         final var list = new JList<String>();
+        final String cut = this.getPolicyListTitle();
         list.setBorder(BorderFactory.createTitledBorder(
             null,
-            this.translate(this.getPolicyListTitle()),
+            getText(cut),
             TitledBorder.CENTER,
             TitledBorder.DEFAULT_POSITION
         ));
@@ -380,7 +339,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
     private JMenu makeMenu (final String name, final Component... items) {
         final var menu = new JMenu();
-        menu.setText(this.translate(name));
+        menu.setText(getText(name));
 
         for (final var item : items) {
             menu.add(item);
@@ -400,7 +359,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
             itemName, imagePath,
             action, acceleratorKey
         );
-        item.setToolTipText(this.translate(toolTip));
+        item.setToolTipText(getText(toolTip));
         return item;
     }
 
@@ -425,7 +384,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     ) {
         final var item = new JMenuItem();
         item.setIcon(new ImageIcon(this.getResource(imagePath)));
-        item.setText(this.translate(itemName));
+        item.setText(getText(itemName));
         item.addActionListener(action);
         return item;
     }
@@ -458,7 +417,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final ActionListener action
     ) {
         return ButtonBuilder.aButton(new ImageIcon(this.getResource(iconPath)), action)
-            .withToolTip(this.translate(helpText))
+            .withToolTip(getText(helpText))
             .withCenterBottomTextPosition()
             .nonFocusable()
             .build();
@@ -524,7 +483,6 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
             this,
             true,
             this.manager.directory().getAbsolutePath(),
-            this.words,
             this.manager
         );
 
@@ -602,9 +560,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private void updateTitleWithFileName (final String fileName) {
-        final var afterFileName = this.hasPendingChanges
-                                  ? " [%s] ".formatted(this.translate("modified"))
-                                  : " ";
+        final String afterFileName;
+        afterFileName = this.hasPendingChanges ? " [%s] ".formatted(getText("modified")) : " ";
 
         this.setTitle("%s.java%s- %s".formatted(
             fileName, afterFileName,
@@ -613,7 +570,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     protected String getTranslatedWindowTitle () {
-        return this.translate(this.getWindowTitle());
+        return getText(this.getWindowTitle());
     }
 
     private void onSave (final ActionEvent evt) {
@@ -743,7 +700,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         final int choice = JOptionPane.showConfirmDialog(
             this,
             "%s %s.java".formatted(
-                this.translate("Do you want to save changes to"),
+                getText("Do you want to save changes to"),
                 this.currentlyOpenFileName.get()
             )
         );

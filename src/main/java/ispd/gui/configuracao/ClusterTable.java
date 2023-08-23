@@ -1,10 +1,11 @@
 package ispd.gui.configuracao;
 
-import ispd.gui.iconico.grade.Cluster;
-import ispd.policy.managers.GridSchedulingPolicyManager;
-import java.util.ResourceBundle;
-import javax.swing.JComboBox;
-import javax.swing.table.AbstractTableModel;
+import static ispd.gui.TextSupplier.*;
+
+import ispd.gui.iconico.grade.*;
+import ispd.policy.managers.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 public class ClusterTable extends AbstractTableModel {
 
@@ -23,20 +24,14 @@ public class ClusterTable extends AbstractTableModel {
 
     private Cluster cluster = null;
 
-    private ResourceBundle words;
-
-    ClusterTable (final ResourceBundle words) {
-        this.words = words;
-    }
-
     @Override
     public int getRowCount () {
-        return ClusterTable.ROW_COUNT;
+        return ROW_COUNT;
     }
 
     @Override
     public int getColumnCount () {
-        return ClusterTable.COLUMN_COUNT;
+        return COLUMN_COUNT;
     }
 
     /**
@@ -54,12 +49,12 @@ public class ClusterTable extends AbstractTableModel {
     @Override
     public Object getValueAt (final int rowIndex, final int columnIndex) {
         switch (columnIndex) {
-            case ClusterTable.TYPE:
+            case TYPE:
                 final var typeName = this.getColumnTypeName(rowIndex);
                 if (typeName != null) {
                     return typeName;
                 }
-            case ClusterTable.VALUE:
+            case VALUE:
                 if (this.cluster != null) {
                     switch (rowIndex) {
                         case TableRows.LABEL:
@@ -103,20 +98,20 @@ public class ClusterTable extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case ClusterTable.TYPE -> this.words.getString("Properties");
-            case ClusterTable.VALUE -> this.words.getString("Values");
+            case TYPE -> getText("Properties");
+            case VALUE -> getText("Values");
             default -> null;
         };
     }
 
     @Override
     public boolean isCellEditable (final int rowIndex, final int columnIndex) {
-        return columnIndex != ClusterTable.TYPE;
+        return columnIndex != TYPE;
     }
 
     @Override
     public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
-        if (!(columnIndex == ClusterTable.VALUE && this.cluster != null)) {
+        if (!(columnIndex == VALUE && this.cluster != null)) {
             return;
         }
 
@@ -136,7 +131,7 @@ public class ClusterTable extends AbstractTableModel {
                 this.schedulers.getSelectedItem().toString());
         }
 
-        this.fireTableCellUpdated(rowIndex, ClusterTable.VALUE);
+        this.fireTableCellUpdated(rowIndex, VALUE);
     }
 
     void setCluster (final Cluster cluster, final Iterable<?> users) {
@@ -151,17 +146,17 @@ public class ClusterTable extends AbstractTableModel {
 
     private String getColumnTypeName (final int rowIndex) {
         return switch (rowIndex) {
-            case TableRows.LABEL -> this.words.getString("Label");
-            case TableRows.OWNER -> this.words.getString("Owner");
-            case TableRows.NODES -> this.words.getString("Number of nodes");
-            case TableRows.PROCESSORS -> this.words.getString("Computing power");
+            case TableRows.LABEL -> getText("Label");
+            case TableRows.OWNER -> getText("Owner");
+            case TableRows.NODES -> getText("Number of nodes");
+            case TableRows.PROCESSORS -> getText("Computing power");
             case TableRows.RAM -> "Primary Storage";
             case TableRows.HARD_DISK -> "Secondary Storage";
             case TableRows.CORES -> "Cores";
-            case TableRows.BANDWIDTH -> this.words.getString("Bandwidth");
-            case TableRows.LATENCY -> this.words.getString("Latency");
-            case TableRows.MASTER -> this.words.getString("Master");
-            case TableRows.SCHEDULER -> this.words.getString("Scheduling algorithm");
+            case TableRows.BANDWIDTH -> getText("Bandwidth");
+            case TableRows.LATENCY -> getText("Latency");
+            case TableRows.MASTER -> getText("Master");
+            case TableRows.SCHEDULER -> getText("Scheduling algorithm");
             case TableRows.ENERGY -> "Energy consumption Per Node";
             default -> null;
         };
@@ -169,11 +164,6 @@ public class ClusterTable extends AbstractTableModel {
 
     public JComboBox<Object> getEscalonadores () {
         return this.schedulers;
-    }
-
-    public void setPalavras (final ResourceBundle words) {
-        this.words = words;
-        this.fireTableStructureChanged();
     }
 
     private static class TableRows {

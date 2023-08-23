@@ -1,10 +1,11 @@
 package ispd.gui;
 
+import static ispd.gui.TextSupplier.*;
 import static ispd.gui.utils.ButtonBuilder.*;
 
 import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
-import ispd.gui.utils.Fonts;
+import ispd.gui.utils.fonts.*;
 import ispd.motor.workload.*;
 import ispd.motor.workload.impl.*;
 import ispd.utils.*;
@@ -49,8 +50,6 @@ public class LoadConfigurationDialog extends JDialog {
     private final Vector<Vector> tableRow = new Vector<>(0);
 
     private final Vector<String> tableColumn = new Vector<>(7);
-
-    private final ResourceBundle translator;
 
     private File file = null;
 
@@ -136,11 +135,9 @@ public class LoadConfigurationDialog extends JDialog {
 
     LoadConfigurationDialog (
         final Frame parent, final boolean modal, final Object[] users, final Object[] schedulers,
-        final WorkloadGenerator loadGenerator, final ResourceBundle translator
+        final WorkloadGenerator loadGenerator
     ) {
         super(parent, modal);
-
-        this.translator = translator;
 
         this.users = new Vector<>(0);
         for (final var user : users) {
@@ -154,14 +151,14 @@ public class LoadConfigurationDialog extends JDialog {
 
         this.loadGenerator = loadGenerator;
 
-        this.tableColumn.add(this.translate("Application"));
-        this.tableColumn.add(this.translate("User"));
-        this.tableColumn.add(this.translate("Scheduler"));
-        this.tableColumn.add(this.translate("Tasks"));
-        this.tableColumn.add(this.translate("Maximum computing"));
-        this.tableColumn.add(this.translate("Minimum computing"));
-        this.tableColumn.add(this.translate("Maximum communication"));
-        this.tableColumn.add(this.translate("Minimum communication"));
+        this.tableColumn.add(getText("Application"));
+        this.tableColumn.add(getText("User"));
+        this.tableColumn.add(getText("Scheduler"));
+        this.tableColumn.add(getText("Tasks"));
+        this.tableColumn.add(getText("Maximum computing"));
+        this.tableColumn.add(getText("Minimum computing"));
+        this.tableColumn.add(getText("Maximum communication"));
+        this.tableColumn.add(getText("Minimum communication"));
 
         this.workloadFileFilter =
             new MultipleExtensionFileFilter("Workload Model of Sumulation", "wmsx", true);
@@ -174,10 +171,6 @@ public class LoadConfigurationDialog extends JDialog {
 
         this.initComponents();
         this.setValores(loadGenerator);
-    }
-
-    private String translate (final String text) {
-        return this.translator.getString(text);
     }
 
     private void initComponents () {
@@ -229,45 +222,45 @@ public class LoadConfigurationDialog extends JDialog {
         this.jPanelRandom.setMaximumSize(null);
         this.jPanelRandom.setPreferredSize(PREFERRED_PANEL_SIZE);
 
-        final var taskCount = new JLabel(this.translate("Number of tasks"));
+        final var taskCount = new JLabel(getText("Number of tasks"));
 
         this.jSpinnerNumTarefas.setModel(UNSIGNED_MODEL.get());
 
         this.jSpinnerMinComputacao.setModel(POSITIVE_REAL_MODEL.get());
 
-        final var computationalSize = new JLabel(this.translate("Computational size"));
+        final var computationalSize = new JLabel(getText("Computational size"));
 
-        final var communicationSize = new JLabel(this.translate("Communication size"));
+        final var communicationSize = new JLabel(getText("Communication size"));
 
-        final var arrivalTime = new JLabel(this.translate("Time of arrival"));
+        final var arrivalTime = new JLabel(getText("Time of arrival"));
 
         this.jSpinnerMinComunicacao.setModel(POSITIVE_REAL_MODEL.get());
         this.jSpinnerTimeOfArrival.setModel(UNSIGNED_MODEL.get());
 
-        final var minimumLabel = new JLabel(this.translate("Minimum"));
-        final var averageLabel = new JLabel(this.translate("Average"));
+        final var minimumLabel = new JLabel(getText("Minimum"));
+        final var averageLabel = new JLabel(getText("Average"));
 
         this.jSpinnerAverageComputacao.setModel(POSITIVE_REAL_MODEL.get());
 
         this.jSpinnerAverageComunicacao.setModel(POSITIVE_REAL_MODEL.get());
 
-        final var maximumLabel = new JLabel(this.translate("Maximum"));
+        final var maximumLabel = new JLabel(getText("Maximum"));
 
         this.jSpinnerMaxComputacao.setModel(POSITIVE_REAL_MODEL.get());
 
         this.jSpinnerMaxComunicacao.setModel(POSITIVE_REAL_MODEL.get());
 
-        final var probability = new JLabel(this.translate("Probability"));
+        final var probability = new JLabel(getText("Probability"));
 
         this.jSpinnerProbabilityComputacao.setModel(PROBABILITY_MODEL.get());
 
         this.jSpinnerProbabilityComunicacao.setModel(PROBABILITY_MODEL.get());
 
-        final var mFlops = new JLabel(this.translate("MFLOPS"));
+        final var mFlops = new JLabel(getText("MFLOPS"));
 
-        final var mBits = new JLabel(this.translate("Mbits"));
+        final var mBits = new JLabel(getText("Mbits"));
 
-        final var seconds = new JLabel(this.translate("Seconds"));
+        final var seconds = new JLabel(getText("Seconds"));
 
         final var jPanelRandomLayout = new GroupLayout(this.jPanelRandom);
         this.jPanelRandom.setLayout(jPanelRandomLayout);
@@ -582,22 +575,22 @@ public class LoadConfigurationDialog extends JDialog {
         this.jPanelForNode.setMaximumSize(null);
         this.jPanelForNode.setPreferredSize(PREFERRED_PANEL_SIZE);
 
-        final var userLabel = new JLabel(this.translate("User"));
+        final var userLabel = new JLabel(getText("User"));
 
         this.comboBoxUsers.setModel(new DefaultComboBoxModel(this.users));
         this.comboBoxUsers.addActionListener(DO_NOTHING);
 
-        final var scheduler = new JLabel(this.translate("Scheduler"));
+        final var scheduler = new JLabel(getText("Scheduler"));
 
         this.comboBoxSchedulers.setModel(new DefaultComboBoxModel(this.schedulers));
 
-        final var numberOfTasks = new JLabel(this.translate("Number of tasks"));
+        final var numberOfTasks = new JLabel(getText("Number of tasks"));
 
         this.jSpinnerNumTarefasNo.setModel(UNSIGNED_MODEL.get());
 
-        final var computational = new JLabel(this.translate("Computational"));
+        final var computational = new JLabel(getText("Computational"));
 
-        final var communication = new JLabel(this.translate("Communication"));
+        final var communication = new JLabel(getText("Communication"));
 
         this.jSpinnerMaxCompNo.setModel(new SpinnerNumberModel(0.0f, 0.0f, null, 1.0f));
 
@@ -607,16 +600,16 @@ public class LoadConfigurationDialog extends JDialog {
 
         this.jSpinnerMaxComuNo.setModel(new SpinnerNumberModel(0.0f, 0.0f, null, 1.0f));
 
-        final var tableAdd = basicButton(this.translate("Add"), this::onTableAddClick);
+        final var tableAdd = basicButton(getText("Add"), this::onTableAddClick);
 
         this.jTable1.setModel(new DefaultTableModel(this.tableRow, this.tableColumn));
         this.jScrollPaneTabela.setViewportView(this.jTable1);
 
-        final var maximum = new JLabel(this.translate("Maximum"));
+        final var maximum = new JLabel(getText("Maximum"));
 
-        final var minimum = new JLabel(this.translate("Minimum"));
+        final var minimum = new JLabel(getText("Minimum"));
 
-        final var remove = basicButton(this.translate("Remove"), this::onTableAddClick1);
+        final var remove = basicButton(getText("Remove"), this::onTableAddClick1);
 
         final var jPanelForNodeLayout = new GroupLayout(this.jPanelForNode);
         this.jPanelForNode.setLayout(jPanelForNodeLayout);
@@ -890,22 +883,22 @@ public class LoadConfigurationDialog extends JDialog {
         this.jPanelTrace.setPreferredSize(PREFERRED_PANEL_SIZE);
 
         this.jRadioButtonWmsx.setSelected(true);
-        this.jRadioButtonWmsx.setText(this.translate("Open an existing iSPD " + "trace file"));
+        this.jRadioButtonWmsx.setText(getText("Open an existing iSPD " + "trace file"));
         this.jRadioButtonWmsx.addActionListener(this::jRadioButtonwmsxActionPerformed);
 
         this.jRadioButtonConvTrace.setText(
-            this.translate("Convert an "
-                           + "external"
-                           + " trace file to "
-                           + "iSPD"
-                           + " trace format"));
+            getText("Convert an "
+                    + "external"
+                    + " trace file to "
+                    + "iSPD"
+                    + " trace format"));
 
         this.jRadioButtonConvTrace.addActionListener(this::jRadioButtonConvTraceActionPerformed);
 
-        final var optionSelect = new JLabel(this.translate("Select the desired option"));
+        final var optionSelect = new JLabel(getText("Select the desired option"));
 
         final var next =
-            basicButton("%s >>".formatted(this.translate("Next")), this::onNextClick);
+            basicButton("%s >>".formatted(getText("Next")), this::onNextClick);
 
         final var jPanelTraceLayout = new GroupLayout(this.jPanelTrace);
         this.jPanelTrace.setLayout(jPanelTraceLayout);
@@ -987,15 +980,15 @@ public class LoadConfigurationDialog extends JDialog {
         this.jPanelConvertTrace.setPreferredSize(PREFERRED_PANEL_SIZE);
 
         final var externalSelect =
-            new JLabel(this.translate("Select a external format trace file to convert:"));
+            new JLabel(getText("Select a external format trace file to convert:"));
 
         final var openExternal =
-            basicButton(this.translate("Open"), this::onOpenExternalClicked);
+            basicButton(getText("Open"), this::onOpenExternalClicked);
 
-        final var notifications = new JLabel(this.translate("Notifications"));
+        final var notifications = new JLabel(getText("Notifications"));
 
         final var convertExternal =
-            basicButton(this.translate("Convert"), this::onConvertExternalClicked);
+            basicButton(getText("Convert"), this::onConvertExternalClicked);
 
         this.jTextFieldCaminhoTrace.addActionListener(DO_NOTHING);
 
@@ -1005,7 +998,7 @@ public class LoadConfigurationDialog extends JDialog {
         jScrollPane2.setViewportView(this.jTextNotifTrace);
 
         final var previous = basicButton(
-            "<< %s".formatted(this.translate("Previous")),
+            "<< %s".formatted(getText("Previous")),
             this::onPreviousClick
         );
 
@@ -1077,23 +1070,23 @@ public class LoadConfigurationDialog extends JDialog {
         this.jPanelPickTrace.setCursor(new Cursor(Cursor.TEXT_CURSOR));
         this.jPanelPickTrace.setPreferredSize(PREFERRED_PANEL_SIZE);
 
-        final var jLabel20 = new JLabel(this.translate("Select an iSPD trace " + "file to open:"));
+        final var jLabel20 = new JLabel(getText("Select an iSPD trace " + "file to open:"));
 
-        final var jLabel21 = new JLabel(this.translate("Notifications"));
+        final var jLabel21 = new JLabel(getText("Notifications"));
 
         this.jTextNotification.setColumns(20);
-        this.jTextNotification.setFont(Fonts.Tahoma.PLAIN_11);
+        this.jTextNotification.setFont(Tahoma.PLAIN_MEDIUM);
         this.jTextNotification.setRows(5);
         this.jTextNotification.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 
         jScrollPane1.setViewportView(this.jTextNotification);
 
         final var previous2 = basicButton(
-            "<< %s".formatted(this.translate("Previous")),
+            "<< %s".formatted(getText("Previous")),
             this::onPrevious2Click
         );
 
-        final var openWmsx = basicButton(this.translate("Open"), this::onOpenWmsxClick);
+        final var openWmsx = basicButton(getText("Open"), this::onOpenWmsxClick);
 
         final var jPanelSelecionaTraceLayout = new GroupLayout(this.jPanelPickTrace);
         this.jPanelPickTrace.setLayout(jPanelSelecionaTraceLayout);
@@ -1153,27 +1146,27 @@ public class LoadConfigurationDialog extends JDialog {
         this.jFileExternalTrace.setFileFilter(this.traceFileFilter);
 
         this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.setTitle(this.translate("Model of tasks"));
+        this.setTitle(getText("Model of tasks"));
         this.setMinimumSize(new Dimension(550, 450));
         this.setResizable(false);
 
         jPanelModo.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createLineBorder(new Color(0, 0, 0)),
-            this.translate("Insertion mode for the workloads")
+            getText("Insertion mode for the workloads")
         ));
         jPanelModo.setMaximumSize(new Dimension(500, 60));
         jPanelModo.setMinimumSize(new Dimension(500, 60));
         jPanelModo.setPreferredSize(new Dimension(500, 60));
 
-        this.jRadioButtonTraces.setText(this.translate("Traces"));
+        this.jRadioButtonTraces.setText(getText("Traces"));
         this.jRadioButtonTraces.setOpaque(false);
         this.jRadioButtonTraces.addActionListener(this::jRadioButtonTracesActionPerformed);
 
-        this.jRadioButtonForNode.setText(this.translate("For each node"));
+        this.jRadioButtonForNode.setText(getText("For each node"));
         this.jRadioButtonForNode.addActionListener(this::jRadioButtonForNodeActionPerformed);
 
         this.jRadioButtonRandom.setSelected(true);
-        this.jRadioButtonRandom.setText(this.translate("Random"));
+        this.jRadioButtonRandom.setText(getText("Random"));
         this.jRadioButtonRandom.addActionListener(this::jRadioButtonRandomActionPerformed);
 
         final var jPanelModoLayout = new GroupLayout(jPanelModo);
@@ -1348,7 +1341,7 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onOpenExternalClicked (final ActionEvent evt) {
-        this.traceFileFilter.setDescricao(this.translate("External Trace " + "File"));
+        this.traceFileFilter.setDescricao(getText("External Trace " + "File"));
         final var exts = new String[] { ".swf", ".gwf" };
         this.traceFileFilter.setExtensao(exts);
         this.jFileExternalTrace.setAcceptAllFileFilterUsed(false);
@@ -1372,11 +1365,11 @@ public class LoadConfigurationDialog extends JDialog {
                 this.traceTaskNumber = interpret.getNum_Tasks();
                 this.traceType       = interpret.getTipo();
             } catch (final Exception e) {
-                this.jTextNotifTrace.setText(this.translate("Badly formatted " + "file"));
+                this.jTextNotifTrace.setText(getText("Badly formatted " + "file"));
             }
             this.jTextNotifTrace.setText(interpret.toString());
         } catch (final Exception e) {
-            this.jTextNotifTrace.setText(this.translate("There is no file " + "selected"));
+            this.jTextNotifTrace.setText(getText("There is no file " + "selected"));
         }
     }
 
@@ -1389,7 +1382,7 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void onOpenWmsxClick (final ActionEvent evt) {
-        this.workloadFileFilter.setDescricao(this.translate("Workload Model of Simulation"));
+        this.workloadFileFilter.setDescricao(getText("Workload Model of Simulation"));
 
         this.workloadFileFilter.setExtensao(FileExtensions.WORKLOAD_MODEL);
         this.jOpenTrace.setAcceptAllFileFilterUsed(false);
@@ -1420,11 +1413,11 @@ public class LoadConfigurationDialog extends JDialog {
     }
 
     private void makeLayoutAndPack (final Component panel) {
-        final var ok = aButton(this.translate("OK"), this::onOkClick)
+        final var ok = aButton(getText("OK"), this::onOkClick)
             .withPreferredSize(PREFERRED_BUTTON_SIZE)
             .build();
 
-        final var cancel = aButton(this.translate("Cancel"), this::onCancelClick)
+        final var cancel = aButton(getText("Cancel"), this::onCancelClick)
             .withSize(PREFERRED_BUTTON_SIZE).build();
 
         final var layout = new GroupLayout(this.getContentPane());

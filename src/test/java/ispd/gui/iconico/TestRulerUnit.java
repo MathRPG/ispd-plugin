@@ -1,21 +1,15 @@
 package ispd.gui.iconico;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.Matchers.*;
 
-public final class TestRulerUnit {
+import org.junit.jupiter.api.*;
 
-    /**
-     * It tests the {@link RulerUnit#nextUnit()}.
-     */
+final class TestRulerUnit {
+
     @Test
-    public void testNextUnit() {
-        final var cmUnit = RulerUnit.CENTIMETERS;
-        final var inUnit = RulerUnit.INCHES;
-
-        Assertions.assertEquals(RulerUnit.INCHES,
-                cmUnit.nextUnit());
-        Assertions.assertEquals(RulerUnit.CENTIMETERS,
-                inUnit.nextUnit());
+    void testNextUnit () {
+        assertThat(RulerUnit.CENTIMETERS.nextUnit(), is(equalTo(RulerUnit.INCHES)));
+        assertThat(RulerUnit.INCHES.nextUnit(), is(equalTo(RulerUnit.CENTIMETERS)));
     }
 }

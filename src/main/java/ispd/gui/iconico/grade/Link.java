@@ -1,12 +1,10 @@
 package ispd.gui.iconico.grade;
 
-import ispd.gui.iconico.Vertex;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Polygon;
-import java.util.ResourceBundle;
-import java.util.Set;
+import static ispd.gui.TextSupplier.*;
+
+import ispd.gui.iconico.*;
+import java.awt.*;
+import java.util.*;
 
 public class Link extends EdgeGridItem {
 
@@ -123,7 +121,7 @@ public class Link extends EdgeGridItem {
         if (this.isSelected()) {
             g.setColor(Color.BLACK);
         } else if (this.isConfigured()) {
-            g.setColor(ispd.gui.iconico.grade.Link.DARK_GREEN);
+            g.setColor(DARK_GREEN);
         } else {
             g.setColor(Color.RED);
         }
@@ -189,29 +187,34 @@ public class Link extends EdgeGridItem {
     /**
      * Returns the link attributes.
      *
-     * @param translator
-     *     the translator containing the translation messages
-     *
      * @return the link attributes
      */
     @Override
-    public String makeDescription (final ResourceBundle translator) {
+    public String makeDescription () {
         return (
             "%s %d<br>%s %d<br>%s: %s<br>%s %d<br>%s %d<br>%s %d<br>%s " +
             "%d<br>%s: %s<br>%s: %s<br>%s: %s"
         ).formatted(
-            translator.getString("Local ID:"), this.id.getLocalId(),
-            translator.getString("Global ID:"), this.id.getGlobalId(),
-            translator.getString("Label"), this.id.getName(),
-            translator.getString("X1-coordinate:"), this.getSource().getX(),
-            translator.getString("Y1-coordinate:"), this.getSource().getY(),
-            translator.getString("X2-coordinate:"),
+            getText("Local ID:"),
+            this.id.getLocalId(),
+            getText("Global ID:"),
+            this.id.getGlobalId(),
+            getText("Label"),
+            this.id.getName(),
+            getText("X1-coordinate:"),
+            this.getSource().getX(),
+            getText("Y1-coordinate:"),
+            this.getSource().getY(),
+            getText("X2-coordinate:"),
             this.getDestination().getY(),
-            translator.getString("Y2-coordinate:"),
+            getText("Y2-coordinate:"),
             this.getDestination().getX(),
-            translator.getString("Bandwidth"), this.bandwidth,
-            translator.getString("Latency"), this.latency,
-            translator.getString("Load Factor"), this.loadFactor
+            getText("Bandwidth"),
+            this.bandwidth,
+            getText("Latency"),
+            this.latency,
+            getText("Load Factor"),
+            this.loadFactor
         );
     }
 

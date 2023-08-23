@@ -1,12 +1,12 @@
 package ispd.gui.configuracao;
 
-import ispd.gui.iconico.grade.Cluster;
-import ispd.policy.managers.CloudSchedulingPolicyManager;
-import ispd.policy.managers.VmAllocationPolicyManager;
-import java.io.Serializable;
-import java.util.ResourceBundle;
-import javax.swing.JComboBox;
-import javax.swing.table.AbstractTableModel;
+import static ispd.gui.TextSupplier.*;
+
+import ispd.gui.iconico.grade.*;
+import ispd.policy.managers.*;
+import java.io.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 public class ClusterTableIaaS extends AbstractTableModel {
 
@@ -27,7 +27,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
         );
 
     private final JComboBox<Object> users =
-        makeComboBox(ClusterTableIaaS.EMPTY_COMBO_BOX_LIST, "Select the resource owner");
+        makeComboBox(EMPTY_COMBO_BOX_LIST, "Select the resource owner");
 
     private final JComboBox<Object> vmmPolicies =
         makeComboBox(
@@ -36,12 +36,6 @@ public class ClusterTableIaaS extends AbstractTableModel {
         );
 
     private Cluster cluster = null;
-
-    private ResourceBundle words;
-
-    ClusterTableIaaS (final ResourceBundle words) {
-        this.words = words;
-    }
 
     private static JComboBox<Object> makeComboBox (
         final String[] comboBoxArg,
@@ -54,23 +48,23 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     @Override
     public int getRowCount () {
-        return ClusterTableIaaS.ROW_COUNT;
+        return ROW_COUNT;
     }
 
     @Override
     public int getColumnCount () {
-        return ClusterTableIaaS.COLUMN_COUNT;
+        return COLUMN_COUNT;
     }
 
     @Override
     public Object getValueAt (final int rowIndex, final int columnIndex) {
         switch (columnIndex) {
-            case ClusterTableIaaS.TYPE:
+            case TYPE:
                 final var name = this.nameForRow(rowIndex);
                 if (name != null) {
                     return name;
                 }
-            case ClusterTableIaaS.VALUE:
+            case VALUE:
                 if (this.cluster == null) {
                     return this.comboBoxForRow(rowIndex);
                 }
@@ -87,17 +81,17 @@ public class ClusterTableIaaS extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         switch (columnIndex) {
-            case ClusterTableIaaS.TYPE:
-                return this.words.getString("Properties");
-            case ClusterTableIaaS.VALUE:
-                return this.words.getString("Values");
+            case TYPE:
+                return getText("Properties");
+            case VALUE:
+                return getText("Values");
         }
         return null;
     }
 
     @Override
     public boolean isCellEditable (final int rowIndex, final int columnIndex) {
-        return columnIndex != ClusterTableIaaS.TYPE;
+        return columnIndex != TYPE;
     }
 
     @Override
@@ -105,7 +99,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
         final Object aValue, final int rowIndex, final int columnIndex
     ) {
         // Pega o sócio referente a linha especificada.
-        if (columnIndex != ClusterTableIaaS.VALUE || this.cluster == null) {
+        if (columnIndex != VALUE || this.cluster == null) {
             return;
         }
 
@@ -130,7 +124,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
                 this.vmmPolicies.getSelectedItem().toString());
         }
 
-        this.fireTableCellUpdated(rowIndex, ClusterTableIaaS.VALUE);
+        this.fireTableCellUpdated(rowIndex, VALUE);
     }
 
     void setCluster (final Cluster cluster, final Iterable<String> users) {
@@ -146,17 +140,17 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private String nameForRow (final int rowIndex) {
         return switch (rowIndex) {
-            case TableRows.LABEL -> this.words.getString("Label");
-            case TableRows.OWNER -> this.words.getString("Owner");
-            case TableRows.NODES -> this.words.getString("Number of nodes");
-            case TableRows.PROCESSORS -> this.words.getString("Computing power");
+            case TableRows.LABEL -> getText("Label");
+            case TableRows.OWNER -> getText("Owner");
+            case TableRows.NODES -> getText("Number of nodes");
+            case TableRows.PROCESSORS -> getText("Computing power");
             case TableRows.CORES -> "Cores";
             case TableRows.MEMORY -> "Primary Storage";
             case TableRows.DISK -> "Secondary Storage";
-            case TableRows.BANDWIDTH -> this.words.getString("Bandwidth");
-            case TableRows.LATENCY -> this.words.getString("Latency");
+            case TableRows.BANDWIDTH -> getText("Bandwidth");
+            case TableRows.LATENCY -> getText("Latency");
             case TableRows.VMM -> "VMM";
-            case TableRows.SCHEDULER -> this.words.getString("Scheduling algorithm");
+            case TableRows.SCHEDULER -> getText("Scheduling algorithm");
             case TableRows.COST_PER_PROCESSOR -> "Cost per Processing";
             case TableRows.COST_PER_MEMORY -> "Cost per Memory";
             case TableRows.COST_PER_DISK -> "Cost per Disk";
@@ -201,11 +195,6 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     JComboBox getAlocadores () {
         return this.vmmPolicies;
-    }
-
-    public void setPalavras (final ResourceBundle words) {
-        this.words = words;
-        this.fireTableStructureChanged();
     }
 
     private static class TableRows implements Serializable {

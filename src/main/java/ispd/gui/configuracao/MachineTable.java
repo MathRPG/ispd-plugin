@@ -1,18 +1,13 @@
 package ispd.gui.configuracao;
 
-import ispd.gui.iconico.grade.GridItem;
-import ispd.gui.iconico.grade.Machine;
-import ispd.policy.managers.GridSchedulingPolicyManager;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.ResourceBundle;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
+import static ispd.gui.TextSupplier.*;
+
+import ispd.gui.iconico.grade.*;
+import ispd.policy.managers.*;
+import java.awt.event.*;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 public class MachineTable extends AbstractTableModel {
 
@@ -55,35 +50,32 @@ public class MachineTable extends AbstractTableModel {
 
     private final JList<GridItem> slaveList = new JList<>();
 
-    private ResourceBundle words;
-
     private Machine machine = null;
 
-    public MachineTable (final ResourceBundle words) {
-        this.words = words;
+    public MachineTable () {
         new CheckListRenderer(this.slaveList);
     }
 
     @Override
     public int getRowCount () {
-        return MachineTable.ROW_COUNT;
+        return ROW_COUNT;
     }
 
     @Override
     public int getColumnCount () {
-        return MachineTable.COLUMN_COUNT;
+        return COLUMN_COUNT;
     }
 
     @Override
     public Object getValueAt (final int rowIndex, final int columnIndex) {
         switch (columnIndex) {
-            case MachineTable.TYPE -> {
+            case TYPE -> {
                 final var name = this.returnNameForIndex(rowIndex);
                 if (name != null) {
                     return name;
                 }
             }
-            case MachineTable.VALUE -> {
+            case VALUE -> {
                 final var val = this.getValueForMachine(rowIndex);
                 if (val != null) {
                     return val;
@@ -97,26 +89,26 @@ public class MachineTable extends AbstractTableModel {
     @Override
     public String getColumnName (final int columnIndex) {
         return switch (columnIndex) {
-            case MachineTable.TYPE -> this.words.getString("Properties");
-            case MachineTable.VALUE -> this.words.getString("Values");
+            case TYPE -> getText("Properties");
+            case VALUE -> getText("Values");
             default -> null;
         };
     }
 
     @Override
     public boolean isCellEditable (final int rowIndex, final int columnIndex) {
-        return columnIndex != MachineTable.TYPE;
+        return columnIndex != TYPE;
     }
 
     @Override
     public void setValueAt (final Object aValue, final int rowIndex, final int columnIndex) {
-        if (columnIndex != MachineTable.VALUE || this.machine == null) {
+        if (columnIndex != VALUE || this.machine == null) {
             return;
         }
 
         this.setValueAtIndex(aValue, rowIndex);
 
-        this.fireTableCellUpdated(rowIndex, MachineTable.VALUE);
+        this.fireTableCellUpdated(rowIndex, VALUE);
     }
 
     private JButton setButton () {
@@ -139,18 +131,17 @@ public class MachineTable extends AbstractTableModel {
 
     private String returnNameForIndex (final int rowIndex) {
         return switch (rowIndex) {
-            case MachineTable.LABEL -> this.words.getString("Label");
-            case MachineTable.OWNER -> this.words.getString("Owner");
-            case MachineTable.PROCESSOR -> "%s (Mflop/s)".formatted(this.words.getString(
-                "Computing power"));
-            case MachineTable.LOAD_FACTOR -> this.words.getString("Load Factor");
-            case MachineTable.RAM -> "Primary Storage";
-            case MachineTable.DISK -> "Secondary Storage";
-            case MachineTable.CORES -> "Cores";
-            case MachineTable.MASTER -> this.words.getString("Master");
-            case MachineTable.SCHEDULER -> this.words.getString("Scheduling algorithm");
-            case MachineTable.SLAVE -> "Slave Nodes";
-            case MachineTable.ENERGY -> "Energy consumption";
+            case LABEL -> getText("Label");
+            case OWNER -> getText("Owner");
+            case PROCESSOR -> "%s (Mflop/s)".formatted(getText("Computing power"));
+            case LOAD_FACTOR -> getText("Load Factor");
+            case RAM -> "Primary Storage";
+            case DISK -> "Secondary Storage";
+            case CORES -> "Cores";
+            case MASTER -> getText("Master");
+            case SCHEDULER -> getText("Scheduling algorithm");
+            case SLAVE -> "Slave Nodes";
+            case ENERGY -> "Energy consumption";
             default -> null;
         };
     }
@@ -158,54 +149,49 @@ public class MachineTable extends AbstractTableModel {
     private Object getValueForMachine (final int rowIndex) {
         if (this.machine == null) {
             return switch (rowIndex) {
-                case MachineTable.OWNER -> this.users;
-                case MachineTable.SCHEDULER -> this.schedulers;
-                case MachineTable.SLAVE -> this.slaves;
+                case OWNER -> this.users;
+                case SCHEDULER -> this.schedulers;
+                case SLAVE -> this.slaves;
                 default -> "null";
             };
         }
 
         return switch (rowIndex) {
-            case MachineTable.LABEL -> this.machine.getId().getName();
-            case MachineTable.OWNER -> this.users;
-            case MachineTable.PROCESSOR -> this.machine.getComputationalPower();
-            case MachineTable.LOAD_FACTOR -> this.machine.getLoadFactor();
-            case MachineTable.RAM -> this.machine.getRam();
-            case MachineTable.DISK -> this.machine.getHardDisk();
-            case MachineTable.CORES -> this.machine.getCoreCount();
-            case MachineTable.MASTER -> this.machine.isMaster();
-            case MachineTable.SCHEDULER -> this.schedulers;
-            case MachineTable.SLAVE -> this.slaves;
-            case MachineTable.ENERGY -> this.machine.getEnergyConsumption();
+            case LABEL -> this.machine.getId().getName();
+            case OWNER -> this.users;
+            case PROCESSOR -> this.machine.getComputationalPower();
+            case LOAD_FACTOR -> this.machine.getLoadFactor();
+            case RAM -> this.machine.getRam();
+            case DISK -> this.machine.getHardDisk();
+            case CORES -> this.machine.getCoreCount();
+            case MASTER -> this.machine.isMaster();
+            case SCHEDULER -> this.schedulers;
+            case SLAVE -> this.slaves;
+            case ENERGY -> this.machine.getEnergyConsumption();
             default -> null;
         };
     }
 
     private void setValueAtIndex (final Object value, final int rowIndex) {
         switch (rowIndex) {
-            case MachineTable.LABEL -> this.machine.getId().setName(value.toString());
-            case MachineTable.OWNER -> this.machine.setOwner(this.users
+            case LABEL -> this.machine.getId().setName(value.toString());
+            case OWNER -> this.machine.setOwner(this.users
                                                                  .getSelectedItem()
                                                                  .toString());
-            case MachineTable.PROCESSOR -> this.machine.setComputationalPower(Double.valueOf(value.toString()));
-            case MachineTable.LOAD_FACTOR -> this.machine.setLoadFactor(Double.valueOf(value.toString()));
-            case MachineTable.RAM -> this.machine.setRam(Double.valueOf(value.toString()));
-            case MachineTable.DISK -> this.machine.setHardDisk(Double.valueOf(value.toString()));
-            case MachineTable.CORES -> this.machine.setCoreCount(Integer.valueOf(value.toString()));
-            case MachineTable.ENERGY -> this.machine.setEnergyConsumption(Double.valueOf(value.toString()));
-            case MachineTable.MASTER -> this.machine.setMaster(Boolean.valueOf(value.toString()));
-            case MachineTable.SCHEDULER -> this.machine.setSchedulingAlgorithm(
+            case PROCESSOR -> this.machine.setComputationalPower(Double.valueOf(value.toString()));
+            case LOAD_FACTOR -> this.machine.setLoadFactor(Double.valueOf(value.toString()));
+            case RAM -> this.machine.setRam(Double.valueOf(value.toString()));
+            case DISK -> this.machine.setHardDisk(Double.valueOf(value.toString()));
+            case CORES -> this.machine.setCoreCount(Integer.valueOf(value.toString()));
+            case ENERGY -> this.machine.setEnergyConsumption(Double.valueOf(value.toString()));
+            case MASTER -> this.machine.setMaster(Boolean.valueOf(value.toString()));
+            case SCHEDULER -> this.machine.setSchedulingAlgorithm(
                 this.schedulers.getSelectedItem().toString());
         }
     }
 
     public JComboBox getEscalonadores () {
         return this.schedulers;
-    }
-
-    public void setPalavras (final ResourceBundle palavras) {
-        this.words = palavras;
-        this.fireTableStructureChanged();
     }
 
     private class ButtonActionListener implements ActionListener {

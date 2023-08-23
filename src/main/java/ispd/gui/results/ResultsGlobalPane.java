@@ -1,31 +1,18 @@
 package ispd.gui.results;
 
-import ispd.gui.utils.Fonts.CourierNew;
-import ispd.utils.constants.FileExtensions;
-import java.awt.Dimension;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
+import ispd.arquivo.*;
+import ispd.arquivo.xml.*;
+import ispd.gui.auxiliar.*;
+import ispd.gui.utils.fonts.*;
+import ispd.motor.filas.*;
+import ispd.motor.metricas.*;
+import ispd.utils.constants.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
 import java.util.List;
-
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-
-import ispd.arquivo.SalvarResultadosHTML;
-import ispd.arquivo.xml.TraceXML;
-import ispd.gui.auxiliar.HtmlPane;
-import ispd.gui.auxiliar.SimulationResultChartMaker;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.metricas.Metricas;
-import ispd.motor.metricas.MetricasGlobais;
+import javax.swing.*;
 
 /**
  * A {@link ResultsGlobalPane} is a class used to display the general results
@@ -75,7 +62,7 @@ public class ResultsGlobalPane extends JScrollPane {
         textArea.setEditable(false);
         textArea.setColumns(20);
         textArea.setRows(5);
-        textArea.setFont(CourierNew.BOLD_14);
+        textArea.setFont(CourierNew.BOLD);
         textArea.setText(this.makeGlobalResultsText(metrics.getMetricasGlobais()));
     }
 

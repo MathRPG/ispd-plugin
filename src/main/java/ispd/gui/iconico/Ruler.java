@@ -30,12 +30,9 @@
  */
 package ispd.gui.iconico;
 
-import ispd.gui.utils.Fonts.SansSerif;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Rectangle;
-import javax.swing.JComponent;
+import ispd.gui.utils.fonts.*;
+import java.awt.*;
+import javax.swing.*;
 
 public class Ruler extends JComponent {
 
@@ -93,11 +90,11 @@ public class Ruler extends JComponent {
         final Rectangle drawHere = g.getClipBounds();
 
         // Fill clipping area with dirty brown/orange.
-        g.setColor(Ruler.RULER_BACKGROUND_COLOR);
+        g.setColor(RULER_BACKGROUND_COLOR);
         g.fillRect(drawHere.x, drawHere.y, drawHere.width, drawHere.height);
 
         // Set the color and font for marking the ruler's labels.
-        g.setFont(SansSerif.PLAIN_10);
+        g.setFont(SansSerif.PLAIN);
         g.setColor(Color.BLACK);
 
         final var isHorizontal =
@@ -120,10 +117,10 @@ public class Ruler extends JComponent {
             final var text = "0 " + this.unit.getSymbol();
 
             if (isHorizontal) {
-                g.drawLine(0, Ruler.SIZE - 1, 0, Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1);
+                g.drawLine(0, SIZE - 1, 0, SIZE - RULER_TICK_LENGTH - 1);
                 g.drawString(text, 2, 21);
             } else {
-                g.drawLine(Ruler.SIZE - 1, 0, Ruler.SIZE - Ruler.RULER_TICK_LENGTH - 1, 0);
+                g.drawLine(SIZE - 1, 0, SIZE - RULER_TICK_LENGTH - 1, 0);
                 g.drawString(text, 9, 10);
             }
             start = increment;
@@ -135,20 +132,20 @@ public class Ruler extends JComponent {
             final int    tickLength;
 
             if (i % units == 0) {
-                tickLength = Ruler.RULER_TICK_LENGTH;
+                tickLength = RULER_TICK_LENGTH;
                 text       = Integer.toString(i / units);
             } else {
-                tickLength = Ruler.RULER_PRE_TICK_LENGTH;
+                tickLength = RULER_PRE_TICK_LENGTH;
                 text       = null;
             }
 
             if (isHorizontal) {
-                g.drawLine(i, Ruler.SIZE - 1, i, Ruler.SIZE - tickLength - 1);
+                g.drawLine(i, SIZE - 1, i, SIZE - tickLength - 1);
                 if (text != null) {
                     g.drawString(text, i - 3, 21);
                 }
             } else {
-                g.drawLine(Ruler.SIZE - 1, i, Ruler.SIZE - tickLength - 1, i);
+                g.drawLine(SIZE - 1, i, SIZE - tickLength - 1, i);
                 if (text != null) {
                     g.drawString(text, 9, i + 3);
                 }
@@ -177,7 +174,7 @@ public class Ruler extends JComponent {
      *     the preferred height
      */
     protected void setPreferredHeight (final int preferredHeight) {
-        this.setPreferredSize(new Dimension(Ruler.SIZE, preferredHeight));
+        this.setPreferredSize(new Dimension(SIZE, preferredHeight));
     }
 
     /**
@@ -187,6 +184,6 @@ public class Ruler extends JComponent {
      *     the preferred width
      */
     protected void setPreferredWidth (final int preferredWidth) {
-        this.setPreferredSize(new Dimension(preferredWidth, Ruler.SIZE));
+        this.setPreferredSize(new Dimension(preferredWidth, SIZE));
     }
 }
