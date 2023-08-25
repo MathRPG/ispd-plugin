@@ -556,7 +556,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
     }
 
     private void updateTitleWithNoFile () {
-        this.setTitle(this.getTranslatedWindowTitle());
+        this.setTitle(getText(this.getWindowTitle()));
     }
 
     private void updateTitleWithFileName (final String fileName) {
@@ -565,12 +565,8 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
 
         this.setTitle("%s.java%s- %s".formatted(
             fileName, afterFileName,
-            this.getTranslatedWindowTitle()
+            getText(this.getWindowTitle())
         ));
-    }
-
-    private String getTranslatedWindowTitle () {
-        return getText(this.getWindowTitle());
     }
 
     private void onSave (final ActionEvent evt) {
