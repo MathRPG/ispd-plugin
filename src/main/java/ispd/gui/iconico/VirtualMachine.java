@@ -1,4 +1,4 @@
-package ispd.gui.iconico.grade;
+package ispd.gui.iconico;
 
 public class VirtualMachine {
 

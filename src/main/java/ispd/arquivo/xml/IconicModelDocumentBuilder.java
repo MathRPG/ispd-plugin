@@ -3,7 +3,6 @@ package ispd.arquivo.xml;
 import ispd.arquivo.xml.utils.*;
 import ispd.gui.*;
 import ispd.gui.iconico.*;
-import ispd.gui.iconico.grade.*;
 import ispd.motor.workload.impl.*;
 import java.util.*;
 import java.util.stream.*;

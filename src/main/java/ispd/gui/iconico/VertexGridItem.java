@@ -1,6 +1,5 @@
-package ispd.gui.iconico.grade;
+package ispd.gui.iconico;
 
-import ispd.gui.iconico.*;
 import java.awt.*;
 import java.util.*;
 

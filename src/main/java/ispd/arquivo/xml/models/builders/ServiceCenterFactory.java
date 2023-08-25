@@ -1,14 +1,15 @@
 package ispd.arquivo.xml.models.builders;
 
 import ispd.arquivo.xml.utils.*;
-import ispd.gui.iconico.grade.*;
+import ispd.gui.iconico.*;
 import ispd.motor.filas.servidores.implementacao.*;
 
 /**
  * Utility class with static methods to build service centers for simulable models and,
  * exceptionally, virtual machines for cloud models
  */
-public class ServiceCenterFactory {
+public enum ServiceCenterFactory {
+    ;
 
     /**
      * @return a master from the given {@link WrappedElement}

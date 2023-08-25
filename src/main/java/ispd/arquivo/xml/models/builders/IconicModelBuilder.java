@@ -1,18 +1,9 @@
 package ispd.arquivo.xml.models.builders;
 
-import ispd.arquivo.xml.models.IconicModel;
-import ispd.arquivo.xml.utils.WrappedDocument;
-import ispd.arquivo.xml.utils.WrappedElement;
-import ispd.gui.iconico.Edge;
-import ispd.gui.iconico.Vertex;
-import ispd.gui.iconico.grade.GridItem;
-import ispd.gui.iconico.grade.Link;
-import ispd.gui.iconico.grade.Machine;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import ispd.arquivo.xml.models.*;
+import ispd.arquivo.xml.utils.*;
+import ispd.gui.iconico.*;
+import java.util.*;
 
 /**
  * Builds iconic models from a {@link WrappedDocument} representing the system. Instantiate and call

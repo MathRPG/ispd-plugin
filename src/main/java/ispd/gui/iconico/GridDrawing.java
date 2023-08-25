@@ -1,11 +1,9 @@
-package ispd.gui.iconico.grade;
+package ispd.gui.iconico;
 
 import static ispd.gui.TextSupplier.*;
 
 import ispd.arquivo.xml.*;
 import ispd.gui.*;
-import ispd.gui.iconico.Icon;
-import ispd.gui.iconico.*;
 import ispd.motor.workload.*;
 import ispd.motor.workload.impl.*;
 import java.awt.*;
