@@ -37,12 +37,6 @@ public class JPanelConfigIcon extends JPanel {
     private final VariedRowTable linkTable =
         this.createTableWith(LinkVariedRowTable::new, LinkTable::new);
 
-    private PolicyManager schedulers = null;
-
-    private PolicyManager cloudSchedulers = null;
-
-    private PolicyManager allocators = null;
-
     public JPanelConfigIcon () {
         this.setLayout();
     }
@@ -107,7 +101,6 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setEscalonadores (final PolicyManager schedulers) {
-        this.schedulers = schedulers;
         schedulers.listar().forEach(sch -> {
             this.getTabelaMaquina().getEscalonadores().addItem(sch);
             this.getTabelaCluster().getEscalonadores().addItem(sch);
@@ -123,7 +116,6 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setEscalonadoresCloud (final PolicyManager cloudSchedulers) {
-        this.cloudSchedulers = cloudSchedulers;
         cloudSchedulers.listar().forEach(sch -> {
             this.getTabelaMaquinaIaaS().getEscalonadores().addItem(sch);
             this.getTabelaClusterIaaS().getEscalonadores().addItem(sch);
@@ -139,7 +131,6 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setAlocadores (final PolicyManager allocators) {
-        this.allocators = allocators;
         allocators.listar().forEach(alloc -> {
             this.getTabelaMaquinaIaaS().getAlocadores().addItem(alloc);
             this.getTabelaClusterIaaS().getAlocadores().addItem(alloc);
