@@ -4,7 +4,6 @@ import static ispd.gui.TextSupplier.*;
 
 import ispd.arquivo.exportador.*;
 import ispd.arquivo.interpretador.gridsim.*;
-import ispd.arquivo.interpretador.simgrid.*;
 import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
 import ispd.gui.configuracao.*;
@@ -1041,77 +1040,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
         this.saveDrawingAreaToFile(this.openFile);
         this.refreshEdits();
-    }
-
-    private void jMenuItemSimGridActionPerformed (final ActionEvent evt) {
-        this.configureFileFilterAndChooser("XML File", new String[] { ".xml" }, true);
-
-        JOptionPane.showMessageDialog(
-            null,
-            getText("Select the application file."),
-            getText("WARNING"),
-            JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (this.jFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final var appFile = this.jFileChooser.getSelectedFile();
-
-        JOptionPane.showMessageDialog(null, getText("Select the platform file."),
-                                      getText("WARNING"),
-                                      JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (this.jFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final var platformFile = this.jFileChooser.getSelectedFile();
-
-        this.interpretAndOpenModel(appFile, platformFile);
-    }
-
-    private void interpretAndOpenModel (final File appFile, final File platFile) {
-        final var interpreter = new InterpretadorSimGrid();
-        interpreter.interpreta(appFile, platFile);
-
-        try {
-            final var model = interpreter.getModelo();
-
-            if (model == null) {
-                JOptionPane.showMessageDialog(
-                    null,
-                    String.format("%s\n", getText("File not found.")),
-                    getText("WARNING"),
-                    JOptionPane.PLAIN_MESSAGE
-                );
-                return;
-            }
-
-            this.openModel(model);
-        } catch (final HeadlessException e) {
-            final var message =
-                String.format(
-                    "%s\n%s",
-                    getText("Error opening file."),
-                    e.getMessage()
-                );
-            JOptionPane.showMessageDialog(
-                null,
-                message,
-                getText("WARNING"),
-                JOptionPane.PLAIN_MESSAGE
-            );
-        }
-    }
-
-    private void openModel (final Document model) {
-        this.startNewDrawing(model);
-        this.drawingArea.iconArrange();
-        this.updateGuiWithOpenFile("model opened", null);
-        this.modificar();
     }
 
     private void configureFileFilterAndChooser (
