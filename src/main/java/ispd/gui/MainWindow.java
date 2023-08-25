@@ -6,7 +6,6 @@ import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
 import ispd.gui.configuracao.*;
 import ispd.gui.iconico.grade.*;
-import ispd.gui.policy.*;
 import ispd.gui.utils.*;
 import ispd.utils.*;
 import ispd.utils.constants.*;
@@ -42,15 +41,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     private final ConfiguracaoISPD configure = new ConfiguracaoISPD();
 
     private final JFileChooser jFileChooser = new JFileChooser();
-
-    private final GenericPolicyManagementWindow jFrameManager =
-        new GridSchedulingPolicyManagementWindow();
-
-    private final GenericPolicyManagementWindow jFrameAllocManager =
-        new VmAllocationPolicyManagementWindow();
-
-    private final GenericPolicyManagementWindow jFrameCloudManager =
-        new CloudSchedulingPolicyManagementWindow();
 
     private final SimplePanel jPanelSimple = new SimplePanel();
 
@@ -99,8 +89,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenu jMenuExport = new JMenu();
 
-    private final JMenu jMenuTools = new JMenu();
-
     private final JMenuItem jMenuItemOpen = new JMenuItem();
 
     private final JMenuItem jMenuItemHelp = new JMenuItem();
@@ -112,10 +100,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     private final JMenuItem jMenuItemCompare = new JMenuItem();
 
     private final JMenuItem jMenuItemClose = new JMenuItem();
-
-    private final JMenuItem jMenuItemGenerate = new JMenuItem();
-
-    private final JMenuItem jMenuItemManage = new JMenuItem();
 
     private final JMenuItem jMenuItemNew = new JMenuItem();
 
@@ -143,10 +127,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenuItem jMenuItemPreferences = new JMenuItem();
 
-    private final JMenuItem jMenuItemManageCloud = new JMenuItem();
-
-    private final JMenuItem jMenuItemManageAllocation = new JMenuItem();
-
     private final AbstractButton jButtonInjectFaults = ButtonBuilder
         .aButton("Faults Injection", MainWindow::jButtonInjectFaultsActionPerformed)
         .withIcon(getImage("/ispd/gui/imagens/vermelho.png"))
@@ -163,7 +143,7 @@ public final class MainWindow extends JFrame implements KeyListener {
             true
         );
 
-    private JPanelConfigIcon jPanelSettings;
+    private final JPanelConfigIcon jPanelSettings = new JPanelConfigIcon();
 
     /**
      * define se o modelo é GRID, IAAS ou PAAS;
@@ -311,16 +291,10 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.initMenuFile();
         this.initMenuEdit();
         this.initMenuShow();
-        this.initMenuTools();
         this.initMenuHelp();
     }
 
     private void initPanels () {
-        this.jPanelSettings = new JPanelConfigIcon();
-        this.jPanelSettings.setEscalonadores(this.jFrameManager.getManager());
-        this.jPanelSettings.setEscalonadoresCloud(this.jFrameCloudManager.getManager());
-        this.jPanelSettings.setAlocadores(this.jFrameAllocManager.getManager());
-
         this.jPanelSimple.setText(getText("No icon selected."));
 
         this.jScrollPaneSideBar.setBorder(BorderFactory.createTitledBorder("Settings"));
@@ -352,23 +326,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemAbout.setToolTipText(aboutProgramText);
         this.jMenuItemAbout.addActionListener(this::jMenuItemAboutActionPerformed);
         this.jMenuHelp.add(this.jMenuItemAbout);
-    }
-
-    private void initMenuTools () {
-        this.jMenuTools.setText(getText("Tools"));
-        this.jMenuTools.addActionListener(this::jMenuToolsActionPerformed);
-        this.jMenuItemManage.setText(getText("Manage Schedulers"));
-        this.jMenuItemManage.addActionListener(this::jMenuItemManageActionPerformed);
-        this.jMenuTools.add(this.jMenuItemManage);
-        this.jMenuItemGenerate.setText(getText("Generate Scheduler"));
-        this.jMenuItemGenerate.addActionListener(this::jMenuItemGenerateActionPerformed);
-        this.jMenuTools.add(this.jMenuItemGenerate);
-        this.jMenuItemManageCloud.setText("Manage Cloud Schedulers");
-        this.jMenuItemManageCloud.addActionListener(this::jMenuItemManageCloudActionPerformed);
-        this.jMenuTools.add(this.jMenuItemManageCloud);
-        this.jMenuItemManageAllocation.setText("Manage Allocation Policies");
-        this.jMenuItemManageAllocation.addActionListener(this::jMenuItemManageAllocationActionPerformed);
-        this.jMenuTools.add(this.jMenuItemManageAllocation);
     }
 
     private void initMenuShow () {
@@ -687,7 +644,6 @@ public final class MainWindow extends JFrame implements KeyListener {
             this.jMenuFile,
             this.jMenuEdit,
             this.jMenuShow,
-            this.jMenuTools,
             this.jMenuHelp,
         };
 
@@ -731,10 +687,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jFileChooser.setFileFilter(this.fileFilter);
         this.jFileChooser.setFileView(new IspdFileView());
         this.jFileChooser.setSelectedFile(this.configure.getLastFile());
-    }
-
-    private void jMenuItemManageActionPerformed (final ActionEvent evt) {
-        this.showSubWindow(this.jFrameManager);
     }
 
     private void jMenuItemAboutActionPerformed (final ActionEvent evt) {
@@ -963,7 +915,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         throws ParserConfigurationException, IOException, SAXException {
         final var doc = ManipuladorXML.readModelFromFile(file);
         this.startNewDrawing(doc);
-        this.modelType       = this.drawingArea.getModelType();
+        this.modelType = this.drawingArea.getModelType();
         this.virtualMachines = this.drawingArea.getVirtualMachines();
         this.updateVmConfigButtonVisibility();
     }
@@ -1178,31 +1130,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, new Corner());
     }
 
-    private void jMenuItemGenerateActionPerformed (final ActionEvent evt) {
-        if (this.modelType == PickModelTypeDialog.GRID) {
-            this.generatePolicy(this.jFrameManager);
-            return;
-        }
-
-        if (this.modelType == PickModelTypeDialog.IAAS) {
-            this.generatePolicy(this.jFrameCloudManager);
-            this.generatePolicy(this.jFrameAllocManager);
-        }
-    }
-
-    private void generatePolicy (final GenericPolicyManagementWindow window) {
-        final var manager = window.getManager();
-        final var path    = manager.directory().getAbsolutePath();
-
-        final var policyGenerator =
-            new PolicyGeneratorWindow(this, true, path, manager);
-
-        this.showSubWindow(policyGenerator);
-
-        Optional.ofNullable(policyGenerator.getParse())
-            .ifPresent(i -> window.updatePolicyList());
-    }
-
     private void jMenuItemHelpActionPerformed (final ActionEvent evt) {
         this.showSubWindow(new HelpWindow());
     }
@@ -1391,17 +1318,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void updateDrawingVms (final VmConfiguration vmConfigWindow) {
         this.drawingArea.setUsers(vmConfigWindow.atualizaUsuarios());
         this.drawingArea.setVirtualMachines(vmConfigWindow.getMaqVirtuais());
-    }
-
-    private void jMenuItemManageCloudActionPerformed (final ActionEvent evt) {
-        this.showSubWindow(this.jFrameCloudManager);
-    }
-
-    private void jMenuItemManageAllocationActionPerformed (final ActionEvent evt) {
-        this.showSubWindow(this.jFrameAllocManager);
-    }
-
-    private void jMenuToolsActionPerformed (final ActionEvent evt) {
     }
 
     public JPanelConfigIcon getjPanelConfiguracao () {

@@ -3,7 +3,7 @@ package ispd.gui.configuracao;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.grade.*;
-import ispd.policy.managers.*;
+import ispd.policy.*;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -22,7 +22,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private final JComboBox<Object> schedulers =
         makeComboBox(
-            CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+            PolicyLoader.NATIVE_CLOUD_POLICIES.toArray(String[]::new),
             "Select the task scheduling policy"
         );
 
@@ -31,7 +31,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private final JComboBox<Object> vmmPolicies =
         makeComboBox(
-            VmAllocationPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+            PolicyLoader.NATIVE_VM_POLICIES.toArray(String[]::new),
             "Select the virtual machine allocation policy"
         );
 

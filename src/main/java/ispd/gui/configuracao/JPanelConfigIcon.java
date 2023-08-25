@@ -5,7 +5,6 @@ import static ispd.gui.TextSupplier.*;
 import ispd.gui.*;
 import ispd.gui.iconico.grade.*;
 import ispd.gui.utils.fonts.*;
-import ispd.policy.*;
 import java.awt.event.*;
 import java.util.function.*;
 import javax.swing.*;
@@ -35,12 +34,6 @@ public class JPanelConfigIcon extends JPanel {
 
     private final VariedRowTable linkTable =
         this.createTableWith(LinkVariedRowTable::new, LinkTable::new);
-
-    private PolicyManager schedulers = null;
-
-    private PolicyManager cloudSchedulers = null;
-
-    private PolicyManager allocators = null;
 
     public JPanelConfigIcon () {
         this.setLayout();
@@ -105,14 +98,6 @@ public class JPanelConfigIcon extends JPanel {
         return t;
     }
 
-    public void setEscalonadores (final PolicyManager schedulers) {
-        this.schedulers = schedulers;
-        schedulers.listar().forEach(sch -> {
-            this.getTabelaMaquina().getEscalonadores().addItem(sch);
-            this.getTabelaCluster().getEscalonadores().addItem(sch);
-        });
-    }
-
     private MachineTable getTabelaMaquina () {
         return (MachineTable) this.machineTable.getModel();
     }
@@ -121,28 +106,12 @@ public class JPanelConfigIcon extends JPanel {
         return (ClusterTable) this.clusterTable.getModel();
     }
 
-    public void setEscalonadoresCloud (final PolicyManager cloudSchedulers) {
-        this.cloudSchedulers = cloudSchedulers;
-        cloudSchedulers.listar().forEach(sch -> {
-            this.getTabelaMaquinaIaaS().getEscalonadores().addItem(sch);
-            this.getTabelaClusterIaaS().getEscalonadores().addItem(sch);
-        });
-    }
-
     private MachineTableIaaS getTabelaMaquinaIaaS () {
         return (MachineTableIaaS) this.iassMachineTable.getModel();
     }
 
     private ClusterTableIaaS getTabelaClusterIaaS () {
         return (ClusterTableIaaS) this.iassClusterTable.getModel();
-    }
-
-    public void setAlocadores (final PolicyManager allocators) {
-        this.allocators = allocators;
-        allocators.listar().forEach(alloc -> {
-            this.getTabelaMaquinaIaaS().getAlocadores().addItem(alloc);
-            this.getTabelaClusterIaaS().getAlocadores().addItem(alloc);
-        });
     }
 
     public void setIcone (final GridItem icon) {
@@ -166,18 +135,6 @@ public class JPanelConfigIcon extends JPanel {
 
     public void setIcone (final GridItem icon, final Iterable<String> users, final int choice) {
         if (choice == PickModelTypeDialog.GRID) {
-            if (!this.schedulers.listarRemovidos().isEmpty()) {
-                for (final var escal : this.schedulers.listarRemovidos()) {
-                    this.getTabelaMaquina().getEscalonadores().removeItem(escal);
-                }
-                this.schedulers.listarRemovidos().clear();
-            }
-            if (!this.schedulers.listarAdicionados().isEmpty()) {
-                for (final var escal : this.schedulers.listarAdicionados()) {
-                    this.getTabelaMaquina().getEscalonadores().addItem(escal);
-                }
-                this.schedulers.listarAdicionados().clear();
-            }
             this.jLabelIconName.setText(
                 "%s#: %d".formatted(
                     getText("Configuration for the icon"),
@@ -194,35 +151,6 @@ public class JPanelConfigIcon extends JPanel {
                 this.jScrollPane.setViewportView(this.clusterTable);
             }
         } else if (choice == PickModelTypeDialog.IAAS) {
-            if (!this.cloudSchedulers.listarRemovidos().isEmpty()) {
-                for (final var escal : this.cloudSchedulers.listarRemovidos()) {
-                    this.getTabelaMaquinaIaaS().getEscalonadores().removeItem(escal);
-                    this.getTabelaClusterIaaS().getEscalonadores().removeItem(escal);
-                }
-                this.cloudSchedulers.listarRemovidos().clear();
-            }
-            if (!this.cloudSchedulers.listarAdicionados().isEmpty()) {
-                for (final var escal : this.cloudSchedulers.listarAdicionados()) {
-                    this.getTabelaMaquinaIaaS().getEscalonadores().addItem(escal);
-                    this.getTabelaClusterIaaS().getEscalonadores().addItem(escal);
-                }
-                this.cloudSchedulers.listarAdicionados().clear();
-            }
-
-            if (!this.allocators.listarRemovidos().isEmpty()) {
-                for (final var alloc : this.allocators.listarRemovidos()) {
-                    this.getTabelaMaquinaIaaS().getAlocadores().removeItem(alloc);
-                    this.getTabelaClusterIaaS().getAlocadores().removeItem(alloc);
-                }
-                this.allocators.listarRemovidos().clear();
-            }
-            if (!this.allocators.listarAdicionados().isEmpty()) {
-                for (final var alloc : this.allocators.listarAdicionados()) {
-                    this.getTabelaMaquinaIaaS().getAlocadores().addItem(alloc);
-                    this.getTabelaClusterIaaS().getAlocadores().addItem(alloc);
-                }
-                this.allocators.listarAdicionados().clear();
-            }
 
             this.jLabelIconName.setText(
                 "%s#: %d".formatted(
