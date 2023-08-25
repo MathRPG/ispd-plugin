@@ -51,9 +51,6 @@ public class GridDrawing extends DrawingArea {
 
     private final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
-    /**
-     * (GRID, IAAS ou PAAS)
-     */
     private ModelType modelType = ModelType.GRID;
 
     private HashSet<String> users;
