@@ -139,9 +139,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JPanelConfigIcon jPanelSettings = new JPanelConfigIcon();
 
-    /**
-     * define se o modelo é GRID, IAAS ou PAAS;
-     */
     private ModelType modelType = ModelType.GRID;
 
     private boolean currentFileHasUnsavedChanges = false;
