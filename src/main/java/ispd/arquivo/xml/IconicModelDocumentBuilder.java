@@ -110,16 +110,33 @@ public class IconicModelDocumentBuilder {
     }
 
     private void addPerNodeLoad (final PerNodeWorkloadGenerator no) {
-        this.addLoadNo(
-            no.getApplication(),
-            no.getOwner(),
-            no.getSchedulerId(),
-            no.getTaskCount(),
-            no.getComputationMaximum(),
-            no.getComputationMinimum(),
-            no.getCommunicationMaximum(),
-            no.getCommunicationMinimum()
-        );
+        final String  application = no.getApplication();
+        final String  owner       = no.getOwner();
+        final String  masterId    = no.getSchedulerId();
+        final Integer taskCount   = no.getTaskCount();
+        final Double  maxComp     = no.getComputationMaximum();
+        final Double  minComp     = no.getComputationMinimum();
+        final Double  maxComm     = no.getCommunicationMaximum();
+        final Double  minComm     = no.getCommunicationMinimum();
+        this.addElementToLoad(this.anElement(
+            "node", new Object[][] {
+                { "application", application },
+                { "owner", owner },
+                { "id_master", masterId },
+                { "tasks", taskCount },
+            }, new Element[] {
+                this.anElement("size", new Object[][] {
+                    { "type", "computing" },
+                    { "maximum", maxComp },
+                    { "minimum", minComp },
+                }),
+                this.anElement("size", new Object[][] {
+                    { "type", "communication" },
+                    { "maximum", maxComm },
+                    { "minimum", minComm },
+                }),
+            }
+        ));
     }
 
     public void addTraceLoad (final TraceFileWorkloadGenerator trace) {
@@ -529,42 +546,6 @@ public class IconicModelDocumentBuilder {
             this.load = this.document.createElement("load");
             this.system.appendChild(this.load);
         }
-    }
-
-    /**
-     * Add a per-node load to the current model being built.
-     *
-     * @apiNote This method may be called more than once per instance.
-     */
-    public void addLoadNo (
-        final String application,
-        final String owner,
-        final String masterId,
-        final Integer taskCount,
-        final Double maxComp,
-        final Double minComp,
-        final Double maxComm,
-        final Double minComm
-    ) {
-        this.addElementToLoad(this.anElement(
-            "node", new Object[][] {
-                { "application", application },
-                { "owner", owner },
-                { "id_master", masterId },
-                { "tasks", taskCount },
-            }, new Element[] {
-                this.anElement("size", new Object[][] {
-                    { "type", "computing" },
-                    { "maximum", maxComp },
-                    { "minimum", minComp },
-                }),
-                this.anElement("size", new Object[][] {
-                    { "type", "communication" },
-                    { "maximum", maxComm },
-                    { "minimum", minComm },
-                }),
-            }
-        ));
     }
 
     /**
