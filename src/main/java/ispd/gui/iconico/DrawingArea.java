@@ -55,7 +55,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private final boolean isRectOn;
 
-    private final boolean isPositionFixed;
+    private final boolean isPositionFixed = false;
 
     private JPopupMenu generalPopup;
 
@@ -143,7 +143,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         this.isPopupOn       = true;
         this.isGridOn        = true;
         this.isRectOn        = true;
-        this.isPositionFixed = false;
         this.initRuler();
         this.initGeneralPopup();
         this.initIconPopup();
