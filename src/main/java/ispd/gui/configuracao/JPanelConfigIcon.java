@@ -6,7 +6,6 @@ import ispd.gui.*;
 import ispd.gui.iconico.grade.*;
 import ispd.gui.utils.fonts.*;
 import java.awt.event.*;
-import java.util.*;
 import java.util.function.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -100,10 +99,6 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setEscalonadores () {
-        new ArrayList<String>().forEach(sch -> {
-            this.getTabelaMaquina().getEscalonadores().addItem(sch);
-            this.getTabelaCluster().getEscalonadores().addItem(sch);
-        });
     }
 
     private MachineTable getTabelaMaquina () {
@@ -115,10 +110,6 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setEscalonadoresCloud () {
-        new ArrayList<String>().forEach(sch -> {
-            this.getTabelaMaquinaIaaS().getEscalonadores().addItem(sch);
-            this.getTabelaClusterIaaS().getEscalonadores().addItem(sch);
-        });
     }
 
     private MachineTableIaaS getTabelaMaquinaIaaS () {
@@ -130,10 +121,6 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setAlocadores () {
-        new ArrayList<String>().forEach(alloc -> {
-            this.getTabelaMaquinaIaaS().getAlocadores().addItem(alloc);
-            this.getTabelaClusterIaaS().getAlocadores().addItem(alloc);
-        });
     }
 
     public void setIcone (final GridItem icon) {
