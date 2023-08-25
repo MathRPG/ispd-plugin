@@ -39,7 +39,7 @@ public class GridDrawing extends DrawingArea {
 
     public static final Image RED_ICON = getImage("imagens/vermelho.png");
 
-    public static final int INITIAL_SIZE = 1500;
+    private static final int INITIAL_SIZE = 1500;
 
     private static final Color ALMOST_WHITE = new Color(220, 220, 220);
 
