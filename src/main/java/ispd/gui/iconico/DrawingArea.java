@@ -225,7 +225,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             }
             if (!this.selectedIcons.contains(icon)) {
                 if (mouseEvent.getButton() != MouseEvent.BUTTON2
-                    && this.selectedIcons.size() >= 1) {
+                    && !this.selectedIcons.isEmpty()) {
                     for (final var icone : this.selectedIcons) {
                         icone.setSelected(false);
                     }
