@@ -250,23 +250,15 @@ public class IconicModelDocumentBuilder {
     public void addInternet (final Internet i) {
         final var id = i.getId();
 
-        final int    x            = i.getX();
-        final int    y            = i.getY();
-        final int    idLocal      = id.getLocalId();
-        final int    idGlobal     = id.getGlobalId();
-        final String name         = id.getName();
-        final double bandwidth    = i.getBandwidth();
-        final double internetLoad = i.getLoadFactor();
-        final double latency      = i.getLatency();
         this.system.appendChild(this.anElement(
             "internet", new Object[][] {
-                { "id", name },
-                { "bandwidth", bandwidth },
-                { "load", internetLoad },
-                { "latency", latency },
+                { "id", id.getName() },
+                { "bandwidth", i.getBandwidth() },
+                { "load", i.getLoadFactor() },
+                { "latency", i.getLatency() },
             }, new Element[] {
-                this.aPositionElement(x, y),
-                this.anIconIdElement(idGlobal, idLocal),
+                this.aPositionElement(i.getX(), i.getY()),
+                this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
             }
         ));
     }
