@@ -11,7 +11,11 @@ public interface PolicyManager {
 
     File directory ();
 
-    List listarAdicionados ();
+    default List listarAdicionados () {
+        return new ArrayList<String>();
+    }
 
-    List listarRemovidos ();
+    default List listarRemovidos () {
+        return new ArrayList<String>();
+    }
 }

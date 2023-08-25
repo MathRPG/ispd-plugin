@@ -52,16 +52,6 @@ public abstract class FilePolicyManager implements PolicyManager {
         return this.policies;
     }
 
-    @Override
-    public List listarAdicionados () {
-        return new ArrayList<String>();
-    }
-
-    @Override
-    public List listarRemovidos () {
-        return new ArrayList<String>();
-    }
-
     private void initialize () {
         if (this.directory().exists()) {
             this.loadPoliciesFromFoundDotClassFiles();
