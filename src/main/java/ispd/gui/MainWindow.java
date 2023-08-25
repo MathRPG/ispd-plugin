@@ -157,8 +157,8 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final AbstractButton jButtonSimulate = ButtonBuilder
         .aButton(getText("Simulate"), this::jButtonSimulateActionPerformed)
-        .withIcon(getImage("/ispd/gui/imagens" + "/system-run.png"))
-        .withToolTip(getText("Starts the " + "simulation"))
+        .withIcon(getImage("/ispd/gui/imagens/system-run.png"))
+        .withToolTip(getText("Starts the simulation"))
         .withCenterBottomTextPosition()
         .disabled()
         .nonFocusable()
@@ -300,7 +300,7 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private void initMenuHelp () {
         this.jMenuHelp.setText(getText("Help"));
-        this.jMenuItemAbout.setIcon(getImage("/ispd/gui/imagens" + "/help-about.png"));
+        this.jMenuItemAbout.setIcon(getImage("/ispd/gui/imagens/help-about.png"));
         final var aboutProgramText =
             String.format(
                 "%s %s",
@@ -315,32 +315,22 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private void initMenuShow () {
         this.jMenuShow.setText(getText("View"));
-        this.jCheckBoxMenuConnectedItem.setText(getText("Show "
-                                                        + "Connected "
-                                                        + "Nodes"));
+        this.jCheckBoxMenuConnectedItem.setText(getText("Show Connected Nodes"));
         this.jCheckBoxMenuConnectedItem.setToolTipText(getText(
-            "Displays in the settings area, the list of nodes connected "
-            + "for the selected icon"));
+            "Displays in the settings area, the list of nodes connected for the selected icon"));
         this.jCheckBoxMenuConnectedItem.setEnabled(false);
         this.jCheckBoxMenuConnectedItem.addActionListener(this::jCheckBoxMenuItemConnectedActionPerformed);
         this.jMenuShow.add(this.jCheckBoxMenuConnectedItem);
-        this.jCheckBoxIndirectMenuItem.setText(getText("Show "
-                                                       + "Indirectly "
-                                                       + "Connected "
-                                                       + "Nodes"));
+        this.jCheckBoxIndirectMenuItem.setText(getText("Show Indirectly Connected Nodes"));
         this.jCheckBoxIndirectMenuItem.setToolTipText(getText(
-            "Displays in the settings area, the list of nodes connected " +
-            "through the internet icon, to the icon selected"));
+            "Displays in the settings area, the list of nodes connected through the internet icon, to the icon selected"));
         this.jCheckBoxIndirectMenuItem.setEnabled(false);
         this.jCheckBoxIndirectMenuItem.addActionListener(this::jCheckBoxMenuItemIndirectActionPerformed);
         this.jMenuShow.add(this.jCheckBoxIndirectMenuItem);
         this.jCheckBoxMenuSchedulableItem.setSelected(true);
-        this.jCheckBoxMenuSchedulableItem.setText(getText("Show "
-                                                          + "Schedulable"
-                                                          + " Nodes"));
+        this.jCheckBoxMenuSchedulableItem.setText(getText("Show Schedulable Nodes"));
         this.jCheckBoxMenuSchedulableItem.setToolTipText(getText(
-            "Displays in the settings area, the list of nodes schedulable" +
-            " for the selected icon"));
+            "Displays in the settings area, the list of nodes schedulable for the selected icon"));
         this.jCheckBoxMenuSchedulableItem.setEnabled(false);
         this.jCheckBoxMenuSchedulableItem.addActionListener(this::jCheckBoxMenuItemSchedulableActionPerformed);
         this.jMenuShow.add(this.jCheckBoxMenuSchedulableItem);
@@ -350,10 +340,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         ));
         this.jCheckBoxMenuGridItem.setSelected(true);
         this.jCheckBoxMenuGridItem.setText(getText("Drawing grid"));
-        this.jCheckBoxMenuGridItem.setToolTipText(getText("Displays "
-                                                          + "grid in the"
-                                                          + " drawing "
-                                                          + "area"));
+        this.jCheckBoxMenuGridItem.setToolTipText(getText("Displays grid in the drawing area"));
         this.jCheckBoxMenuGridItem.addActionListener(this::jCheckBoxMenuItemGradeActionPerformed);
         this.jMenuShow.add(this.jCheckBoxMenuGridItem);
         this.jCheckBoxRulerMenuItem.setAccelerator(KeyStroke.getKeyStroke(
@@ -363,7 +350,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jCheckBoxRulerMenuItem.setSelected(true);
         this.jCheckBoxRulerMenuItem.setText(getText("Drawing rule"));
         this.jCheckBoxRulerMenuItem.setToolTipText(
-            getText("Displays " + "rule in " + "the " + "drawing " + "area"));
+            getText("Displays rule in the drawing area"));
         this.jCheckBoxRulerMenuItem.addActionListener(this::jCheckBoxMenuItemRulerActionPerformed);
         this.jMenuShow.add(this.jCheckBoxRulerMenuItem);
     }
@@ -374,7 +361,7 @@ public final class MainWindow extends JFrame implements KeyListener {
             KeyEvent.VK_C,
             InputEvent.CTRL_DOWN_MASK
         ));
-        this.jMenuItemCopy.setIcon(getImage("/ispd/gui/imagens" + "/edit-copy.png"));
+        this.jMenuItemCopy.setIcon(getImage("/ispd/gui/imagens/edit-copy.png"));
         this.jMenuItemCopy.setText(getText("Copy"));
         this.jMenuItemCopy.setEnabled(false);
         this.jMenuItemCopy.addActionListener(this::jMenuItemCopyActionPerformed);
@@ -383,12 +370,12 @@ public final class MainWindow extends JFrame implements KeyListener {
             KeyEvent.VK_V,
             InputEvent.CTRL_DOWN_MASK
         ));
-        this.jMenuItemPaste.setIcon(getImage("/ispd/gui/imagens" + "/edit-paste.png"));
+        this.jMenuItemPaste.setIcon(getImage("/ispd/gui/imagens/edit-paste.png"));
         this.jMenuItemPaste.setText(getText("Paste"));
         this.jMenuItemPaste.setEnabled(false);
         this.jMenuItemPaste.addActionListener(this::jMenuItemPasteActionPerformed);
         this.jMenuEdit.add(this.jMenuItemPaste);
-        this.jMenuItemDelete.setIcon(getImage("/ispd/gui/imagens" + "/edit-delete.png"));
+        this.jMenuItemDelete.setIcon(getImage("/ispd/gui/imagens/edit-delete.png"));
         this.jMenuItemDelete.setText(getText("Delete"));
         this.jMenuItemDelete.setEnabled(false);
         this.jMenuItemDelete.addActionListener(this::jMenuItemDeleteActionPerformed);
@@ -417,7 +404,7 @@ public final class MainWindow extends JFrame implements KeyListener {
             KeyEvent.VK_N,
             InputEvent.CTRL_DOWN_MASK
         ));
-        this.jMenuItemNew.setIcon(getImage("/ispd/gui/imagens" + "/insert-object_1.png"));
+        this.jMenuItemNew.setIcon(getImage("/ispd/gui/imagens/insert-object_1.png"));
         this.jMenuItemNew.setText(getText("New"));
         this.jMenuItemNew.setToolTipText(getText("Starts a new model"));
         this.jMenuItemNew.addActionListener(this::jMenuItemNovoActionPerformed);
@@ -426,18 +413,18 @@ public final class MainWindow extends JFrame implements KeyListener {
             KeyEvent.VK_O,
             InputEvent.CTRL_DOWN_MASK
         ));
-        this.jMenuItemOpen.setIcon(getImage("/ispd/gui/imagens" + "/document-open.png"));
+        this.jMenuItemOpen.setIcon(getImage("/ispd/gui/imagens/document-open.png"));
         this.jMenuItemOpen.setText(getText("Open"));
-        this.jMenuItemOpen.setToolTipText(getText("Opens an existing " + "model"));
+        this.jMenuItemOpen.setToolTipText(getText("Opens an existing model"));
         this.jMenuItemOpen.addActionListener(this::jMenuItemOpenActionPerformed);
         this.jMenuFile.add(this.jMenuItemOpen);
         this.jMenuItemSave.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_S,
             InputEvent.CTRL_DOWN_MASK
         ));
-        this.jMenuItemSave.setIcon(getImage("/ispd/gui/imagens" + "/document-save_1.png"));
+        this.jMenuItemSave.setIcon(getImage("/ispd/gui/imagens/document-save_1.png"));
         this.jMenuItemSave.setText(getText("Save"));
-        this.jMenuItemSave.setToolTipText(getText("Save the open " + "model"));
+        this.jMenuItemSave.setToolTipText(getText("Save the open model"));
         this.jMenuItemSave.setEnabled(false);
         this.jMenuItemSave.addActionListener(this::jMenuItemSaveActionPerformed);
         this.jMenuFile.add(this.jMenuItemSave);
@@ -445,10 +432,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemSaveAs.setEnabled(false);
         this.jMenuItemSaveAs.addActionListener(this::jMenuItemSaveAsActionPerformed);
         this.jMenuFile.add(this.jMenuItemSaveAs);
-        this.jMenuItemOpenResult.setIcon(getImage("/ispd/gui"
-                                                  + "/imagens"
-                                                  + "/document-open"
-                                                  + ".png"));
+        this.jMenuItemOpenResult.setIcon(getImage("/ispd/gui/imagens/document-open.png"));
         this.jMenuItemOpenResult.setText("Open Results");
         this.jMenuItemOpenResult.addActionListener(this::jMenuItemOpenResultActionPerformed);
         this.jMenuFile.add(this.jMenuItemOpenResult);
@@ -480,11 +464,9 @@ public final class MainWindow extends JFrame implements KeyListener {
             KeyEvent.VK_F4,
             InputEvent.CTRL_DOWN_MASK
         ));
-        this.jMenuItemClose.setIcon(getImage("/ispd/gui/imagens" + "/document-close.png"));
+        this.jMenuItemClose.setIcon(getImage("/ispd/gui/imagens/document-close.png"));
         this.jMenuItemClose.setText(getText("Close"));
-        this.jMenuItemClose.setToolTipText(getText("Closes the "
-                                                   + "currently open "
-                                                   + "model"));
+        this.jMenuItemClose.setToolTipText(getText("Closes the currently open model"));
         this.jMenuItemClose.setEnabled(false);
         this.jMenuItemClose.addActionListener(this::jMenuItemCloseActionPerformed);
         this.jMenuFile.add(this.jMenuItemClose);
@@ -492,7 +474,7 @@ public final class MainWindow extends JFrame implements KeyListener {
             KeyEvent.VK_F4,
             InputEvent.ALT_DOWN_MASK
         ));
-        this.jMenuItemExit.setIcon(getImage("/ispd/gui/imagens" + "/window-close.png"));
+        this.jMenuItemExit.setIcon(getImage("/ispd/gui/imagens/window-close.png"));
         this.jMenuItemExit.setText(getText("Exit"));
         this.jMenuItemExit.setToolTipText(getText("Closes the program"));
         this.jMenuItemExit.addActionListener(this::jMenuItemExitActionPerformed);
@@ -512,12 +494,12 @@ public final class MainWindow extends JFrame implements KeyListener {
             this::jToggleButtonNetworkActionPerformed
         );
         this.initButton(
-            this.jToggleButtonCluster, "/ispd/gui/imagens/botao_cluster" + ".gif",
+            this.jToggleButtonCluster, "/ispd/gui/imagens/botao_cluster.gif",
             "Selects cluster icon for add to the model",
             this::jToggleButtonClusterActionPerformed
         );
         this.initButton(
-            this.jToggleButtonInternet, "/ispd/gui/imagens/botao_internet" + ".gif",
+            this.jToggleButtonInternet, "/ispd/gui/imagens/botao_internet.gif",
             "Selects internet icon for add to the model",
             this::jToggleButtonInternetActionPerformed
         );
