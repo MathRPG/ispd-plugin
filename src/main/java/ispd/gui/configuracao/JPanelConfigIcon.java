@@ -7,7 +7,6 @@ import ispd.gui.iconico.grade.*;
 import ispd.gui.utils.fonts.*;
 import ispd.policy.*;
 import java.awt.event.*;
-import java.util.*;
 import java.util.function.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -158,18 +157,6 @@ public class JPanelConfigIcon extends JPanel {
 
     public void setIcone (final GridItem icon, final Iterable<String> users, final int choice) {
         if (choice == PickModelTypeDialog.GRID) {
-            if (!((List) new ArrayList<String>()).isEmpty()) {
-                for (final var escal : new ArrayList<String>()) {
-                    this.getTabelaMaquina().getEscalonadores().removeItem(escal);
-                }
-                ((List) new ArrayList<String>()).clear();
-            }
-            if (!((List) new ArrayList<String>()).isEmpty()) {
-                for (final var escal : new ArrayList<String>()) {
-                    this.getTabelaMaquina().getEscalonadores().addItem(escal);
-                }
-                ((List) new ArrayList<String>()).clear();
-            }
             this.jLabelIconName.setText(
                 "%s#: %d".formatted(
                     getText("Configuration for the icon"),
@@ -186,35 +173,6 @@ public class JPanelConfigIcon extends JPanel {
                 this.jScrollPane.setViewportView(this.clusterTable);
             }
         } else if (choice == PickModelTypeDialog.IAAS) {
-            if (!((List) new ArrayList<String>()).isEmpty()) {
-                for (final var escal : new ArrayList<String>()) {
-                    this.getTabelaMaquinaIaaS().getEscalonadores().removeItem(escal);
-                    this.getTabelaClusterIaaS().getEscalonadores().removeItem(escal);
-                }
-                ((List) new ArrayList<String>()).clear();
-            }
-            if (!((List) new ArrayList<String>()).isEmpty()) {
-                for (final var escal : new ArrayList<String>()) {
-                    this.getTabelaMaquinaIaaS().getEscalonadores().addItem(escal);
-                    this.getTabelaClusterIaaS().getEscalonadores().addItem(escal);
-                }
-                ((List) new ArrayList<String>()).clear();
-            }
-
-            if (!((List) new ArrayList<String>()).isEmpty()) {
-                for (final var alloc : new ArrayList<String>()) {
-                    this.getTabelaMaquinaIaaS().getAlocadores().removeItem(alloc);
-                    this.getTabelaClusterIaaS().getAlocadores().removeItem(alloc);
-                }
-                ((List) new ArrayList<String>()).clear();
-            }
-            if (!((List) new ArrayList<String>()).isEmpty()) {
-                for (final var alloc : new ArrayList<String>()) {
-                    this.getTabelaMaquinaIaaS().getAlocadores().addItem(alloc);
-                    this.getTabelaClusterIaaS().getAlocadores().addItem(alloc);
-                }
-                ((List) new ArrayList<String>()).clear();
-            }
 
             this.jLabelIconName.setText(
                 "%s#: %d".formatted(
