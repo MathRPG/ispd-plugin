@@ -21,14 +21,6 @@ import org.w3c.dom.*;
 
 public class GridDrawing extends DrawingArea {
 
-    public static final IconType MACHINE = IconType.MACHINE;
-
-    public static final IconType NETWORK = IconType.NETWORK;
-
-    public static final IconType CLUSTER = IconType.CLUSTER;
-
-    public static final IconType INTERNET = IconType.INTERNET;
-
     public static final Image MACHINE_ICON = getImage("imagens/botao_no.gif");
 
     public static final Image CLUSTER_ICON = getImage("imagens/botao_cluster.gif");
@@ -767,7 +759,7 @@ public class GridDrawing extends DrawingArea {
             return;
         }
 
-        if (object == NETWORK) {
+        if (object == IconType.NETWORK) {
             this.setIsDrawingEdge(true);
             this.setAddVertice(false);
             this.setCursor(this.crossHairCursor);

@@ -717,7 +717,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jToggleButtonMachineActionPerformed (final ActionEvent evt) {
         this.iconButtonOnClick(
             this.jToggleButtonMachine,
-            GridDrawing.MACHINE,
+            IconType.MACHINE,
             "Machine button selected."
         );
     }
@@ -725,7 +725,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jToggleButtonNetworkActionPerformed (final ActionEvent evt) {
         this.iconButtonOnClick(
             this.jToggleButtonNetwork,
-            GridDrawing.NETWORK,
+            IconType.NETWORK,
             "Network button selected."
         );
     }
@@ -733,7 +733,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jToggleButtonClusterActionPerformed (final ActionEvent evt) {
         this.iconButtonOnClick(
             this.jToggleButtonCluster,
-            GridDrawing.CLUSTER,
+            IconType.CLUSTER,
             "Cluster button selected."
         );
     }
@@ -741,7 +741,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jToggleButtonInternetActionPerformed (final ActionEvent evt) {
         this.iconButtonOnClick(
             this.jToggleButtonInternet,
-            GridDrawing.INTERNET,
+            IconType.INTERNET,
             "Internet button selected."
         );
     }
