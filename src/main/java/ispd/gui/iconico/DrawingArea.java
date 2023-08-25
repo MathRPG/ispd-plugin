@@ -144,6 +144,9 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
         this.users.add("user1");
         this.profiles.put("user1", FULL_CAPACITY);
+
+        this.errorMessage = getText("You must click an icon.");
+        this.errorTitle   = getText("WARNING");
     }
 
     private static Image getImage (final String name) {
@@ -513,9 +516,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             getText("Turn Over"),
             getText("Paste")
         );
-
-        this.errorMessage = getText("You must click an icon.");
-        this.errorTitle   = getText("WARNING");
     }
 
     public HashSet<VirtualMachine> getVirtualMachines () {
