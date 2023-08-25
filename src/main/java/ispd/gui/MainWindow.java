@@ -780,7 +780,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         final String notificationText
     ) {
         if (!clickedButton.isSelected()) {
-            this.drawingArea.setIconeSelecionado(null);
+            this.drawingArea.setIconeSelecionado(IconType.NONE);
             return;
         }
 

@@ -760,7 +760,7 @@ public class GridDrawing extends DrawingArea {
     }
 
     public void setIconeSelecionado (final IconType object) {
-        if (object == null) {
+        if (object == IconType.NONE) {
             this.setIsDrawingEdge(false);
             this.setAddVertice(false);
             this.setCursor(this.normalCursor);
