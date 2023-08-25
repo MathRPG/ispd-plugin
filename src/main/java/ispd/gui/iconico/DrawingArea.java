@@ -1,24 +1,10 @@
 package ispd.gui.iconico;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Stream;
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+import java.util.stream.*;
+import javax.swing.*;
 
 public abstract class DrawingArea extends JPanel implements MouseListener, MouseMotionListener {
 
@@ -26,11 +12,11 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
 
     private static final RulerUnit DEFAULT_UNIT = RulerUnit.CENTIMETERS;
 
-    protected final Set<Icon> selectedIcons = new HashSet<>(0);
+    protected final Set<Icon> selectedIcons = new HashSet<>();
 
-    protected final Set<Vertex> vertices = new HashSet<>(0);
+    protected final Set<Vertex> vertices = new HashSet<>();
 
-    protected final Set<Edge> edges = new HashSet<>(0);
+    protected final Set<Edge> edges = new HashSet<>();
 
     private final boolean isPopupOn;
 
@@ -356,7 +342,7 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
      * change the both ruler's unit.
      */
     private void initRuler () {
-        this.updateUnitTo(DrawingArea.DEFAULT_UNIT);
+        this.updateUnitTo(DEFAULT_UNIT);
 
         this.columnRuler = new Ruler(RulerOrientation.HORIZONTAL, this.unit);
         this.columnRuler.setPreferredWidth(this.getWidth());
@@ -653,7 +639,7 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
 
         g.setColor(Color.BLACK);
         g.drawRect(x, y, w, h);
-        g.setColor(DrawingArea.RECTANGLE_FILL_COLOR);
+        g.setColor(RECTANGLE_FILL_COLOR);
         g.fillRect(x, y, w, h);
     }
 
