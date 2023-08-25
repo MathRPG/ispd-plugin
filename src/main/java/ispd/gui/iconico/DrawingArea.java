@@ -505,13 +505,8 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         this.modelType = modelType;
     }
 
-    public void setMainWindow (final MainWindow janelaPrincipal) {
-        this.mainWindow = janelaPrincipal;
-        this.initTexts();
-    }
-
-    //utilizado para inserir novo valor nas Strings dos componentes
-    private void initTexts () {
+    public void setMainWindow (final MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
         this.setPopupButtonText(
             getText("Remove"),
             getText("Copy"),
