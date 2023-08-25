@@ -303,7 +303,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.initMenuFile();
         this.initMenuEdit();
         this.initMenuShow();
-        this.initMenuTools();
         this.initMenuHelp();
     }
 
@@ -344,9 +343,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemAbout.setToolTipText(aboutProgramText);
         this.jMenuItemAbout.addActionListener(this::jMenuItemAboutActionPerformed);
         this.jMenuHelp.add(this.jMenuItemAbout);
-    }
-
-    private void initMenuTools () {
     }
 
     private void initMenuShow () {
