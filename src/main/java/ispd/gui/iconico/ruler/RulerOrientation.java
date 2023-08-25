@@ -1,4 +1,4 @@
-package ispd.gui.iconico;
+package ispd.gui.iconico.ruler;
 
 /**
  * {@link RulerOrientation} is an enumeration that stores the available ruler orientation.

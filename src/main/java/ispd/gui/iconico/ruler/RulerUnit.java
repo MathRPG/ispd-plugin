@@ -1,6 +1,6 @@
-package ispd.gui.iconico;
+package ispd.gui.iconico.ruler;
 
-import java.awt.Toolkit;
+import java.awt.*;
 
 /**
  * {@link RulerUnit} is an enumeration that stores the available ruler units.

@@ -4,6 +4,7 @@ import static ispd.gui.TextSupplier.*;
 
 import ispd.arquivo.xml.*;
 import ispd.gui.*;
+import ispd.gui.iconico.ruler.*;
 import ispd.motor.workload.*;
 import ispd.motor.workload.impl.*;
 import java.awt.*;
