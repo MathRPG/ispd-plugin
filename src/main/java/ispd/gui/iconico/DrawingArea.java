@@ -215,15 +215,16 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     @Override
-    public void mousePressed (final MouseEvent me) {
+    public void mousePressed (final MouseEvent mouseEvent) {
         //Verifica se algum icone foi selecionado
-        final var icon = this.getSelectedIcon(me.getX(), me.getY());
+        final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
         if (icon != null) {
             if (icon instanceof Vertex) {
                 ((Vertex) icon).setBase(0, 0);
             }
             if (!this.selectedIcons.contains(icon)) {
-                if (me.getButton() != MouseEvent.BUTTON2 && this.selectedIcons.size() >= 1) {
+                if (mouseEvent.getButton() != MouseEvent.BUTTON2
+                    && this.selectedIcons.size() >= 1) {
                     for (final var icone : this.selectedIcons) {
                         icone.setSelected(false);
                     }
@@ -236,8 +237,8 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                 for (final var icone : this.selectedIcons) {
                     if (icone instanceof Vertex) {
                         ((Vertex) icone).setBase(
-                            icone.getX() - me.getX(),
-                            icone.getY() - me.getY()
+                            icone.getX() - mouseEvent.getX(),
+                            icone.getY() - mouseEvent.getY()
                         );
                     }
                 }
@@ -246,8 +247,8 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         //Indica ponto inicial do retangulo
         if (this.selectedIcons.isEmpty()) {
             this.shouldDrawRect  = true;
-            this.rectangleX      = me.getX();
-            this.rectangleY      = me.getY();
+            this.rectangleX = mouseEvent.getX();
+            this.rectangleY = mouseEvent.getY();
             this.rectangleWidth  = 0;
             this.rectangleHeight = 0;
         }
@@ -285,12 +286,12 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     @Override
-    public void mouseEntered (final MouseEvent me) {
+    public void mouseEntered (final MouseEvent mouseEvent) {
         this.repaint();
     }
 
     @Override
-    public void mouseExited (final MouseEvent me) {
+    public void mouseExited (final MouseEvent mouseEvent) {
         this.repaint();
     }
 
@@ -301,9 +302,9 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     @Override
-    public void mouseMoved (final MouseEvent e) {
-        this.mousePosX = e.getX();
-        this.mousePosY = e.getY();
+    public void mouseMoved (final MouseEvent mouseEvent) {
+        this.mousePosX = mouseEvent.getX();
+        this.mousePosY = mouseEvent.getY();
         if (this.isDrawingEdge) {
             this.repaint();
         }
@@ -335,16 +336,16 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         }
     }
 
-    public void processKeyEvent (final KeyEvent keyEvent) {
-        if (keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
+    public void processKeyEvent (final KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_DELETE) {
             this.botaoIconeActionPerformed(null);
         }
 
-        if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_C) {
+        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C) {
             this.botaoVerticeActionPerformed(null);
         }
 
-        if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_V) {
+        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
             this.botaoPainelActionPerformed(null);
         }
     }
