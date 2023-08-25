@@ -231,20 +231,31 @@ public class IconicModelDocumentBuilder {
         final var destination = l.getDestination();
         final var id          = l.getId();
 
-        this.addLink(
-            source.getX(),
-            source.getY(),
-            destination.getX(),
-            destination.getY(),
-            id.getLocalId(),
-            id.getGlobalId(),
-            id.getName(),
-            l.getBandwidth(),
-            l.getLoadFactor(),
-            l.getLatency(),
-            ((GridItem) source).getId().getGlobalId(),
-            ((GridItem) destination).getId().getGlobalId()
-        );
+        final int    x0           = source.getX();
+        final int    y0           = source.getY();
+        final int    x1           = destination.getX();
+        final int    y1           = destination.getY();
+        final int    localId      = id.getLocalId();
+        final int    globalId     = id.getGlobalId();
+        final String name         = id.getName();
+        final double bandwidth    = l.getBandwidth();
+        final double linkLoad     = l.getLoadFactor();
+        final double latency      = l.getLatency();
+        final int    origination  = ((GridItem) source).getId().getGlobalId();
+        final int    destination1 = ((GridItem) destination).getId().getGlobalId();
+        this.system.appendChild(this.anElement(
+            "link", new Object[][] {
+                { "id", name },
+                { "bandwidth", bandwidth },
+                { "load", linkLoad },
+                { "latency", latency },
+            }, new Element[] {
+                this.anElement("connect", "origination", origination, "destination", destination1),
+                this.aPositionElement(x0, y0),
+                this.aPositionElement(x1, y1),
+                this.anIconIdElement(globalId, localId),
+            }
+        ));
     }
 
     public void addInternet (final Internet i) {
@@ -535,38 +546,6 @@ public class IconicModelDocumentBuilder {
      */
     private Element aSlaveElement (final Integer id) {
         return this.anElement("slave", "id", id);
-    }
-
-    /**
-     * Add a link icon with the given attributes to the current model being built.
-     */
-    public void addLink (
-        final int x0,
-        final int y0,
-        final int x1,
-        final int y1,
-        final int localId,
-        final int globalId,
-        final String name,
-        final double bandwidth,
-        final double linkLoad,
-        final double latency,
-        final int origination,
-        final int destination
-    ) {
-        this.system.appendChild(this.anElement(
-            "link", new Object[][] {
-                { "id", name },
-                { "bandwidth", bandwidth },
-                { "load", linkLoad },
-                { "latency", latency },
-            }, new Element[] {
-                this.anElement("connect", "origination", origination, "destination", destination),
-                this.aPositionElement(x0, y0),
-                this.aPositionElement(x1, y1),
-                this.anIconIdElement(globalId, localId),
-            }
-        ));
     }
 
     /**
