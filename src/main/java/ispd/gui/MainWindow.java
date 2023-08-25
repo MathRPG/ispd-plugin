@@ -529,15 +529,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuFile.add(this.jMenuItemOpenResult);
         this.jMenuImport.setIcon(getImage("/ispd/gui/imagens" + "/document-import.png"));
         this.jMenuImport.setText(getText("Import"));
-        this.jMenuItemGridSim.setText(getText("GridSim model"));
-        this.jMenuItemGridSim.setToolTipText(
-            getText("Open model from "
-                    + "the "
-                    + "specification "
-                    + "files of "
-                    + "GridSim"));
-        this.jMenuItemGridSim.addActionListener(this::jMenuItemGridSimActionPerformed);
-        this.jMenuImport.add(this.jMenuItemGridSim);
         this.jMenuFile.add(this.jMenuImport);
         this.jMenuExport.setIcon(getImage("/ispd/gui/imagens/document-export.png"));
         this.jMenuExport.setText(getText("Export"));
