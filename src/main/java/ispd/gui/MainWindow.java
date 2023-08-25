@@ -540,10 +540,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemToTxt.setEnabled(false);
         this.jMenuItemToTxt.addActionListener(this::jMenuItemToTxtActionPerformed);
         this.jMenuExport.add(this.jMenuItemToTxt);
-        this.jMenuItemToSimGrid.setText("to SimGrid");
-        this.jMenuItemToSimGrid.setEnabled(false);
-        this.jMenuItemToSimGrid.addActionListener(this::jMenuItemToSimGridActionPerformed);
-        this.jMenuExport.add(this.jMenuItemToSimGrid);
         this.jMenuItemToGridSim.setText("to GridSim");
         this.jMenuItemToGridSim.setEnabled(false);
         this.jMenuItemToGridSim.addActionListener(this::jMenuItemToGridSimActionPerformed);
