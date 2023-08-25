@@ -190,16 +190,17 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     public void mouseClicked (final MouseEvent mouseEvent) {
         if (this.isDrawingEdge) {
             final var destination = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
-            if (this.edgeOrigin != null) {
-                if (destination instanceof Vertex && !this.edgeOrigin.equals(destination)) {
-                    this.adicionarAresta(this.edgeOrigin, (Vertex) destination);
-                    this.edgeOrigin = null;
+            if (this.edgeOrigin == null) {
+                if (destination instanceof final Vertex vertex) {
+                    this.edgeOrigin = vertex;
                 } else {
                     this.showWarning();
                 }
             } else {
-                if (destination instanceof Vertex) {
-                    this.edgeOrigin = (Vertex) destination;
+                if (destination instanceof final Vertex vertex && !this.edgeOrigin.equals(
+                    destination)) {
+                    this.adicionarAresta(this.edgeOrigin, vertex);
+                    this.edgeOrigin = null;
                 } else {
                     this.showWarning();
                 }
