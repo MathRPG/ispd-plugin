@@ -27,7 +27,6 @@ public class VmAllocationPolicyManager extends FilePolicyManager {
     private static final File VM_DIRECTORY =
         new File(ConfiguracaoISPD.DIRETORIO_ISPD, VM_DIR_PATH);
 
-    @Override
     protected String className () {
         return "VmAllocationPolicyManager.class";
     }

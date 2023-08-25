@@ -19,7 +19,6 @@ public class CloudSchedulingPolicyManager extends FilePolicyManager {
     private static final File CLOUD_DIRECTORY =
         new File(ConfiguracaoISPD.DIRETORIO_ISPD, CLOUD_DIR_PATH);
 
-    @Override
     protected String className () {
         return "CloudSchedulingPolicyManager.class";
     }

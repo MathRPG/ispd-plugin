@@ -7,6 +7,7 @@ import ispd.gui.iconico.grade.*;
 import ispd.gui.utils.fonts.*;
 import ispd.policy.*;
 import java.awt.event.*;
+import java.util.*;
 import java.util.function.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -100,7 +101,7 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setEscalonadores (final PolicyManager schedulers) {
-        schedulers.listar().forEach(sch -> {
+        new ArrayList<String>().forEach(sch -> {
             this.getTabelaMaquina().getEscalonadores().addItem(sch);
             this.getTabelaCluster().getEscalonadores().addItem(sch);
         });
@@ -115,7 +116,7 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setEscalonadoresCloud (final PolicyManager cloudSchedulers) {
-        cloudSchedulers.listar().forEach(sch -> {
+        new ArrayList<String>().forEach(sch -> {
             this.getTabelaMaquinaIaaS().getEscalonadores().addItem(sch);
             this.getTabelaClusterIaaS().getEscalonadores().addItem(sch);
         });
@@ -130,7 +131,7 @@ public class JPanelConfigIcon extends JPanel {
     }
 
     public void setAlocadores (final PolicyManager allocators) {
-        allocators.listar().forEach(alloc -> {
+        new ArrayList<String>().forEach(alloc -> {
             this.getTabelaMaquinaIaaS().getAlocadores().addItem(alloc);
             this.getTabelaClusterIaaS().getAlocadores().addItem(alloc);
         });

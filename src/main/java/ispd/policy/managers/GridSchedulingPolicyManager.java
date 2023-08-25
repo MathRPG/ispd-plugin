@@ -30,7 +30,6 @@ public class GridSchedulingPolicyManager extends FilePolicyManager {
     private static final File GRID_DIRECTORY =
         new File(ConfiguracaoISPD.DIRETORIO_ISPD, GRID_DIR_PATH);
 
-    @Override
     protected String className () {
         return "GridSchedulingPolicyManager.class";
     }
