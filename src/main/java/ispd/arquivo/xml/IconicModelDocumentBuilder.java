@@ -28,7 +28,7 @@ public class IconicModelDocumentBuilder {
 
     private Element load = null;
 
-    public IconicModelDocumentBuilder (final int modelType) {
+    public IconicModelDocumentBuilder (final ModelType modelType) {
         this.system = this.document.createElement("system");
         this.system.setAttribute("version", getVersionForModelType(modelType));
         this.document.appendChild(this.system);
@@ -38,12 +38,11 @@ public class IconicModelDocumentBuilder {
      * @throws IllegalArgumentException
      *     if modelType is not in -1, 0, 1 or 2
      */
-    private static String getVersionForModelType (final int modelType) {
+    private static String getVersionForModelType (final ModelType modelType) {
         return switch (modelType) {
-            case PickModelTypeDialog.GRID -> "2.1";
-            case PickModelTypeDialog.IAAS -> "2.2";
-            case PickModelTypeDialog.PAAS -> "2.3";
-            case DEFAULT_MODEL_TYPE -> "1.2";
+            case GRID -> "2.1";
+            case IAAS -> "2.2";
+            case PAAS -> "2.3";
             default -> throw new IllegalArgumentException("Invalid model type " + modelType);
         };
     }

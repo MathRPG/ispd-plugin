@@ -8,19 +8,13 @@ import javax.swing.*;
 
 public class PickModelTypeDialog extends JDialog {
 
-    public static final int GRID = 0;
-
-    public static final int IAAS = 1;
-
-    public static final int PAAS = 2;
-
     private final JRadioButton jRadioGrid;
 
     private final JRadioButton jRadioIaaS;
 
     private final JRadioButton jRadioPaaS;
 
-    private int choice = 0;
+    private ModelType choice = ModelType.GRID;
 
     PickModelTypeDialog (final Frame owner, final boolean modal) {
         super(owner, modal);
@@ -157,23 +151,23 @@ public class PickModelTypeDialog extends JDialog {
         this.setVisible(false);
     }
 
-    private int getChoiceForSelectedButton () {
+    private ModelType getChoiceForSelectedButton () {
         if (this.jRadioGrid.isSelected()) {
-            return GRID;
+            return ModelType.GRID;
         }
 
         if (this.jRadioIaaS.isSelected()) {
-            return IAAS;
+            return ModelType.IAAS;
         }
 
         if (this.jRadioPaaS.isSelected()) {
-            return PAAS;
+            return ModelType.PAAS;
         }
 
         return this.choice;
     }
 
-    int getEscolha () {
+    ModelType getEscolha () {
         return this.choice;
     }
 }

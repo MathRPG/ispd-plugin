@@ -142,7 +142,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     /**
      * define se o modelo é GRID, IAAS ou PAAS;
      */
-    private int modelType = 0;
+    private ModelType modelType = ModelType.GRID;
 
     private boolean currentFileHasUnsavedChanges = false;
 
@@ -845,7 +845,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void updateVmConfigButtonVisibility () {
-        this.jButtonConfigVM.setVisible(this.modelType == PickModelTypeDialog.IAAS);
+        this.jButtonConfigVM.setVisible(this.modelType == ModelType.IAAS);
     }
 
     private void jMenuItemOpenActionPerformed (final ActionEvent evt) {

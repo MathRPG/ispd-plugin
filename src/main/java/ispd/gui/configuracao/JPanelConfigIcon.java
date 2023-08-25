@@ -133,8 +133,12 @@ public class JPanelConfigIcon extends JPanel {
         return (LinkTable) this.linkTable.getModel();
     }
 
-    public void setIcone (final GridItem icon, final Iterable<String> users, final int choice) {
-        if (choice == PickModelTypeDialog.GRID) {
+    public void setIcone (
+        final GridItem icon,
+        final Iterable<String> users,
+        final ModelType choice
+    ) {
+        if (choice == ModelType.GRID) {
             this.jLabelIconName.setText(
                 "%s#: %d".formatted(
                     getText("Configuration for the icon"),
@@ -150,7 +154,7 @@ public class JPanelConfigIcon extends JPanel {
                 this.getTabelaCluster().setCluster((Cluster) icon, users);
                 this.jScrollPane.setViewportView(this.clusterTable);
             }
-        } else if (choice == PickModelTypeDialog.IAAS) {
+        } else if (choice == ModelType.IAAS) {
 
             this.jLabelIconName.setText(
                 "%s#: %d".formatted(

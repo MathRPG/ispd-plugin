@@ -54,7 +54,7 @@ public class GridDrawing extends DrawingArea {
     /**
      * (GRID, IAAS ou PAAS)
      */
-    private int modelType = PickModelTypeDialog.GRID;
+    private ModelType modelType = ModelType.GRID;
 
     private HashSet<String> users;
 
@@ -326,11 +326,11 @@ public class GridDrawing extends DrawingArea {
         return this.getPreferredSize();
     }
 
-    public int getModelType () {
+    public ModelType getModelType () {
         return this.modelType;
     }
 
-    public void setModelType (final int modelType) {
+    public void setModelType (final ModelType modelType) {
         this.modelType = modelType;
     }
 
@@ -543,16 +543,16 @@ public class GridDrawing extends DrawingArea {
                     .map(s -> s.getId().getGlobalId())
                     .toList();
 
-                if (this.modelType == PickModelTypeDialog.GRID) {
+                if (this.modelType == ModelType.GRID) {
                     xml.addMachine(m, slaves);
-                } else if (this.modelType == PickModelTypeDialog.IAAS) {
+                } else if (this.modelType == ModelType.IAAS) {
                     xml.addMachineIaas(m, slaves);
                 }
             } else if (vertice instanceof final Cluster c) {
 
-                if (this.modelType == PickModelTypeDialog.GRID) {
+                if (this.modelType == ModelType.GRID) {
                     xml.addCluster(c);
-                } else if (this.modelType == PickModelTypeDialog.IAAS) {
+                } else if (this.modelType == ModelType.IAAS) {
                     xml.addClusterIaas(c);
                 }
             } else if (vertice instanceof final Internet i) {
@@ -599,12 +599,12 @@ public class GridDrawing extends DrawingArea {
         this.repaint();
     }
 
-    private int getModelType (final Document doc) {
+    private ModelType getModelType (final Document doc) {
         final var sys = (Element) doc.getElementsByTagName("system").item(0);
         return switch (sys.getAttribute("version")) {
-            case "2.1" -> PickModelTypeDialog.GRID;
-            case "2.2" -> PickModelTypeDialog.IAAS;
-            case "2.3" -> PickModelTypeDialog.PAAS;
+            case "2.1" -> ModelType.GRID;
+            case "2.2" -> ModelType.IAAS;
+            case "2.3" -> ModelType.PAAS;
             default -> this.modelType;
         };
     }

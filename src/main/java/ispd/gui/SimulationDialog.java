@@ -26,7 +26,7 @@ public class SimulationDialog extends JDialog implements Runnable {
 
     private final ProgressoSimulacao progressTracker = new BasicProgressTracker();
 
-    private final int gridOrCloud;
+    private final ModelType gridOrCloud;
 
     private JProgressBar progressBar;
 
@@ -40,7 +40,7 @@ public class SimulationDialog extends JDialog implements Runnable {
         final Frame parent,
         final boolean modal,
         final Document model,
-        final int gridOrCloud
+        final ModelType gridOrCloud
     ) {
         super(parent, modal);
         this.gridOrCloud = gridOrCloud;
@@ -60,7 +60,7 @@ public class SimulationDialog extends JDialog implements Runnable {
             this.progressTracker.print("Mounting network queue.");
             this.progressTracker.print(" -> ");
 
-            if (this.gridOrCloud == PickModelTypeDialog.GRID) {
+            if (this.gridOrCloud == ModelType.GRID) {
                 final var queueNetwork = GridQueueNetworkFactory.fromDocument(this.model);
                 this.incrementProgress(10);//[10%] --> 35%
                 this.progressTracker.println("OK", Color.green);
@@ -104,7 +104,7 @@ public class SimulationDialog extends JDialog implements Runnable {
                     "Simulation Execution Time = " + tempototal + "seconds");
                 janelaResultados.setLocationRelativeTo(this);
                 janelaResultados.setVisible(true);
-            } else if (this.gridOrCloud == PickModelTypeDialog.IAAS) {
+            } else if (this.gridOrCloud == ModelType.IAAS) {
 
                 final var cloudQueueNetwork = CloudQueueNetworkFactory.fromDocument(this.model);
 
