@@ -133,7 +133,7 @@ public class LoadConfigurationDialog extends JDialog {
 
     private String traceType = "";
 
-    LoadConfigurationDialog (
+    public LoadConfigurationDialog (
         final Frame parent, final boolean modal, final Object[] users, final Object[] schedulers,
         final WorkloadGenerator loadGenerator
     ) {
