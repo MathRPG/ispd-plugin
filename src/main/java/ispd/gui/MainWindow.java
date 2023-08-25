@@ -247,12 +247,9 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed (final KeyEvent keyEvent) {
-        final var drawingArea1 = this.drawingArea;
-        if (drawingArea1 == null) {
-            return;
+        if (this.drawingArea != null) {
+            this.drawingArea.processKeyEvent(keyEvent);
         }
-
-        drawingArea1.processKeyEvent(keyEvent);
     }
 
     @Override
