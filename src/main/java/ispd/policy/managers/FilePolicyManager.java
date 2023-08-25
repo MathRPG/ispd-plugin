@@ -6,8 +6,6 @@ import java.util.*;
 
 public abstract class FilePolicyManager implements PolicyManager {
 
-    private static final String JAR_PREFIX = "jar:";
-
     private final ArrayList<String> policies = new ArrayList<>();
 
     protected FilePolicyManager () {
@@ -20,8 +18,6 @@ public abstract class FilePolicyManager implements PolicyManager {
         }
     }
 
-    protected abstract String className ();
-
     /**
      * Lists all available allocation policies.
      *
@@ -30,13 +26,5 @@ public abstract class FilePolicyManager implements PolicyManager {
     @Override
     public ArrayList<String> listar () {
         return this.policies;
-    }
-
-    private boolean isExecutingFromJar () {
-        return this.getExecutableName().startsWith(JAR_PREFIX);
-    }
-
-    private String getExecutableName () {
-        return Objects.requireNonNull(this.getClass().getResource(this.className())).toString();
     }
 }
