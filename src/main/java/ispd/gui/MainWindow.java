@@ -3,7 +3,6 @@ package ispd.gui;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.arquivo.exportador.*;
-import ispd.arquivo.interpretador.gridsim.*;
 import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
 import ispd.gui.configuracao.*;
@@ -27,10 +26,6 @@ import org.w3c.dom.*;
 import org.xml.sax.*;
 
 public final class MainWindow extends JFrame implements KeyListener {
-
-    private static final int LOADING_SCREEN_WIDTH = 200;
-
-    private static final int LOADING_SCREEN_HEIGHT = 100;
 
     private static final String[] ISPD_FILE_EXTENSIONS = { FileExtensions.ICONIC_MODEL };
 
@@ -1321,69 +1316,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void jMenuFileActionPerformed (final ActionEvent evt) {
-    }
-
-    private void jMenuItemGridSimActionPerformed (final ActionEvent evt) {
-        this.configureFileFilterAndChooser(
-            "Java Source Files (. java)",
-            new String[] { FileExtensions.JAVA_SOURCE },
-            true
-        );
-
-        final int returnVal = this.jFileChooser.showOpenDialog(this);
-        if (returnVal != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final var loadingScreen = this.LoadingScreen();
-
-        new Thread(() -> this.showSubWindow(loadingScreen)).start();
-
-        try {
-            this.interpretFileAndUpdateDrawing();
-        } catch (final Exception e) {
-            JOptionPane.showMessageDialog(
-                null,
-                getText("Error opening file.") + "\n" + e.getMessage(),
-                getText("WARNING"),
-                JOptionPane.PLAIN_MESSAGE
-            );
-        }
-
-        loadingScreen.dispose();
-    }
-
-    private JDialog LoadingScreen () {
-        final var window = new JDialog(this, "Carregando");
-        window.setSize(LOADING_SCREEN_WIDTH, LOADING_SCREEN_HEIGHT);
-        window.add(new JLabel("Carregando..."), BorderLayout.CENTER);
-        final var progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true);
-        window.add(progressBar, BorderLayout.SOUTH);
-        return window;
-    }
-
-    private void interpretFileAndUpdateDrawing () {
-        final var file        = this.jFileChooser.getSelectedFile();
-        final var interpreter = new InterpretadorGridSim();
-
-        if (!file.exists()) {
-            final var message = String.format("%s\n", getText("File not found."));
-            JOptionPane.showMessageDialog(
-                null,
-                message,
-                getText("WARNING"),
-                JOptionPane.PLAIN_MESSAGE
-            );
-            return;
-        }
-
-        interpreter.interpreta(file);
-
-        this.drawingArea = new DesenhoGrade();
-        this.drawingArea.setGrid(interpreter.getDescricao());
-        this.updateGuiWithOpenFile("model opened", null);
-        this.modificar();
     }
 
     private void jMenuItemSortActionPerformed (final ActionEvent evt) {
