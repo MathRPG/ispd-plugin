@@ -55,8 +55,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private final boolean isRectOn;
 
-    private final boolean isPositionFixed = false;
-
     private JPopupMenu generalPopup;
 
     private ModelType modelType = ModelType.GRID;
@@ -368,7 +366,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                 }
             }
         } else if (this.addVertex) {
-            if (this.isPositionFixed) {
+            if (false) {
                 this.adicionarVertice(
                     this.getPosFixaX(mouseEvent.getX()),
                     this.getPosFixaY(mouseEvent.getY())
@@ -929,7 +927,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     @Override
     public void mouseReleased (final MouseEvent me) {
         //Arruma ícone na tela
-        if (this.isPositionFixed && !this.selectedIcons.isEmpty()) {
+        if (false) {
             for (final var icon : this.selectedIcons) {
                 if (icon instanceof Vertex) {
                     ((Vertex) icon).setPosition(
@@ -1141,7 +1139,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     private void updateUnitTo (final RulerUnit newUnit) {
         this.unit = newUnit;
 
-        if (!this.isPositionFixed) {
+        if (true) {
             return;
         }
 
@@ -1338,7 +1336,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     private void drawPoints (final Graphics g) {
-        if (!this.isPositionFixed) {
+        if (true) {
             return;
         }
 
