@@ -84,36 +84,25 @@ public class IconicModelDocumentBuilder {
         final Machine m,
         final List<Integer> slaves
     ) {
-        final Integer x         = m.getX();
-        final Integer y         = m.getY();
-        final Integer localId   = m.getId().getLocalId();
-        final Integer globalId  = m.getId().getGlobalId();
-        final String  name      = m.getId().getName();
-        final Double  power     = m.getComputationalPower();
-        final Double  occupancy = m.getLoadFactor();
-        final String  scheduler = m.getSchedulingAlgorithm();
-        final String  owner     = m.getOwner();
-        final Integer coreCount = m.getCoreCount();
-        final Double  memory    = m.getRam();
-        final Double  disk      = m.getHardDisk();
-        final boolean isMaster  = m.isMaster();
+        final var id = m.getId();
+
         this.addMachineInner(
-            x,
-            y,
-            localId,
-            globalId,
-            name,
-            power,
-            occupancy,
-            scheduler,
-            owner,
-            coreCount,
-            memory,
-            disk,
+            m.getX(),
+            m.getY(),
+            id.getLocalId(),
+            id.getGlobalId(),
+            id.getName(),
+            m.getComputationalPower(),
+            m.getLoadFactor(),
+            m.getSchedulingAlgorithm(),
+            m.getOwner(),
+            m.getCoreCount(),
+            m.getRam(),
+            m.getHardDisk(),
             null,
             null,
             null,
-            isMaster,
+            m.isMaster(),
             slaves,
             new Object[][] { { "energy", m.getEnergyConsumption() } },
             NO_ATTRS
