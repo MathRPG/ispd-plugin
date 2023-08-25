@@ -1,6 +1,5 @@
 package ispd.policy;
 
-import java.io.*;
 import java.util.*;
 
 public interface PolicyManager {
@@ -8,6 +7,4 @@ public interface PolicyManager {
     String NO_POLICY = "---";
 
     ArrayList<String> listar ();
-
-    File directory ();
 }

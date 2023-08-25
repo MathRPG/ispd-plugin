@@ -40,6 +40,8 @@ public abstract class FilePolicyManager implements PolicyManager {
 
     protected abstract String className ();
 
+    protected abstract File directory ();
+
     /**
      * Lists all available allocation policies.
      *
