@@ -24,7 +24,7 @@ public abstract class FilePolicyManager implements PolicyManager {
         }
     }
 
-    public static void severeLog (final Throwable e) {
+    private static void severeLog (final Throwable e) {
         Logger.getLogger(FilePolicyManager.class.getName()).log(Level.SEVERE, null, e);
     }
 
