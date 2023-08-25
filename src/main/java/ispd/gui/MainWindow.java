@@ -1108,11 +1108,17 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jScrollPaneDrawingArea.setRowHeaderView(this.drawingArea.getRowView());
 
         this.jScrollPaneDrawingArea.setCorner(
-            ScrollPaneConstants.UPPER_LEFT_CORNER,
+            ScrollPaneConstants.UPPER_LEADING_CORNER,
             this.drawingArea.getCorner()
         );
-        this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.LOWER_LEFT_CORNER, new Corner());
-        this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, new Corner());
+        this.jScrollPaneDrawingArea.setCorner(
+            ScrollPaneConstants.LOWER_LEADING_CORNER,
+            new Corner()
+        );
+        this.jScrollPaneDrawingArea.setCorner(
+            ScrollPaneConstants.UPPER_TRAILING_CORNER,
+            new Corner()
+        );
     }
 
     private void jMenuItemToTxtActionPerformed (final ActionEvent evt) {
@@ -1366,9 +1372,9 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void closeDrawingArea () {
         this.jScrollPaneDrawingArea.setColumnHeaderView(null);
         this.jScrollPaneDrawingArea.setRowHeaderView(null);
-        this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, null);
-        this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.LOWER_LEFT_CORNER, null);
-        this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, null);
+        this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_LEADING_CORNER, null);
+        this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.LOWER_LEADING_CORNER, null);
+        this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_TRAILING_CORNER, null);
     }
 
     private void disableInteractables () {
