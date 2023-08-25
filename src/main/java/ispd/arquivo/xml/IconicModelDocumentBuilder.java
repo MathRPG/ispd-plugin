@@ -250,16 +250,25 @@ public class IconicModelDocumentBuilder {
     public void addInternet (final Internet i) {
         final var id = i.getId();
 
-        this.addInternet(
-            i.getX(),
-            i.getY(),
-            id.getLocalId(),
-            id.getGlobalId(),
-            id.getName(),
-            i.getBandwidth(),
-            i.getLoadFactor(),
-            i.getLatency()
-        );
+        final int    x            = i.getX();
+        final int    y            = i.getY();
+        final int    idLocal      = id.getLocalId();
+        final int    idGlobal     = id.getGlobalId();
+        final String name         = id.getName();
+        final double bandwidth    = i.getBandwidth();
+        final double internetLoad = i.getLoadFactor();
+        final double latency      = i.getLatency();
+        this.system.appendChild(this.anElement(
+            "internet", new Object[][] {
+                { "id", name },
+                { "bandwidth", bandwidth },
+                { "load", internetLoad },
+                { "latency", latency },
+            }, new Element[] {
+                this.aPositionElement(x, y),
+                this.anIconIdElement(idGlobal, idLocal),
+            }
+        ));
     }
 
     /**
@@ -335,32 +344,6 @@ public class IconicModelDocumentBuilder {
         Arrays.stream(children).forEach(e::appendChild);
 
         return e;
-    }
-
-    /**
-     * Add internet icon with the given attributes to the current model being built.
-     */
-    public void addInternet (
-        final int x,
-        final int y,
-        final int idLocal,
-        final int idGlobal,
-        final String name,
-        final double bandwidth,
-        final double internetLoad,
-        final double latency
-    ) {
-        this.system.appendChild(this.anElement(
-            "internet", new Object[][] {
-                { "id", name },
-                { "bandwidth", bandwidth },
-                { "load", internetLoad },
-                { "latency", latency },
-            }, new Element[] {
-                this.aPositionElement(x, y),
-                this.anIconIdElement(idGlobal, idLocal),
-            }
-        ));
     }
 
     /**
