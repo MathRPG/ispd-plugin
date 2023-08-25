@@ -91,8 +91,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenuItem jMenuItemOpen = new JMenuItem();
 
-    private final JMenuItem jMenuItemHelp = new JMenuItem();
-
     private final JMenuItem jMenuItemCopy = new JMenuItem();
 
     private final JMenuItem jMenuItemDelete = new JMenuItem();
