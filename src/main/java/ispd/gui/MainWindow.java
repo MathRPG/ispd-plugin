@@ -21,7 +21,6 @@ import javax.swing.Icon;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 import javax.xml.parsers.*;
-import org.w3c.dom.*;
 import org.xml.sax.*;
 
 public final class MainWindow extends JFrame {
@@ -861,7 +860,8 @@ public final class MainWindow extends JFrame {
     private void readFileContents (final File file)
         throws ParserConfigurationException, IOException, SAXException {
         final var doc = ManipuladorXML.readModelFromFile(file);
-        this.startNewDrawing(doc);
+        this.drawingArea = new DrawingArea();
+        this.drawingArea.setGrid(doc);
         this.modelType = this.drawingArea.getModelType();
         this.virtualMachines = this.drawingArea.getVirtualMachines();
         this.updateVmConfigButtonVisibility();
@@ -875,11 +875,6 @@ public final class MainWindow extends JFrame {
         this.jScrollPaneDrawingArea.setViewportView(this.drawingArea);
         this.appendNotificacao(getText(message));
         this.openEditing(file);
-    }
-
-    private void startNewDrawing (final Document doc) {
-        this.drawingArea = new DrawingArea();
-        this.drawingArea.setGrid(doc);
     }
 
     private boolean shouldContinueEditingCurrentlyOpenedFile () {
