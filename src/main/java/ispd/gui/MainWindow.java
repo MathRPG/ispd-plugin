@@ -25,13 +25,6 @@ import org.xml.sax.*;
 
 public final class MainWindow extends JFrame implements KeyListener {
 
-    private static final String[] ISPD_FILE_EXTENSIONS = { FileExtensions.ICONIC_MODEL };
-
-    private static final String[] ALL_FILE_EXTENSIONS = {
-        FileExtensions.ICONIC_MODEL,
-        FileExtensions.WORKLOAD_MODEL
-    };
-
     private static final String ISPD_LOGO_FILE_PATH = "imagens/Logo_iSPD_25.png";
 
     private static final int NOTIFICATION_AREA_COLS = 20;
@@ -137,7 +130,10 @@ public final class MainWindow extends JFrame implements KeyListener {
     private final MultipleExtensionFileFilter fileFilter =
         new MultipleExtensionFileFilter(
             getText("Iconic Model of Simulation"),
-            ALL_FILE_EXTENSIONS,
+            new String[] {
+                FileExtensions.ICONIC_MODEL,
+                FileExtensions.WORKLOAD_MODEL
+            },
             true
         );
 
@@ -859,7 +855,7 @@ public final class MainWindow extends JFrame implements KeyListener {
 
         this.configureFileFilterAndChooser(
             "Iconic Model of Simulation",
-            ISPD_FILE_EXTENSIONS,
+            new String[] { FileExtensions.ICONIC_MODEL },
             true
         );
 
