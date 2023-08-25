@@ -91,8 +91,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenuItem jMenuItemOpen = new JMenuItem();
 
-    private final JMenuItem jMenuItemHelp = new JMenuItem();
-
     private final JMenuItem jMenuItemCopy = new JMenuItem();
 
     private final JMenuItem jMenuItemDelete = new JMenuItem();
@@ -309,12 +307,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private void initMenuHelp () {
         this.jMenuHelp.setText(getText("Help"));
-        this.jMenuItemHelp.setIcon(getImage("/ispd/gui/imagens" + "/help-faq.png"));
-        this.jMenuItemHelp.setText(getText("Help"));
-        this.jMenuItemHelp.setToolTipText(getText("Help"));
-        this.jMenuItemHelp.addActionListener(this::jMenuItemHelpActionPerformed);
-        this.jMenuHelp.add(this.jMenuItemHelp);
-        this.jMenuHelp.add(new JPopupMenu.Separator());
         this.jMenuItemAbout.setIcon(getImage("/ispd/gui/imagens" + "/help-about.png"));
         final var aboutProgramText =
             String.format(
@@ -1128,10 +1120,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         );
         this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.LOWER_LEFT_CORNER, new Corner());
         this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, new Corner());
-    }
-
-    private void jMenuItemHelpActionPerformed (final ActionEvent evt) {
-        this.showSubWindow(new HelpWindow());
     }
 
     private void jMenuItemToTxtActionPerformed (final ActionEvent evt) {

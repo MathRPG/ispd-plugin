@@ -1,11 +1,8 @@
 package ispd.gui.utils;
 
-import java.awt.Dimension;
-import java.awt.event.ActionListener;
-
-import javax.swing.Icon;
-import javax.swing.JButton;
-import javax.swing.SwingConstants;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 /**
  * Utility class for constructing buttons in a builder-like approach.
@@ -78,11 +75,6 @@ public class ButtonBuilder {
 
     public ButtonBuilder disabled () {
         this.button.setEnabled(false);
-        return this;
-    }
-
-    public ButtonBuilder withActionCommand (final String theText) {
-        this.button.setActionCommand(theText);
         return this;
     }
 }
