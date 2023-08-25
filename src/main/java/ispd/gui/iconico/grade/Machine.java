@@ -173,7 +173,7 @@ public class Machine extends VertexGridItem {
      */
     @Override
     public Image getImage () {
-        return DesenhoGrade.MACHINE_ICON;
+        return GridDrawing.MACHINE_ICON;
     }
 
     /**

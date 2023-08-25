@@ -152,7 +152,7 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private File openFile = null;
 
-    private DesenhoGrade drawingArea = null;
+    private GridDrawing drawingArea = null;
 
     private final AbstractButton jButtonTasks = ButtonBuilder
         .aButton(getImage("/ispd/gui/imagens/botao_tarefas.gif"), this::jButtonTaskActionPerformed)
@@ -723,7 +723,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jToggleButtonMachineActionPerformed (final ActionEvent evt) {
         this.iconButtonOnClick(
             this.jToggleButtonMachine,
-            DesenhoGrade.MACHINE,
+            GridDrawing.MACHINE,
             "Machine button selected."
         );
     }
@@ -731,7 +731,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jToggleButtonNetworkActionPerformed (final ActionEvent evt) {
         this.iconButtonOnClick(
             this.jToggleButtonNetwork,
-            DesenhoGrade.NETWORK,
+            GridDrawing.NETWORK,
             "Network button selected."
         );
     }
@@ -739,7 +739,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jToggleButtonClusterActionPerformed (final ActionEvent evt) {
         this.iconButtonOnClick(
             this.jToggleButtonCluster,
-            DesenhoGrade.CLUSTER,
+            GridDrawing.CLUSTER,
             "Cluster button selected."
         );
     }
@@ -747,7 +747,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jToggleButtonInternetActionPerformed (final ActionEvent evt) {
         this.iconButtonOnClick(
             this.jToggleButtonInternet,
-            DesenhoGrade.INTERNET,
+            GridDrawing.INTERNET,
             "Internet button selected."
         );
     }
@@ -836,7 +836,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         final var classPickWindow = new PickModelTypeDialog(this, true);
         this.showSubWindow(classPickWindow);
 
-        this.drawingArea = new DesenhoGrade();
+        this.drawingArea = new GridDrawing();
         this.updateGuiWithOpenFile("New model opened", null);
         this.modificar();
         this.onModelTypeChange(classPickWindow);
@@ -923,7 +923,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void startNewDrawing (final Document doc) {
-        this.drawingArea = new DesenhoGrade();
+        this.drawingArea = new GridDrawing();
         this.drawingArea.setGrid(doc);
     }
 

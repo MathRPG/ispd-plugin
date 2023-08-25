@@ -19,7 +19,7 @@ import java.util.stream.*;
 import javax.swing.*;
 import org.w3c.dom.*;
 
-public class DesenhoGrade extends DrawingArea {
+public class GridDrawing extends DrawingArea {
 
     public static final int MACHINE = 1;
 
@@ -82,11 +82,11 @@ public class DesenhoGrade extends DrawingArea {
 
     private HashSet<VirtualMachine> virtualMachines = null;
 
-    public DesenhoGrade () {
+    public GridDrawing () {
         this(INITIAL_SIZE, INITIAL_SIZE);
     }
 
-    private DesenhoGrade (final int w, final int h) {
+    private GridDrawing (final int w, final int h) {
         super(true, true, true, false);
         this.setSize(w, h);
 

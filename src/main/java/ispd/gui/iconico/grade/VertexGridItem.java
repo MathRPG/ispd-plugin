@@ -1,10 +1,8 @@
 package ispd.gui.iconico.grade;
 
-import ispd.gui.iconico.Vertex;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.util.HashSet;
-import java.util.Set;
+import ispd.gui.iconico.*;
+import java.awt.*;
+import java.util.*;
 
 public abstract class VertexGridItem extends Vertex implements GridItem {
 
@@ -33,7 +31,7 @@ public abstract class VertexGridItem extends Vertex implements GridItem {
     protected boolean configured;
 
     /**
-     * Constructor of {@link VertexGridItem} which specifies the local, global and name identifiers,
+     * Constructor of  which specifies the local, global and name identifiers,
      * as well as, the X and Y coordinates.
      *
      * @param localId
@@ -47,7 +45,7 @@ public abstract class VertexGridItem extends Vertex implements GridItem {
      * @param y
      *     the vertex grid item y-coordinate in cartesian coordinates
      */
-    public VertexGridItem (
+    protected VertexGridItem (
         final int localId,
         final int globalId,
         final String name,
@@ -58,7 +56,7 @@ public abstract class VertexGridItem extends Vertex implements GridItem {
     }
 
     /**
-     * Constructor of {@link VertexGridItem} which specifies the local, global and name identifiers,
+     * Constructor of  which specifies the local, global and name identifiers,
      * as well as, the X and Y coordinates and whether is selected.
      *
      * @param localId
@@ -74,7 +72,7 @@ public abstract class VertexGridItem extends Vertex implements GridItem {
      * @param selected
      *     whether is selected
      */
-    public VertexGridItem (
+    protected VertexGridItem (
         final int localId, final int globalId, final String name, final Integer x, final Integer y,
         final boolean selected
     ) {
@@ -87,7 +85,7 @@ public abstract class VertexGridItem extends Vertex implements GridItem {
     @Override
     public void draw (final Graphics g) {
         final var configuredStatusImage =
-            this.configured ? DesenhoGrade.GREEN_ICON : DesenhoGrade.RED_ICON;
+            this.configured ? GridDrawing.GREEN_ICON : GridDrawing.RED_ICON;
 
         g.drawImage(this.getImage(), this.getX() - 15, this.getY() - 15, null);
         g.drawImage(configuredStatusImage, this.getX() + 15, this.getY() + 15, null);
