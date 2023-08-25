@@ -3,6 +3,7 @@ package ispd.gui.configuracao;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.grade.*;
+import ispd.policy.*;
 import ispd.policy.managers.*;
 import java.io.*;
 import javax.swing.*;
@@ -22,7 +23,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private final JComboBox<Object> schedulers =
         makeComboBox(
-            CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+            PolicyManager.NATIVE_CLOUD_POLICIES.toArray(String[]::new),
             "Select the task scheduling policy"
         );
 

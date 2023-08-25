@@ -3,6 +3,7 @@ package ispd.gui.configuracao;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.grade.*;
+import ispd.policy.*;
 import ispd.policy.managers.*;
 import java.awt.event.*;
 import java.util.*;
@@ -53,7 +54,7 @@ public class MachineTableIaaS extends AbstractTableModel {
 
     private final JComboBox<?> schedulers =
         toolTippedComboBox(
-            CloudSchedulingPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+            PolicyManager.NATIVE_CLOUD_POLICIES.toArray(String[]::new),
             "Select the task scheduling policy"
         );
 

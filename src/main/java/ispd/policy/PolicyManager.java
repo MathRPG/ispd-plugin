@@ -6,6 +6,9 @@ public interface PolicyManager {
 
     String NO_POLICY = "---";
 
+    List<String> NATIVE_CLOUD_POLICIES =
+        List.of(NO_POLICY, "RoundRobin");
+
     /**
      * Scheduling policies available by default
      */
