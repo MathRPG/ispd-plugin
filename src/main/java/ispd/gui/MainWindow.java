@@ -1386,21 +1386,13 @@ public final class MainWindow extends JFrame {
         }
     }
 
-    public class KeyHandler implements KeyListener, Serializable {
+    public class KeyHandler extends KeyAdapter {
 
         @Override
-        public void keyTyped (final KeyEvent keyEvent) {
-        }
-
-        @Override
-        public void keyPressed (final KeyEvent keyEvent) {
+        public void keyPressed (final KeyEvent e) {
             if (MainWindow.this.drawingArea != null) {
-                MainWindow.this.drawingArea.processKeyEvent(keyEvent);
+                MainWindow.this.drawingArea.processKeyEvent(e);
             }
-        }
-
-        @Override
-        public void keyReleased (final KeyEvent keyEvent) {
         }
     }
 
