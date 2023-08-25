@@ -2,7 +2,6 @@ package ispd.gui;
 
 import static ispd.gui.TextSupplier.*;
 
-import ispd.arquivo.exportador.*;
 import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
 import ispd.gui.configuracao.*;
@@ -1320,33 +1319,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.drawingArea.repaint();
     }
 
-    private void exportToFileType (final String description, final String extension) {
-        this.configureFileFilterAndChooser(description, new String[] { extension }, false);
-
-        if (this.jFileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final var file = this.getFileWithExtension(extension);
-
-        try {
-            new Exportador(this.drawingArea.getGrade()).toGridSim(file);
-            JOptionPane.showMessageDialog(
-                this,
-                getText("model saved"),
-                "Done",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-        } catch (final IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(
-                this,
-                ex.getMessage(),
-                getText("WARNING"),
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-
     private void jMenuItemOpenResultActionPerformed (final ActionEvent evt) {
         this.jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         this.openResultInternal();
@@ -1381,10 +1353,6 @@ public final class MainWindow extends JFrame implements KeyListener {
                 JOptionPane.PLAIN_MESSAGE
             );
         }
-    }
-
-    private void jMenuItemToGridSimActionPerformed (final ActionEvent evt) {
-        this.exportToFileType("Java Source Files (. java)", FileExtensions.JAVA_SOURCE);
     }
 
     private File getFileWithExtension (final String ext) {
