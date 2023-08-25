@@ -230,8 +230,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemClose,
         this.jMenuItemToJPG,
         this.jMenuItemToTxt,
-        this.jMenuItemToSimGrid,
-        this.jMenuItemToGridSim,
         this.jMenuItemCompare,
         this.jMenuItemSort,
         this.jMenuItemCopy,
