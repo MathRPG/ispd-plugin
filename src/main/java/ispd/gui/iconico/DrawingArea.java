@@ -918,7 +918,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     @Override
-    public void mouseReleased (final MouseEvent me) {
+    public void mouseReleased (final MouseEvent mouseEvent) {
         //Arruma ícone na tela
 
         if (!this.isRectOn) {
