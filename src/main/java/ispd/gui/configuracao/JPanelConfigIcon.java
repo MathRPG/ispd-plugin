@@ -98,9 +98,6 @@ public class JPanelConfigIcon extends JPanel {
         return t;
     }
 
-    public void setEscalonadores () {
-    }
-
     private MachineTable getTabelaMaquina () {
         return (MachineTable) this.machineTable.getModel();
     }
@@ -109,18 +106,12 @@ public class JPanelConfigIcon extends JPanel {
         return (ClusterTable) this.clusterTable.getModel();
     }
 
-    public void setEscalonadoresCloud () {
-    }
-
     private MachineTableIaaS getTabelaMaquinaIaaS () {
         return (MachineTableIaaS) this.iassMachineTable.getModel();
     }
 
     private ClusterTableIaaS getTabelaClusterIaaS () {
         return (ClusterTableIaaS) this.iassClusterTable.getModel();
-    }
-
-    public void setAlocadores () {
     }
 
     public void setIcone (final GridItem icon) {
