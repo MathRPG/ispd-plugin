@@ -51,7 +51,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
-    private final boolean isPopupOn;
+    private final boolean isPopupOn = true;
 
     private JPopupMenu generalPopup;
 
@@ -136,7 +136,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     private DrawingArea (final int w, final int h) {
-        this.isPopupOn       = true;
         this.isGridOn        = true;
         this.initRuler();
         this.initGeneralPopup();
