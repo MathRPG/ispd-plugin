@@ -31,16 +31,6 @@ public class GridSchedulingPolicyManager extends FilePolicyManager {
         new File(ConfiguracaoISPD.DIRETORIO_ISPD, GRID_DIR_PATH);
 
     @Override
-    public File directory () {
-        return GRID_DIRECTORY;
-    }
-
-    @Override
-    protected String packageName () {
-        return "escalonador";
-    }
-
-    @Override
     protected String className () {
         return "GridSchedulingPolicyManager.class";
     }

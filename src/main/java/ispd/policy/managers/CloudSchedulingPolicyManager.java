@@ -20,16 +20,6 @@ public class CloudSchedulingPolicyManager extends FilePolicyManager {
         new File(ConfiguracaoISPD.DIRETORIO_ISPD, CLOUD_DIR_PATH);
 
     @Override
-    public File directory () {
-        return CLOUD_DIRECTORY;
-    }
-
-    @Override
-    protected String packageName () {
-        return "escalonadorCloud";
-    }
-
-    @Override
     protected String className () {
         return "CloudSchedulingPolicyManager.class";
     }
