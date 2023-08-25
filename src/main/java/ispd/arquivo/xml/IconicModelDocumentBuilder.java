@@ -183,7 +183,7 @@ public class IconicModelDocumentBuilder {
                 { "energy", cluster.getEnergyConsumption() },
             }, new Node[] {
                 this.aPositionElement(cluster),
-                this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
+                this.getAnIconIdElement(id),
                 this.aCharacteristic(
                     cluster.getComputationalPower(),
                     cluster.getCoreCount(),
@@ -213,7 +213,7 @@ public class IconicModelDocumentBuilder {
                 { "master", cluster.isMaster() },
             }, new Node[] {
                 this.aPositionElement(cluster),
-                this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
+                this.getAnIconIdElement(id),
                 this.aCharacteristic(
                     cluster.getComputationalPower(),
                     cluster.getCoreCount(),
@@ -248,9 +248,13 @@ public class IconicModelDocumentBuilder {
                 ),
                 this.aPositionElement(origination),
                 this.aPositionElement(destination),
-                this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
+                this.getAnIconIdElement(id),
             }
         ));
+    }
+
+    private Element getAnIconIdElement (final GridItemIdentifier id) {
+        return this.anIconIdElement(id.getGlobalId(), id.getLocalId());
     }
 
     private Element aPositionElement (final Vertex vertex) {
@@ -268,7 +272,7 @@ public class IconicModelDocumentBuilder {
                 { "latency", i.getLatency() },
             }, new Element[] {
                 this.aPositionElement(i),
-                this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
+                this.getAnIconIdElement(id),
             }
         ));
     }
