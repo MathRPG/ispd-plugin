@@ -247,20 +247,21 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed (final KeyEvent keyEvent) {
-        if (this.drawingArea == null) {
+        final var drawingArea1 = this.drawingArea;
+        if (drawingArea1 == null) {
             return;
         }
 
         if (keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
-            this.drawingArea.botaoIconeActionPerformed(null);
+            drawingArea1.botaoIconeActionPerformed(null);
         }
 
         if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_C) {
-            this.drawingArea.botaoVerticeActionPerformed(null);
+            drawingArea1.botaoVerticeActionPerformed(null);
         }
 
         if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_V) {
-            this.drawingArea.botaoPainelActionPerformed(null);
+            drawingArea1.botaoPainelActionPerformed(null);
         }
     }
 
