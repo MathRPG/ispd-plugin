@@ -569,7 +569,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         ));
     }
 
-    protected String getTranslatedWindowTitle () {
+    private String getTranslatedWindowTitle () {
         return getText(this.getWindowTitle());
     }
 
@@ -692,7 +692,7 @@ public abstract class GenericPolicyManagementWindow extends JFrame {
         this.fileChooser.setCurrentDirectory(startDirectory);
     }
 
-    public void updatePolicyList () {
+    private void updatePolicyList () {
         this.policyList.setListData(this.manager.listar().toArray(String[]::new));
     }
 
