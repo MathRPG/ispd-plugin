@@ -1,5 +1,7 @@
 package ispd.gui;
 
+import static ispd.gui.TextSupplier.*;
+
 import ispd.gui.utils.*;
 import ispd.gui.utils.fonts.*;
 import java.awt.*;
@@ -31,7 +33,7 @@ public class PickModelTypeDialog extends JDialog {
         final ActionListener action
     ) {
         final var button = new JRadioButton();
-        button.setText(text);
+        button.setText(getText(text));
         button.addActionListener(action);
         return button;
     }
