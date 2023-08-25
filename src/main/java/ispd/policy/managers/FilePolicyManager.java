@@ -1,25 +1,13 @@
 package ispd.policy.managers;
 
-import ispd.policy.PolicyManager;
-import ispd.policy.managers.util.CompilationHelper;
-import ispd.policy.managers.util.JarExtractor;
-import ispd.utils.constants.FileExtensions;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import ispd.policy.*;
+import ispd.policy.managers.util.*;
+import ispd.utils.constants.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.logging.*;
+import java.util.stream.*;
 
 public abstract class FilePolicyManager implements PolicyManager {
 
@@ -37,7 +25,6 @@ public abstract class FilePolicyManager implements PolicyManager {
         this.initialize();
     }
 
-    /* package-private */
     public static void createDirectory (final File dir)
         throws IOException {
         if (!dir.mkdirs()) {
@@ -101,7 +88,7 @@ public abstract class FilePolicyManager implements PolicyManager {
      */
     @Override
     public String getPolicyTemplate (final String policyName) {
-        return this.getTemplate().replace(FilePolicyManager.POLICY_NAME_REPL, policyName);
+        return this.getTemplate().replace(POLICY_NAME_REPL, policyName);
     }
 
     /**
@@ -290,7 +277,7 @@ public abstract class FilePolicyManager implements PolicyManager {
     }
 
     private boolean isExecutingFromJar () {
-        return this.getExecutableName().startsWith(FilePolicyManager.JAR_PREFIX);
+        return this.getExecutableName().startsWith(JAR_PREFIX);
     }
 
     private String getExecutableName () {
