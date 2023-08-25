@@ -1,14 +1,11 @@
-package ispd.arquivo.interpretador.cargas;
+package ispd.arquivo;
 
-import ispd.motor.filas.Tarefa;
-import ispd.utils.constants.StringConstants;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
-import java.util.Collection;
+import ispd.motor.filas.*;
+import ispd.utils.constants.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * Responsible for outputting a simulation trace to a file path, from a collection of tasks

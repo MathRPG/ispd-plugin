@@ -1,7 +1,6 @@
 package ispd.gui;
 
 import ispd.arquivo.*;
-import ispd.arquivo.interpretador.cargas.*;
 import ispd.gui.auxiliar.*;
 import ispd.gui.utils.fonts.*;
 import ispd.motor.filas.*;
