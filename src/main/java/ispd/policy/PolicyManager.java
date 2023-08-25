@@ -7,7 +7,7 @@ public interface PolicyManager {
     String NO_POLICY = "---";
 
     /**
-     * Allocation policies available by default
+     * Allocation policies available by default.
      */
     List<String> NATIVE_VM_POLICIES = List.of(
         NO_POLICY,
@@ -17,10 +17,13 @@ public interface PolicyManager {
         "Volume"
     );
 
+    /**
+     * Cloud scheduling policies available by default.
+     */
     List<String> NATIVE_CLOUD_POLICIES = List.of(NO_POLICY, "RoundRobin");
 
     /**
-     * Scheduling policies available by default
+     * Grid scheduling policies available by default.
      */
     List<String> NATIVE_GRID_POLICIES = List.of(
         NO_POLICY,
