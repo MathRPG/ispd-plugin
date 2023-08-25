@@ -197,8 +197,8 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                     this.showWarning();
                 }
             } else {
-                if (destination instanceof final Vertex vertex && !this.edgeOrigin.equals(
-                    destination)) {
+                if (destination instanceof final Vertex vertex
+                    && !this.edgeOrigin.equals(destination)) {
                     this.adicionarAresta(this.edgeOrigin, vertex);
                     this.edgeOrigin = null;
                 } else {
