@@ -9,13 +9,12 @@ import org.jetbrains.annotations.*;
 
 public abstract class GenericPolicyLoader <T extends Policy<?>> implements PolicyLoader<T> {
 
+    private static final ClassLoader CLASS_LOADER = GenericPolicyLoader.class.getClassLoader();
+
     private static final URLClassLoader URL_CLASS_LOADER = makeClassLoader();
 
     private static URLClassLoader makeClassLoader () {
-        return URLClassLoader.newInstance(
-            new URL[] { getIspdDirectoryUrl() },
-            GenericPolicyLoader.class.getClassLoader()
-        );
+        return URLClassLoader.newInstance(new URL[] { getIspdDirectoryUrl() }, CLASS_LOADER);
     }
 
     private static @NotNull URL getIspdDirectoryUrl () {
