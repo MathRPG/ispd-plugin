@@ -139,8 +139,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenuItem jMenuItemPreferences = new JMenuItem();
 
-    private final JMenuItem jMenuItemManageAllocation = new JMenuItem();
-
     private final AbstractButton jButtonInjectFaults = ButtonBuilder
         .aButton("Faults Injection", MainWindow::jButtonInjectFaultsActionPerformed)
         .withIcon(getImage("/ispd/gui/imagens/vermelho.png"))
