@@ -316,7 +316,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         super.paintComponent(g);
         this.drawBackground(g);
         this.drawGrid(g);
-        this.drawPoints(g);
         //Desenha a linha da conexão de rede antes dela se estabelcer.
         if (this.edgeOrigin != null) {
             g.setColor(new Color(0, 0, 0));
@@ -1221,9 +1220,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         for (var h = 0; h <= this.getHeight(); h += increment) {
             g.drawLine(0, h, this.getWidth(), h);
         }
-    }
-
-    private void drawPoints (final Graphics g) {
     }
 
     private void drawRect (final Graphics g) {
