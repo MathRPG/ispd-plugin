@@ -53,7 +53,7 @@ public class MachineTableIaaS extends AbstractTableModel {
 
     private final JComboBox<?> schedulers =
         toolTippedComboBox(
-            PolicyManager.NATIVE_CLOUD_POLICIES.toArray(String[]::new),
+            PolicyLoader.NATIVE_CLOUD_POLICIES.toArray(String[]::new),
             "Select the task scheduling policy"
         );
 
@@ -61,7 +61,7 @@ public class MachineTableIaaS extends AbstractTableModel {
         toolTippedComboBox(NO_USERS, "Select the resource owner");
 
     private final JComboBox<String> allocators = toolTippedComboBox(
-        PolicyManager.NATIVE_VM_POLICIES.toArray(String[]::new),
+        PolicyLoader.NATIVE_VM_POLICIES.toArray(String[]::new),
         "Select the virtual machine allocation policy"
     );
 

@@ -22,7 +22,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private final JComboBox<Object> schedulers =
         makeComboBox(
-            PolicyManager.NATIVE_CLOUD_POLICIES.toArray(String[]::new),
+            PolicyLoader.NATIVE_CLOUD_POLICIES.toArray(String[]::new),
             "Select the task scheduling policy"
         );
 
@@ -31,7 +31,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private final JComboBox<Object> vmmPolicies =
         makeComboBox(
-            PolicyManager.NATIVE_VM_POLICIES.toArray(String[]::new),
+            PolicyLoader.NATIVE_VM_POLICIES.toArray(String[]::new),
             "Select the virtual machine allocation policy"
         );
 
