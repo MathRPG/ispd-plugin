@@ -4,7 +4,6 @@ import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.grade.*;
 import ispd.policy.*;
-import ispd.policy.managers.*;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -32,7 +31,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private final JComboBox<Object> vmmPolicies =
         makeComboBox(
-            VmAllocationPolicyManager.NATIVE_POLICIES.toArray(String[]::new),
+            PolicyManager.NATIVE_VM_POLICIES.toArray(String[]::new),
             "Select the virtual machine allocation policy"
         );
 
