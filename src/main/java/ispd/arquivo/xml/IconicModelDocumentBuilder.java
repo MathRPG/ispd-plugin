@@ -227,33 +227,25 @@ public class IconicModelDocumentBuilder {
     }
 
     public void addLink (final Link l) {
+        final var id = l.getId();
+
         final var source      = l.getSource();
         final var destination = l.getDestination();
-        final var id          = l.getId();
 
-        final int    x0           = source.getX();
-        final int    y0           = source.getY();
-        final int    x1           = destination.getX();
-        final int    y1           = destination.getY();
-        final int    localId      = id.getLocalId();
-        final int    globalId     = id.getGlobalId();
-        final String name         = id.getName();
-        final double bandwidth    = l.getBandwidth();
-        final double linkLoad     = l.getLoadFactor();
-        final double latency      = l.getLatency();
-        final int    origination  = ((GridItem) source).getId().getGlobalId();
-        final int    destination1 = ((GridItem) destination).getId().getGlobalId();
+        final int origination  = ((GridItem) source).getId().getGlobalId();
+        final int destination1 = ((GridItem) destination).getId().getGlobalId();
+
         this.system.appendChild(this.anElement(
             "link", new Object[][] {
-                { "id", name },
-                { "bandwidth", bandwidth },
-                { "load", linkLoad },
-                { "latency", latency },
+                { "id", id.getName() },
+                { "bandwidth", l.getBandwidth() },
+                { "load", l.getLoadFactor() },
+                { "latency", l.getLatency() },
             }, new Element[] {
                 this.anElement("connect", "origination", origination, "destination", destination1),
-                this.aPositionElement(x0, y0),
-                this.aPositionElement(x1, y1),
-                this.anIconIdElement(globalId, localId),
+                this.aPositionElement(source.getX(), source.getY()),
+                this.aPositionElement(destination.getX(), destination.getY()),
+                this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
             }
         ));
     }
