@@ -898,11 +898,9 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     public void iconArrange () {
 
         final var distanceBetweenIcons = 100;
-        final var initialX             = distanceBetweenIcons;
-        final var initialY             = distanceBetweenIcons;
 
-        var currentX      = initialX;
-        var currentY      = initialY;
+        var currentX = distanceBetweenIcons;
+        var currentY = distanceBetweenIcons;
         var currentColumn = 0;
 
         final var totalColumns = (int) Math.sqrt(this.vertices.size()) + 1;
@@ -915,7 +913,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
             if (currentColumn == totalColumns) {
                 currentColumn = 0;
-                currentX      = initialX;
+                currentX = distanceBetweenIcons;
                 currentY += distanceBetweenIcons;
             }
         }
