@@ -263,21 +263,16 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             this.rectangleY += this.rectangleHeight;
             this.rectangleHeight *= -1;
         }
-        //Adiciona icone na lista de selecionados
+
         if (this.selectedIcons.isEmpty()) {
-            for (final var icone : this.vertices) {
-                if (this.isInSelectionRectangle(icone)) {
-                    icone.setSelected(true);
-                    this.selectedIcons.add(icone);
-                }
-            }
-            for (final var icone : this.edges) {
-                if (this.isInSelectionRectangle(icone)) {
-                    icone.setSelected(true);
-                    this.selectedIcons.add(icone);
-                }
-            }
+            this.allIcons()
+                .filter(this::isInSelectionRectangle)
+                .forEach(icon -> {
+                    icon.setSelected(true);
+                    this.selectedIcons.add(icon);
+                });
         }
+
         this.shouldDrawRect = false;
         this.repaint();
     }
