@@ -42,18 +42,22 @@ public class PickModelTypeDialog extends JDialog {
     }
 
     private void gridButtonClicked (final ActionEvent evt) {
-        this.deselectAllButtons();
-        this.jRadioGrid.setSelected(true);
+        this.selectOnly(this.jRadioGrid);
+    }
+
+    private void selectOnly (final JRadioButton button) {
+        this.jRadioGrid.setSelected(false);
+        this.jRadioIaaS.setSelected(false);
+        this.jRadioPaaS.setSelected(false);
+        button.setSelected(true);
     }
 
     private void iaasButtonClicked (final ActionEvent evt) {
-        this.deselectAllButtons();
-        this.jRadioIaaS.setSelected(true);
+        this.selectOnly(this.jRadioIaaS);
     }
 
     private void paasButtonClicked (final ActionEvent evt) {
-        this.deselectAllButtons();
-        this.jRadioPaaS.setSelected(true);
+        this.selectOnly(this.jRadioPaaS);
     }
 
     private void makeLayoutAndPack () {
@@ -138,12 +142,6 @@ public class PickModelTypeDialog extends JDialog {
         );
 
         this.pack();
-    }
-
-    private void deselectAllButtons () {
-        this.jRadioGrid.setSelected(false);
-        this.jRadioIaaS.setSelected(false);
-        this.jRadioPaaS.setSelected(false);
     }
 
     private void onOkClick (final ActionEvent evt) {
