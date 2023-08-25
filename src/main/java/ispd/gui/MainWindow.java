@@ -1409,7 +1409,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         private static ImageIcon getIconForFileExtension (final File file) {
             final var ext = FileUtils.fileExtensionOf(file);
 
-            if (ext.isEmpty() || !FileExtensions.ICONIC_MODEL.equals(ext)) {
+            if (!FileExtensions.ICONIC_MODEL.equals(ext) || ext.isEmpty()) {
                 return null;
             }
 
