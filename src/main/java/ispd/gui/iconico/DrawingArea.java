@@ -41,11 +41,11 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private static final RulerUnit DEFAULT_UNIT = RulerUnit.CENTIMETERS;
 
-    protected final Set<Icon> selectedIcons = new HashSet<>();
+    private final Set<Icon> selectedIcons = new HashSet<>();
 
-    protected final Set<Vertex> vertices = new HashSet<>();
+    private final Set<Vertex> vertices = new HashSet<>();
 
-    protected final Set<Edge> edges = new HashSet<>();
+    private final Set<Edge> edges = new HashSet<>();
 
     private final Cursor crossHairCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
@@ -57,7 +57,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private final boolean isPositionFixed;
 
-    protected JPopupMenu generalPopup;
+    private JPopupMenu generalPopup;
 
     private ModelType modelType = ModelType.GRID;
 
@@ -265,7 +265,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         }
     }
 
-    public void botaoArestaActionPerformed (final ActionEvent evt) {
+    private void botaoArestaActionPerformed (final ActionEvent evt) {
         if (this.selectedIcons.size() == 1) {
             final var link = (Link) this.selectedIcons.iterator().next();
             this.selectedIcons.remove(link);
@@ -388,7 +388,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         }
     }
 
-    public void showActionIcon (final MouseEvent me, final Icon icon) {
+    private void showActionIcon (final MouseEvent me, final Icon icon) {
         this.mainWindow.modificar();
         if (icon instanceof Machine || icon instanceof Cluster) {
             this.mainWindow
@@ -412,7 +412,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         this.setLabelAtributos((GridItem) icon);
     }
 
-    public void showSelectionIcon (final MouseEvent me, final Icon icon) {
+    private void showSelectionIcon (final MouseEvent me, final Icon icon) {
         this.setLabelAtributos((GridItem) icon);
     }
 
@@ -1024,7 +1024,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
      * @param Destino
      *     Vertice de destino da aresta
      */
-    public void adicionarAresta (final Vertex Origem, final Vertex Destino) {
+    private void adicionarAresta (final Vertex Origem, final Vertex Destino) {
         final var link = new Link(Origem, Destino, this.edgeCount, this.iconCount);
         ((GridItem) Origem).getOutboundConnections().add(link);
         ((GridItem) Destino).getInboundConnections().add(link);
@@ -1050,7 +1050,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
      * @param y
      *     posição no eixo Y
      */
-    public void adicionarVertice (final int x, final int y) {
+    private void adicionarVertice (final int x, final int y) {
         GridItem vertice = null;
         switch (this.vertexType) {
             case MACHINE -> {
@@ -1309,7 +1309,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             .forEach(icon -> icon.setSelected(true));
     }
 
-    protected void setIsDrawingEdge (final boolean isDrawingEdge) {
+    private void setIsDrawingEdge (final boolean isDrawingEdge) {
         this.isDrawingEdge = isDrawingEdge;
         this.edgeOrigin    = null;
     }
@@ -1394,12 +1394,12 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         this.repaint();
     }
 
-    protected void setErrorText (final String message, final String title) {
+    private void setErrorText (final String message, final String title) {
         this.errorMessage = message;
         this.errorTitle   = title;
     }
 
-    protected void setPopupButtonText (
+    private void setPopupButtonText (
         final String icon,
         final String vertex,
         final String edge,
