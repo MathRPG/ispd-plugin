@@ -43,7 +43,6 @@ public class IconicModelDocumentBuilder {
             case GRID -> "2.1";
             case IAAS -> "2.2";
             case PAAS -> "2.3";
-            default -> throw new IllegalArgumentException("Invalid model type " + modelType);
         };
     }
 
