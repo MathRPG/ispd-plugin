@@ -311,7 +311,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void initPanels () {
         this.jPanelSettings = new JPanelConfigIcon();
         this.jPanelSettings.setEscalonadores(this.gridSchedulingPolicyManager);
-        this.jPanelSettings.setEscalonadoresCloud(this.jFrameCloudManager.getManager());
+        this.jPanelSettings.setEscalonadoresCloud(this.cloudSchedulingPolicyManager);
         this.jPanelSettings.setAlocadores(this.allocationPolicyManager);
 
         this.jPanelSimple.setText(getText("No icon selected."));
