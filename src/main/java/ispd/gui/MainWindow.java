@@ -413,7 +413,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private void initMenuFile () {
         this.jMenuFile.setText(getText("File"));
-        this.jMenuFile.addActionListener(this::jMenuFileActionPerformed);
         this.jMenuItemNew.setAccelerator(KeyStroke.getKeyStroke(
             KeyEvent.VK_N,
             InputEvent.CTRL_DOWN_MASK
@@ -1207,9 +1206,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         }
 
         System.exit(0);
-    }
-
-    private void jMenuFileActionPerformed (final ActionEvent evt) {
     }
 
     private void jMenuItemSortActionPerformed (final ActionEvent evt) {
