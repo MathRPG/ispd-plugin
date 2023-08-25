@@ -1,8 +1,6 @@
 package ispd.policy.managers;
 
-import ispd.arquivo.xml.*;
 import ispd.policy.*;
-import java.io.*;
 import java.util.*;
 
 /**
@@ -23,17 +21,4 @@ public class GridSchedulingPolicyManager implements PolicyManager {
         "OSEP",
         "EHOSEP"
     );
-
-    private static final String GRID_DIR_PATH =
-        String.join(File.separator, "policies", "scheduling", "grid");
-
-    private static final File GRID_DIRECTORY =
-        new File(ConfiguracaoISPD.DIRETORIO_ISPD, GRID_DIR_PATH);
-
-    public GridSchedulingPolicyManager () {
-    }
-
-    protected String className () {
-        return "GridSchedulingPolicyManager.class";
-    }
 }
