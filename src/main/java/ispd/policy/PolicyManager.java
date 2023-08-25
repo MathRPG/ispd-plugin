@@ -6,5 +6,12 @@ public interface PolicyManager {
 
     String NO_POLICY = "---";
 
-    ArrayList<String> listar ();
+    /**
+     * Lists all available allocation policies.
+     *
+     * @return {@code ArrayList} with all allocation policies' names
+     */
+    default ArrayList<String> listar () {
+        return new ArrayList<>();
+    }
 }
