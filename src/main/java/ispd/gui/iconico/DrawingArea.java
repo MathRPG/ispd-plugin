@@ -161,7 +161,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     private static JPanel panelWith (final Component component) {
-        final JPanel corner = new JPanel();
+        final var corner = new JPanel();
         corner.add(component);
         return corner;
     }
@@ -331,7 +331,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     public void mouseClicked (final MouseEvent mouseEvent) {
         if (this.isDrawingEdge) {
             if (this.edgeOrigin != null) {
-                final Icon destinoAresta =
+                final var destinoAresta =
                     this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
                 if (destinoAresta instanceof Vertex && !this.edgeOrigin.equals(destinoAresta)) {
                     this.adicionarAresta(this.edgeOrigin, (Vertex) destinoAresta);
@@ -341,7 +341,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                         null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
                 }
             } else {
-                final Icon icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
+                final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
                 if (icon instanceof Vertex) {
                     this.edgeOrigin = (Vertex) icon;
                 } else {
@@ -350,7 +350,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                 }
             }
         } else if (!this.selectedIcons.isEmpty()) {
-            final Icon icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
+            final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
             if (icon != null) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                     if (this.isPopupOn) {
@@ -406,14 +406,14 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     @Override
     public void mousePressed (final MouseEvent me) {
         //Verifica se algum icone foi selecionado
-        final Icon icon = this.getSelectedIcon(me.getX(), me.getY());
+        final var icon = this.getSelectedIcon(me.getX(), me.getY());
         if (icon != null) {
             if (icon instanceof Vertex) {
                 ((Vertex) icon).setBase(0, 0);
             }
             if (!this.selectedIcons.contains(icon)) {
                 if (me.getButton() != MouseEvent.BUTTON2 && this.selectedIcons.size() >= 1) {
-                    for (final Icon icone : this.selectedIcons) {
+                    for (final var icone : this.selectedIcons) {
                         icone.setSelected(false);
                     }
                     this.selectedIcons.clear();
@@ -422,7 +422,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                 this.selectedIcons.add(icon);
             }
             if (this.selectedIcons.size() > 1) {
-                for (final Icon icone : this.selectedIcons) {
+                for (final var icone : this.selectedIcons) {
                     if (icone instanceof Vertex) {
                         ((Vertex) icone).setBase(
                             icone.getX() - me.getX(),
@@ -927,13 +927,13 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         }
         //Adiciona icone na lista de selecionados
         if (this.selectedIcons.isEmpty()) {
-            for (final Vertex icone : this.vertices) {
+            for (final var icone : this.vertices) {
                 if (this.isInSelectionRectangle(icone)) {
                     icone.setSelected(true);
                     this.selectedIcons.add(icone);
                 }
             }
-            for (final Edge icone : this.edges) {
+            for (final var icone : this.edges) {
                 if (this.isInSelectionRectangle(icone)) {
                     icone.setSelected(true);
                     this.selectedIcons.add(icone);
@@ -1078,7 +1078,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         this.vertexPopup = new JPopupMenu();
         this.edgePopup   = new JPopupMenu();
 
-        final JMenuItem jMenuVertice0 = new JMenuItem();
+        final var jMenuVertice0 = new JMenuItem();
         jMenuVertice0.addActionListener(evt -> {});
         this.vertexPopup.add(jMenuVertice0);
         jMenuVertice0.setVisible(false);
@@ -1204,8 +1204,8 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private int convertToFixedPosition (final int pos, final int range) {
         final var increment     = this.unit.getIncrement();
-        final int offset        = (pos % increment);
-        final int positionIndex = (pos / increment);
+        final var offset        = (pos % increment);
+        final var positionIndex = (pos / increment);
         //Verifica se está na posição correta
         final int newPosition;
         if (offset == 0) {
@@ -1292,10 +1292,10 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
         g.setColor(Color.LIGHT_GRAY);
         final var increment = this.unit.getIncrement();
-        for (int w = 0; w <= this.getWidth(); w += increment) {
+        for (var w = 0; w <= this.getWidth(); w += increment) {
             g.drawLine(w, 0, w, this.getHeight());
         }
-        for (int h = 0; h <= this.getHeight(); h += increment) {
+        for (var h = 0; h <= this.getHeight(); h += increment) {
             g.drawLine(0, h, this.getWidth(), h);
         }
     }
