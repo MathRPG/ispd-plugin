@@ -50,8 +50,11 @@ public final class MainWindow extends JFrame implements KeyListener {
     private final VmAllocationPolicyManager allocationPolicyManager =
         new VmAllocationPolicyManager();
 
+    private final CloudSchedulingPolicyManager cloudSchedulingPolicyManager =
+        new CloudSchedulingPolicyManager();
+
     private final GenericPolicyManagementWindow jFrameCloudManager =
-        new CloudSchedulingPolicyManagementWindow(new CloudSchedulingPolicyManager());
+        new CloudSchedulingPolicyManagementWindow(this.cloudSchedulingPolicyManager);
 
     private final SimplePanel jPanelSimple = new SimplePanel();
 
