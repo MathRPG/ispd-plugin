@@ -357,9 +357,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void initMenuTools () {
         this.jMenuTools.setText(getText("Tools"));
         this.jMenuTools.addActionListener(this::jMenuToolsActionPerformed);
-        this.jMenuItemManage.setText(getText("Manage Schedulers"));
-        this.jMenuItemManage.addActionListener(this::jMenuItemManageActionPerformed);
-        this.jMenuTools.add(this.jMenuItemManage);
         this.jMenuItemGenerate.setText(getText("Generate Scheduler"));
         this.jMenuItemGenerate.addActionListener(this::jMenuItemGenerateActionPerformed);
         this.jMenuTools.add(this.jMenuItemGenerate);
