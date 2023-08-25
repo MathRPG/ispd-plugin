@@ -335,21 +335,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         }
     }
 
-    @Override
-    public Dimension getPreferredSize () {
-        return this.getSize();
-    }
-
-    @Override
-    public Dimension getMaximumSize () {
-        return this.getPreferredSize();
-    }
-
-    @Override
-    public Dimension getMinimumSize () {
-        return this.getPreferredSize();
-    }
-
     public void processKeyEvent (final KeyEvent keyEvent) {
         if (keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
             this.botaoIconeActionPerformed(null);
