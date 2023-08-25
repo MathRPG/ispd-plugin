@@ -5,8 +5,6 @@ import java.util.*;
 
 public abstract class FilePolicyManager implements PolicyManager {
 
-    private final ArrayList<String> policies = new ArrayList<>();
-
     protected FilePolicyManager () {
     }
 
@@ -17,6 +15,6 @@ public abstract class FilePolicyManager implements PolicyManager {
      */
     @Override
     public ArrayList<String> listar () {
-        return this.policies;
+        return new ArrayList<>();
     }
 }
