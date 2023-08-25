@@ -167,7 +167,7 @@ public class PickModelTypeDialog extends JDialog {
         return this.choice;
     }
 
-    ModelType getEscolha () {
+    public ModelType getEscolha () {
         return this.choice;
     }
 }
