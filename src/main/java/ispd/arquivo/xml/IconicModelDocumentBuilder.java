@@ -3,7 +3,6 @@ package ispd.arquivo.xml;
 import ispd.arquivo.xml.utils.*;
 import ispd.gui.*;
 import ispd.gui.iconico.*;
-import ispd.gui.iconico.grade.*;
 import ispd.motor.workload.impl.*;
 import java.util.*;
 import java.util.stream.*;
@@ -20,15 +19,13 @@ public class IconicModelDocumentBuilder {
 
     private static final Object[][] NO_ATTRS = {};
 
-    private static final int DEFAULT_MODEL_TYPE = -1;
-
     private final WrappedDocument document = new WrappedDocument(ManipuladorXML.newDocument());
 
     private final Element system;
 
     private Element load = null;
 
-    public IconicModelDocumentBuilder (final int modelType) {
+    public IconicModelDocumentBuilder (final ModelType modelType) {
         this.system = this.document.createElement("system");
         this.system.setAttribute("version", getVersionForModelType(modelType));
         this.document.appendChild(this.system);
@@ -38,13 +35,11 @@ public class IconicModelDocumentBuilder {
      * @throws IllegalArgumentException
      *     if modelType is not in -1, 0, 1 or 2
      */
-    private static String getVersionForModelType (final int modelType) {
+    private static String getVersionForModelType (final ModelType modelType) {
         return switch (modelType) {
-            case PickModelTypeDialog.GRID -> "2.1";
-            case PickModelTypeDialog.IAAS -> "2.2";
-            case PickModelTypeDialog.PAAS -> "2.3";
-            case DEFAULT_MODEL_TYPE -> "1.2";
-            default -> throw new IllegalArgumentException("Invalid model type " + modelType);
+            case GRID -> "2.1";
+            case IAAS -> "2.2";
+            case PAAS -> "2.3";
         };
     }
 

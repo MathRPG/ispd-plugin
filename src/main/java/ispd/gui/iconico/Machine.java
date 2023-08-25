@@ -1,4 +1,4 @@
-package ispd.gui.iconico.grade;
+package ispd.gui.iconico;
 
 import static ispd.gui.TextSupplier.*;
 
@@ -173,7 +173,7 @@ public class Machine extends VertexGridItem {
      */
     @Override
     public Image getImage () {
-        return DesenhoGrade.MACHINE_ICON;
+        return DrawingArea.MACHINE_ICON;
     }
 
     /**

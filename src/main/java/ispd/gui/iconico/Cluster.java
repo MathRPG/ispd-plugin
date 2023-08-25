@@ -1,4 +1,4 @@
-package ispd.gui.iconico.grade;
+package ispd.gui.iconico;
 
 import static ispd.gui.TextSupplier.*;
 
@@ -177,7 +177,7 @@ public class Cluster extends VertexGridItem {
      */
     @Override
     public Image getImage () {
-        return DesenhoGrade.CLUSTER_ICON;
+        return DrawingArea.CLUSTER_ICON;
     }
 
     /**

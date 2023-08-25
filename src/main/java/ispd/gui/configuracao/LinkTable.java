@@ -2,7 +2,7 @@ package ispd.gui.configuracao;
 
 import static ispd.gui.TextSupplier.*;
 
-import ispd.gui.iconico.grade.*;
+import ispd.gui.iconico.*;
 import javax.swing.table.*;
 
 public class LinkTable extends AbstractTableModel {

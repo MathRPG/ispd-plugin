@@ -2,7 +2,7 @@ package ispd.gui.configuracao;
 
 import static ispd.gui.TextSupplier.*;
 
-import ispd.gui.iconico.grade.*;
+import ispd.gui.iconico.*;
 import ispd.policy.*;
 import java.awt.event.*;
 import java.util.*;

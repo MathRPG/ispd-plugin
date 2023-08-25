@@ -3,6 +3,7 @@ package ispd.gui.iconico;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
 
+import ispd.gui.iconico.ruler.*;
 import org.junit.jupiter.api.*;
 
 final class TestRulerUnit {
