@@ -163,15 +163,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         return corner;
     }
 
-    private static int clampPosition (final int position, final int range, final int increment) {
-        if (position <= 0) {
-            return increment;
-        } else if (position >= range) {
-            return (range / increment) * increment;
-        }
-        return position;
-    }
-
     private static boolean isIconWithinRect (
         final Icon icon,
         final int x,
@@ -213,7 +204,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                 } else if (mouseEvent.getClickCount() == 2) {
                     this.showActionIcon(mouseEvent, icon);
                 } else if (mouseEvent.getClickCount() == 1) {
-                    this.showSelectionIcon(mouseEvent, icon);
+                    this.showSelectionIcon(icon);
                 }
             }
         } else if (this.addVertex) {
@@ -520,7 +511,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         this.setLabelAtributos((GridItem) icon);
     }
 
-    private void showSelectionIcon (final MouseEvent me, final Icon icon) {
+    private void showSelectionIcon (final Icon icon) {
         this.setLabelAtributos((GridItem) icon);
     }
 
@@ -1122,18 +1113,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         }
     }
 
-    protected int getPosicaoMouseX () {
-        return this.mousePosX;
-    }
-
-    protected int getPosicaoMouseY () {
-        return this.mousePosY;
-    }
-
-    protected void setAddVertice (final boolean addVertice) {
-        this.addVertex = addVertice;
-    }
-
     public Ruler getColumnView () {
         return this.columnRuler;
     }
@@ -1144,10 +1123,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     public JPanel getCorner () {
         return this.cornerUnitButton;
-    }
-
-    protected RulerUnit getUnit () {
-        return this.unit;
     }
 
     private Icon getSelectedIcon (final int x, final int y) {
@@ -1187,34 +1162,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             }
             this.edgePopup.show(me.getComponent(), me.getX(), me.getY());
         }
-    }
-
-    private int getPosFixaX (final int x) {
-        return this.convertToFixedPosition(x, this.getWidth());
-    }
-
-    private int getPosFixaY (final int y) {
-        return this.convertToFixedPosition(y, this.getHeight());
-    }
-
-    private int convertToFixedPosition (final int pos, final int range) {
-        final var increment     = this.unit.getIncrement();
-        final var offset        = (pos % increment);
-        final var positionIndex = (pos / increment);
-        //Verifica se está na posição correta
-        final int newPosition;
-        if (offset == 0) {
-            newPosition = pos;
-        } else {
-            //verifica para qual ponto deve deslocar a posição
-            if (offset < increment / 2) {
-                newPosition = positionIndex * increment;
-            } else {
-                newPosition = positionIndex * increment + increment;
-            }
-        }
-
-        return clampPosition(newPosition, range, increment);
     }
 
     private void updateIcons (final int x, final int y) {
@@ -1329,10 +1276,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         g.drawRect(x, y, w, h);
         g.setColor(RECTANGLE_FILL_COLOR);
         g.fillRect(x, y, w, h);
-    }
-
-    protected boolean isGridOn () {
-        return this.isGridOn;
     }
 
     public void setGridOn (final boolean gridOn) {
