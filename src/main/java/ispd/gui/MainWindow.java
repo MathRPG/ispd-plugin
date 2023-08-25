@@ -44,8 +44,11 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JFileChooser jFileChooser = new JFileChooser();
 
+    private final GridSchedulingPolicyManager gridSchedulingPolicyManager =
+        new GridSchedulingPolicyManager();
+
     private final GenericPolicyManagementWindow jFrameManager =
-        new GridSchedulingPolicyManagementWindow(new GridSchedulingPolicyManager());
+        new GridSchedulingPolicyManagementWindow(this.gridSchedulingPolicyManager);
 
     private final GenericPolicyManagementWindow jFrameAllocManager =
         new VmAllocationPolicyManagementWindow();
@@ -307,7 +310,7 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private void initPanels () {
         this.jPanelSettings = new JPanelConfigIcon();
-        this.jPanelSettings.setEscalonadores(this.jFrameManager.getManager());
+        this.jPanelSettings.setEscalonadores(this.gridSchedulingPolicyManager);
         this.jPanelSettings.setEscalonadoresCloud(this.jFrameCloudManager.getManager());
         this.jPanelSettings.setAlocadores(this.jFrameAllocManager.getManager());
 
