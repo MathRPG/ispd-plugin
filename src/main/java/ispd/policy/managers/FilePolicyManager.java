@@ -11,8 +11,6 @@ public abstract class FilePolicyManager implements PolicyManager {
 
     private static final String JAR_PREFIX = "jar:";
 
-    private static final String POLICY_NAME_REPL = "__POLICY_NAME__";
-
     private final ArrayList<String> policies = new ArrayList<>();
 
     private final List<String> addedPolicies = new ArrayList<>();
@@ -40,29 +38,6 @@ public abstract class FilePolicyManager implements PolicyManager {
 
     private static String removeSuffix (final String str, final String suffix) {
         return str.substring(0, str.length() - suffix.length());
-    }
-
-    private static String compile (final File target) {
-        return new CompilationHelper(target).compile();
-    }
-
-    private static boolean canDeleteFile (final File classFile) {
-        return classFile.exists() && classFile.delete();
-    }
-
-    private static void transferFileContents (final File src, final File dest) {
-        if (src.getPath().equals(dest.getPath())) {
-            return;
-        }
-
-        try (
-            final var srcFs = new FileInputStream(src);
-            final var destFs = new FileOutputStream(dest)
-        ) {
-            srcFs.transferTo(destFs);
-        } catch (final IOException ex) {
-            severeLog(ex);
-        }
     }
 
     protected abstract String packageName ();
@@ -133,39 +108,5 @@ public abstract class FilePolicyManager implements PolicyManager {
 
     private String getExecutableName () {
         return Objects.requireNonNull(this.getClass().getResource(this.className())).toString();
-    }
-
-    private boolean checkIfDotClassExists (final String policyName) {
-        return this.policyDotClassFile(policyName).exists();
-    }
-
-    private void addPolicy (final String policyName) {
-        if (this.policies.contains(policyName)) {
-            return;
-        }
-
-        this.policies.add(policyName);
-        this.addedPolicies.add(policyName);
-    }
-
-    private File policyDotClassFile (final String policyName) {
-        return this.fileWithExtension(policyName, FileExtensions.JAVA_CLASS);
-    }
-
-    private void removePolicy (final String policyName) {
-        if (!this.policies.contains(policyName)) {
-            return;
-        }
-
-        this.policies.remove(policyName);
-        this.removedPolicies.add(policyName);
-    }
-
-    private File policyJavaFile (final String name) {
-        return this.fileWithExtension(name, FileExtensions.JAVA_SOURCE);
-    }
-
-    private File fileWithExtension (final String policyName, final String ext) {
-        return new File(this.directory(), policyName + ext);
     }
 }
