@@ -134,7 +134,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     private DrawingArea (final int w, final int h) {
-        this.isGridOn        = true;
+        this.isGridOn = true;
         this.initRuler();
         this.initGeneralPopup();
         this.initIconPopup();
@@ -186,6 +186,182 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         return start <= pos && pos <= start + size;
     }
 
+    @Override
+    public void mouseClicked (final MouseEvent mouseEvent) {
+        if (this.isDrawingEdge) {
+            final var destination = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
+            if (this.edgeOrigin != null) {
+                if (destination instanceof Vertex && !this.edgeOrigin.equals(destination)) {
+                    this.adicionarAresta(this.edgeOrigin, (Vertex) destination);
+                    this.edgeOrigin = null;
+                } else {
+                    this.showWarning();
+                }
+            } else {
+                if (destination instanceof Vertex) {
+                    this.edgeOrigin = (Vertex) destination;
+                } else {
+                    this.showWarning();
+                }
+            }
+        } else if (!this.selectedIcons.isEmpty()) {
+            final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
+            if (icon != null) {
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    this.showPopupIcon(mouseEvent, icon);
+                } else if (mouseEvent.getClickCount() == 2) {
+                    this.showActionIcon(mouseEvent, icon);
+                } else if (mouseEvent.getClickCount() == 1) {
+                    this.showSelectionIcon(mouseEvent, icon);
+                }
+            }
+        } else if (this.addVertex) {
+            this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
+        } else if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+            this.generalPopup.show(
+                mouseEvent.getComponent(),
+                mouseEvent.getX(),
+                mouseEvent.getY()
+            );
+        }
+    }
+
+    @Override
+    public void mousePressed (final MouseEvent me) {
+        //Verifica se algum icone foi selecionado
+        final var icon = this.getSelectedIcon(me.getX(), me.getY());
+        if (icon != null) {
+            if (icon instanceof Vertex) {
+                ((Vertex) icon).setBase(0, 0);
+            }
+            if (!this.selectedIcons.contains(icon)) {
+                if (me.getButton() != MouseEvent.BUTTON2 && this.selectedIcons.size() >= 1) {
+                    for (final var icone : this.selectedIcons) {
+                        icone.setSelected(false);
+                    }
+                    this.selectedIcons.clear();
+                }
+                icon.setSelected(true);
+                this.selectedIcons.add(icon);
+            }
+            if (this.selectedIcons.size() > 1) {
+                for (final var icone : this.selectedIcons) {
+                    if (icone instanceof Vertex) {
+                        ((Vertex) icone).setBase(
+                            icone.getX() - me.getX(),
+                            icone.getY() - me.getY()
+                        );
+                    }
+                }
+            }
+        }
+        //Indica ponto inicial do retangulo
+        if (this.selectedIcons.isEmpty()) {
+            this.shouldDrawRect  = true;
+            this.rectangleX      = me.getX();
+            this.rectangleY      = me.getY();
+            this.rectangleWidth  = 0;
+            this.rectangleHeight = 0;
+        }
+        this.repaint();
+    }
+
+    @Override
+    public void mouseReleased (final MouseEvent mouseEvent) {
+        //Ajusta posição do retangulo
+        if (this.rectangleWidth < 0) {
+            this.rectangleX += this.rectangleWidth;
+            this.rectangleWidth *= -1;
+        }
+        if (this.rectangleHeight < 0) {
+            this.rectangleY += this.rectangleHeight;
+            this.rectangleHeight *= -1;
+        }
+        //Adiciona icone na lista de selecionados
+        if (this.selectedIcons.isEmpty()) {
+            for (final var icone : this.vertices) {
+                if (this.isInSelectionRectangle(icone)) {
+                    icone.setSelected(true);
+                    this.selectedIcons.add(icone);
+                }
+            }
+            for (final var icone : this.edges) {
+                if (this.isInSelectionRectangle(icone)) {
+                    icone.setSelected(true);
+                    this.selectedIcons.add(icone);
+                }
+            }
+        }
+        this.shouldDrawRect = false;
+        this.repaint();
+    }
+
+    @Override
+    public void mouseEntered (final MouseEvent me) {
+        this.repaint();
+    }
+
+    @Override
+    public void mouseExited (final MouseEvent me) {
+        this.repaint();
+    }
+
+    @Override
+    public void mouseDragged (final MouseEvent mouseEvent) {
+        this.updateIcons(mouseEvent.getX(), mouseEvent.getY());
+        this.repaint();
+    }
+
+    @Override
+    public void mouseMoved (final MouseEvent e) {
+        this.mousePosX = e.getX();
+        this.mousePosY = e.getY();
+        if (this.isDrawingEdge) {
+            this.repaint();
+        }
+    }
+
+    @Override
+    protected void paintComponent (final Graphics g) {
+        super.paintComponent(g);
+        this.drawBackground(g);
+        this.drawGrid(g);
+        this.drawPoints(g);
+        //Desenha a linha da conexão de rede antes dela se estabelcer.
+        if (this.edgeOrigin != null) {
+            g.setColor(new Color(0, 0, 0));
+            g.drawLine(
+                this.edgeOrigin.getX(),
+                this.edgeOrigin.getY(),
+                this.mousePosX,
+                this.mousePosY
+            );
+        }
+        this.drawRect(g);
+        // Desenhamos todos os icones
+        for (final Icon icone : this.edges) {
+            icone.draw(g);
+        }
+        for (final Icon icone : this.vertices) {
+            icone.draw(g);
+        }
+    }
+
+    @Override
+    public Dimension getPreferredSize () {
+        return this.getSize();
+    }
+
+    @Override
+    public Dimension getMaximumSize () {
+        return this.getPreferredSize();
+    }
+
+    @Override
+    public Dimension getMinimumSize () {
+        return this.getPreferredSize();
+    }
+
     public void processKeyEvent (final KeyEvent keyEvent) {
         if (keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
             this.botaoIconeActionPerformed(null);
@@ -198,16 +374,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_V) {
             this.botaoPainelActionPerformed(null);
         }
-    }
-
-    @Override
-    public void mouseEntered (final MouseEvent me) {
-        this.repaint();
-    }
-
-    @Override
-    public void mouseExited (final MouseEvent me) {
-        this.repaint();
     }
 
     public void botaoPainelActionPerformed (final ActionEvent evt) {
@@ -324,48 +490,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         }
     }
 
-    @Override
-    public void mouseClicked (final MouseEvent mouseEvent) {
-        if (this.isDrawingEdge) {
-            if (this.edgeOrigin != null) {
-                final var destinoAresta =
-                    this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
-                if (destinoAresta instanceof Vertex && !this.edgeOrigin.equals(destinoAresta)) {
-                    this.adicionarAresta(this.edgeOrigin, (Vertex) destinoAresta);
-                    this.edgeOrigin = null;
-                } else {
-                    this.showWarning();
-                }
-            } else {
-                final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
-                if (icon instanceof Vertex) {
-                    this.edgeOrigin = (Vertex) icon;
-                } else {
-                    this.showWarning();
-                }
-            }
-        } else if (!this.selectedIcons.isEmpty()) {
-            final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
-            if (icon != null) {
-                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
-                    this.showPopupIcon(mouseEvent, icon);
-                } else if (mouseEvent.getClickCount() == 2) {
-                    this.showActionIcon(mouseEvent, icon);
-                } else if (mouseEvent.getClickCount() == 1) {
-                    this.showSelectionIcon(mouseEvent, icon);
-                }
-            }
-        } else if (this.addVertex) {
-            this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
-        } else if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
-            this.generalPopup.show(
-                mouseEvent.getComponent(),
-                mouseEvent.getX(),
-                mouseEvent.getY()
-            );
-        }
-    }
-
     private void showWarning () {
         JOptionPane.showMessageDialog(
             null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
@@ -397,61 +521,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private void showSelectionIcon (final MouseEvent me, final Icon icon) {
         this.setLabelAtributos((GridItem) icon);
-    }
-
-    @Override
-    public void mousePressed (final MouseEvent me) {
-        //Verifica se algum icone foi selecionado
-        final var icon = this.getSelectedIcon(me.getX(), me.getY());
-        if (icon != null) {
-            if (icon instanceof Vertex) {
-                ((Vertex) icon).setBase(0, 0);
-            }
-            if (!this.selectedIcons.contains(icon)) {
-                if (me.getButton() != MouseEvent.BUTTON2 && this.selectedIcons.size() >= 1) {
-                    for (final var icone : this.selectedIcons) {
-                        icone.setSelected(false);
-                    }
-                    this.selectedIcons.clear();
-                }
-                icon.setSelected(true);
-                this.selectedIcons.add(icon);
-            }
-            if (this.selectedIcons.size() > 1) {
-                for (final var icone : this.selectedIcons) {
-                    if (icone instanceof Vertex) {
-                        ((Vertex) icone).setBase(
-                            icone.getX() - me.getX(),
-                            icone.getY() - me.getY()
-                        );
-                    }
-                }
-            }
-        }
-        //Indica ponto inicial do retangulo
-        if (this.selectedIcons.isEmpty()) {
-            this.shouldDrawRect  = true;
-            this.rectangleX      = me.getX();
-            this.rectangleY      = me.getY();
-            this.rectangleWidth  = 0;
-            this.rectangleHeight = 0;
-        }
-        this.repaint();
-    }
-
-    @Override
-    public Dimension getPreferredSize () {
-        return this.getSize();
-    }
-
-    @Override
-    public Dimension getMaximumSize () {
-        return this.getPreferredSize();
-    }
-
-    @Override
-    public Dimension getMinimumSize () {
-        return this.getPreferredSize();
     }
 
     public ModelType getModelType () {
@@ -910,77 +979,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         }
     }
 
-    @Override
-    public void mouseReleased (final MouseEvent mouseEvent) {
-        //Ajusta posição do retangulo
-        if (this.rectangleWidth < 0) {
-            this.rectangleX += this.rectangleWidth;
-            this.rectangleWidth *= -1;
-        }
-        if (this.rectangleHeight < 0) {
-            this.rectangleY += this.rectangleHeight;
-            this.rectangleHeight *= -1;
-        }
-        //Adiciona icone na lista de selecionados
-        if (this.selectedIcons.isEmpty()) {
-            for (final var icone : this.vertices) {
-                if (this.isInSelectionRectangle(icone)) {
-                    icone.setSelected(true);
-                    this.selectedIcons.add(icone);
-                }
-            }
-            for (final var icone : this.edges) {
-                if (this.isInSelectionRectangle(icone)) {
-                    icone.setSelected(true);
-                    this.selectedIcons.add(icone);
-                }
-            }
-        }
-        this.shouldDrawRect = false;
-        this.repaint();
-    }
-
-    @Override
-    public void mouseDragged (final MouseEvent mouseEvent) {
-        this.updateIcons(mouseEvent.getX(), mouseEvent.getY());
-        this.repaint();
-    }
-
-    @Override
-    public void mouseMoved (final MouseEvent e) {
-        this.mousePosX = e.getX();
-        this.mousePosY = e.getY();
-        if (this.isDrawingEdge) {
-            this.repaint();
-        }
-    }
-
-    @Override
-    protected void paintComponent (final Graphics g) {
-        super.paintComponent(g);
-        this.drawBackground(g);
-        this.drawGrid(g);
-        this.drawPoints(g);
-        //Desenha a linha da conexão de rede antes dela se estabelcer.
-        if (this.edgeOrigin != null) {
-            g.setColor(new Color(0, 0, 0));
-            g.drawLine(
-                this.edgeOrigin.getX(),
-                this.edgeOrigin.getY(),
-                this.mousePosX,
-                this.mousePosY
-            );
-        }
-        this.drawRect(g);
-        // Desenhamos todos os icones
-        for (final Icon icone : this.edges) {
-            icone.draw(g);
-        }
-        for (final Icon icone : this.vertices) {
-            icone.draw(g);
-        }
-    }
-
     /**
      * Realiza a adição de uma aresta à area de desenho. Este método é chamado quando se realiza a
      * conexão entre dois vertices com o addAresta ativo
@@ -1008,7 +1006,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     /**
-         * Realiza a adição de um vertice à area de desenho. Este método é chamado quando o mouse é
+     * Realiza a adição de um vertice à area de desenho. Este método é chamado quando o mouse é
      * precionado com addVertice ativo
      *
      * @param x
