@@ -30,7 +30,7 @@ public class GridSchedulingPolicyManager implements PolicyManager {
     private static final File GRID_DIRECTORY =
         new File(ConfiguracaoISPD.DIRETORIO_ISPD, GRID_DIR_PATH);
 
-    protected GridSchedulingPolicyManager () {
+    public GridSchedulingPolicyManager () {
     }
 
     protected String className () {
