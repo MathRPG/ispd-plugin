@@ -5,7 +5,6 @@ import static ispd.gui.TextSupplier.*;
 import ispd.gui.*;
 import ispd.gui.iconico.grade.*;
 import ispd.gui.utils.fonts.*;
-import ispd.policy.*;
 import java.awt.event.*;
 import java.util.*;
 import java.util.function.*;
@@ -100,7 +99,7 @@ public class JPanelConfigIcon extends JPanel {
         return t;
     }
 
-    public void setEscalonadores (final PolicyManager schedulers) {
+    public void setEscalonadores () {
         new ArrayList<String>().forEach(sch -> {
             this.getTabelaMaquina().getEscalonadores().addItem(sch);
             this.getTabelaCluster().getEscalonadores().addItem(sch);
@@ -115,7 +114,7 @@ public class JPanelConfigIcon extends JPanel {
         return (ClusterTable) this.clusterTable.getModel();
     }
 
-    public void setEscalonadoresCloud (final PolicyManager cloudSchedulers) {
+    public void setEscalonadoresCloud () {
         new ArrayList<String>().forEach(sch -> {
             this.getTabelaMaquinaIaaS().getEscalonadores().addItem(sch);
             this.getTabelaClusterIaaS().getEscalonadores().addItem(sch);
@@ -130,7 +129,7 @@ public class JPanelConfigIcon extends JPanel {
         return (ClusterTableIaaS) this.iassClusterTable.getModel();
     }
 
-    public void setAlocadores (final PolicyManager allocators) {
+    public void setAlocadores () {
         new ArrayList<String>().forEach(alloc -> {
             this.getTabelaMaquinaIaaS().getAlocadores().addItem(alloc);
             this.getTabelaClusterIaaS().getAlocadores().addItem(alloc);
