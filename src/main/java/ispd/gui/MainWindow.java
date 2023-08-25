@@ -347,8 +347,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void initMenuTools () {
-        this.jMenuTools.setText(getText("Tools"));
-        this.jMenuTools.addActionListener(this::jMenuToolsActionPerformed);
     }
 
     private void initMenuShow () {
@@ -667,7 +665,6 @@ public final class MainWindow extends JFrame implements KeyListener {
             this.jMenuFile,
             this.jMenuEdit,
             this.jMenuShow,
-            this.jMenuTools,
             this.jMenuHelp,
         };
 
