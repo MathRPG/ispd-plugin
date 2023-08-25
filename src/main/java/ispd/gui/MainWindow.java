@@ -6,7 +6,6 @@ import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
 import ispd.gui.configuracao.*;
 import ispd.gui.iconico.grade.*;
-import ispd.gui.policy.*;
 import ispd.gui.utils.*;
 import ispd.policy.managers.*;
 import ispd.utils.*;
@@ -52,9 +51,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final CloudSchedulingPolicyManager cloudSchedulingPolicyManager =
         new CloudSchedulingPolicyManager();
-
-    private final GenericPolicyManagementWindow jFrameCloudManager =
-        new CloudSchedulingPolicyManagementWindow(this.cloudSchedulingPolicyManager);
 
     private final SimplePanel jPanelSimple = new SimplePanel();
 
