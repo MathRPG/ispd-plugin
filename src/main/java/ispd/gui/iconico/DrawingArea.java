@@ -334,16 +334,14 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                     this.adicionarAresta(this.edgeOrigin, (Vertex) destinoAresta);
                     this.edgeOrigin = null;
                 } else {
-                    JOptionPane.showMessageDialog(
-                        null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
+                    this.showWarning();
                 }
             } else {
                 final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
                 if (icon instanceof Vertex) {
                     this.edgeOrigin = (Vertex) icon;
                 } else {
-                    JOptionPane.showMessageDialog(
-                        null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
+                    this.showWarning();
                 }
             }
         } else if (!this.selectedIcons.isEmpty()) {
@@ -366,6 +364,11 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                 mouseEvent.getY()
             );
         }
+    }
+
+    private void showWarning () {
+        JOptionPane.showMessageDialog(
+            null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
     }
 
     private void showActionIcon (final MouseEvent me, final Icon icon) {
