@@ -143,7 +143,7 @@ public final class MainWindow extends JFrame implements KeyListener {
             true
         );
 
-    private JPanelConfigIcon jPanelSettings;
+    private final JPanelConfigIcon jPanelSettings = new JPanelConfigIcon();
 
     /**
      * define se o modelo é GRID, IAAS ou PAAS;
@@ -295,8 +295,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void initPanels () {
-        this.jPanelSettings = new JPanelConfigIcon();
-
         this.jPanelSimple.setText(getText("No icon selected."));
 
         this.jScrollPaneSideBar.setBorder(BorderFactory.createTitledBorder("Settings"));
