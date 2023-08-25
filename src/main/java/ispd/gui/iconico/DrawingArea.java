@@ -366,14 +366,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                 }
             }
         } else if (this.addVertex) {
-            if (false) {
-                this.adicionarVertice(
-                    this.getPosFixaX(mouseEvent.getX()),
-                    this.getPosFixaY(mouseEvent.getY())
-                );
-            } else {
-                this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
-            }
+            this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
         } else if (this.isPopupOn) {
             if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                 this.generalPopup.show(
@@ -927,16 +920,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     @Override
     public void mouseReleased (final MouseEvent me) {
         //Arruma ícone na tela
-        if (false) {
-            for (final var icon : this.selectedIcons) {
-                if (icon instanceof Vertex) {
-                    ((Vertex) icon).setPosition(
-                        this.getPosFixaX(icon.getX()),
-                        this.getPosFixaY(icon.getY())
-                    );
-                }
-            }
-        }
 
         if (!this.isRectOn) {
             this.repaint();
@@ -1138,14 +1121,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
      */
     private void updateUnitTo (final RulerUnit newUnit) {
         this.unit = newUnit;
-
-        if (true) {
-            return;
-        }
-
-        for (final var v : this.vertices) {
-            v.setPosition(this.getPosFixaX(v.getX()), this.getPosFixaY(v.getY()));
-        }
     }
 
     private void onUnitButtonClicked (final ActionEvent evt) {
@@ -1336,17 +1311,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     private void drawPoints (final Graphics g) {
-        if (true) {
-            return;
-        }
-
-        g.setColor(Color.GRAY);
-        final var increment = this.unit.getIncrement();
-        for (int i = increment; i <= this.getWidth(); i += increment) {
-            for (int j = increment; j <= this.getHeight(); j += increment) {
-                g.fillRect(i - 1, j - 1, 3, 3);
-            }
-        }
     }
 
     private void drawRect (final Graphics g) {
