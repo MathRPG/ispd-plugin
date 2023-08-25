@@ -1,7 +1,6 @@
 package ispd.policy.managers;
 
 import ispd.policy.*;
-import ispd.policy.managers.util.*;
 import ispd.utils.constants.*;
 import java.io.*;
 import java.util.*;
@@ -53,24 +52,6 @@ public abstract class FilePolicyManager implements PolicyManager {
     }
 
     private void initialize () {
-        if (this.directory().exists()) {
-            this.loadPoliciesFromFoundDotClassFiles();
-            return;
-        }
-
-        try {
-            createDirectory(this.directory());
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        if (this.isExecutingFromJar()) {
-            try {
-                new JarExtractor(this.packageName()).extractDirsFromJar();
-            } catch (final IOException e) {
-                severeLog(e);
-            }
-        }
     }
 
     private void loadPoliciesFromFoundDotClassFiles () {
