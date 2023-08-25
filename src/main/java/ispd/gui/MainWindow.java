@@ -949,7 +949,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         throws ParserConfigurationException, IOException, SAXException {
         final var doc = ManipuladorXML.readModelFromFile(file);
         this.startNewDrawing(doc);
-        this.modelType       = this.drawingArea.getModelType();
+        this.modelType = this.drawingArea.getModelType();
         this.virtualMachines = this.drawingArea.getVirtualMachines();
         this.updateVmConfigButtonVisibility();
     }
