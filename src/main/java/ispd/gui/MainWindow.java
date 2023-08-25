@@ -2,9 +2,6 @@ package ispd.gui;
 
 import static ispd.gui.TextSupplier.*;
 
-import ispd.arquivo.exportador.*;
-import ispd.arquivo.interpretador.gridsim.*;
-import ispd.arquivo.interpretador.simgrid.*;
 import ispd.arquivo.xml.*;
 import ispd.gui.auxiliar.*;
 import ispd.gui.configuracao.*;
@@ -28,10 +25,6 @@ import org.w3c.dom.*;
 import org.xml.sax.*;
 
 public final class MainWindow extends JFrame implements KeyListener {
-
-    private static final int LOADING_SCREEN_WIDTH = 200;
-
-    private static final int LOADING_SCREEN_HEIGHT = 100;
 
     private static final String[] ISPD_FILE_EXTENSIONS = { FileExtensions.ICONIC_MODEL };
 
@@ -108,8 +101,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenu jMenuTools = new JMenu();
 
-    private final JMenu jMenuImport = new JMenu();
-
     private final JMenuItem jMenuItemOpen = new JMenuItem();
 
     private final JMenuItem jMenuItemHelp = new JMenuItem();
@@ -138,15 +129,9 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenuItem jMenuItemSaveAs = new JMenuItem();
 
-    private final JMenuItem jMenuItemSimGrid = new JMenuItem();
-
     private final JMenuItem jMenuItemAbout = new JMenuItem();
 
-    private final JMenuItem jMenuItemToGridSim = new JMenuItem();
-
     private final JMenuItem jMenuItemToJPG = new JMenuItem();
-
-    private final JMenuItem jMenuItemToSimGrid = new JMenuItem();
 
     private final JMenuItem jMenuItemToTxt = new JMenuItem();
 
@@ -155,8 +140,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     private final JScrollPane jScrollPaneProperties = new JScrollPane();
 
     private final JMenuItem jMenuItemOpenResult = new JMenuItem();
-
-    private final JMenuItem jMenuItemGridSim = new JMenuItem();
 
     private final JMenuItem jMenuItemPreferences = new JMenuItem();
 
@@ -243,8 +226,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemClose,
         this.jMenuItemToJPG,
         this.jMenuItemToTxt,
-        this.jMenuItemToSimGrid,
-        this.jMenuItemToGridSim,
         this.jMenuItemCompare,
         this.jMenuItemSort,
         this.jMenuItemCopy,
@@ -530,27 +511,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemOpenResult.setText("Open Results");
         this.jMenuItemOpenResult.addActionListener(this::jMenuItemOpenResultActionPerformed);
         this.jMenuFile.add(this.jMenuItemOpenResult);
-        this.jMenuImport.setIcon(getImage("/ispd/gui/imagens" + "/document-import.png"));
-        this.jMenuImport.setText(getText("Import"));
-        this.jMenuItemSimGrid.setText(getText("SimGrid model"));
-        this.jMenuItemSimGrid.setToolTipText(
-            getText("Open model from "
-                    + "the "
-                    + "specification "
-                    + "files of "
-                    + "Simgrid"));
-        this.jMenuItemSimGrid.addActionListener(this::jMenuItemSimGridActionPerformed);
-        this.jMenuImport.add(this.jMenuItemSimGrid);
-        this.jMenuItemGridSim.setText(getText("GridSim model"));
-        this.jMenuItemGridSim.setToolTipText(
-            getText("Open model from "
-                    + "the "
-                    + "specification "
-                    + "files of "
-                    + "GridSim"));
-        this.jMenuItemGridSim.addActionListener(this::jMenuItemGridSimActionPerformed);
-        this.jMenuImport.add(this.jMenuItemGridSim);
-        this.jMenuFile.add(this.jMenuImport);
         this.jMenuExport.setIcon(getImage("/ispd/gui/imagens/document-export.png"));
         this.jMenuExport.setText(getText("Export"));
         this.jMenuItemToJPG.setAccelerator(KeyStroke.getKeyStroke(
@@ -573,14 +533,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jMenuItemToTxt.setEnabled(false);
         this.jMenuItemToTxt.addActionListener(this::jMenuItemToTxtActionPerformed);
         this.jMenuExport.add(this.jMenuItemToTxt);
-        this.jMenuItemToSimGrid.setText("to SimGrid");
-        this.jMenuItemToSimGrid.setEnabled(false);
-        this.jMenuItemToSimGrid.addActionListener(this::jMenuItemToSimGridActionPerformed);
-        this.jMenuExport.add(this.jMenuItemToSimGrid);
-        this.jMenuItemToGridSim.setText("to GridSim");
-        this.jMenuItemToGridSim.setEnabled(false);
-        this.jMenuItemToGridSim.addActionListener(this::jMenuItemToGridSimActionPerformed);
-        this.jMenuExport.add(this.jMenuItemToGridSim);
         this.jMenuFile.add(this.jMenuExport);
         this.jMenuFile.add(new JPopupMenu.Separator());
         this.jMenuItemClose.setAccelerator(KeyStroke.getKeyStroke(
@@ -1054,77 +1006,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.refreshEdits();
     }
 
-    private void jMenuItemSimGridActionPerformed (final ActionEvent evt) {
-        this.configureFileFilterAndChooser("XML File", new String[] { ".xml" }, true);
-
-        JOptionPane.showMessageDialog(
-            null,
-            getText("Select the application file."),
-            getText("WARNING"),
-            JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (this.jFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final var appFile = this.jFileChooser.getSelectedFile();
-
-        JOptionPane.showMessageDialog(null, getText("Select the platform file."),
-                                      getText("WARNING"),
-                                      JOptionPane.PLAIN_MESSAGE
-        );
-
-        if (this.jFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final var platformFile = this.jFileChooser.getSelectedFile();
-
-        this.interpretAndOpenModel(appFile, platformFile);
-    }
-
-    private void interpretAndOpenModel (final File appFile, final File platFile) {
-        final var interpreter = new InterpretadorSimGrid();
-        interpreter.interpreta(appFile, platFile);
-
-        try {
-            final var model = interpreter.getModelo();
-
-            if (model == null) {
-                JOptionPane.showMessageDialog(
-                    null,
-                    String.format("%s\n", getText("File not found.")),
-                    getText("WARNING"),
-                    JOptionPane.PLAIN_MESSAGE
-                );
-                return;
-            }
-
-            this.openModel(model);
-        } catch (final HeadlessException e) {
-            final var message =
-                String.format(
-                    "%s\n%s",
-                    getText("Error opening file."),
-                    e.getMessage()
-                );
-            JOptionPane.showMessageDialog(
-                null,
-                message,
-                getText("WARNING"),
-                JOptionPane.PLAIN_MESSAGE
-            );
-        }
-    }
-
-    private void openModel (final Document model) {
-        this.startNewDrawing(model);
-        this.drawingArea.iconArrange();
-        this.updateGuiWithOpenFile("model opened", null);
-        this.modificar();
-    }
-
     private void configureFileFilterAndChooser (
         final String description, final String[] extensions, final boolean shouldAcceptAllFiles
     ) {
@@ -1417,69 +1298,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void jMenuFileActionPerformed (final ActionEvent evt) {
     }
 
-    private void jMenuItemGridSimActionPerformed (final ActionEvent evt) {
-        this.configureFileFilterAndChooser(
-            "Java Source Files (. java)",
-            new String[] { FileExtensions.JAVA_SOURCE },
-            true
-        );
-
-        final int returnVal = this.jFileChooser.showOpenDialog(this);
-        if (returnVal != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final var loadingScreen = this.LoadingScreen();
-
-        new Thread(() -> this.showSubWindow(loadingScreen)).start();
-
-        try {
-            this.interpretFileAndUpdateDrawing();
-        } catch (final Exception e) {
-            JOptionPane.showMessageDialog(
-                null,
-                getText("Error opening file.") + "\n" + e.getMessage(),
-                getText("WARNING"),
-                JOptionPane.PLAIN_MESSAGE
-            );
-        }
-
-        loadingScreen.dispose();
-    }
-
-    private JDialog LoadingScreen () {
-        final var window = new JDialog(this, "Carregando");
-        window.setSize(LOADING_SCREEN_WIDTH, LOADING_SCREEN_HEIGHT);
-        window.add(new JLabel("Carregando..."), BorderLayout.CENTER);
-        final var progressBar = new JProgressBar();
-        progressBar.setIndeterminate(true);
-        window.add(progressBar, BorderLayout.SOUTH);
-        return window;
-    }
-
-    private void interpretFileAndUpdateDrawing () {
-        final var file        = this.jFileChooser.getSelectedFile();
-        final var interpreter = new InterpretadorGridSim();
-
-        if (!file.exists()) {
-            final var message = String.format("%s\n", getText("File not found."));
-            JOptionPane.showMessageDialog(
-                null,
-                message,
-                getText("WARNING"),
-                JOptionPane.PLAIN_MESSAGE
-            );
-            return;
-        }
-
-        interpreter.interpreta(file);
-
-        this.drawingArea = new DesenhoGrade();
-        this.drawingArea.setGrid(interpreter.getDescricao());
-        this.updateGuiWithOpenFile("model opened", null);
-        this.modificar();
-    }
-
     private void jMenuItemSortActionPerformed (final ActionEvent evt) {
         if (this.drawingArea == null) {
             return;
@@ -1493,37 +1311,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         }
 
         this.drawingArea.repaint();
-    }
-
-    private void jMenuItemToSimGridActionPerformed (final ActionEvent evt) {
-        this.exportToFileType("XML File", ".xml");
-    }
-
-    private void exportToFileType (final String description, final String extension) {
-        this.configureFileFilterAndChooser(description, new String[] { extension }, false);
-
-        if (this.jFileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
-
-        final var file = this.getFileWithExtension(extension);
-
-        try {
-            new Exportador(this.drawingArea.getGrade()).toGridSim(file);
-            JOptionPane.showMessageDialog(
-                this,
-                getText("model saved"),
-                "Done",
-                JOptionPane.INFORMATION_MESSAGE
-            );
-        } catch (final IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(
-                this,
-                ex.getMessage(),
-                getText("WARNING"),
-                JOptionPane.ERROR_MESSAGE
-            );
-        }
     }
 
     private void jMenuItemOpenResultActionPerformed (final ActionEvent evt) {
@@ -1560,10 +1347,6 @@ public final class MainWindow extends JFrame implements KeyListener {
                 JOptionPane.PLAIN_MESSAGE
             );
         }
-    }
-
-    private void jMenuItemToGridSimActionPerformed (final ActionEvent evt) {
-        this.exportToFileType("Java Source Files (. java)", FileExtensions.JAVA_SOURCE);
     }
 
     private File getFileWithExtension (final String ext) {
