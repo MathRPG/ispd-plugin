@@ -1423,7 +1423,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         }
 
         private static boolean isIspdFileExtension (final String ext) {
-            return "ims".equals(ext) || FileExtensions.ICONIC_MODEL.equals(ext);
+            return FileExtensions.ICONIC_MODEL.equals(ext);
         }
 
         @Override
