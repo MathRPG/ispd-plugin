@@ -309,11 +309,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private void initMenuHelp () {
         this.jMenuHelp.setText(getText("Help"));
-        this.jMenuItemHelp.setIcon(getImage("/ispd/gui/imagens" + "/help-faq.png"));
-        this.jMenuItemHelp.setText(getText("Help"));
-        this.jMenuItemHelp.setToolTipText(getText("Help"));
-        this.jMenuItemHelp.addActionListener(this::jMenuItemHelpActionPerformed);
-        this.jMenuHelp.add(this.jMenuItemHelp);
         this.jMenuHelp.add(new JPopupMenu.Separator());
         this.jMenuItemAbout.setIcon(getImage("/ispd/gui/imagens" + "/help-about.png"));
         final var aboutProgramText =
