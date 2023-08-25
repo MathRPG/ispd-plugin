@@ -173,7 +173,7 @@ public class Ruler extends JComponent {
      * @param preferredHeight
      *     the preferred height
      */
-    protected void setPreferredHeight (final int preferredHeight) {
+    public void setPreferredHeight (final int preferredHeight) {
         this.setPreferredSize(new Dimension(SIZE, preferredHeight));
     }
 
@@ -183,7 +183,7 @@ public class Ruler extends JComponent {
      * @param preferredWidth
      *     the preferred width
      */
-    protected void setPreferredWidth (final int preferredWidth) {
+    public void setPreferredWidth (final int preferredWidth) {
         this.setPreferredSize(new Dimension(preferredWidth, SIZE));
     }
 }
