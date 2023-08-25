@@ -134,6 +134,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     private DrawingArea (final int w, final int h) {
+        super();
         this.initRuler();
         this.initGeneralPopup();
         this.initIconPopup();
