@@ -99,8 +99,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JMenu jMenuExport = new JMenu();
 
-    private final JMenu jMenuTools = new JMenu();
-
     private final JMenuItem jMenuItemOpen = new JMenuItem();
 
     private final JMenuItem jMenuItemHelp = new JMenuItem();
