@@ -1324,10 +1324,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.drawingArea.repaint();
     }
 
-    private void jMenuItemToSimGridActionPerformed (final ActionEvent evt) {
-        this.exportToFileType("XML File", ".xml");
-    }
-
     private void exportToFileType (final String description, final String extension) {
         this.configureFileFilterAndChooser(description, new String[] { extension }, false);
 
