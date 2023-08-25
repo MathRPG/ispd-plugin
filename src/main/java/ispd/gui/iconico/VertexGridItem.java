@@ -84,7 +84,7 @@ public abstract class VertexGridItem extends Vertex implements GridItem {
     @Override
     public void draw (final Graphics g) {
         final var configuredStatusImage =
-            this.configured ? GridDrawing.GREEN_ICON : GridDrawing.RED_ICON;
+            this.configured ? DrawingArea.GREEN_ICON : DrawingArea.RED_ICON;
 
         g.drawImage(this.getImage(), this.getX() - 15, this.getY() - 15, null);
         g.drawImage(configuredStatusImage, this.getX() + 15, this.getY() + 15, null);

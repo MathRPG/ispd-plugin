@@ -89,7 +89,7 @@ public class Internet extends VertexGridItem {
      */
     @Override
     public Image getImage () {
-        return GridDrawing.INTERNET_ICON;
+        return DrawingArea.INTERNET_ICON;
     }
 
     /**

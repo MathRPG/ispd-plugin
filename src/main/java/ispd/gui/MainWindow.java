@@ -148,7 +148,7 @@ public final class MainWindow extends JFrame {
 
     private File openFile = null;
 
-    private GridDrawing drawingArea = null;
+    private DrawingArea drawingArea = null;
 
     private final AbstractButton jButtonTasks = ButtonBuilder
         .aButton(getImage("/ispd/gui/imagens/botao_tarefas.gif"), this::jButtonTaskActionPerformed)
@@ -791,7 +791,7 @@ public final class MainWindow extends JFrame {
         final var classPickWindow = new PickModelTypeDialog(this, true);
         this.showSubWindow(classPickWindow);
 
-        this.drawingArea = new GridDrawing();
+        this.drawingArea = new DrawingArea();
         this.updateGuiWithOpenFile("New model opened", null);
         this.modificar();
         this.onModelTypeChange(classPickWindow);
@@ -878,7 +878,7 @@ public final class MainWindow extends JFrame {
     }
 
     private void startNewDrawing (final Document doc) {
-        this.drawingArea = new GridDrawing();
+        this.drawingArea = new DrawingArea();
         this.drawingArea.setGrid(doc);
     }
 

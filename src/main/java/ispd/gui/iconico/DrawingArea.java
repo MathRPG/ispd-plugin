@@ -17,7 +17,7 @@ import java.util.stream.*;
 import javax.swing.*;
 import org.w3c.dom.*;
 
-public class GridDrawing extends JPanel implements MouseListener, MouseMotionListener {
+public class DrawingArea extends JPanel implements MouseListener, MouseMotionListener {
 
     public static final Image MACHINE_ICON = getImage("imagens/botao_no.gif");
 
@@ -135,11 +135,11 @@ public class GridDrawing extends JPanel implements MouseListener, MouseMotionLis
 
     private String errorTitle = null;
 
-    public GridDrawing () {
+    public DrawingArea () {
         this(INITIAL_SIZE, INITIAL_SIZE);
     }
 
-    private GridDrawing (final int w, final int h) {
+    private DrawingArea (final int w, final int h) {
         this.isPopupOn       = true;
         this.isGridOn        = true;
         this.isRectOn        = true;

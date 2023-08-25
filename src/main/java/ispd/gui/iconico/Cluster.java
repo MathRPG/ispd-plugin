@@ -177,7 +177,7 @@ public class Cluster extends VertexGridItem {
      */
     @Override
     public Image getImage () {
-        return GridDrawing.CLUSTER_ICON;
+        return DrawingArea.CLUSTER_ICON;
     }
 
     /**
