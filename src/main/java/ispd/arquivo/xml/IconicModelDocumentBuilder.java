@@ -227,13 +227,11 @@ public class IconicModelDocumentBuilder {
     }
 
     public void addLink (final Link l) {
-        final var id = l.getId();
-
-        final var source      = l.getSource();
-        final var destination = l.getDestination();
-
-        final int origination  = ((GridItem) source).getId().getGlobalId();
-        final int destination1 = ((GridItem) destination).getId().getGlobalId();
+        final var id            = l.getId();
+        final var origination   = l.getSource();
+        final var destination   = l.getDestination();
+        final int originationId = ((GridItem) origination).getId().getGlobalId();
+        final int destinationId = ((GridItem) destination).getId().getGlobalId();
 
         this.system.appendChild(this.anElement(
             "link", new Object[][] {
@@ -242,8 +240,12 @@ public class IconicModelDocumentBuilder {
                 { "load", l.getLoadFactor() },
                 { "latency", l.getLatency() },
             }, new Element[] {
-                this.anElement("connect", "origination", origination, "destination", destination1),
-                this.aPositionElement(source.getX(), source.getY()),
+                this.anElement(
+                    "connect",
+                    "origination", originationId,
+                    "destination", destinationId
+                ),
+                this.aPositionElement(origination.getX(), origination.getY()),
                 this.aPositionElement(destination.getX(), destination.getY()),
                 this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
             }
