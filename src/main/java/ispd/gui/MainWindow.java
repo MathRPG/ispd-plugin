@@ -1337,9 +1337,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.drawingArea.setVirtualMachines(vmConfigWindow.getMaqVirtuais());
     }
 
-    private void jMenuToolsActionPerformed (final ActionEvent evt) {
-    }
-
     public JPanelConfigIcon getjPanelConfiguracao () {
         return this.jPanelSettings;
     }
