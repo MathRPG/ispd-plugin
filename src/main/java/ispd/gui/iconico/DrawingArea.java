@@ -41,11 +41,11 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private static final RulerUnit DEFAULT_UNIT = RulerUnit.CENTIMETERS;
 
-    private final Set<Icon> selectedIcons = new HashSet<>();
+    private final Collection<Icon> selectedIcons = new HashSet<>();
 
     private final Set<Vertex> vertices = new HashSet<>();
 
-    private final Set<Edge> edges = new HashSet<>();
+    private final Collection<Edge> edges = new HashSet<>();
 
     private final Cursor crossHairCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
