@@ -350,9 +350,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
             if (icon != null) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
-                    if (true) {
-                        this.showPopupIcon(mouseEvent, icon);
-                    }
+                    this.showPopupIcon(mouseEvent, icon);
                 } else if (mouseEvent.getClickCount() == 2) {
                     this.showActionIcon(mouseEvent, icon);
                 } else if (mouseEvent.getClickCount() == 1) {
@@ -361,7 +359,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             }
         } else if (this.addVertex) {
             this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
-        } else if (true) {
+        } else {
             if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                 this.generalPopup.show(
                     mouseEvent.getComponent(),
