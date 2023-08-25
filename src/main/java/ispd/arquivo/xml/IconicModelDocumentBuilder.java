@@ -110,30 +110,22 @@ public class IconicModelDocumentBuilder {
     }
 
     private void addPerNodeLoad (final PerNodeWorkloadGenerator no) {
-        final String  application = no.getApplication();
-        final String  owner       = no.getOwner();
-        final String  masterId    = no.getSchedulerId();
-        final Integer taskCount   = no.getTaskCount();
-        final Double  maxComp     = no.getComputationMaximum();
-        final Double  minComp     = no.getComputationMinimum();
-        final Double  maxComm     = no.getCommunicationMaximum();
-        final Double  minComm     = no.getCommunicationMinimum();
         this.addElementToLoad(this.anElement(
             "node", new Object[][] {
-                { "application", application },
-                { "owner", owner },
-                { "id_master", masterId },
-                { "tasks", taskCount },
+                { "application", no.getApplication() },
+                { "owner", no.getOwner() },
+                { "id_master", no.getSchedulerId() },
+                { "tasks", no.getTaskCount() },
             }, new Element[] {
                 this.anElement("size", new Object[][] {
                     { "type", "computing" },
-                    { "maximum", maxComp },
-                    { "minimum", minComp },
+                    { "maximum", no.getComputationMaximum() },
+                    { "minimum", no.getComputationMinimum() },
                 }),
                 this.anElement("size", new Object[][] {
                     { "type", "communication" },
-                    { "maximum", maxComm },
-                    { "minimum", minComm },
+                    { "maximum", no.getCommunicationMaximum() },
+                    { "minimum", no.getCommunicationMinimum() },
                 }),
             }
         ));
