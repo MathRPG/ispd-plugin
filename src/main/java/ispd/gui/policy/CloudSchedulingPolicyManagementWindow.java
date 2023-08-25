@@ -1,11 +1,11 @@
 package ispd.gui.policy;
 
-import ispd.policy.managers.CloudSchedulingPolicyManager;
+import ispd.policy.managers.*;
 
 public class CloudSchedulingPolicyManagementWindow extends GenericPolicyManagementWindow {
 
-    public CloudSchedulingPolicyManagementWindow () {
-        super(new CloudSchedulingPolicyManager());
+    public CloudSchedulingPolicyManagementWindow (final CloudSchedulingPolicyManager manager) {
+        super(manager);
     }
 
     @Override
