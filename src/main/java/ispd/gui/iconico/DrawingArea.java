@@ -945,8 +945,8 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     @Override
-    public void mouseDragged (final MouseEvent me) {
-        this.updateIcons(me.getX(), me.getY());
+    public void mouseDragged (final MouseEvent mouseEvent) {
+        this.updateIcons(mouseEvent.getX(), mouseEvent.getY());
         this.repaint();
     }
 
