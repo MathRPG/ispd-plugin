@@ -53,8 +53,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private final boolean isPopupOn;
 
-    private final boolean isRectOn;
-
     private JPopupMenu generalPopup;
 
     private ModelType modelType = ModelType.GRID;
@@ -140,7 +138,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     private DrawingArea (final int w, final int h) {
         this.isPopupOn       = true;
         this.isGridOn        = true;
-        this.isRectOn        = true;
         this.initRuler();
         this.initGeneralPopup();
         this.initIconPopup();
@@ -436,7 +433,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             }
         }
         //Indica ponto inicial do retangulo
-        if (this.isRectOn && this.selectedIcons.isEmpty()) {
+        if (this.selectedIcons.isEmpty()) {
             this.shouldDrawRect  = true;
             this.rectangleX      = me.getX();
             this.rectangleY      = me.getY();
@@ -919,13 +916,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     @Override
     public void mouseReleased (final MouseEvent mouseEvent) {
-        //Arruma ícone na tela
-
-        if (!this.isRectOn) {
-            this.repaint();
-            return;
-        }
-
         //Ajusta posição do retangulo
         if (this.rectangleWidth < 0) {
             this.rectangleX += this.rectangleWidth;
@@ -1238,7 +1228,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             return;
         }
 
-        if (!this.shouldDrawRect || !this.isRectOn) {
+        if (!this.shouldDrawRect) {
             return;
         }
 
@@ -1314,7 +1304,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     private void drawRect (final Graphics g) {
-        if (!this.isRectOn || !this.shouldDrawRect) {
+        if (!this.shouldDrawRect) {
             return;
         }
 
