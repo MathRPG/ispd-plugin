@@ -1349,10 +1349,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.drawingArea.setVirtualMachines(vmConfigWindow.getMaqVirtuais());
     }
 
-    private void jMenuItemManageCloudActionPerformed (final ActionEvent evt) {
-        this.showSubWindow(this.jFrameCloudManager);
-    }
-
     private void jMenuItemManageAllocationActionPerformed (final ActionEvent evt) {
         this.showSubWindow(this.jFrameAllocManager);
     }
