@@ -1166,31 +1166,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, new Corner());
     }
 
-    private void jMenuItemGenerateActionPerformed (final ActionEvent evt) {
-        if (this.modelType == PickModelTypeDialog.GRID) {
-            this.generatePolicy(this.jFrameManager);
-            return;
-        }
-
-        if (this.modelType == PickModelTypeDialog.IAAS) {
-            this.generatePolicy(this.jFrameCloudManager);
-            this.generatePolicy(this.jFrameAllocManager);
-        }
-    }
-
-    private void generatePolicy (final GenericPolicyManagementWindow window) {
-        final var manager = window.getManager();
-        final var path    = manager.directory().getAbsolutePath();
-
-        final var policyGenerator =
-            new PolicyGeneratorWindow(this, true, path, manager);
-
-        this.showSubWindow(policyGenerator);
-
-        Optional.ofNullable(policyGenerator.getParse())
-            .ifPresent(i -> window.updatePolicyList());
-    }
-
     private void jMenuItemHelpActionPerformed (final ActionEvent evt) {
         this.showSubWindow(new HelpWindow());
     }
