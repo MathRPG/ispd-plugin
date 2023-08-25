@@ -23,7 +23,7 @@ import javax.xml.parsers.*;
 import org.w3c.dom.*;
 import org.xml.sax.*;
 
-public final class MainWindow extends JFrame implements KeyListener {
+public final class MainWindow extends JFrame {
 
     private static final String ISPD_LOGO_FILE_PATH = "imagens/Logo_iSPD_25.png";
 
@@ -139,6 +139,8 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private final JPanelConfigIcon jPanelSettings = new JPanelConfigIcon();
 
+    private final KeyHandler keyHandler = new KeyHandler();
+
     private ModelType modelType = ModelType.GRID;
 
     private boolean currentFileHasUnsavedChanges = false;
@@ -212,6 +214,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.addKeyListeners();
         this.buildLayoutAndPack();
         this.setLocationRelativeTo(null);
+        this.addKeyListener(this.keyHandler);
     }
 
     private static URL getResourceOrThrow (final String resourcePath) {
@@ -239,21 +242,6 @@ public final class MainWindow extends JFrame implements KeyListener {
 
     private static void jButtonInjectFaultsActionPerformed (final ActionEvent evt) {
         new PickSimulationFaultsDialog().setVisible(true);
-    }
-
-    @Override
-    public void keyTyped (final KeyEvent keyEvent) {
-    }
-
-    @Override
-    public void keyPressed (final KeyEvent keyEvent) {
-        if (this.drawingArea != null) {
-            this.drawingArea.processKeyEvent(keyEvent);
-        }
-    }
-
-    @Override
-    public void keyReleased (final KeyEvent keyEvent) {
     }
 
     private void initComponents () {
@@ -632,7 +620,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         };
 
         for (final var component : components) {
-            component.addKeyListener(this);
+            component.addKeyListener(this.keyHandler);
         }
     }
 
@@ -879,7 +867,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void updateGuiWithOpenFile (final String message, final File file) {
-        this.drawingArea.addKeyListener(this);
+        this.drawingArea.addKeyListener(this.keyHandler);
         this.drawingArea.setMainWindow(this);
         this.jScrollPaneSideBar.setViewportView(null);
         this.jPanelProperties.setText("");
@@ -1395,6 +1383,24 @@ public final class MainWindow extends JFrame implements KeyListener {
         @Override
         public Icon getIcon (final File f) {
             return getIconForFileExtension(f);
+        }
+    }
+
+    public class KeyHandler implements KeyListener, Serializable {
+
+        @Override
+        public void keyTyped (final KeyEvent keyEvent) {
+        }
+
+        @Override
+        public void keyPressed (final KeyEvent keyEvent) {
+            if (MainWindow.this.drawingArea != null) {
+                MainWindow.this.drawingArea.processKeyEvent(keyEvent);
+            }
+        }
+
+        @Override
+        public void keyReleased (final KeyEvent keyEvent) {
         }
     }
 
