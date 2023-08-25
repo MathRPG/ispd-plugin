@@ -55,9 +55,9 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private ModelType modelType = ModelType.GRID;
 
-    private HashSet<String> users;
+    private HashSet<String> users = new HashSet<>();
 
-    private HashMap<String, Double> profiles;
+    private HashMap<String, Double> profiles = new HashMap<>();
 
     private WorkloadGenerator loadConfiguration = null;
 
@@ -95,7 +95,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private JMenuItem jMenuPanel;
 
-    private boolean isGridOn;
+    private boolean isGridOn = true;
 
     private RulerUnit unit = null;
 
@@ -134,7 +134,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     }
 
     private DrawingArea (final int w, final int h) {
-        this.isGridOn = true;
         this.initRuler();
         this.initGeneralPopup();
         this.initIconPopup();
@@ -142,10 +141,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
         this.addMouseMotionListener(this);
         this.setSize(w, h);
 
-        this.users = new HashSet<>(0);
         this.users.add("user1");
-
-        this.profiles = new HashMap<>(0);
         this.profiles.put("user1", FULL_CAPACITY);
     }
 
