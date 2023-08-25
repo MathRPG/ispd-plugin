@@ -17,8 +17,7 @@ public interface PolicyManager {
         "Volume"
     );
 
-    List<String> NATIVE_CLOUD_POLICIES =
-        List.of(NO_POLICY, "RoundRobin");
+    List<String> NATIVE_CLOUD_POLICIES = List.of(NO_POLICY, "RoundRobin");
 
     /**
      * Scheduling policies available by default
