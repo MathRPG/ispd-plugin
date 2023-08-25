@@ -1409,7 +1409,7 @@ public final class MainWindow extends JFrame implements KeyListener {
         private static ImageIcon getIconForFileExtension (final File file) {
             final var ext = FileUtils.fileExtensionOf(file);
 
-            if (ext.isEmpty() || !isIspdFileExtension(ext)) {
+            if (ext.isEmpty() || !FileExtensions.ICONIC_MODEL.equals(ext)) {
                 return null;
             }
 
@@ -1420,10 +1420,6 @@ public final class MainWindow extends JFrame implements KeyListener {
             }
 
             return new ImageIcon(imgURL);
-        }
-
-        private static boolean isIspdFileExtension (final String ext) {
-            return FileExtensions.ICONIC_MODEL.equals(ext);
         }
 
         @Override
