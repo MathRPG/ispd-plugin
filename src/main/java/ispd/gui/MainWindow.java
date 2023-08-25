@@ -1386,7 +1386,7 @@ public final class MainWindow extends JFrame {
         }
     }
 
-    public class KeyHandler extends KeyAdapter {
+    private class KeyHandler extends KeyAdapter {
 
         @Override
         public void keyPressed (final KeyEvent e) {
