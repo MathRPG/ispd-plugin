@@ -1,11 +1,11 @@
 package ispd.gui.policy;
 
-import ispd.policy.managers.VmAllocationPolicyManager;
+import ispd.policy.managers.*;
 
 public class VmAllocationPolicyManagementWindow extends GenericPolicyManagementWindow {
 
-    public VmAllocationPolicyManagementWindow () {
-        super(new VmAllocationPolicyManager());
+    public VmAllocationPolicyManagementWindow (final VmAllocationPolicyManager manager) {
+        super(manager);
     }
 
     @Override
