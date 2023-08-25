@@ -518,10 +518,9 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             getText("Turn Over"),
             getText("Paste")
         );
-        this.setErrorText(
-            getText("You must click an icon."),
-            getText("WARNING")
-        );
+
+        this.errorMessage = getText("You must click an icon.");
+        this.errorTitle   = getText("WARNING");
     }
 
     public HashSet<VirtualMachine> getVirtualMachines () {
@@ -1258,11 +1257,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
     public void setGridOn (final boolean gridOn) {
         this.isGridOn = gridOn;
         this.repaint();
-    }
-
-    private void setErrorText (final String message, final String title) {
-        this.errorMessage = message;
-        this.errorTitle   = title;
     }
 
     private void setPopupButtonText (
