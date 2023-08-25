@@ -678,7 +678,9 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void iconButtonOnClick (
-        final AbstractButton clickedButton, final int drawingIndex, final String notificationText
+        final AbstractButton clickedButton,
+        final IconType drawingIndex,
+        final String notificationText
     ) {
         this.deselectOtherButtons(clickedButton);
         this.updateDrawingAreaButton(clickedButton, drawingIndex, notificationText);
@@ -773,7 +775,9 @@ public final class MainWindow extends JFrame implements KeyListener {
     }
 
     private void updateDrawingAreaButton (
-        final AbstractButton clickedButton, final int drawingIndex, final String notificationText
+        final AbstractButton clickedButton,
+        final IconType drawingIndex,
+        final String notificationText
     ) {
         if (!clickedButton.isSelected()) {
             this.drawingArea.setIconeSelecionado(null);

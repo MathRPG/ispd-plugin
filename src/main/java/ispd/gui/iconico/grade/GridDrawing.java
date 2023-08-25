@@ -21,13 +21,13 @@ import org.w3c.dom.*;
 
 public class GridDrawing extends DrawingArea {
 
-    public static final int MACHINE = 1;
+    public static final IconType MACHINE = IconType.MACHINE;
 
-    public static final int NETWORK = 2;
+    public static final IconType NETWORK = IconType.NETWORK;
 
-    public static final int CLUSTER = 3;
+    public static final IconType CLUSTER = IconType.CLUSTER;
 
-    public static final int INTERNET = 4;
+    public static final IconType INTERNET = IconType.INTERNET;
 
     public static final Image MACHINE_ICON = getImage("imagens/botao_no.gif");
 
@@ -75,7 +75,7 @@ public class GridDrawing extends DrawingArea {
 
     private Vertex copiedIcon = null;
 
-    private int vertexType = -1;
+    private IconType vertexType = IconType.NONE;
 
     private HashSet<VirtualMachine> virtualMachines = null;
 
@@ -759,7 +759,7 @@ public class GridDrawing extends DrawingArea {
         return machines;
     }
 
-    public void setIconeSelecionado (final Integer object) {
+    public void setIconeSelecionado (final IconType object) {
         if (object == null) {
             this.setIsDrawingEdge(false);
             this.setAddVertice(false);
