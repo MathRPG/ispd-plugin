@@ -8,6 +8,7 @@ import ispd.gui.configuracao.*;
 import ispd.gui.iconico.grade.*;
 import ispd.gui.policy.*;
 import ispd.gui.utils.*;
+import ispd.policy.managers.*;
 import ispd.utils.*;
 import ispd.utils.constants.*;
 import java.awt.*;
@@ -44,7 +45,7 @@ public final class MainWindow extends JFrame implements KeyListener {
     private final JFileChooser jFileChooser = new JFileChooser();
 
     private final GenericPolicyManagementWindow jFrameManager =
-        new GridSchedulingPolicyManagementWindow();
+        new GridSchedulingPolicyManagementWindow(new GridSchedulingPolicyManager());
 
     private final GenericPolicyManagementWindow jFrameAllocManager =
         new VmAllocationPolicyManagementWindow();

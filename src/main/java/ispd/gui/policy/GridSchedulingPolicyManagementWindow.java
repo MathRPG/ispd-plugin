@@ -1,11 +1,11 @@
 package ispd.gui.policy;
 
-import ispd.policy.managers.GridSchedulingPolicyManager;
+import ispd.policy.managers.*;
 
 public class GridSchedulingPolicyManagementWindow extends GenericPolicyManagementWindow {
 
-    public GridSchedulingPolicyManagementWindow () {
-        super(new GridSchedulingPolicyManager());
+    public GridSchedulingPolicyManagementWindow (final GridSchedulingPolicyManager manager) {
+        super(manager);
     }
 
     @Override
