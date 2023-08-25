@@ -730,10 +730,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jFileChooser.setSelectedFile(this.configure.getLastFile());
     }
 
-    private void jMenuItemManageActionPerformed (final ActionEvent evt) {
-        this.showSubWindow(this.jFrameManager);
-    }
-
     private void jMenuItemAboutActionPerformed (final ActionEvent evt) {
         this.showSubWindow(new AboutDialog(this, true));
     }
