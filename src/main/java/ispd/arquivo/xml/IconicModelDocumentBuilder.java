@@ -2,6 +2,7 @@ package ispd.arquivo.xml;
 
 import ispd.arquivo.xml.utils.*;
 import ispd.gui.*;
+import ispd.gui.iconico.*;
 import ispd.gui.iconico.grade.*;
 import ispd.motor.workload.impl.*;
 import java.util.*;
@@ -181,7 +182,7 @@ public class IconicModelDocumentBuilder {
                 { "id", id.getName() },
                 { "energy", cluster.getEnergyConsumption() },
             }, new Node[] {
-                this.aPositionElement(cluster.getX(), cluster.getY()),
+                this.aPositionElement(cluster),
                 this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
                 this.aCharacteristic(
                     cluster.getComputationalPower(),
@@ -211,7 +212,7 @@ public class IconicModelDocumentBuilder {
                 { "owner", cluster.getOwner() },
                 { "master", cluster.isMaster() },
             }, new Node[] {
-                this.aPositionElement(cluster.getX(), cluster.getY()),
+                this.aPositionElement(cluster),
                 this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
                 this.aCharacteristic(
                     cluster.getComputationalPower(),
@@ -245,11 +246,15 @@ public class IconicModelDocumentBuilder {
                     "origination", originationId,
                     "destination", destinationId
                 ),
-                this.aPositionElement(origination.getX(), origination.getY()),
-                this.aPositionElement(destination.getX(), destination.getY()),
+                this.aPositionElement(origination),
+                this.aPositionElement(destination),
                 this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
             }
         ));
+    }
+
+    private Element aPositionElement (final Vertex vertex) {
+        return this.aPositionElement(vertex.getX(), vertex.getY());
     }
 
     public void addInternet (final Internet i) {
@@ -262,7 +267,7 @@ public class IconicModelDocumentBuilder {
                 { "load", i.getLoadFactor() },
                 { "latency", i.getLatency() },
             }, new Element[] {
-                this.aPositionElement(i.getX(), i.getY()),
+                this.aPositionElement(i),
                 this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
             }
         ));
