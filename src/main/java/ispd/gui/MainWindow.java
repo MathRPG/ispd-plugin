@@ -47,9 +47,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     private final GridSchedulingPolicyManager gridSchedulingPolicyManager =
         new GridSchedulingPolicyManager();
 
-    private final GenericPolicyManagementWindow jFrameManager =
-        new GridSchedulingPolicyManagementWindow(this.gridSchedulingPolicyManager);
-
     private final GenericPolicyManagementWindow jFrameAllocManager =
         new VmAllocationPolicyManagementWindow();
 
