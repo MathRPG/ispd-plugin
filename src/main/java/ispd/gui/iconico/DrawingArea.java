@@ -199,7 +199,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
                 if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
                     this.showPopupIcon(mouseEvent, icon);
                 } else if (mouseEvent.getClickCount() == 2) {
-                    this.showActionIcon(mouseEvent, icon);
+                    this.showActionIcon(icon);
                 } else if (mouseEvent.getClickCount() == 1) {
                     this.showSelectionIcon(icon);
                 }
@@ -469,7 +469,7 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
     }
 
-    private void showActionIcon (final MouseEvent me, final Icon icon) {
+    private void showActionIcon (final Icon icon) {
         this.mainWindow.modificar();
         if (icon instanceof Machine || icon instanceof Cluster) {
             this.mainWindow
