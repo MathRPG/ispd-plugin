@@ -351,9 +351,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     private void initMenuTools () {
         this.jMenuTools.setText(getText("Tools"));
         this.jMenuTools.addActionListener(this::jMenuToolsActionPerformed);
-        this.jMenuItemManageAllocation.setText("Manage Allocation Policies");
-        this.jMenuItemManageAllocation.addActionListener(this::jMenuItemManageAllocationActionPerformed);
-        this.jMenuTools.add(this.jMenuItemManageAllocation);
     }
 
     private void initMenuShow () {
