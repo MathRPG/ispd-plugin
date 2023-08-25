@@ -1122,10 +1122,6 @@ public final class MainWindow extends JFrame implements KeyListener {
         this.jScrollPaneDrawingArea.setCorner(ScrollPaneConstants.UPPER_RIGHT_CORNER, new Corner());
     }
 
-    private void jMenuItemHelpActionPerformed (final ActionEvent evt) {
-        this.showSubWindow(new HelpWindow());
-    }
-
     private void jMenuItemToTxtActionPerformed (final ActionEvent evt) {
         this.configureFileFilterAndChooser("Plane Text", new String[] { ".txt" }, false);
 
