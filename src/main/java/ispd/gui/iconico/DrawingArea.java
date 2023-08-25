@@ -359,14 +359,12 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
             }
         } else if (this.addVertex) {
             this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
-        } else {
-            if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
-                this.generalPopup.show(
-                    mouseEvent.getComponent(),
-                    mouseEvent.getX(),
-                    mouseEvent.getY()
-                );
-            }
+        } else if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+            this.generalPopup.show(
+                mouseEvent.getComponent(),
+                mouseEvent.getX(),
+                mouseEvent.getY()
+            );
         }
     }
 
