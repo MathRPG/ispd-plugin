@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Manages storing, retrieving and compiling allocation policies
  */
-public class VmAllocationPolicyManager extends FilePolicyManager {
+public class VmAllocationPolicyManager implements PolicyManager {
 
     /**
      * Allocation policies available by default

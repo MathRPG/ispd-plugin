@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Manages storing, retrieving and compiling scheduling policies
  */
-public class GridSchedulingPolicyManager extends FilePolicyManager {
+public class GridSchedulingPolicyManager implements PolicyManager {
 
     /**
      * Scheduling policies available by default
@@ -29,6 +29,9 @@ public class GridSchedulingPolicyManager extends FilePolicyManager {
 
     private static final File GRID_DIRECTORY =
         new File(ConfiguracaoISPD.DIRETORIO_ISPD, GRID_DIR_PATH);
+
+    protected GridSchedulingPolicyManager () {
+    }
 
     protected String className () {
         return "GridSchedulingPolicyManager.class";
