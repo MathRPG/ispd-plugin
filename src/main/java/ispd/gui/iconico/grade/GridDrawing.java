@@ -94,6 +94,20 @@ public class GridDrawing extends DrawingArea {
         return MainWindow.class.getResource(name);
     }
 
+    public void processKeyEvent (final KeyEvent keyEvent) {
+        if (keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
+            this.botaoIconeActionPerformed(null);
+        }
+
+        if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_C) {
+            this.botaoVerticeActionPerformed(null);
+        }
+
+        if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_V) {
+            this.botaoPainelActionPerformed(null);
+        }
+    }
+
     @Override
     public void mouseEntered (final MouseEvent me) {
         this.repaint();

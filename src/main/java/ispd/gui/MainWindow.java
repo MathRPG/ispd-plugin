@@ -245,20 +245,6 @@ public final class MainWindow extends JFrame implements KeyListener {
     public void keyTyped (final KeyEvent keyEvent) {
     }
 
-    private static void processKeyEvent (final KeyEvent keyEvent, final GridDrawing drawingArea1) {
-        if (keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
-            drawingArea1.botaoIconeActionPerformed(null);
-        }
-
-        if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_C) {
-            drawingArea1.botaoVerticeActionPerformed(null);
-        }
-
-        if (keyEvent.isControlDown() && keyEvent.getKeyCode() == KeyEvent.VK_V) {
-            drawingArea1.botaoPainelActionPerformed(null);
-        }
-    }
-
     @Override
     public void keyPressed (final KeyEvent keyEvent) {
         final var drawingArea1 = this.drawingArea;
@@ -266,7 +252,7 @@ public final class MainWindow extends JFrame implements KeyListener {
             return;
         }
 
-        processKeyEvent(keyEvent, drawingArea1);
+        drawingArea1.processKeyEvent(keyEvent);
     }
 
     @Override
