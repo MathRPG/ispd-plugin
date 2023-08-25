@@ -16,7 +16,7 @@ public class PickModelTypeDialog extends JDialog {
 
     private ModelType choice = ModelType.GRID;
 
-    PickModelTypeDialog (final Frame owner, final boolean modal) {
+    public PickModelTypeDialog (final Frame owner, final boolean modal) {
         super(owner, modal);
         this.initWindowProperties();
         this.jRadioGrid = configuredRadioButton("Grid", this::gridButtonClicked);
