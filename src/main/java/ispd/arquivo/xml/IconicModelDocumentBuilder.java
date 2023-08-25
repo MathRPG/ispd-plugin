@@ -20,8 +20,6 @@ public class IconicModelDocumentBuilder {
 
     private static final Object[][] NO_ATTRS = {};
 
-    private static final int DEFAULT_MODEL_TYPE = -1;
-
     private final WrappedDocument document = new WrappedDocument(ManipuladorXML.newDocument());
 
     private final Element system;
