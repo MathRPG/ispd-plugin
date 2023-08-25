@@ -27,10 +27,6 @@ public class IconicModelDocumentBuilder {
 
     private Element load = null;
 
-    public IconicModelDocumentBuilder () {
-        this(DEFAULT_MODEL_TYPE);
-    }
-
     public IconicModelDocumentBuilder (final int modelType) {
         this.system = this.document.createElement("system");
         this.system.setAttribute("version", getVersionForModelType(modelType));
