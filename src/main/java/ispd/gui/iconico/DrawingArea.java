@@ -125,10 +125,6 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private int mousePosY = 0;
 
-    private final String errorMessage = getText("You must click an icon.");
-
-    private final String errorTitle = getText("WARNING");
-
     public DrawingArea () {
         this(INITIAL_SIZE, INITIAL_SIZE);
     }
@@ -466,7 +462,11 @@ public class DrawingArea extends JPanel implements MouseListener, MouseMotionLis
 
     private void showWarning () {
         JOptionPane.showMessageDialog(
-            null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
+            null,
+            getText("You must click an icon."),
+            getText("WARNING"),
+            JOptionPane.WARNING_MESSAGE
+        );
     }
 
     private void showActionIcon (final Icon icon) {
