@@ -13,10 +13,6 @@ public abstract class FilePolicyManager implements PolicyManager {
 
     private final ArrayList<String> policies = new ArrayList<>();
 
-    private final List<String> addedPolicies = new ArrayList<>();
-
-    private final List<String> removedPolicies = new ArrayList<>();
-
     protected FilePolicyManager () {
         this.initialize();
     }
@@ -58,12 +54,12 @@ public abstract class FilePolicyManager implements PolicyManager {
 
     @Override
     public List listarAdicionados () {
-        return this.addedPolicies;
+        return new ArrayList<String>();
     }
 
     @Override
     public List listarRemovidos () {
-        return this.removedPolicies;
+        return new ArrayList<String>();
     }
 
     private void initialize () {
