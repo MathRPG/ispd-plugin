@@ -32,9 +32,6 @@ public class LoadConfigurationDialog extends JDialog {
     private static final Supplier<SpinnerModel> POSITIVE_REAL_MODEL =
         () -> new SpinnerNumberModel(0.0d, 0.0d, null, 0.1d);
 
-    private static final ActionListener DO_NOTHING = evt -> {
-    };
-
     private static final Dimension PREFERRED_BUTTON_SIZE = new Dimension(80, 30);
 
     private static final Dimension PREFERRED_PANEL_SIZE = new Dimension(500, 300);
@@ -578,7 +575,6 @@ public class LoadConfigurationDialog extends JDialog {
         final var userLabel = new JLabel(getText("User"));
 
         this.comboBoxUsers.setModel(new DefaultComboBoxModel(this.users));
-        this.comboBoxUsers.addActionListener(DO_NOTHING);
 
         final var scheduler = new JLabel(getText("Scheduler"));
 
@@ -989,8 +985,6 @@ public class LoadConfigurationDialog extends JDialog {
 
         final var convertExternal =
             basicButton(getText("Convert"), this::onConvertExternalClicked);
-
-        this.jTextFieldCaminhoTrace.addActionListener(DO_NOTHING);
 
         this.jTextNotifTrace.setColumns(20);
         this.jTextNotifTrace.setRows(5);
