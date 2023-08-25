@@ -426,9 +426,7 @@ public class IconicModelDocumentBuilder {
 
     /**
      * Helper method to abstract away the addition of a machine element to the model being built. It
-     * takes in all attributes in common between the methods
-     * {@link #addMachine(Integer, Integer, Integer, Integer, String, Double, Double, String,
-     * String, Integer, Double, Double, boolean, Collection, Double)}, but also two extra params,
+     * takes in all attributes in common between the methods, but also two extra params,
      * {@code extraAttrs} and {@code extraMasterAttrs}, which are arrays containing the specific
      * attributes of each of the outer methods.
      *
