@@ -43,7 +43,7 @@ public abstract class Simulation {
     public abstract void addFutureEvent (FutureEvent ev);
 
     public abstract boolean removeFutureEvent (
-        int eventType,
+        EventType eventType,
         CentroServico eventServer,
         Client eventClient
     );

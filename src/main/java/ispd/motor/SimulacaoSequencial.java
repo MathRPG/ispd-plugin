@@ -86,7 +86,7 @@ public class SimulacaoSequencial extends Simulation {
 
     @Override
     public boolean removeFutureEvent (
-        final int eventType,
+        final EventType eventType,
         final CentroServico eventServer,
         final Client eventClient
     ) {
@@ -113,7 +113,7 @@ public class SimulacaoSequencial extends Simulation {
         tasks.stream()
             .map(t -> new FutureEvent(
                 t.getTimeCriacao(),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 t.getOrigem(),
                 t
             ))
@@ -181,16 +181,16 @@ public class SimulacaoSequencial extends Simulation {
         Objects.requireNonNull(eventoAtual);
         this.time = eventoAtual.getCreationTime();
         switch (eventoAtual.getType()) {
-            case FutureEvent.CHEGADA -> eventoAtual.getServidor()
+            case ARRIVAL -> eventoAtual.getServidor()
                 .chegadaDeCliente(this, (Tarefa) eventoAtual.getClient());
-            case FutureEvent.ATENDIMENTO -> eventoAtual.getServidor()
+            case SERVICE -> eventoAtual.getServidor()
                 .atendimento(this, (Tarefa) eventoAtual.getClient());
-            case FutureEvent.SAIDA -> eventoAtual
+            case EXIT -> eventoAtual
                 .getServidor()
                 .saidaDeCliente(this, (Tarefa) eventoAtual.getClient());
-            case FutureEvent.ESCALONAR -> eventoAtual
+            case SCHEDULING -> eventoAtual
                 .getServidor()
-                .requisicao(this, null, FutureEvent.ESCALONAR);
+                .requisicao(this, null, EventType.SCHEDULING);
             default -> eventoAtual.getServidor()
                 .requisicao(this, (Mensagem) eventoAtual.getClient(), eventoAtual.getType());
         }

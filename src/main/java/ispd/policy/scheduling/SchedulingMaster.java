@@ -1,5 +1,6 @@
 package ispd.policy.scheduling;
 
+import ispd.motor.*;
 import ispd.motor.filas.*;
 import ispd.motor.filas.servidores.*;
 import ispd.policy.*;
@@ -15,5 +16,5 @@ public interface SchedulingMaster extends Simulable {
 
     Tarefa cloneTask (Tarefa task);
 
-    void sendMessage (Tarefa task, CS_Processamento slave, int messageType);
+    void sendMessage (Tarefa task, CS_Processamento slave, MessageType messageType);
 }

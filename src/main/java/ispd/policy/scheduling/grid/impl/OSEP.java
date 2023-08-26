@@ -121,7 +121,7 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
             this.mestre.sendMessage(
                 this.slaveControls.get(cs_processamento).firstTaskInProcessing(),
                 cs_processamento,
-                Mensagens.DEVOLVER_COM_PREEMPCAO
+                MessageType.PREEMPTIVE_RETURN
             );
             return cs_processamento;
         }

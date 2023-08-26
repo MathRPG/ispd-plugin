@@ -1,8 +1,7 @@
 package ispd.motor.filas.servidores;
 
-import ispd.motor.Simulation;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
+import ispd.motor.*;
+import ispd.motor.filas.*;
 
 /**
  * Elemento servidor do modelo de fila. Podendo representar: Recursos de processamento: Maquina,
@@ -59,7 +58,7 @@ public abstract class CentroServico {
      */
     //Obs.: o método requisição pode necessitar de uma nova classe para ser transferida na rede interna
     //e executada apenas nnos centros de serviços
-    public abstract void requisicao (Simulation simulacao, Mensagem cliente, int tipo);
+    public abstract void requisicao (Simulation simulacao, Mensagem cliente, EventType tipo);
 
     public abstract String getId ();
 

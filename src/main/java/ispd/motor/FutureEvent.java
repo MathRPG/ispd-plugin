@@ -1,30 +1,16 @@
 package ispd.motor;
 
-import ispd.motor.filas.Client;
-import ispd.motor.filas.servidores.CentroServico;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
 
 /**
  * Classe que representa os eventos que alteram o estado do modelo simulado
  */
 public class FutureEvent implements Comparable<FutureEvent> {
 
-    public static final int CHEGADA = 1;
-
-    public static final int ATENDIMENTO = 2;
-
-    public static final int SAIDA = 3;
-
-    public static final int ESCALONAR = 4;
-
-    public static final int MENSAGEM = 5;
-
-    public static final int SAIDA_MENSAGEM = 6;
-
-    public static final int ALOCAR_VMS = 7;
-
     private final double creationTime;
 
-    private final int eventType;
+    private final EventType eventType;
 
     private final CentroServico resource;
 
@@ -44,7 +30,7 @@ public class FutureEvent implements Comparable<FutureEvent> {
      */
     public FutureEvent (
         final double time,
-        final int eventType,
+        final EventType eventType,
         final CentroServico resource,
         final Client client
     ) {
@@ -71,7 +57,7 @@ public class FutureEvent implements Comparable<FutureEvent> {
      *
      * @return Retorna o tipo do evento de acordo com as constantes da classe
      */
-    public int getType () {
+    public EventType getType () {
         return this.eventType;
     }
 

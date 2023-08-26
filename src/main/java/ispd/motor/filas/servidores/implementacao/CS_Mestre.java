@@ -41,16 +41,16 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
 
     @Override
     public void chegadaDeCliente (final Simulation simulacao, final Tarefa cliente) {
-        if (cliente.getEstado() != Tarefa.CANCELADO) {
+        if (cliente.getEstado() != TaskState.CANCELLED) {
             //Tarefas concluida possuem tratamento diferencial
-            if (cliente.getEstado() == Tarefa.CONCLUIDO) {
+            if (cliente.getEstado() == TaskState.DONE) {
                 //se não for origem da tarefa ela deve ser encaminhada
                 if (!cliente.getOrigem().equals(this)) {
                     //encaminhar tarefa!
                     //Gera evento para chegada da tarefa no proximo servidor
                     final FutureEvent evtFut = new FutureEvent(
                         simulacao.getTime(this),
-                        FutureEvent.CHEGADA,
+                        EventType.ARRIVAL,
                         cliente.getCaminho().remove(0),
                         cliente
                     );
@@ -91,7 +91,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
                 simulacao.getTime(this)
                 + this.tempoProcessar(cliente.getTamProcessamento()
                                       - cliente.getMflopsProcessado()),
-                FutureEvent.SAIDA, this, cliente
+                EventType.EXIT, this, cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -102,7 +102,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
 
     @Override
     public void saidaDeCliente (final Simulation simulacao, final Tarefa cliente) {
-        if (cliente.getEstado() == Tarefa.PROCESSANDO) {
+        if (cliente.getEstado() == TaskState.PROCESSING) {
             //Incrementa o número de Mbits transmitido por este link
             this
                 .getMetrica()
@@ -124,7 +124,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
+                    simulacao.getTime(this), EventType.SERVICE, this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
@@ -133,7 +133,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
             //Gera evento para chegada da tarefa no proximo servidor
             final FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 cliente.getCaminho().remove(0),
                 cliente
             );
@@ -152,26 +152,30 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
     }
 
     @Override
-    public void requisicao (final Simulation simulacao, final Mensagem mensagem, final int tipo) {
-        if (tipo == FutureEvent.ESCALONAR) {
+    public void requisicao (
+        final Simulation simulacao,
+        final Mensagem mensagem,
+        final EventType tipo
+    ) {
+        if (tipo == EventType.SCHEDULING) {
             this.escalonador.escalonar();
         } else if (mensagem != null) {
-            if (mensagem.getTipo() == Mensagens.ATUALIZAR) {
+            if (mensagem.getTipo() == MessageType.UPDATE) {
                 this.atenderAtualizacao(simulacao, mensagem);
             } else if (mensagem.getTarefa() != null && mensagem
                 .getTarefa()
                 .getLocalProcessamento()
                 .equals(this)) {
                 switch (mensagem.getTipo()) {
-                    case Mensagens.PARAR -> this.atenderParada(simulacao, mensagem);
-                    case Mensagens.CANCELAR -> this.atenderCancelamento(simulacao, mensagem);
-                    case Mensagens.DEVOLVER -> this.atenderDevolucao(simulacao, mensagem);
-                    case Mensagens.DEVOLVER_COM_PREEMPCAO -> this.atenderDevolucaoPreemptiva(
+                    case STOP -> this.atenderParada(simulacao, mensagem);
+                    case CANCEL -> this.atenderCancelamento(simulacao, mensagem);
+                    case RETURN -> this.atenderDevolucao(simulacao, mensagem);
+                    case PREEMPTIVE_RETURN -> this.atenderDevolucaoPreemptiva(
                         simulacao,
                         mensagem
                     );
                 }
-            } else if (mensagem.getTipo() == Mensagens.RESULTADO_ATUALIZAR) {
+            } else if (mensagem.getTipo() == MessageType.UPDATE_RESULT) {
                 this.atenderRetornoAtualizacao(simulacao, mensagem);
             } else if (mensagem.getTarefa() != null) {
                 //encaminhando mensagem para o destino
@@ -193,9 +197,9 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
     public void atenderCancelamento (
         final Simulation simulacao, final Mensagem mensagem
     ) {
-        if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
+        if (mensagem.getTarefa().getEstado() == TaskState.PROCESSING) {
             //remover evento de saida do cliente do servidor
-            simulacao.removeFutureEvent(FutureEvent.SAIDA, this,
+            simulacao.removeFutureEvent(EventType.EXIT, this,
                                         mensagem.getTarefa()
             );
             //gerar evento para atender proximo cliente
@@ -206,7 +210,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
+                    simulacao.getTime(this), EventType.SERVICE, this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
@@ -225,9 +229,9 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
 
     @Override
     public void atenderParada (final Simulation simulacao, final Mensagem mensagem) {
-        if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
+        if (mensagem.getTarefa().getEstado() == TaskState.PROCESSING) {
             //remover evento de saida do cliente do servidor
-            simulacao.removeFutureEvent(FutureEvent.SAIDA, this, mensagem.getTarefa());
+            simulacao.removeFutureEvent(EventType.EXIT, this, mensagem.getTarefa());
             //gerar evento para atender proximo cliente
             if (this.filaTarefas.isEmpty()) {
                 //Indica que está livre
@@ -237,7 +241,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut = new FutureEvent(
                     simulacao.getTime(this),
-                    FutureEvent.ATENDIMENTO,
+                    EventType.SERVICE,
                     this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
@@ -262,7 +266,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
         if (temp1 || temp2) {
             final FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 mensagem.getTarefa().getOrigem(),
                 mensagem.getTarefa()
             );
@@ -275,12 +279,12 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
     public void atenderDevolucaoPreemptiva (final Simulation simulacao, final Mensagem mensagem) {
         boolean temp1 = false;
         boolean temp2 = false;
-        if (mensagem.getTarefa().getEstado() == Tarefa.PARADO) {
+        if (mensagem.getTarefa().getEstado() == TaskState.BLOCKED) {
             temp1 = this.filaTarefas.remove(mensagem.getTarefa());
             temp2 = this.escalonador.getFilaTarefas().remove(mensagem.getTarefa());
-        } else if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
+        } else if (mensagem.getTarefa().getEstado() == TaskState.PROCESSING) {
             //remover evento de saida do cliente do servidor
-            temp1 = simulacao.removeFutureEvent(FutureEvent.SAIDA, this,
+            temp1 = simulacao.removeFutureEvent(EventType.EXIT, this,
                                                 mensagem.getTarefa()
             );
             //gerar evento para atender proximo cliente
@@ -292,7 +296,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut = new FutureEvent(
                     simulacao.getTime(this),
-                    FutureEvent.ATENDIMENTO,
+                    EventType.SERVICE,
                     this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
@@ -321,7 +325,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
         if (temp1 || temp2) {
             final FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 mensagem.getTarefa().getOrigem(),
                 mensagem.getTarefa()
             );
@@ -342,14 +346,14 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
         ));
 
         final Mensagem novaMensagem =
-            new Mensagem(this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR);
+            new Mensagem(this, mensagem.getTamComunicacao(), MessageType.UPDATE_RESULT);
         //Obtem informações dinâmicas
         novaMensagem.setFilaEscravo(new ArrayList<>(this.filaTarefas));
         novaMensagem.getFilaEscravo().addAll(this.escalonador.getFilaTarefas());
         novaMensagem.setCaminho(caminho);
         final FutureEvent evtFut = new FutureEvent(
             simulacao.getTime(this),
-            FutureEvent.MENSAGEM,
+            EventType.MESSAGE,
             novaMensagem.getCaminho().remove(0),
             novaMensagem
         );
@@ -376,7 +380,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
     public void executeScheduling () {
         final FutureEvent evtFut = new FutureEvent(
             this.simulacao.getTime(this),
-            FutureEvent.ESCALONAR,
+            EventType.SCHEDULING,
             this, null
         );
         //Event adicionado a lista de evntos futuros
@@ -392,7 +396,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
     public void sendTask (final Tarefa task) {
         //Gera evento para atender proximo cliente da lista
         final FutureEvent evtFut = new FutureEvent(
-            this.simulacao.getTime(this), FutureEvent.SAIDA, this, task
+            this.simulacao.getTime(this), EventType.EXIT, this, task
         );
         //Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
@@ -409,12 +413,12 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
     public void sendMessage (
         final Tarefa task,
         final CS_Processamento slave,
-        final int messageType
+        final MessageType messageType
     ) {
         final Mensagem msg = new Mensagem(this, messageType, task);
         msg.setCaminho(this.escalonador.escalonarRota(slave));
         final FutureEvent evtFut = new FutureEvent(
-            this.simulacao.getTime(this), FutureEvent.MENSAGEM, msg.getCaminho().remove(0), msg
+            this.simulacao.getTime(this), EventType.MESSAGE, msg.getCaminho().remove(0), msg
         );
         //Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
@@ -467,12 +471,12 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
 
     public void atualizar (final CentroServico escravo, final Double time) {
         final Mensagem msg = new Mensagem(this, 0.011444091796875,
-                                          Mensagens.ATUALIZAR
+                                          MessageType.UPDATE
         );
         msg.setCaminho(this.escalonador.escalonarRota(escravo));
         final FutureEvent evtFut = new FutureEvent(
             time,
-            FutureEvent.MENSAGEM,
+            EventType.MESSAGE,
             msg.getCaminho().remove(0),
             msg
         );

@@ -1,21 +1,12 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.Mensagens;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.policy.scheduling.SchedulingPolicy;
-import ispd.policy.scheduling.grid.impl.util.PreemptionEntry;
-import ispd.policy.scheduling.grid.impl.util.SlaveControl;
-import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Stream;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.scheduling.*;
+import ispd.policy.scheduling.grid.impl.util.*;
+import java.util.*;
+import java.util.stream.*;
 
 public abstract class AbstractHOSEP <T extends UserProcessingControl> extends AbstractOSEP<T> {
 
@@ -347,7 +338,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         this.mestre.sendMessage(
             taskToPreempt,
             machine,
-            Mensagens.DEVOLVER_COM_PREEMPCAO
+            MessageType.PREEMPTIVE_RETURN
         );
 
         taskOwner.decreaseTaskDemand();

@@ -1,22 +1,12 @@
 package ispd.motor.metricas;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
-import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import java.io.*;
+import java.math.*;
+import java.util.*;
+import java.util.stream.*;
 
 public class Metricas implements Serializable {
 
@@ -407,7 +397,7 @@ public class Metricas implements Serializable {
 
         BigDecimal satis;
         for (final Tarefa tar : tarefas) {
-            if (tar.getEstado() == Tarefa.CONCLUIDO) {
+            if (tar.getEstado() == TaskState.DONE) {
 
                 this.tempoMedioFilaComunicacao += tar.getMetricas().getTempoEsperaComu();
                 this.tempoMedioComunicacao += tar.getMetricas().getTempoComunicacao();
@@ -523,7 +513,7 @@ public class Metricas implements Serializable {
                         );
                     }
                 }
-            } else if (tar.getEstado() == Tarefa.CANCELADO) {
+            } else if (tar.getEstado() == TaskState.CANCELLED) {
                 this.MflopsDesperdicio += tar.getTamProcessamento() * tar.getMflopsProcessado();
                 this.numTarefasCanceladas++;
             }
@@ -704,7 +694,7 @@ public class Metricas implements Serializable {
             .collect(Collectors.averagingDouble(CS_Processamento::getPoderComputacional));
 
         for (final var no : tarefas) {
-            if (no.getEstado() == Tarefa.CONCLUIDO) {
+            if (no.getEstado() == TaskState.DONE) {
 
                 final Double suij = (
                                         no.getTamProcessamento() / mediaPoder /
@@ -720,13 +710,13 @@ public class Metricas implements Serializable {
                     1 + this.tarefasConcluidas.get(no.getProprietario())
                 );
             }
-            if (no.getEstado() == Tarefa.CONCLUIDO) {
+            if (no.getEstado() == TaskState.DONE) {
                 this.tempoMedioFilaComunicacao += no.getMetricas().getTempoEsperaComu();
                 this.tempoMedioComunicacao += no.getMetricas().getTempoComunicacao();
                 this.tempoMedioFilaProcessamento = no.getMetricas().getTempoEsperaProc();
                 this.tempoMedioProcessamento     = no.getMetricas().getTempoProcessamento();
                 this.numTarefas++;
-            } else if (no.getEstado() == Tarefa.CANCELADO) {
+            } else if (no.getEstado() == TaskState.CANCELLED) {
                 this.MflopsDesperdicio += no.getTamProcessamento() * no.getMflopsProcessado();
                 this.numTarefasCanceladas++;
             }
@@ -785,7 +775,7 @@ public class Metricas implements Serializable {
         this.metricasCusto = new HashMap<>();
         //percorre as vms inserindo as métricas de custo
         for (final var vm : redeDeFilas.getVMs()) {
-            if (vm.getStatus() == CS_VirtualMac.DESTRUIDA) {
+            if (vm.getStatus() == VirtualMachineState.DESTROYED) {
                 this.metricasCusto.put(vm.getId() + vm.getnumeroMaquina(), vm.getMetricaCusto());
             }
         }
@@ -1010,7 +1000,7 @@ public class Metricas implements Serializable {
         }
 
         System.out.printf(
-            "Usuário \t SatisfaçãoGeralTempoSim\tSatisfaçãoGeralTempoUso\tSatisfaçãoDesempenho\tConsumoTotal\tLimiteConsumoTempoSimulado\tLimiteConsumoTempoUso\tConsumoLocal\tConsumoLocalProprio\tConsumoLocalEstrangeiro\tConsumoMaxLocal\tTarefasPreemp\tAlpha\tBetaTempoSim\tBetaTempoUso\tDesperdicio\tConsumoKJS\tTurnaroundTime\tTempoSIM%%n".formatted());
+            "Usuário \t SatisfaçãoGeralTempoSim\tSatisfaçãoGeralTempoUso\tSatisfaçãoDesempenho\tConsumoTotal\tLimiteConsumoTempoSimulado\tLimiteConsumoTempoUso\tConsumoLocal\tConsumoLocalProprio\tConsumoLocalEstrangeiro\tConsumoMaxLocal\tTarefasPreemp\tAlpha\tBetaTempoSim\tBetaTempoUso\tDesperdicio\tConsumoKJS\tTurnaroundTime\tTempoSIM%n");
 
         for (final var usuario : this.usuarios) {
             for (var i = 0; i < this.numeroDeSimulacoes; i++) {

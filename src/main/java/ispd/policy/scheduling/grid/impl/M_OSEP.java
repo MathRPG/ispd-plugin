@@ -292,7 +292,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
             this.mestre.sendMessage(
                 tar,
                 machine,
-                Mensagens.DEVOLVER_COM_PREEMPCAO
+                MessageType.PREEMPTIVE_RETURN
             );
             return machine;
         }

@@ -127,7 +127,7 @@ public class RoundRobin extends VmAllocationPolicy {
 
     private void rejectVm (final CS_VirtualMac auxVm) {
         System.out.printf("%s foi rejeitada%n", auxVm.getId());
-        auxVm.setStatus(CS_VirtualMac.REJEITADA);
+        auxVm.setStatus(VirtualMachineState.REJECTED);
         this.VMsRejeitadas.add(auxVm);
         System.out.println("Adicionada na lista de rejeitadas");
         System.out.println("---------------------------------------");

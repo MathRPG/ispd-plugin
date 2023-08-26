@@ -115,7 +115,7 @@ public class Volume extends VmAllocationPolicy {
                     }
                 } else {
                     System.out.println(auxVM.getId() + " foi rejeitada");
-                    auxVM.setStatus(CS_VirtualMac.REJEITADA);
+                    auxVM.setStatus(VirtualMachineState.REJECTED);
                     this.VMsRejeitadas.add(auxVM);
                     System.out.println("Adicionada na lista de rejeitadas");
                     num_escravos--;

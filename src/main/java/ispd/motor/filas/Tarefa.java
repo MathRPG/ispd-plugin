@@ -1,31 +1,17 @@
 package ispd.motor.filas;
 
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.metricas.MetricasTarefa;
-import ispd.utils.constants.StringConstants;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.metricas.*;
+import ispd.utils.constants.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
 /**
  * Classe que representa o cliente do modelo de filas, ele será atendo pelos centros de serviços Os
  * clientes podem ser: Tarefas
  */
 public class Tarefa implements Client {
-
-    //Estados que a tarefa pode estar
-    public static final int PARADO = 1;
-
-    public static final int PROCESSANDO = 2;
-
-    public static final int CANCELADO = 3;
-
-    public static final int CONCLUIDO = 4;
-
-    public static final int FALHA = 5;
 
     private final String proprietario;
 
@@ -88,7 +74,7 @@ public class Tarefa implements Client {
 
     private double inicioEspera = 0.0;
 
-    private int estado = Tarefa.PARADO;
+    private TaskState estado = TaskState.BLOCKED;
 
     private double tamComunicacao;
 
@@ -217,7 +203,7 @@ public class Tarefa implements Client {
     }
 
     public void iniciarAtendimentoProcessamento (final double tempo) {
-        this.estado       = Tarefa.PROCESSANDO;
+        this.estado = TaskState.PROCESSING;
         this.inicioEspera = tempo;
         this.tempoInicial.add(tempo);
         this.historicoProcessamento.add((CS_Processamento) this.localProcessamento);
@@ -228,7 +214,7 @@ public class Tarefa implements Client {
     }
 
     public void finalizarAtendimentoProcessamento (final double tempo) {
-        this.estado = Tarefa.CONCLUIDO;
+        this.estado = TaskState.DONE;
         this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
         if (this.tempoFinal.size() < this.tempoInicial.size()) {
             this.tempoFinal.add(tempo);
@@ -237,22 +223,22 @@ public class Tarefa implements Client {
     }
 
     public double cancelar (final double tempo) {
-        if (this.estado == Tarefa.PARADO || this.estado == Tarefa.PROCESSANDO) {
-            this.estado = Tarefa.CANCELADO;
+        if (this.estado == TaskState.BLOCKED || this.estado == TaskState.PROCESSING) {
+            this.estado = TaskState.CANCELLED;
             this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
             if (this.tempoFinal.size() < this.tempoInicial.size()) {
                 this.tempoFinal.add(tempo);
             }
             return this.inicioEspera;
         } else {
-            this.estado = Tarefa.CANCELADO;
+            this.estado = TaskState.CANCELLED;
             return tempo;
         }
     }
 
     public double parar (final double tempo) {
-        if (this.estado == Tarefa.PROCESSANDO) {
-            this.estado = Tarefa.PARADO;
+        if (this.estado == TaskState.PROCESSING) {
+            this.estado = TaskState.BLOCKED;
             this.metricas.incTempoProcessamento(tempo - this.inicioEspera);
             if (this.tempoFinal.size() < this.tempoInicial.size()) {
                 this.tempoFinal.add(tempo);
@@ -279,11 +265,11 @@ public class Tarefa implements Client {
         return this.metricas;
     }
 
-    public int getEstado () {
+    public TaskState getEstado () {
         return this.estado;
     }
 
-    public void setEstado (final int estado) {
+    public void setEstado (final TaskState estado) {
         this.estado = estado;
     }
 

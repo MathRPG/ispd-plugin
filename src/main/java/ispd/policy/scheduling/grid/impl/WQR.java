@@ -46,7 +46,7 @@ public class WQR extends GridSchedulingPolicy {
                     this.mestre.sendMessage(
                         this.tarefaEnviada.get(this.escravos.indexOf(rec)),
                         rec,
-                        Mensagens.CANCELAR
+                        MessageType.CANCEL
                     );
                 } else {
                     this.servidoresOcupados++;
@@ -130,7 +130,7 @@ public class WQR extends GridSchedulingPolicy {
         for (int i = 0; i < this.tarefaEnviada.size(); i++) {
             if (this.tarefaEnviada.get(i) != null && this.tarefaEnviada.get(i).isCopyOf(tarefa)) {
                 this.mestre.sendMessage(this.tarefaEnviada.get(i),
-                                        this.escravos.get(i), Mensagens.CANCELAR
+                                        this.escravos.get(i), MessageType.CANCEL
                 );
                 this.servidoresOcupados--;
                 this.tarefaEnviada.set(i, null);

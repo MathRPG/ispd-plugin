@@ -1,12 +1,9 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import ispd.motor.FutureEvent;
-import ispd.motor.Simulation;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import java.util.ArrayList;
-import java.util.List;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import java.util.*;
 
 public class CS_Internet extends CS_Comunicacao implements Vertice {
 
@@ -34,7 +31,7 @@ public class CS_Internet extends CS_Comunicacao implements Vertice {
     public void chegadaDeCliente (final Simulation simulacao, final Tarefa cliente) {
         //cria evento para iniciar o atendimento imediatamente
         final var novoEvt = new FutureEvent(
-            simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente
+            simulacao.getTime(this), EventType.SERVICE, this, cliente
         );
         simulacao.addFutureEvent(novoEvt);
     }
@@ -45,7 +42,7 @@ public class CS_Internet extends CS_Comunicacao implements Vertice {
         //Gera evento para atender proximo cliente da lista
         final var evtFut = new FutureEvent(
             simulacao.getTime(this) + this.tempoTransmitir(cliente.getTamComunicacao()),
-            FutureEvent.SAIDA, this, cliente
+            EventType.EXIT, this, cliente
         );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
@@ -62,14 +59,18 @@ public class CS_Internet extends CS_Comunicacao implements Vertice {
         cliente.finalizarAtendimentoComunicacao(simulacao.getTime(this));
         //Gera evento para chegada da tarefa no proximo servidor
         final var evtFut = new FutureEvent(
-            simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+            simulacao.getTime(this), EventType.ARRIVAL, cliente.getCaminho().remove(0), cliente
         );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
     }
 
     @Override
-    public void requisicao (final Simulation simulacao, final Mensagem cliente, final int tipo) {
+    public void requisicao (
+        final Simulation simulacao,
+        final Mensagem cliente,
+        final EventType tipo
+    ) {
         //Incrementa o número de Mbits transmitido por este link
         this.getMetrica().incMbitsTransmitidos(cliente.getTamComunicacao());
         //Incrementa o tempo de transmissão
@@ -78,7 +79,7 @@ public class CS_Internet extends CS_Comunicacao implements Vertice {
         //Gera evento para chegada da tarefa no proximo servidor
         final var evtFut = new FutureEvent(
             simulacao.getTime(this) + tempoTrans,
-            FutureEvent.MENSAGEM, cliente.getCaminho().remove(0), cliente
+            EventType.MESSAGE, cliente.getCaminho().remove(0), cliente
         );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);

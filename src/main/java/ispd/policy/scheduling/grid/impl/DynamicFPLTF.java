@@ -107,7 +107,7 @@ public class DynamicFPLTF extends GridSchedulingPolicy {
                         );
                     }
                     this.mestre.sendMessage(trf, escravo,
-                                            Mensagens.DEVOLVER
+                                            MessageType.RETURN
                     );
                 }
                 this.filaEscravo.get(i).clear();

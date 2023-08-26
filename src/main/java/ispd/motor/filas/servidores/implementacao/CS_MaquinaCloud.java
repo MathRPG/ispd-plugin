@@ -1,17 +1,10 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import ispd.motor.FutureEvent;
-import ispd.motor.Mensagens;
-import ispd.motor.Simulation;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.TarefaVM;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.metricas.MetricasAlocacao;
-import java.util.ArrayList;
-import java.util.List;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.metricas.*;
+import java.util.*;
 
 public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vertice {
 
@@ -113,7 +106,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                                        + " enviada para evento de atendimento nesta máquina");
                     System.out.println("----------------------------------------------");
                     final FutureEvent evtFut = new FutureEvent(
-                        simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente
+                        simulacao.getTime(this), EventType.SERVICE, this, cliente
                     );
                     simulacao.addFutureEvent(evtFut);
                 }
@@ -123,7 +116,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 System.out.println("----------------------------------------------");
                 final FutureEvent evtFut = new FutureEvent(
                     simulacao.getTime(this),
-                    FutureEvent.CHEGADA,
+                    EventType.ARRIVAL,
                     cliente.getCaminho().remove(0),
                     cliente
                 );
@@ -138,7 +131,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                                    " sendo enviada para execução na vm " + vm.getId());
                 System.out.println("----------------------------------------------");
                 final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.CHEGADA, vm, cliente
+                    simulacao.getTime(this), EventType.ARRIVAL, vm, cliente
                 );
                 simulacao.addFutureEvent(evtFut);
             } else {
@@ -149,7 +142,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                     + " sendo encaminhada para próximo CS");
                 System.out.println("----------------------------------------------");
                 final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.SAIDA, this, cliente
+                    simulacao.getTime(this), EventType.EXIT, this, cliente
                 );
                 simulacao.addFutureEvent(evtFut);
             }
@@ -167,7 +160,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         //Setar o caminho da vm para o VMM e o caminho do ACK da mensagem >>>
         final CS_VMM   vmm   = vm.getVmmResponsavel();
         final int      index = this.mestres.indexOf(vmm);
-        final Mensagem msg   = new Mensagem(this, Mensagens.ALOCAR_ACK, cliente);
+        final Mensagem msg   = new Mensagem(this, MessageType.ALLOCATION_ACK, cliente);
 
         if (index == -1) {
             final ArrayList<CentroServico> caminhoVMM =
@@ -198,7 +191,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
 
         //enviar mensagem de ACK para o VMM
         final FutureEvent NovoEvt =
-            new FutureEvent(simulacao.getTime(this), FutureEvent.MENSAGEM, this, msg);
+            new FutureEvent(simulacao.getTime(this), EventType.MESSAGE, this, msg);
         simulacao.addFutureEvent(NovoEvt);
 
         //Gerenciamento de custos
@@ -220,12 +213,16 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
     }
 
     @Override
-    public void requisicao (final Simulation simulacao, final Mensagem mensagem, final int tipo) {
+    public void requisicao (
+        final Simulation simulacao,
+        final Mensagem mensagem,
+        final EventType tipo
+    ) {
         if (mensagem != null) {
-            if (mensagem.getTipo() == Mensagens.ATUALIZAR) {
+            if (mensagem.getTipo() == MessageType.UPDATE) {
                 this.atenderAtualizacao(simulacao, mensagem);
             } else if (mensagem.getTipo()
-                       == Mensagens.ALOCAR_ACK) { //a máquina é só um intermediário
+                       == MessageType.ALLOCATION_ACK) { //a máquina é só um intermediário
                 //esse tipo de mensagem só é atendido por um VMM
                 this.atenderAckAlocacao(simulacao, mensagem);
             } else if (mensagem.getTarefa() != null && mensagem
@@ -233,18 +230,18 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 .getLocalProcessamento()
                 .equals(this)) {
                 switch (mensagem.getTipo()) {
-                    case ispd.motor.Mensagens.PARAR -> this.atenderParada(simulacao, mensagem);
-                    case ispd.motor.Mensagens.CANCELAR -> this.atenderCancelamento(
+                    case STOP -> this.atenderParada(simulacao, mensagem);
+                    case CANCEL -> this.atenderCancelamento(
                         simulacao,
                         mensagem
                     );
-                    case ispd.motor.Mensagens.DEVOLVER -> this.atenderDevolucao(
+                    case RETURN -> this.atenderDevolucao(
                         simulacao,
                         mensagem
                     );
-                    case ispd.motor.Mensagens.DEVOLVER_COM_PREEMPCAO -> this.atenderDevolucaoPreemptiva(
+                    case PREEMPTIVE_RETURN -> this.atenderDevolucaoPreemptiva(
                         simulacao, mensagem);
-                    case ispd.motor.Mensagens.FALHAR -> this.atenderFalha(simulacao, mensagem);
+                    case FAIL -> this.atenderFalha(simulacao, mensagem);
                 }
             }
         }
@@ -257,9 +254,9 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
 
     @Override
     public void atenderCancelamento (final Simulation simulacao, final Mensagem mensagem) {
-        if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
+        if (mensagem.getTarefa().getEstado() == TaskState.PROCESSING) {
             //remover evento de saida do cliente do servidor
-            simulacao.removeFutureEvent(FutureEvent.SAIDA, this, mensagem.getTarefa());
+            simulacao.removeFutureEvent(EventType.EXIT, this, mensagem.getTarefa());
             this.tarefaEmExecucao.remove(mensagem.getTarefa());
             //gerar evento para atender proximo cliente
             if (this.filaTarefas.isEmpty()) {
@@ -269,7 +266,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 //Gera evento para atender proximo cliente da lista
                 final Tarefa proxCliente = this.filaTarefas.remove(0);
                 final FutureEvent evtFut = new FutureEvent(
-                    simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
+                    simulacao.getTime(this), EventType.SERVICE, this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
@@ -288,9 +285,9 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
 
     @Override
     public void atenderParada (final Simulation simulacao, final Mensagem mensagem) {
-        if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
+        if (mensagem.getTarefa().getEstado() == TaskState.PROCESSING) {
             //remover evento de saida do cliente do servidor
-            simulacao.removeFutureEvent(FutureEvent.SAIDA, this, mensagem.getTarefa());
+            simulacao.removeFutureEvent(EventType.EXIT, this, mensagem.getTarefa());
             //gerar evento para atender proximo cliente
             if (this.filaTarefas.isEmpty()) {
                 //Indica que está livre
@@ -301,7 +298,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 final FutureEvent evtFut =
                     new FutureEvent(
                         simulacao.getTime(this),
-                        FutureEvent.ATENDIMENTO,
+                        EventType.SERVICE,
                         this,
                         proxCliente
                     );
@@ -328,7 +325,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         if (remover) {
             final FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 mensagem.getTarefa().getOrigem(),
                 mensagem.getTarefa()
             );
@@ -340,10 +337,10 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
     @Override
     public void atenderDevolucaoPreemptiva (final Simulation simulacao, final Mensagem mensagem) {
         boolean remover = false;
-        if (mensagem.getTarefa().getEstado() == Tarefa.PARADO) {
+        if (mensagem.getTarefa().getEstado() == TaskState.BLOCKED) {
             remover = this.filaTarefas.remove(mensagem.getTarefa());
-        } else if (mensagem.getTarefa().getEstado() == Tarefa.PROCESSANDO) {
-            remover = simulacao.removeFutureEvent(FutureEvent.SAIDA, this, mensagem.getTarefa());
+        } else if (mensagem.getTarefa().getEstado() == TaskState.PROCESSING) {
+            remover = simulacao.removeFutureEvent(EventType.EXIT, this, mensagem.getTarefa());
             //gerar evento para atender proximo cliente
             if (this.filaTarefas.isEmpty()) {
                 //Indica que está livre
@@ -354,7 +351,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                 final FutureEvent evtFut =
                     new FutureEvent(
                         simulacao.getTime(this),
-                        FutureEvent.ATENDIMENTO,
+                        EventType.SERVICE,
                         this,
                         proxCliente
                     );
@@ -378,7 +375,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         if (remover) {
             final FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 mensagem.getTarefa().getOrigem(),
                 mensagem.getTarefa()
             );
@@ -394,14 +391,14 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         final List<CentroServico> caminho =
             new ArrayList<>((List<CentroServico>) this.caminhoMestre.get(index));
         final Mensagem novaMensagem =
-            new Mensagem(this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR);
+            new Mensagem(this, mensagem.getTamComunicacao(), MessageType.UPDATE_RESULT);
         //Obtem informações dinâmicas
         novaMensagem.setProcessadorEscravo(new ArrayList<>(this.tarefaEmExecucao));
         novaMensagem.setFilaEscravo(new ArrayList<>(this.filaTarefas));
         novaMensagem.setCaminho(caminho);
         final FutureEvent evtFut = new FutureEvent(
             simulacao.getTime(this),
-            FutureEvent.MENSAGEM,
+            EventType.MESSAGE,
             novaMensagem.getCaminho().remove(0),
             novaMensagem
         );
@@ -418,7 +415,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
     public void atenderFalha (final Simulation simulacao, final Mensagem mensagem) {
         final double tempoRec = this.recuperacao.remove(0);
         for (final Tarefa tar : this.tarefaEmExecucao) {
-            if (tar.getEstado() == Tarefa.PROCESSANDO) {
+            if (tar.getEstado() == TaskState.PROCESSING) {
                 final double inicioAtendimento = tar.parar(simulacao.getTime(this));
                 final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
                 final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
@@ -437,11 +434,11 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
                     //cria evento para iniciar o atendimento imediatamente
                     final FutureEvent novoEvt = new FutureEvent(
                         simulacao.getTime(this) + tempoRec,
-                        FutureEvent.ATENDIMENTO, this, tar
+                        EventType.SERVICE, this, tar
                     );
                     simulacao.addFutureEvent(novoEvt);
                 } else {
-                    tar.setEstado(Tarefa.FALHA);
+                    tar.setEstado(TaskState.FAILED);
                 }
             }
         }
@@ -457,7 +454,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
         System.out.println("--------------------------------------");
         System.out.println("Encaminhando ACK de alocação para " + mensagem.getOrigem().getId());
         final FutureEvent evt = new FutureEvent(
-            simulacao.getTime(this), FutureEvent.MENSAGEM, mensagem.getCaminho().remove(0), mensagem
+            simulacao.getTime(this), EventType.MESSAGE, mensagem.getCaminho().remove(0), mensagem
         );
         simulacao.addFutureEvent(evt);
     }
@@ -546,7 +543,7 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
 
     public void desligar (final Simulation simulacao) {
         for (final CS_VirtualMac vm : this.VMs) {
-            vm.setStatus(CS_VirtualMac.DESTRUIDA);
+            vm.setStatus(VirtualMachineState.DESTROYED);
             vm.setTempoDeExec(simulacao.getTime(this));
             vm
                 .getMetricaCusto()

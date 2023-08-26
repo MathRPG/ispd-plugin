@@ -55,7 +55,7 @@ public class FirstFit extends VmAllocationPolicy {
 
             do {
                 if (slaveCount == 0) {
-                    auxVM.setStatus(CS_VirtualMac.REJEITADA);
+                    auxVM.setStatus(VirtualMachineState.REJECTED);
                     this.VMsRejeitadas.add(auxVM);
                     this.maqIndex = 0;
                     slaveCount--;

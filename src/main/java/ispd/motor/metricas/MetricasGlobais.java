@@ -1,14 +1,10 @@
 package ispd.motor.metricas;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
-import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
-import java.io.Serializable;
-import java.util.List;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import java.io.*;
+import java.util.*;
 
 public class MetricasGlobais implements Serializable {
 
@@ -140,7 +136,7 @@ public class MetricasGlobais implements Serializable {
         double tempoLivreMedio = 0.0;
         for (final CS_Processamento auxVM : redeDeFilas.getVMs()) {
             final CS_VirtualMac vm = (CS_VirtualMac) auxVM;
-            if (vm.getStatus() == CS_VirtualMac.ALOCADA) {
+            if (vm.getStatus() == VirtualMachineState.ALLOCATED) {
                 double aux = auxVM.getMetrica().getSegundosDeProcessamento();
                 aux = (this.tempoSimulacao - aux);
                 tempoLivreMedio += aux;//tempo livre
@@ -155,7 +151,7 @@ public class MetricasGlobais implements Serializable {
     private double getCustoTotalDisco (final RedeDeFilasCloud redeDeFilas) {
         // calcula o custo total de uso de disco na nuvem
         for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
-            if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
+            if (auxVM.getStatus() == VirtualMachineState.DESTROYED) {
                 this.custoTotalDisco =
                     this.custoTotalDisco + auxVM.getMetricaCusto().getCustoDisco();
             }
@@ -166,7 +162,7 @@ public class MetricasGlobais implements Serializable {
     private double getCustoTotalMem (final RedeDeFilasCloud redeDeFilas) {
         // calcula custo total de uso de memória pela nuvem
         for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
-            if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
+            if (auxVM.getStatus() == VirtualMachineState.DESTROYED) {
                 this.custoTotalMem = this.custoTotalMem + auxVM.getMetricaCusto().getCustoMem();
             }
         }
@@ -176,7 +172,7 @@ public class MetricasGlobais implements Serializable {
     private double getCustoTotalProc (final RedeDeFilasCloud redeDeFilas) {
         // calcula o custo total de uso de processamento da nuvem
         for (final CS_VirtualMac auxVM : redeDeFilas.getVMs()) {
-            if (auxVM.getStatus() == CS_VirtualMac.DESTRUIDA) {
+            if (auxVM.getStatus() == VirtualMachineState.DESTROYED) {
                 this.custoTotalProc = this.custoTotalProc + auxVM.getMetricaCusto().getCustoProc();
             }
         }

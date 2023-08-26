@@ -1,13 +1,9 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import ispd.motor.FutureEvent;
-import ispd.motor.Simulation;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import ispd.motor.filas.servidores.CentroServico;
-import java.util.ArrayList;
-import java.util.List;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import java.util.*;
 
 public class CS_Switch extends CS_Comunicacao implements Vertice {
 
@@ -40,7 +36,7 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
             this.linkDisponivel = false;
             //cria evento para iniciar o atendimento imediatamente
             final FutureEvent novoEvt = new FutureEvent(
-                simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, cliente
+                simulacao.getTime(this), EventType.SERVICE, this, cliente
             );
             simulacao.addFutureEvent(novoEvt);
         } else {
@@ -55,7 +51,7 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
         //Gera evento para atender proximo cliente da lista
         final FutureEvent evtFut = new FutureEvent(
             simulacao.getTime(this) + this.tempoTransmitir(cliente.getTamComunicacao()),
-            FutureEvent.SAIDA, this, cliente
+            EventType.EXIT, this, cliente
         );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
@@ -72,7 +68,7 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
         cliente.finalizarAtendimentoComunicacao(simulacao.getTime(this));
         //Gera evento para chegada da tarefa no proximo servidor
         FutureEvent evtFut = new FutureEvent(
-            simulacao.getTime(this), FutureEvent.CHEGADA, cliente.getCaminho().remove(0), cliente
+            simulacao.getTime(this), EventType.ARRIVAL, cliente.getCaminho().remove(0), cliente
         );
         //Event adicionado a lista de evntos futuros
         simulacao.addFutureEvent(evtFut);
@@ -83,7 +79,7 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
             //Gera evento para atender proximo cliente da lista
             final Tarefa proxCliente = this.filaPacotes.remove(0);
             evtFut = new FutureEvent(
-                simulacao.getTime(this), FutureEvent.ATENDIMENTO, this, proxCliente
+                simulacao.getTime(this), EventType.SERVICE, this, proxCliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -91,8 +87,12 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
     }
 
     @Override
-    public void requisicao (final Simulation simulacao, final Mensagem cliente, final int tipo) {
-        if (tipo == FutureEvent.SAIDA_MENSAGEM) {
+    public void requisicao (
+        final Simulation simulacao,
+        final Mensagem cliente,
+        final EventType tipo
+    ) {
+        if (tipo == EventType.MESSAGE_EXIT) {
             this.tempoTransmitir(cliente.getTamComunicacao());
             //Incrementa o número de Mbits transmitido por este link
             this.getMetrica().incMbitsTransmitidos(cliente.getTamComunicacao());
@@ -102,7 +102,7 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
             //Gera evento para chegada da mensagem no proximo servidor
             FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this) + tempoTrans,
-                FutureEvent.MENSAGEM, cliente.getCaminho().remove(0), cliente
+                EventType.MESSAGE, cliente.getCaminho().remove(0), cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
@@ -110,7 +110,7 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
                 //Gera evento para chegada da mensagem no proximo servidor
                 evtFut = new FutureEvent(
                     simulacao.getTime(this) + tempoTrans,
-                    FutureEvent.SAIDA_MENSAGEM, this, this.filaMensagens.remove(0)
+                    EventType.MESSAGE_EXIT, this, this.filaMensagens.remove(0)
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
@@ -121,7 +121,7 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
             this.linkDisponivelMensagem = false;
             //Gera evento para chegada da mensagem no proximo servidor
             final FutureEvent evtFut = new FutureEvent(
-                simulacao.getTime(this), FutureEvent.SAIDA_MENSAGEM, this, cliente
+                simulacao.getTime(this), EventType.MESSAGE_EXIT, this, cliente
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);

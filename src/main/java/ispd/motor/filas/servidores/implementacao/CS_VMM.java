@@ -93,7 +93,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                                    + vm.getId());
                 final FutureEvent evtFut = new FutureEvent(
                     simulacao.getTime(this),
-                    FutureEvent.CHEGADA,
+                    EventType.ARRIVAL,
                     cliente.getCaminho().remove(0),
                     cliente
                 );
@@ -106,9 +106,9 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                 + " com status "
                 + cliente.getEstado());
 
-            if (cliente.getEstado() != Tarefa.CANCELADO) {
+            if (cliente.getEstado() != TaskState.CANCELLED) {
                 // Tarefas concluida possuem tratamento diferencial
-                if (cliente.getEstado() == Tarefa.CONCLUIDO) {
+                if (cliente.getEstado() == TaskState.DONE) {
                     System.out.println("cliente é o retorno de tarefa "
                                        + cliente.getIdentificador());
                     // se não for origem da tarefa ela deve ser encaminhada
@@ -117,7 +117,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                         // Gera evento para chegada da tarefa no proximo servidor
                         final FutureEvent evtFut = new FutureEvent(
                             simulacao.getTime(this),
-                            FutureEvent.CHEGADA,
+                            EventType.ARRIVAL,
                             cliente.getCaminho().remove(0),
                             cliente
                         );
@@ -142,7 +142,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                     if (cliente.getCaminho() != null) {
                         final FutureEvent evtFut = new FutureEvent(
                             simulacao.getTime(this),
-                            FutureEvent.CHEGADA,
+                            EventType.ARRIVAL,
                             cliente.getCaminho().remove(0),
                             cliente
                         );
@@ -181,7 +181,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
             System.out.println("cliente é a vm " + trf.getVM_enviada().getId());
             final FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 cliente.getCaminho().remove(0),
                 cliente
             );
@@ -198,7 +198,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
             System.out.println("cliente é uma tarefa " + cliente.getIdentificador());
             final FutureEvent evtFut = new FutureEvent(
                 simulacao.getTime(this),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 cliente.getCaminho().remove(0),
                 cliente
             );
@@ -217,32 +217,36 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     }
 
     @Override
-    public void requisicao (final Simulation simulacao, final Mensagem mensagem, final int tipo) {
-        if (tipo == FutureEvent.ESCALONAR) {
+    public void requisicao (
+        final Simulation simulacao,
+        final Mensagem mensagem,
+        final EventType tipo
+    ) {
+        if (tipo == EventType.SCHEDULING) {
             System.out.println("Iniciando escalonamento...");
             this.escalonador.escalonar();
-        } else if (tipo == FutureEvent.ALOCAR_VMS) {
+        } else if (tipo == EventType.ALLOCATION) {
             System.out.println("Iniciando Alocação...");
             this.alocadorVM.escalonar();// realizar a rotina de alocar a máquina virtual
         } else if (mensagem != null) {
-            if (mensagem.getTipo() == Mensagens.ATUALIZAR) {
+            if (mensagem.getTipo() == MessageType.UPDATE) {
                 this.atenderAtualizacao(simulacao, mensagem);
-            } else if (mensagem.getTipo() == Mensagens.ALOCAR_ACK) {
+            } else if (mensagem.getTipo() == MessageType.ALLOCATION_ACK) {
                 this.atenderAckAlocacao(simulacao, mensagem);
             } else if (mensagem.getTarefa() != null && mensagem
                 .getTarefa()
                 .getLocalProcessamento()
                 .equals(this)) {
                 switch (mensagem.getTipo()) {
-                    case Mensagens.PARAR -> this.atenderParada(simulacao, mensagem);
-                    case Mensagens.CANCELAR -> this.atenderCancelamento(simulacao, mensagem);
-                    case Mensagens.DEVOLVER -> this.atenderDevolucao(simulacao, mensagem);
-                    case Mensagens.DEVOLVER_COM_PREEMPCAO -> this.atenderDevolucaoPreemptiva(
+                    case STOP -> this.atenderParada(simulacao, mensagem);
+                    case CANCEL -> this.atenderCancelamento(simulacao, mensagem);
+                    case RETURN -> this.atenderDevolucao(simulacao, mensagem);
+                    case PREEMPTIVE_RETURN -> this.atenderDevolucaoPreemptiva(
                         simulacao,
                         mensagem
                     );
                 }
-            } else if (mensagem.getTipo() == Mensagens.RESULTADO_ATUALIZAR) {
+            } else if (mensagem.getTipo() == MessageType.UPDATE_RESULT) {
                 this.atenderRetornoAtualizacao(simulacao, mensagem);
             } else if (mensagem.getTarefa() != null) {
                 // encaminhando mensagem para o destino
@@ -289,7 +293,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
             CS_Processamento.getMenorCaminhoIndireto(this, (CS_Processamento) mensagem.getOrigem())
         ));
         final Mensagem novaMensagem = new Mensagem(
-            this, mensagem.getTamComunicacao(), Mensagens.RESULTADO_ATUALIZAR
+            this, mensagem.getTamComunicacao(), MessageType.UPDATE_RESULT
         );
         // Obtem informações dinâmicas
         novaMensagem.setFilaEscravo(new ArrayList<>(this.filaTarefas));
@@ -297,7 +301,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         novaMensagem.setCaminho(caminho);
         final FutureEvent evtFut = new FutureEvent(
             simulacao.getTime(this),
-            FutureEvent.MENSAGEM,
+            EventType.MESSAGE,
             novaMensagem.getCaminho().remove(0),
             novaMensagem
         );
@@ -346,7 +350,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                                + caminho.size());
             this.determinarCaminhoVM(auxVM, caminho);
             System.out.println(auxVM.getId() + " Alocada");
-            auxVM.setStatus(CS_VirtualMac.ALOCADA);
+            auxVM.setStatus(VirtualMachineState.ALLOCATED);
             auxVM.setInstanteAloc(simulacao.getTime(this));
             if (!this.vmsAlocadas) {
                 this.vmsAlocadas   = true;
@@ -378,7 +382,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
             }
             final FutureEvent evt = new FutureEvent(
                 simulacao.getTime(this),
-                FutureEvent.MENSAGEM,
+                EventType.MESSAGE,
                 mensagem.getCaminho().remove(0),
                 mensagem
             );
@@ -389,7 +393,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     @Override
     public void executeAllocation () {
         final FutureEvent evtFut = new FutureEvent(
-            this.simulacao.getTime(this), FutureEvent.ALOCAR_VMS, this, null
+            this.simulacao.getTime(this), EventType.ALLOCATION, this, null
         );
         // Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
@@ -409,7 +413,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     public void executeScheduling () {
         System.out.println(this.getId() + " solicitando escalonamento");
         final FutureEvent evtFut = new FutureEvent(
-            this.simulacao.getTime(this), FutureEvent.ESCALONAR, this, null
+            this.simulacao.getTime(this), EventType.SCHEDULING, this, null
         );
         // Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
@@ -428,7 +432,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                 .getLocalProcessamento()
                 .getId());
         final FutureEvent evtFut = new FutureEvent(
-            this.simulacao.getTime(this), FutureEvent.SAIDA, this, task
+            this.simulacao.getTime(this), EventType.EXIT, this, task
         );
         // Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
@@ -445,12 +449,12 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     public void sendMessage (
         final Tarefa task,
         final CS_Processamento slave,
-        final int messageType
+        final MessageType messageType
     ) {
         final Mensagem msg = new Mensagem(this, messageType, task);
         msg.setCaminho(this.escalonador.escalonarRota(slave));
         final FutureEvent evtFut = new FutureEvent(
-            this.simulacao.getTime(this), FutureEvent.MENSAGEM, msg.getCaminho().remove(0), msg
+            this.simulacao.getTime(this), EventType.MESSAGE, msg.getCaminho().remove(0), msg
         );
         // Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
@@ -468,7 +472,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         final TarefaVM tarefa = new TarefaVM(vm.getVmmResponsavel(), vm, 300.0, 0.0);
         tarefa.setCaminho(vm.getCaminho());
         final FutureEvent evtFut =
-            new FutureEvent(this.simulacao.getTime(this), FutureEvent.SAIDA, this, tarefa);
+            new FutureEvent(this.simulacao.getTime(this), EventType.EXIT, this, tarefa);
         // Event adicionado a lista de evntos futuros
         this.simulacao.addFutureEvent(evtFut);
     }

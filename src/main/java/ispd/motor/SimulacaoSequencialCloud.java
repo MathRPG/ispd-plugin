@@ -245,7 +245,7 @@ public class SimulacaoSequencialCloud extends Simulation {
 
     @Override
     public boolean removeFutureEvent (
-        final int eventType,
+        final EventType eventType,
         final CentroServico eventServer,
         final Client eventClient
     ) {
@@ -273,7 +273,7 @@ public class SimulacaoSequencialCloud extends Simulation {
         for (final Tarefa tarefa : tarefas) {
             final var evt = new FutureEvent(
                 tarefa.getTimeCriacao(),
-                FutureEvent.CHEGADA,
+                EventType.ARRIVAL,
                 tarefa.getOrigem(),
                 tarefa
             );
@@ -351,19 +351,19 @@ public class SimulacaoSequencialCloud extends Simulation {
         Objects.requireNonNull(eventoAtual);
         this.time = eventoAtual.getCreationTime();
         switch (eventoAtual.getType()) {
-            case FutureEvent.CHEGADA -> eventoAtual.getServidor()
+            case ARRIVAL -> eventoAtual.getServidor()
                 .chegadaDeCliente(this, (Tarefa) eventoAtual.getClient());
-            case FutureEvent.ATENDIMENTO -> eventoAtual.getServidor()
+            case SERVICE -> eventoAtual.getServidor()
                 .atendimento(this, (Tarefa) eventoAtual.getClient());
-            case FutureEvent.SAIDA -> eventoAtual
+            case EXIT -> eventoAtual
                 .getServidor()
                 .saidaDeCliente(this, (Tarefa) eventoAtual.getClient());
-            case FutureEvent.ESCALONAR -> eventoAtual
+            case SCHEDULING -> eventoAtual
                 .getServidor()
-                .requisicao(this, null, FutureEvent.ESCALONAR);
-            case FutureEvent.ALOCAR_VMS -> eventoAtual
+                .requisicao(this, null, EventType.SCHEDULING);
+            case ALLOCATION -> eventoAtual
                 .getServidor()
-                .requisicao(this, null, FutureEvent.ALOCAR_VMS);
+                .requisicao(this, null, EventType.ALLOCATION);
             default -> eventoAtual.getServidor()
                 .requisicao(this, (Mensagem) eventoAtual.getClient(), eventoAtual.getType());
         }

@@ -113,7 +113,7 @@ public class SimulacaoParalela extends Simulation {
 
     @Override
     public void addFutureEvent (final FutureEvent ev) {
-        if (ev.getType() == FutureEvent.CHEGADA) {
+        if (ev.getType() == EventType.ARRIVAL) {
             this.threadFilaEventos.get(ev.getServidor()).offer(ev);
         } else {
             this.threadFilaEventos.get(ev.getServidor()).offer(ev);
@@ -122,7 +122,7 @@ public class SimulacaoParalela extends Simulation {
 
     @Override
     public boolean removeFutureEvent (
-        final int eventType,
+        final EventType eventType,
         final CentroServico eventServer,
         final Client eventClient
     ) {
@@ -219,24 +219,24 @@ public class SimulacaoParalela extends Simulation {
                         this.relogioLocal = eventoAtual.getCreationTime();
                     }
                     switch (eventoAtual.getType()) {
-                        case FutureEvent.CHEGADA:
+                        case ARRIVAL:
                             eventoAtual.getServidor()
                                 .chegadaDeCliente(this.simulacao, (Tarefa) eventoAtual.getClient());
                             break;
-                        case FutureEvent.ATENDIMENTO:
+                        case SERVICE:
                             eventoAtual
                                 .getServidor()
                                 .atendimento(this.simulacao, (Tarefa) eventoAtual.getClient());
                             break;
-                        case FutureEvent.SAIDA:
+                        case EXIT:
                             eventoAtual
                                 .getServidor()
                                 .saidaDeCliente(this.simulacao, (Tarefa) eventoAtual.getClient());
                             break;
-                        case FutureEvent.ESCALONAR:
+                        case SCHEDULING:
                             eventoAtual
                                 .getServidor()
-                                .requisicao(this.simulacao, null, FutureEvent.ESCALONAR);
+                                .requisicao(this.simulacao, null, EventType.SCHEDULING);
                             break;
                         default:
                             eventoAtual.getServidor().requisicao(
@@ -312,28 +312,28 @@ public class SimulacaoParalela extends Simulation {
                         this.setRelogioLocal(eventoAtual.getCreationTime());
                     }
                     switch (eventoAtual.getType()) {
-                        case FutureEvent.CHEGADA:
+                        case ARRIVAL:
                             eventoAtual.getServidor()
                                 .chegadaDeCliente(
                                     this.getSimulacao(),
                                     (Tarefa) eventoAtual.getClient()
                                 );
                             break;
-                        case FutureEvent.ATENDIMENTO:
+                        case SERVICE:
                             eventoAtual.getServidor()
                                 .atendimento(this.getSimulacao(), (Tarefa) eventoAtual.getClient());
                             break;
-                        case FutureEvent.SAIDA:
+                        case EXIT:
                             eventoAtual.getServidor()
                                 .saidaDeCliente(
                                     this.getSimulacao(),
                                     (Tarefa) eventoAtual.getClient()
                                 );
                             break;
-                        case FutureEvent.ESCALONAR:
+                        case SCHEDULING:
                             eventoAtual
                                 .getServidor()
-                                .requisicao(this.getSimulacao(), null, FutureEvent.ESCALONAR);
+                                .requisicao(this.getSimulacao(), null, EventType.SCHEDULING);
                             break;
                         default:
                             eventoAtual.getServidor().requisicao(
@@ -369,7 +369,7 @@ public class SimulacaoParalela extends Simulation {
                     if (tarefa.getOrigem() == this.mestre) {
                         //criar evento...
                         final FutureEvent evt = new FutureEvent(
-                            tarefa.getTimeCriacao(), FutureEvent.CHEGADA, tarefa.getOrigem(), tarefa
+                            tarefa.getTimeCriacao(), EventType.ARRIVAL, tarefa.getOrigem(), tarefa
                         );
                         SimulacaoParalela.this.threadFilaEventos.get(this.mestre).add(evt);
                     }
