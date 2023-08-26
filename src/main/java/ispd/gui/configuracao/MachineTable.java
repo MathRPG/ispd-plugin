@@ -44,7 +44,7 @@ public class MachineTable extends AbstractTableModel {
     private final JButton slaves = this.setButton();
 
     private final JComboBox<?> schedulers =
-        new JComboBox<>(GridSchedulingPolicyLoader.getPolicyNames());
+        new JComboBox<>(GridSchedulingLoader.getPolicyNames());
 
     private final JComboBox<String> users = new JComboBox<>();
 

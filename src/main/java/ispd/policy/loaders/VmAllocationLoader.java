@@ -6,7 +6,7 @@ import java.util.*;
 import java.util.function.*;
 import org.jetbrains.annotations.*;
 
-public class VmAllocationPolicyLoader extends PolicyLoader<VmAllocationPolicy> {
+public class VmAllocationLoader extends Loader<VmAllocationPolicy> {
 
     private static final Map<String, Supplier<VmAllocationPolicy>> POLICIES = Map.of(
         "RoundRobin", RoundRobin::new,

@@ -1,26 +1,13 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import ispd.motor.FutureEvent;
-import ispd.motor.Mensagens;
-import ispd.motor.Simulation;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.TarefaVM;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.policy.PolicyCondition;
-import ispd.policy.PolicyConditions;
-import ispd.policy.allocation.vm.VmAllocationPolicy;
-import ispd.policy.allocation.vm.VmMaster;
-import ispd.policy.loaders.CloudSchedulingPolicyLoader;
-import ispd.policy.loaders.VmAllocationPolicyLoader;
-import ispd.policy.scheduling.cloud.CloudMaster;
-import ispd.policy.scheduling.cloud.CloudSchedulingPolicy;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.*;
+import ispd.policy.allocation.vm.*;
+import ispd.policy.loaders.*;
+import ispd.policy.scheduling.cloud.*;
+import java.util.*;
 
 public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, Mensagens, Vertice {
 
@@ -63,9 +50,9 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
         final String allocationPolicyName
     ) {
         super(id, owner, computationalPower, 1, loadFactor, 0);
-        this.alocadorVM = new VmAllocationPolicyLoader().loadPolicy(allocationPolicyName);
+        this.alocadorVM = new VmAllocationLoader().loadPolicy(allocationPolicyName);
         this.alocadorVM.setMestre(this);
-        this.escalonador = new CloudSchedulingPolicyLoader().loadPolicy(schedulingPolicyName);
+        this.escalonador = new CloudSchedulingLoader().loadPolicy(schedulingPolicyName);
         this.escalonador.setMestre(this);
     }
 

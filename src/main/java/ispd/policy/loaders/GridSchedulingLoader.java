@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.function.*;
 import org.jetbrains.annotations.*;
 
-public class GridSchedulingPolicyLoader extends PolicyLoader<GridSchedulingPolicy> {
+public class GridSchedulingLoader extends Loader<GridSchedulingPolicy> {
 
     private static final Map<String, Supplier<GridSchedulingPolicy>> POLICIES;
 

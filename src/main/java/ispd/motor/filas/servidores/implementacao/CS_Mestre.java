@@ -1,22 +1,12 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import ispd.motor.FutureEvent;
-import ispd.motor.Mensagens;
-import ispd.motor.Simulation;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.policy.PolicyCondition;
-import ispd.policy.PolicyConditions;
-import ispd.policy.loaders.GridSchedulingPolicyLoader;
-import ispd.policy.scheduling.grid.GridMaster;
-import ispd.policy.scheduling.grid.GridSchedulingPolicy;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.*;
+import ispd.policy.loaders.*;
+import ispd.policy.scheduling.grid.*;
+import java.util.*;
 
 public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens, Vertice {
 
@@ -45,7 +35,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
         final Double energia
     ) {
         super(id, proprietario, PoderComputacional, 1, Ocupacao, 0, energia);
-        this.escalonador = new GridSchedulingPolicyLoader().loadPolicy(Escalonador);
+        this.escalonador = new GridSchedulingLoader().loadPolicy(Escalonador);
         this.escalonador.setMestre(this);
     }
 
@@ -461,7 +451,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
         /**
          * Armazena os caminhos possiveis para alcançar cada escravo
          */
-        List<List> caminhoEscravo = new ArrayList<>(escravos.size());
+        final List<List> caminhoEscravo = new ArrayList<>(escravos.size());
         //Busca pelo melhor caminho
         for (int i = 0; i < escravos.size(); i++) {
             caminhoEscravo.add(i, CS_Processamento.getMenorCaminho(this, escravos.get(i)));
