@@ -21,14 +21,6 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
     private static final String CLASS_PATH = "ispd.policy.scheduling.grid.impl.";
 
     @Override
-    public GridSchedulingPolicy loadPolicy (final String policyName) {
-        return Optional.of(policyName)
-            .map(SUPPLIER_MAP::get)
-            .map(Supplier::get)
-            .orElseThrow(() -> new UnknownPolicyException(policyName));
-    }
-
-    @Override
     protected String getClassPath () {
         return CLASS_PATH;
     }

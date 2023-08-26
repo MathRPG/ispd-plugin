@@ -2,11 +2,9 @@ package ispd.policy.loaders;
 
 import ispd.arquivo.xml.*;
 import ispd.policy.*;
-import java.lang.reflect.*;
 import java.net.*;
 import java.util.*;
 import java.util.function.*;
-import java.util.logging.*;
 import org.jetbrains.annotations.*;
 
 public abstract class GenericPolicyLoader <T extends Policy<?>> implements PolicyLoader<T> {
@@ -27,23 +25,15 @@ public abstract class GenericPolicyLoader <T extends Policy<?>> implements Polic
         }
     }
 
+    @Override
+    public T loadPolicy (final String policyName) {
+        return Optional.of(policyName)
+            .map(this.getSupplierMap()::get)
+            .map(Supplier::get)
+            .orElseThrow(() -> new UnknownPolicyException(policyName));
+    }
+
     protected abstract String getClassPath ();
 
     protected abstract @NotNull Map<String, Supplier<T>> getSupplierMap ();
-
-    @Override
-    public T loadPolicy (final String policyName) {
-        final var clsName = this.getClassPath() + policyName;
-        try {
-            final var cls = URL_CLASS_LOADER.loadClass(clsName);
-            return (T) cls.getConstructor().newInstance();
-        } catch (final ClassNotFoundException | InvocationTargetException |
-                       InstantiationException | IllegalAccessException |
-                       NoSuchMethodException | ClassCastException e) {
-            Logger.getLogger(GenericPolicyLoader.class.getName())
-                .log(Level.SEVERE, "Could not load policy '%s'!\n".formatted(policyName), e);
-
-            throw new RuntimeException(e);
-        }
-    }
 }
