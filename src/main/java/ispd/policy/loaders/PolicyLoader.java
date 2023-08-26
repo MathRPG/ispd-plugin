@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.function.*;
 import org.jetbrains.annotations.*;
 
-public abstract class GenericPolicyLoader <T extends Policy<?>> {
+public abstract class PolicyLoader <T extends Policy<?>> {
 
     protected abstract @NotNull Map<String, Supplier<T>> getPolicies ();
 
