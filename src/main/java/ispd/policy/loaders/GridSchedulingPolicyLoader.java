@@ -28,7 +28,7 @@ public class GridSchedulingPolicyLoader extends PolicyLoader<GridSchedulingPolic
     }
 
     @Override
-    protected @Unmodifiable @NotNull Map<String, Supplier<GridSchedulingPolicy>> getPolicies () {
+    protected @Unmodifiable @NotNull Map<String, Supplier<GridSchedulingPolicy>> policyMap () {
         return unmodifiableMap(POLICIES);
     }
 }

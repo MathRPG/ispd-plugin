@@ -7,12 +7,16 @@ import org.jetbrains.annotations.*;
 
 public abstract class PolicyLoader <T extends Policy<?>> {
 
-    protected abstract @NotNull Map<String, Supplier<T>> getPolicies ();
+    protected abstract @NotNull Map<String, Supplier<T>> policyMap ();
 
     public T loadPolicy (final String policyName) {
         return Optional.of(policyName)
-            .map(this.getPolicies()::get)
+            .map(this::getSupplierByName)
             .map(Supplier::get)
             .orElseThrow(() -> new UnknownPolicyException(policyName));
+    }
+
+    private Supplier<T> getSupplierByName (final String name) {
+        return this.policyMap().get(name);
     }
 }

@@ -20,7 +20,7 @@ public class VmAllocationPolicyLoader extends PolicyLoader<VmAllocationPolicy> {
     }
 
     @Override
-    protected @NotNull Map<String, Supplier<VmAllocationPolicy>> getPolicies () {
+    protected @NotNull Map<String, Supplier<VmAllocationPolicy>> policyMap () {
         return POLICIES;
     }
 }

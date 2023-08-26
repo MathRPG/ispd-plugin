@@ -22,7 +22,7 @@ public class CloudSchedulingPolicyLoader extends PolicyLoader<CloudSchedulingPol
     }
 
     @Override
-    protected @NotNull Map<String, Supplier<CloudSchedulingPolicy>> getPolicies () {
+    protected @NotNull Map<String, Supplier<CloudSchedulingPolicy>> policyMap () {
         return unmodifiableMap(POLICIES);
     }
 }
