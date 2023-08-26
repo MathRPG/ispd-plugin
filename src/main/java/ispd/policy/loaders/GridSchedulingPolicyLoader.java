@@ -18,8 +18,8 @@ public class GridSchedulingPolicyLoader extends PolicyLoader<GridSchedulingPolic
         POLICIES.put("Workqueue", Workqueue::new);
         POLICIES.put("WQR", WQR::new);
         POLICIES.put("DynamicFPLTF", DynamicFPLTF::new);
-        POLICIES.put("HOSEP", HOSEP::new);
         POLICIES.put("OSEP", OSEP::new);
+        POLICIES.put("HOSEP", HOSEP::new);
         POLICIES.put("EHOSEP", EHOSEP::new);
     }
 
