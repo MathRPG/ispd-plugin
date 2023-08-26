@@ -17,8 +17,8 @@ public class CloudSchedulingPolicyLoader extends GenericPolicyLoader<CloudSchedu
         POLICIES.put("RoundRobin", RoundRobin::new);
     }
 
-    public static String[] getArray () {
-        return NATIVE_CLOUD_POLICIES.toArray(String[]::new);
+    public static String[] getPolicyNames () {
+        return POLICIES.keySet().toArray(String[]::new);
     }
 
     @Override

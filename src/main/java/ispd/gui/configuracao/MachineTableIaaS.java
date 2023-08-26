@@ -54,7 +54,7 @@ public class MachineTableIaaS extends AbstractTableModel {
 
     private final JComboBox<?> schedulers =
         toolTippedComboBox(
-            CloudSchedulingPolicyLoader.getArray(),
+            CloudSchedulingPolicyLoader.getPolicyNames(),
             "Select the task scheduling policy"
         );
 

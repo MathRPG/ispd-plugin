@@ -23,7 +23,7 @@ public class ClusterTableIaaS extends AbstractTableModel {
 
     private final JComboBox<Object> schedulers =
         makeComboBox(
-            CloudSchedulingPolicyLoader.getArray(),
+            CloudSchedulingPolicyLoader.getPolicyNames(),
             "Select the task scheduling policy"
         );
 
