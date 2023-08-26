@@ -7,6 +7,8 @@ import org.jetbrains.annotations.*;
 
 public abstract class GenericPolicyLoader <T extends Policy<?>> implements PolicyLoader<T> {
 
+    protected abstract @NotNull Map<String, Supplier<T>> getSupplierMap ();
+
     @Override
     public T loadPolicy (final String policyName) {
         return Optional.of(policyName)
@@ -14,6 +16,4 @@ public abstract class GenericPolicyLoader <T extends Policy<?>> implements Polic
             .map(Supplier::get)
             .orElseThrow(() -> new UnknownPolicyException(policyName));
     }
-
-    protected abstract @NotNull Map<String, Supplier<T>> getSupplierMap ();
 }
