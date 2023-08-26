@@ -3,7 +3,6 @@ package ispd.gui.configuracao;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.*;
-import ispd.policy.*;
 import ispd.policy.loaders.*;
 import java.awt.event.*;
 import java.util.*;
@@ -62,7 +61,7 @@ public class MachineTableIaaS extends AbstractTableModel {
         toolTippedComboBox(NO_USERS, "Select the resource owner");
 
     private final JComboBox<String> allocators = toolTippedComboBox(
-        PolicyLoader.NATIVE_VM_POLICIES.toArray(String[]::new),
+        VmAllocationPolicyLoader.getPolicyNames(),
         "Select the virtual machine allocation policy"
     );
 

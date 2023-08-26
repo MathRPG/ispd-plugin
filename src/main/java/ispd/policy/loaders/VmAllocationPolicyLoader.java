@@ -15,6 +15,10 @@ public class VmAllocationPolicyLoader extends GenericPolicyLoader<VmAllocationPo
         "Volume", Volume::new
     );
 
+    public static String[] getPolicyNames () {
+        return NATIVE_VM_POLICIES.toArray(String[]::new);
+    }
+
     @Override
     protected @NotNull Map<String, Supplier<VmAllocationPolicy>> getPolicies () {
         return POLICIES;
