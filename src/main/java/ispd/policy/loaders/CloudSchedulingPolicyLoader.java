@@ -8,12 +8,12 @@ import org.jetbrains.annotations.*;
 
 public class CloudSchedulingPolicyLoader extends GenericPolicyLoader<CloudSchedulingPolicy> {
 
-    private static final Map<String, Supplier<CloudSchedulingPolicy>> SUPPLIER_MAP = Map.of(
+    private static final Map<String, Supplier<CloudSchedulingPolicy>> POLICIES = Map.of(
         "RoundRobin", RoundRobin::new
     );
 
     @Override
-    protected @NotNull Map<String, Supplier<CloudSchedulingPolicy>> getSupplierMap () {
-        return SUPPLIER_MAP;
+    protected @NotNull Map<String, Supplier<CloudSchedulingPolicy>> getPolicies () {
+        return POLICIES;
     }
 }

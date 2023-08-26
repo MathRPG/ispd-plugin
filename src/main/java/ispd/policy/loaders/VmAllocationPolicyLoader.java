@@ -8,7 +8,7 @@ import org.jetbrains.annotations.*;
 
 public class VmAllocationPolicyLoader extends GenericPolicyLoader<VmAllocationPolicy> {
 
-    private static final Map<String, Supplier<VmAllocationPolicy>> SUPPLIER_MAP = Map.of(
+    private static final Map<String, Supplier<VmAllocationPolicy>> POLICIES = Map.of(
         "RoundRobin", RoundRobin::new,
         "FirstFit", FirstFit::new,
         "FirstFitDecreasing", FirstFitDecreasing::new,
@@ -16,7 +16,7 @@ public class VmAllocationPolicyLoader extends GenericPolicyLoader<VmAllocationPo
     );
 
     @Override
-    protected @NotNull Map<String, Supplier<VmAllocationPolicy>> getSupplierMap () {
-        return SUPPLIER_MAP;
+    protected @NotNull Map<String, Supplier<VmAllocationPolicy>> getPolicies () {
+        return POLICIES;
     }
 }
