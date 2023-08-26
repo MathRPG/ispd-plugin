@@ -2,7 +2,7 @@ package ispd.arquivo.xml;
 
 import ispd.arquivo.xml.utils.*;
 import ispd.gui.*;
-import ispd.gui.iconico.grade.*;
+import ispd.gui.iconico.*;
 import ispd.motor.workload.impl.*;
 import java.util.*;
 import java.util.stream.*;
@@ -19,19 +19,13 @@ public class IconicModelDocumentBuilder {
 
     private static final Object[][] NO_ATTRS = {};
 
-    private static final int DEFAULT_MODEL_TYPE = -1;
-
     private final WrappedDocument document = new WrappedDocument(ManipuladorXML.newDocument());
 
     private final Element system;
 
     private Element load = null;
 
-    public IconicModelDocumentBuilder () {
-        this(DEFAULT_MODEL_TYPE);
-    }
-
-    public IconicModelDocumentBuilder (final int modelType) {
+    public IconicModelDocumentBuilder (final ModelType modelType) {
         this.system = this.document.createElement("system");
         this.system.setAttribute("version", getVersionForModelType(modelType));
         this.document.appendChild(this.system);
@@ -41,13 +35,11 @@ public class IconicModelDocumentBuilder {
      * @throws IllegalArgumentException
      *     if modelType is not in -1, 0, 1 or 2
      */
-    private static String getVersionForModelType (final int modelType) {
+    private static String getVersionForModelType (final ModelType modelType) {
         return switch (modelType) {
-            case PickModelTypeDialog.GRID -> "2.1";
-            case PickModelTypeDialog.IAAS -> "2.2";
-            case PickModelTypeDialog.PAAS -> "2.3";
-            case DEFAULT_MODEL_TYPE -> "1.2";
-            default -> throw new IllegalArgumentException("Invalid model type " + modelType);
+            case GRID -> "2.1";
+            case IAAS -> "2.2";
+            case PAAS -> "2.3";
         };
     }
 
@@ -87,12 +79,14 @@ public class IconicModelDocumentBuilder {
         final Machine m,
         final List<Integer> slaves
     ) {
-        this.addMachine(
+        final var id = m.getId();
+
+        this.addMachineInner(
             m.getX(),
             m.getY(),
-            m.getId().getLocalId(),
-            m.getId().getGlobalId(),
-            m.getId().getName(),
+            id.getLocalId(),
+            id.getGlobalId(),
+            id.getName(),
             m.getComputationalPower(),
             m.getLoadFactor(),
             m.getSchedulingAlgorithm(),
@@ -100,23 +94,36 @@ public class IconicModelDocumentBuilder {
             m.getCoreCount(),
             m.getRam(),
             m.getHardDisk(),
+            null,
+            null,
+            null,
             m.isMaster(),
             slaves,
-            m.getEnergyConsumption()
+            new Object[][] { { "energy", m.getEnergyConsumption() } },
+            NO_ATTRS
         );
     }
 
     private void addPerNodeLoad (final PerNodeWorkloadGenerator no) {
-        this.addLoadNo(
-            no.getApplication(),
-            no.getOwner(),
-            no.getSchedulerId(),
-            no.getTaskCount(),
-            no.getComputationMaximum(),
-            no.getComputationMinimum(),
-            no.getCommunicationMaximum(),
-            no.getCommunicationMinimum()
-        );
+        this.addElementToLoad(this.anElement(
+            "node", new Object[][] {
+                { "application", no.getApplication() },
+                { "owner", no.getOwner() },
+                { "id_master", no.getSchedulerId() },
+                { "tasks", no.getTaskCount() },
+            }, new Element[] {
+                this.anElement("size", new Object[][] {
+                    { "type", "computing" },
+                    { "maximum", no.getComputationMaximum() },
+                    { "minimum", no.getComputationMinimum() },
+                }),
+                this.anElement("size", new Object[][] {
+                    { "type", "communication" },
+                    { "maximum", no.getCommunicationMaximum() },
+                    { "minimum", no.getCommunicationMinimum() },
+                }),
+            }
+        ));
     }
 
     public void addTraceLoad (final TraceFileWorkloadGenerator trace) {
@@ -185,8 +192,8 @@ public class IconicModelDocumentBuilder {
                 { "id", id.getName() },
                 { "energy", cluster.getEnergyConsumption() },
             }, new Node[] {
-                this.aPositionElement(cluster.getX(), cluster.getY()),
-                this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
+                this.aPositionElement(cluster),
+                this.getAnIconIdElement(id),
                 this.aCharacteristic(
                     cluster.getComputationalPower(),
                     cluster.getCoreCount(),
@@ -215,8 +222,8 @@ public class IconicModelDocumentBuilder {
                 { "owner", cluster.getOwner() },
                 { "master", cluster.isMaster() },
             }, new Node[] {
-                this.aPositionElement(cluster.getX(), cluster.getY()),
-                this.anIconIdElement(id.getGlobalId(), id.getLocalId()),
+                this.aPositionElement(cluster),
+                this.getAnIconIdElement(id),
                 this.aCharacteristic(
                     cluster.getComputationalPower(),
                     cluster.getCoreCount(),
@@ -231,39 +238,53 @@ public class IconicModelDocumentBuilder {
     }
 
     public void addLink (final Link l) {
-        final var source      = l.getSource();
-        final var destination = l.getDestination();
-        final var id          = l.getId();
+        final var id            = l.getId();
+        final var origination   = l.getSource();
+        final var destination   = l.getDestination();
+        final int originationId = ((GridItem) origination).getId().getGlobalId();
+        final int destinationId = ((GridItem) destination).getId().getGlobalId();
 
-        this.addLink(
-            source.getX(),
-            source.getY(),
-            destination.getX(),
-            destination.getY(),
-            id.getLocalId(),
-            id.getGlobalId(),
-            id.getName(),
-            l.getBandwidth(),
-            l.getLoadFactor(),
-            l.getLatency(),
-            ((GridItem) source).getId().getGlobalId(),
-            ((GridItem) destination).getId().getGlobalId()
-        );
+        this.system.appendChild(this.anElement(
+            "link", new Object[][] {
+                { "id", id.getName() },
+                { "bandwidth", l.getBandwidth() },
+                { "load", l.getLoadFactor() },
+                { "latency", l.getLatency() },
+            }, new Element[] {
+                this.anElement(
+                    "connect",
+                    "origination", originationId,
+                    "destination", destinationId
+                ),
+                this.aPositionElement(origination),
+                this.aPositionElement(destination),
+                this.getAnIconIdElement(id),
+            }
+        ));
+    }
+
+    private Element getAnIconIdElement (final GridItemIdentifier id) {
+        return this.anIconIdElement(id.getGlobalId(), id.getLocalId());
+    }
+
+    private Element aPositionElement (final Vertex vertex) {
+        return this.aPositionElement(vertex.getX(), vertex.getY());
     }
 
     public void addInternet (final Internet i) {
         final var id = i.getId();
 
-        this.addInternet(
-            i.getX(),
-            i.getY(),
-            id.getLocalId(),
-            id.getGlobalId(),
-            id.getName(),
-            i.getBandwidth(),
-            i.getLoadFactor(),
-            i.getLatency()
-        );
+        this.system.appendChild(this.anElement(
+            "internet", new Object[][] {
+                { "id", id.getName() },
+                { "bandwidth", i.getBandwidth() },
+                { "load", i.getLoadFactor() },
+                { "latency", i.getLatency() },
+            }, new Element[] {
+                this.aPositionElement(i),
+                this.getAnIconIdElement(id),
+            }
+        ));
     }
 
     /**
@@ -342,32 +363,6 @@ public class IconicModelDocumentBuilder {
     }
 
     /**
-     * Add internet icon with the given attributes to the current model being built.
-     */
-    public void addInternet (
-        final int x,
-        final int y,
-        final int idLocal,
-        final int idGlobal,
-        final String name,
-        final double bandwidth,
-        final double internetLoad,
-        final double latency
-    ) {
-        this.system.appendChild(this.anElement(
-            "internet", new Object[][] {
-                { "id", name },
-                { "bandwidth", bandwidth },
-                { "load", internetLoad },
-                { "latency", latency },
-            }, new Element[] {
-                this.aPositionElement(x, y),
-                this.anIconIdElement(idGlobal, idLocal),
-            }
-        ));
-    }
-
-    /**
      * Create an element with icon id information: those being the local and global ids.
      */
     private Element anIconIdElement (final int global, final int local) {
@@ -400,49 +395,6 @@ public class IconicModelDocumentBuilder {
     }
 
     /**
-     * Add a machine icon with the given attributes to the current model being built.
-     */
-    public void addMachine (
-        final Integer x,
-        final Integer y,
-        final Integer localId,
-        final Integer globalId,
-        final String name,
-        final Double power,
-        final Double occupancy,
-        final String scheduler,
-        final String owner,
-        final Integer coreCount,
-        final Double memory,
-        final Double disk,
-        final boolean isMaster,
-        final Collection<Integer> slaves,
-        final Double energy
-    ) {
-        this.addMachineInner(
-            x,
-            y,
-            localId,
-            globalId,
-            name,
-            power,
-            occupancy,
-            scheduler,
-            owner,
-            coreCount,
-            memory,
-            disk,
-            null,
-            null,
-            null,
-            isMaster,
-            slaves,
-            new Object[][] { { "energy", energy } },
-            NO_ATTRS
-        );
-    }
-
-    /**
      * Create an element with attributes describing the characteristics of a processing center, but
      * without costs. See
      * {@link #aCharacteristic(Double, Integer, Double, Double, Double, Double, Double)} for further
@@ -467,9 +419,7 @@ public class IconicModelDocumentBuilder {
 
     /**
      * Helper method to abstract away the addition of a machine element to the model being built. It
-     * takes in all attributes in common between the methods
-     * {@link #addMachine(Integer, Integer, Integer, Integer, String, Double, Double, String,
-     * String, Integer, Double, Double, boolean, Collection, Double)}, but also two extra params,
+     * takes in all attributes in common between the methods, but also two extra params,
      * {@code extraAttrs} and {@code extraMasterAttrs}, which are arrays containing the specific
      * attributes of each of the outer methods.
      *
@@ -567,38 +517,6 @@ public class IconicModelDocumentBuilder {
     }
 
     /**
-     * Add a link icon with the given attributes to the current model being built.
-     */
-    public void addLink (
-        final int x0,
-        final int y0,
-        final int x1,
-        final int y1,
-        final int localId,
-        final int globalId,
-        final String name,
-        final double bandwidth,
-        final double linkLoad,
-        final double latency,
-        final int origination,
-        final int destination
-    ) {
-        this.system.appendChild(this.anElement(
-            "link", new Object[][] {
-                { "id", name },
-                { "bandwidth", bandwidth },
-                { "load", linkLoad },
-                { "latency", latency },
-            }, new Element[] {
-                this.anElement("connect", "origination", origination, "destination", destination),
-                this.aPositionElement(x0, y0),
-                this.aPositionElement(x1, y1),
-                this.anIconIdElement(globalId, localId),
-            }
-        ));
-    }
-
-    /**
      * Create a position element with position information (x, y)
      */
     private Element aPositionElement (final int x, final int y) {
@@ -615,42 +533,6 @@ public class IconicModelDocumentBuilder {
             this.load = this.document.createElement("load");
             this.system.appendChild(this.load);
         }
-    }
-
-    /**
-     * Add a per-node load to the current model being built.
-     *
-     * @apiNote This method may be called more than once per instance.
-     */
-    public void addLoadNo (
-        final String application,
-        final String owner,
-        final String masterId,
-        final Integer taskCount,
-        final Double maxComp,
-        final Double minComp,
-        final Double maxComm,
-        final Double minComm
-    ) {
-        this.addElementToLoad(this.anElement(
-            "node", new Object[][] {
-                { "application", application },
-                { "owner", owner },
-                { "id_master", masterId },
-                { "tasks", taskCount },
-            }, new Element[] {
-                this.anElement("size", new Object[][] {
-                    { "type", "computing" },
-                    { "maximum", maxComp },
-                    { "minimum", minComp },
-                }),
-                this.anElement("size", new Object[][] {
-                    { "type", "communication" },
-                    { "maximum", maxComm },
-                    { "minimum", minComm },
-                }),
-            }
-        ));
     }
 
     /**

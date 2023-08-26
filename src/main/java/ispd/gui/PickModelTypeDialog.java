@@ -1,5 +1,7 @@
 package ispd.gui;
 
+import static ispd.gui.TextSupplier.*;
+
 import ispd.gui.utils.*;
 import ispd.gui.utils.fonts.*;
 import java.awt.*;
@@ -8,21 +10,15 @@ import javax.swing.*;
 
 public class PickModelTypeDialog extends JDialog {
 
-    public static final int GRID = 0;
-
-    public static final int IAAS = 1;
-
-    public static final int PAAS = 2;
-
     private final JRadioButton jRadioGrid;
 
     private final JRadioButton jRadioIaaS;
 
     private final JRadioButton jRadioPaaS;
 
-    private int choice = 0;
+    private ModelType choice = ModelType.GRID;
 
-    PickModelTypeDialog (final Frame owner, final boolean modal) {
+    public PickModelTypeDialog (final Frame owner, final boolean modal) {
         super(owner, modal);
         this.initWindowProperties();
         this.jRadioGrid = configuredRadioButton("Grid", this::gridButtonClicked);
@@ -37,7 +33,7 @@ public class PickModelTypeDialog extends JDialog {
         final ActionListener action
     ) {
         final var button = new JRadioButton();
-        button.setText(text);
+        button.setText(getText(text));
         button.addActionListener(action);
         return button;
     }
@@ -48,18 +44,22 @@ public class PickModelTypeDialog extends JDialog {
     }
 
     private void gridButtonClicked (final ActionEvent evt) {
-        this.deselectAllButtons();
-        this.jRadioGrid.setSelected(true);
+        this.selectOnly(this.jRadioGrid);
+    }
+
+    private void selectOnly (final JRadioButton button) {
+        this.jRadioGrid.setSelected(false);
+        this.jRadioIaaS.setSelected(false);
+        this.jRadioPaaS.setSelected(false);
+        button.setSelected(true);
     }
 
     private void iaasButtonClicked (final ActionEvent evt) {
-        this.deselectAllButtons();
-        this.jRadioIaaS.setSelected(true);
+        this.selectOnly(this.jRadioIaaS);
     }
 
     private void paasButtonClicked (final ActionEvent evt) {
-        this.deselectAllButtons();
-        this.jRadioPaaS.setSelected(true);
+        this.selectOnly(this.jRadioPaaS);
     }
 
     private void makeLayoutAndPack () {
@@ -146,34 +146,28 @@ public class PickModelTypeDialog extends JDialog {
         this.pack();
     }
 
-    private void deselectAllButtons () {
-        this.jRadioGrid.setSelected(false);
-        this.jRadioIaaS.setSelected(false);
-        this.jRadioPaaS.setSelected(false);
-    }
-
     private void onOkClick (final ActionEvent evt) {
         this.choice = this.getChoiceForSelectedButton();
         this.setVisible(false);
     }
 
-    private int getChoiceForSelectedButton () {
+    private ModelType getChoiceForSelectedButton () {
         if (this.jRadioGrid.isSelected()) {
-            return GRID;
+            return ModelType.GRID;
         }
 
         if (this.jRadioIaaS.isSelected()) {
-            return IAAS;
+            return ModelType.IAAS;
         }
 
         if (this.jRadioPaaS.isSelected()) {
-            return PAAS;
+            return ModelType.PAAS;
         }
 
         return this.choice;
     }
 
-    int getEscolha () {
+    public ModelType getEscolha () {
         return this.choice;
     }
 }

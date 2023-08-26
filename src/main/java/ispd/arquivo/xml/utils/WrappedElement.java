@@ -85,8 +85,6 @@ public class WrappedElement {
      *
      * @return {@link TwoStageUniform} with a minimum, maximum, and average values as the respective
      * tags in this instance, and {@code 0} for probability.
-     *
-     * @see ispd.arquivo.exportador.Exportador
      */
     public TwoStageUniform toTwoStageImplicitProb () {
         return new TwoStageUniform(this.minimum(), this.average(), this.maximum(), 0);

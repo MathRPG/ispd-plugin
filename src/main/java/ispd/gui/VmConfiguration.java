@@ -1,36 +1,22 @@
 package ispd.gui;
 
-import static ispd.gui.utils.ButtonBuilder.aButton;
+import static ispd.gui.utils.ButtonBuilder.*;
 
-import ispd.gui.iconico.grade.VirtualMachine;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Arrays;
-import java.util.HashSet;
+import ispd.gui.iconico.*;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.List;
-import java.util.Vector;
-import java.util.stream.Collectors;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.WindowConstants;
-import javax.swing.table.DefaultTableModel;
+import java.util.*;
+import java.util.stream.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 public class VmConfiguration extends JDialog {
 
     private static final String[] OPERATING_SYSTEMS = { "Linux", "Macintosh", "Windows" };
 
     private final JComboBox<String> osComboBox = configuredComboBox(
-        new DefaultComboBoxModel<>(VmConfiguration.OPERATING_SYSTEMS),
+        new DefaultComboBoxModel<>(OPERATING_SYSTEMS),
         "Select the operational system hosted in the virtual machine",
         this::jSOComboBoxActionPerformed
     );

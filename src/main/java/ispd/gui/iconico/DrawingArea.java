@@ -1,44 +1,86 @@
 package ispd.gui.iconico;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Stream;
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
+import static ispd.gui.TextSupplier.*;
 
-public abstract class DrawingArea extends JPanel implements MouseListener, MouseMotionListener {
+import ispd.arquivo.xml.*;
+import ispd.gui.*;
+import ispd.gui.iconico.ruler.*;
+import ispd.motor.workload.*;
+import ispd.motor.workload.impl.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.*;
+import java.net.*;
+import java.util.List;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
+import javax.swing.*;
+import org.w3c.dom.*;
+
+public class DrawingArea extends JPanel implements MouseListener, MouseMotionListener {
+
+    public static final Image MACHINE_ICON = getImage("imagens/botao_no.gif");
+
+    public static final Image CLUSTER_ICON = getImage("imagens/botao_cluster.gif");
+
+    public static final Image INTERNET_ICON = getImage("imagens/botao_internet.gif");
+
+    public static final Image GREEN_ICON = getImage("imagens/verde.png");
+
+    public static final Image RED_ICON = getImage("imagens/vermelho.png");
+
+    private static final int INITIAL_SIZE = 1500;
+
+    private static final Color ALMOST_WHITE = new Color(220, 220, 220);
+
+    private static final int SOME_OFFSET = 50;
+
+    private static final double FULL_CAPACITY = 100.0;
 
     private static final Color RECTANGLE_FILL_COLOR = new Color(0.0f, 0.0f, 1.0f, 0.2f);
 
     private static final RulerUnit DEFAULT_UNIT = RulerUnit.CENTIMETERS;
 
-    protected final Set<Icon> selectedIcons = new HashSet<>(0);
+    private final Collection<Icon> selectedIcons = new HashSet<>();
 
-    protected final Set<Vertex> vertices = new HashSet<>(0);
+    private final Set<Vertex> vertices = new HashSet<>();
 
-    protected final Set<Edge> edges = new HashSet<>(0);
+    private final Collection<Edge> edges = new HashSet<>();
 
-    private final boolean isPopupOn;
+    private final Cursor crossHairCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
 
-    private final boolean isRectOn;
+    private final Cursor normalCursor = new Cursor(Cursor.DEFAULT_CURSOR);
 
-    private final boolean isPositionFixed;
+    private JPopupMenu generalPopup;
 
-    protected JPopupMenu generalPopup;
+    private ModelType modelType = ModelType.GRID;
+
+    private HashSet<String> users = new HashSet<>();
+
+    private HashMap<String, Double> profiles = new HashMap<>();
+
+    private WorkloadGenerator loadConfiguration = null;
+
+    private int edgeCount = 0;
+
+    private int vertexCount = 0;
+
+    private int iconCount = 0;
+
+    private MainWindow mainWindow = null;
+
+    private boolean shouldPrintDirectConnections = false;
+
+    private boolean shouldPrintIndirectConnections = false;
+
+    private boolean shouldPrintSchedulableNodes = true;
+
+    private Vertex copiedIcon = null;
+
+    private IconType vertexType = IconType.NONE;
+
+    private HashSet<VirtualMachine> virtualMachines = null;
 
     private JPopupMenu vertexPopup;
 
@@ -54,7 +96,7 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
 
     private JMenuItem jMenuPanel;
 
-    private boolean isGridOn;
+    private boolean isGridOn = true;
 
     private RulerUnit unit = null;
 
@@ -84,40 +126,35 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
 
     private int mousePosY = 0;
 
-    private String errorMessage = null;
+    public DrawingArea () {
+        this(INITIAL_SIZE, INITIAL_SIZE);
+    }
 
-    private String errorTitle = null;
-
-    protected DrawingArea (
-        final boolean isPopupOn,
-        final boolean isGridOn,
-        final boolean isRectOn,
-        final boolean isPositionFixed
-    ) {
-        this.isPopupOn       = isPopupOn;
-        this.isGridOn        = isGridOn;
-        this.isRectOn        = isRectOn;
-        this.isPositionFixed = isPositionFixed;
+    private DrawingArea (final int w, final int h) {
+        super();
         this.initRuler();
         this.initGeneralPopup();
         this.initIconPopup();
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+        this.setSize(w, h);
+
+        this.users.add("user1");
+        this.profiles.put("user1", FULL_CAPACITY);
+    }
+
+    private static Image getImage (final String name) {
+        return new ImageIcon(getResource(name)).getImage();
+    }
+
+    private static URL getResource (final String name) {
+        return MainWindow.class.getResource(name);
     }
 
     private static JPanel panelWith (final Component component) {
-        final JPanel corner = new JPanel();
+        final var corner = new JPanel();
         corner.add(component);
         return corner;
-    }
-
-    private static int clampPosition (final int position, final int range, final int increment) {
-        if (position <= 0) {
-            return increment;
-        } else if (position >= range) {
-            return (range / increment) * increment;
-        }
-        return position;
     }
 
     private static boolean isIconWithinRect (
@@ -134,106 +171,59 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
         return start <= pos && pos <= start + size;
     }
 
-    public abstract void botaoPainelActionPerformed (ActionEvent evt);
-
-    public abstract void botaoVerticeActionPerformed (ActionEvent evt);
-
-    public abstract void botaoArestaActionPerformed (ActionEvent evt);
-
-    public abstract void botaoIconeActionPerformed (ActionEvent evt);
-
-    /**
-     * Realiza a adição de uma aresta à area de desenho. Este método é chamado quando se realiza a
-     * conexão entre dois vertices com o addAresta ativo
-     *
-     * @param Origem
-     *     Vertice de origem da aresta
-     * @param Destino
-     *     Vertice de destino da aresta
-     */
-    public abstract void adicionarAresta (Vertex Origem, Vertex Destino);
-
-    public abstract void showActionIcon (MouseEvent me, Icon icon);
-
-    public abstract void showSelectionIcon (MouseEvent me, Icon icon);
-
-    /**
-     * Realiza a adição de um vertice à area de desenho. Este método é chamado quando o mouse é
-     * precionado com addVertice ativo
-     *
-     * @param x
-     *     posição no eixo X
-     * @param y
-     *     posição no eixo Y
-     */
-    public abstract void adicionarVertice (int x, int y);
-
     @Override
     public void mouseClicked (final MouseEvent mouseEvent) {
         if (this.isDrawingEdge) {
-            if (this.edgeOrigin != null) {
-                final Icon destinoAresta =
-                    this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
-                if (destinoAresta instanceof Vertex && !this.edgeOrigin.equals(destinoAresta)) {
-                    this.adicionarAresta(this.edgeOrigin, (Vertex) destinoAresta);
-                    this.edgeOrigin = null;
+            final var destination = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
+            if (this.edgeOrigin == null) {
+                if (destination instanceof final Vertex vertex) {
+                    this.edgeOrigin = vertex;
                 } else {
-                    JOptionPane.showMessageDialog(
-                        null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
+                    this.showWarning();
                 }
             } else {
-                final Icon icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
-                if (icon instanceof Vertex) {
-                    this.edgeOrigin = (Vertex) icon;
+                if (destination instanceof final Vertex vertex
+                    && !this.edgeOrigin.equals(destination)) {
+                    this.adicionarAresta(this.edgeOrigin, vertex);
+                    this.edgeOrigin = null;
                 } else {
-                    JOptionPane.showMessageDialog(
-                        null, this.errorMessage, this.errorTitle, JOptionPane.WARNING_MESSAGE);
+                    this.showWarning();
                 }
             }
         } else if (!this.selectedIcons.isEmpty()) {
-            final Icon icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
+            final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
             if (icon != null) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
-                    if (this.isPopupOn) {
-                        this.showPopupIcon(mouseEvent, icon);
-                    }
+                    this.showPopupIcon(mouseEvent, icon);
                 } else if (mouseEvent.getClickCount() == 2) {
-                    this.showActionIcon(mouseEvent, icon);
+                    this.showActionIcon(icon);
                 } else if (mouseEvent.getClickCount() == 1) {
-                    this.showSelectionIcon(mouseEvent, icon);
+                    this.showSelectionIcon(icon);
                 }
             }
         } else if (this.addVertex) {
-            if (this.isPositionFixed) {
-                this.adicionarVertice(
-                    this.getPosFixaX(mouseEvent.getX()),
-                    this.getPosFixaY(mouseEvent.getY())
-                );
-            } else {
-                this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
-            }
-        } else if (this.isPopupOn) {
-            if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
-                this.generalPopup.show(
-                    mouseEvent.getComponent(),
-                    mouseEvent.getX(),
-                    mouseEvent.getY()
-                );
-            }
+            this.adicionarVertice(mouseEvent.getX(), mouseEvent.getY());
+        } else if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+            this.generalPopup.show(
+                mouseEvent.getComponent(),
+                mouseEvent.getX(),
+                mouseEvent.getY()
+            );
         }
     }
 
     @Override
-    public void mousePressed (final MouseEvent me) {
+    public void mousePressed (final MouseEvent mouseEvent) {
         //Verifica se algum icone foi selecionado
-        final Icon icon = this.getSelectedIcon(me.getX(), me.getY());
+        final var icon = this.getSelectedIcon(mouseEvent.getX(), mouseEvent.getY());
         if (icon != null) {
             if (icon instanceof Vertex) {
                 ((Vertex) icon).setBase(0, 0);
             }
             if (!this.selectedIcons.contains(icon)) {
-                if (me.getButton() != MouseEvent.BUTTON2 && this.selectedIcons.size() >= 1) {
-                    for (final Icon icone : this.selectedIcons) {
+                if (mouseEvent.getButton() != MouseEvent.BUTTON2
+                    && !this.selectedIcons.isEmpty()) {
+                    for (final var icone : this.selectedIcons) {
                         icone.setSelected(false);
                     }
                     this.selectedIcons.clear();
@@ -242,21 +232,21 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
                 this.selectedIcons.add(icon);
             }
             if (this.selectedIcons.size() > 1) {
-                for (final Icon icone : this.selectedIcons) {
+                for (final var icone : this.selectedIcons) {
                     if (icone instanceof Vertex) {
                         ((Vertex) icone).setBase(
-                            icone.getX() - me.getX(),
-                            icone.getY() - me.getY()
+                            icone.getX() - mouseEvent.getX(),
+                            icone.getY() - mouseEvent.getY()
                         );
                     }
                 }
             }
         }
         //Indica ponto inicial do retangulo
-        if (this.isRectOn && this.selectedIcons.isEmpty()) {
+        if (this.selectedIcons.isEmpty()) {
             this.shouldDrawRect  = true;
-            this.rectangleX      = me.getX();
-            this.rectangleY      = me.getY();
+            this.rectangleX = mouseEvent.getX();
+            this.rectangleY = mouseEvent.getY();
             this.rectangleWidth  = 0;
             this.rectangleHeight = 0;
         }
@@ -264,24 +254,7 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
     }
 
     @Override
-    public void mouseReleased (final MouseEvent me) {
-        //Arruma ícone na tela
-        if (this.isPositionFixed && !this.selectedIcons.isEmpty()) {
-            for (final var icon : this.selectedIcons) {
-                if (icon instanceof Vertex) {
-                    ((Vertex) icon).setPosition(
-                        this.getPosFixaX(icon.getX()),
-                        this.getPosFixaY(icon.getY())
-                    );
-                }
-            }
-        }
-
-        if (!this.isRectOn) {
-            this.repaint();
-            return;
-        }
-
+    public void mouseReleased (final MouseEvent mouseEvent) {
         //Ajusta posição do retangulo
         if (this.rectangleWidth < 0) {
             this.rectangleX += this.rectangleWidth;
@@ -291,35 +264,40 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
             this.rectangleY += this.rectangleHeight;
             this.rectangleHeight *= -1;
         }
-        //Adiciona icone na lista de selecionados
+
         if (this.selectedIcons.isEmpty()) {
-            for (final Vertex icone : this.vertices) {
-                if (this.isInSelectionRectangle(icone)) {
-                    icone.setSelected(true);
-                    this.selectedIcons.add(icone);
-                }
-            }
-            for (final Edge icone : this.edges) {
-                if (this.isInSelectionRectangle(icone)) {
-                    icone.setSelected(true);
-                    this.selectedIcons.add(icone);
-                }
-            }
+            this.allIcons()
+                .filter(this::isInSelectionRectangle)
+                .forEach(icon -> {
+                    icon.setSelected(true);
+                    this.selectedIcons.add(icon);
+                });
         }
+
         this.shouldDrawRect = false;
         this.repaint();
     }
 
     @Override
-    public void mouseDragged (final MouseEvent me) {
-        this.updateIcons(me.getX(), me.getY());
+    public void mouseEntered (final MouseEvent mouseEvent) {
         this.repaint();
     }
 
     @Override
-    public void mouseMoved (final MouseEvent e) {
-        this.mousePosX = e.getX();
-        this.mousePosY = e.getY();
+    public void mouseExited (final MouseEvent mouseEvent) {
+        this.repaint();
+    }
+
+    @Override
+    public void mouseDragged (final MouseEvent mouseEvent) {
+        this.updateIcons(mouseEvent.getX(), mouseEvent.getY());
+        this.repaint();
+    }
+
+    @Override
+    public void mouseMoved (final MouseEvent mouseEvent) {
+        this.mousePosX = mouseEvent.getX();
+        this.mousePosY = mouseEvent.getY();
         if (this.isDrawingEdge) {
             this.repaint();
         }
@@ -330,7 +308,6 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
         super.paintComponent(g);
         this.drawBackground(g);
         this.drawGrid(g);
-        this.drawPoints(g);
         //Desenha a linha da conexão de rede antes dela se estabelcer.
         if (this.edgeOrigin != null) {
             g.setColor(new Color(0, 0, 0));
@@ -351,12 +328,686 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
         }
     }
 
+    public void processKeyEvent (final KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+            this.botaoIconeActionPerformed(null);
+        }
+
+        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_C) {
+            this.botaoVerticeActionPerformed(null);
+        }
+
+        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_V) {
+            this.botaoPainelActionPerformed(null);
+        }
+    }
+
+    public void botaoPainelActionPerformed (final ActionEvent evt) {
+        if (this.copiedIcon == null) {
+            return;
+        }
+
+        final var copy = ((GridItem) this.copiedIcon)
+            .makeCopy(
+                this.mousePosX,
+                this.mousePosY,
+                this.iconCount,
+                this.vertexCount
+            );
+        this.vertices.add((Vertex) copy);
+        copy.getId();
+        this.iconCount++;
+        this.vertexCount++;
+        this.selectedIcons.add((Icon) copy);
+        this.mainWindow.modificar();
+        this.setLabelAtributos(copy);
+        this.repaint();
+    }
+
+    public void botaoVerticeActionPerformed (final ActionEvent evt) {
+        //Não copia conexão de rede
+        if (this.selectedIcons.isEmpty()) {
+            final var text = "WARNING";
+            JOptionPane.showMessageDialog(
+                null,
+                getText("No icon selected."),
+                getText(text),
+                JOptionPane.WARNING_MESSAGE
+            );
+        } else if (this.selectedIcons.size() == 1) {
+            final var item = this.selectedIcons.iterator().next();
+            if (item instanceof Vertex) {
+                this.copiedIcon = (Vertex) item;
+                this.generalPopup.getComponent(0).setEnabled(true);
+            } else {
+                this.copiedIcon = null;
+            }
+        }
+        if (this.copiedIcon == null) {
+            this.generalPopup.getComponent(0).setEnabled(false);
+        }
+    }
+
+    private void botaoArestaActionPerformed (final ActionEvent evt) {
+        if (this.selectedIcons.size() == 1) {
+            final var link = (Link) this.selectedIcons.iterator().next();
+            this.selectedIcons.remove(link);
+            link.setSelected(false);
+            final var temp = link.makeCopy(0, 0, this.iconCount, this.edgeCount);
+            this.edgeCount++;
+            this.iconCount++;
+            temp.setPosition(link.getDestination(), link.getSource());
+            ((GridItem) temp.getSource()).getOutboundConnections().add(temp);
+            ((GridItem) temp.getDestination()).getOutboundConnections().add(temp);
+            this.selectedIcons.add(temp);
+            this.edges.add(temp);
+            this.mainWindow.appendNotificacao(getText("Network connection added."));
+            this.mainWindow.modificar();
+            this.setLabelAtributos(temp);
+        }
+    }
+
+    public void botaoIconeActionPerformed (final ActionEvent evt) {
+        if (this.selectedIcons.isEmpty()) {
+            JOptionPane.showMessageDialog(
+                null,
+                getText("No icon selected."),
+                getText("WARNING"),
+                JOptionPane.WARNING_MESSAGE
+            );
+        } else {
+            final var opcao = JOptionPane.showConfirmDialog(
+                null,
+                getText("Remove this icon?"),
+                getText("Remove"),
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+            );
+            if (opcao == JOptionPane.YES_OPTION) {
+                for (final var iconeRemover : this.selectedIcons) {
+                    if (iconeRemover instanceof Edge) {
+                        final var or = (GridItem) ((Edge) iconeRemover).getSource();
+                        or.getOutboundConnections().remove((GridItem) iconeRemover);
+                        final var de = (GridItem) ((Edge) iconeRemover).getDestination();
+                        de.getInboundConnections().remove((GridItem) iconeRemover);
+                        ((GridItem) iconeRemover).getId();
+                        this.edges.remove((Edge) iconeRemover);
+                        this.mainWindow.modificar();
+                    } else {
+                        //Remover dados das conexoes q entram
+                        var listanos = ((GridItem) iconeRemover).getInboundConnections();
+                        for (final var I : listanos) {
+                            this.edges.remove((Edge) I);
+                            I.getId();
+                        }
+                        //Remover dados das conexoes q saem
+                        listanos = ((GridItem) iconeRemover).getOutboundConnections();
+                        for (final var I : listanos) {
+                            this.edges.remove((Edge) I);
+                            I.getId();
+                        }
+                        ((GridItem) iconeRemover).getId();
+                        this.vertices.remove((Vertex) iconeRemover);
+                        this.mainWindow.modificar();
+                    }
+                }
+                this.repaint();
+            }
+        }
+    }
+
+    private void showWarning () {
+        JOptionPane.showMessageDialog(
+            null,
+            getText("You must click an icon."),
+            getText("WARNING"),
+            JOptionPane.WARNING_MESSAGE
+        );
+    }
+
+    private void showActionIcon (final Icon icon) {
+        this.mainWindow.modificar();
+        if (icon instanceof Machine || icon instanceof Cluster) {
+            this.mainWindow
+                .getjPanelConfiguracao()
+                .setIcone((GridItem) icon, this.users, this.modelType);
+            JOptionPane.showMessageDialog(
+                this.mainWindow,
+                this.mainWindow.getjPanelConfiguracao(),
+                this.mainWindow.getjPanelConfiguracao().getTitle(),
+                JOptionPane.PLAIN_MESSAGE
+            );
+        } else {
+            this.mainWindow.getjPanelConfiguracao().setIcone((GridItem) icon);
+            JOptionPane.showMessageDialog(
+                this.mainWindow,
+                this.mainWindow.getjPanelConfiguracao(),
+                this.mainWindow.getjPanelConfiguracao().getTitle(),
+                JOptionPane.PLAIN_MESSAGE
+            );
+        }
+        this.setLabelAtributos((GridItem) icon);
+    }
+
+    private void showSelectionIcon (final Icon icon) {
+        this.setLabelAtributos((GridItem) icon);
+    }
+
+    public ModelType getModelType () {
+        return this.modelType;
+    }
+
+    public void setModelType (final ModelType modelType) {
+        this.modelType = modelType;
+    }
+
+    public void setMainWindow (final MainWindow mainWindow) {
+        this.mainWindow = mainWindow;
+        this.setPopupButtonText(
+            getText("Remove"),
+            getText("Copy"),
+            getText("Turn Over"),
+            getText("Paste")
+        );
+    }
+
+    public HashSet<VirtualMachine> getVirtualMachines () {
+        return this.virtualMachines;
+    }
+
+    public void setVirtualMachines (final HashSet<VirtualMachine> virtualMachines) {
+        this.virtualMachines = virtualMachines;
+    }
+
+    public void setShouldPrintDirectConnections (final boolean should) {
+        this.shouldPrintDirectConnections = should;
+    }
+
+    public void setShouldPrintIndirectConnections (final boolean should) {
+        this.shouldPrintIndirectConnections = should;
+    }
+
+    public void setShouldPrintSchedulableNodes (final boolean should) {
+        this.shouldPrintSchedulableNodes = should;
+    }
+
+    public HashMap<String, Double> getProfiles () {
+        return this.profiles;
+    }
+
+    public void setProfiles (final HashMap<String, Double> profiles) {
+        this.profiles = profiles;
+    }
+
+    public HashSet<String> getUsuarios () {
+        return this.users;
+    }
+
+    public void setUsers (final HashSet<String> users) {
+        this.users = users;
+    }
+
+    public WorkloadGenerator getLoadConfiguration () {
+        return this.loadConfiguration;
+    }
+
+    public void setLoadConfiguration (final WorkloadGenerator loadConfiguration) {
+        this.loadConfiguration = loadConfiguration;
+    }
+
+    private void setLabelAtributos (final GridItem icon) {
+        final var text = new StringBuilder("<html>");
+        text.append(icon.makeDescription());
+        if (this.shouldPrintDirectConnections && icon instanceof Vertex) {
+            text.append("<br>").append(getText("Output Connection:"));
+            for (final var i : icon.getOutboundConnections()) {
+                final var saida = (GridItem) ((Edge) i).getDestination();
+                text.append("<br>").append(saida.getId().getName());
+            }
+            text.append("<br>").append(getText("Input Connection:"));
+            for (final var i : icon.getInboundConnections()) {
+                final var entrada = (GridItem) ((Edge) i).getSource();
+                text.append("<br>").append(entrada.getId().getName());
+            }
+        }
+        if (this.shouldPrintDirectConnections && icon instanceof Edge) {
+            for (final var i : icon.getInboundConnections()) {
+                text.append("<br>").append(getText("Source Node:")).append(" ")
+                    .append(i.getInboundConnections());
+            }
+            for (final var i : icon.getInboundConnections()) {
+                text.append("<br>").append(getText("Destination Node:")).append(" ")
+                    .append(i.getOutboundConnections());
+            }
+        }
+        if (this.shouldPrintIndirectConnections && icon instanceof final Machine I) {
+            final var listaEntrada = I.connectedInboundNodes();
+            final var listaSaida   = I.connectedOutboundNodes();
+            text.append("<br>").append(getText("Output Nodes Indirectly Connected:"));
+            for (final var i : listaSaida) {
+                text.append("<br>").append(i.getId().getGlobalId());
+            }
+            text.append("<br>").append(getText("Input Nodes Indirectly Connected:"));
+            for (final var i : listaEntrada) {
+                text.append("<br>").append(i.getId().getGlobalId());
+            }
+        }
+        if (this.shouldPrintSchedulableNodes && icon instanceof final Machine I) {
+            text.append("<br>").append(getText("Schedulable Nodes:"));
+            for (final var i : I.connectedSchedulableNodes()) {
+                text.append("<br>").append(i.getId().getGlobalId());
+            }
+            if (I.isMaster()) {
+                final var escravos = ((Machine) icon).getSlaves();
+                text.append("<br>").append(getText("Slave Nodes:"));
+                for (final var i : escravos) {
+                    text.append("<br>").append(i.getId().getName());
+                }
+            }
+        }
+        text.append("</html>");
+        this.mainWindow.setSelectedIcon(icon, text.toString());
+    }
+
+    public String makeDescriptiveModel () {
+        final var saida = new StringBuilder();
+        for (final Icon icon : this.vertices) {
+            if (icon instanceof final Machine I) {
+                saida.append(String.format(
+                    "MAQ %s %f %f ",
+                    I.getId().getName(),
+                    I.getComputationalPower(),
+                    I.getLoadFactor()
+                ));
+                if (((Machine) icon).isMaster()) {
+                    saida.append(String.format("MESTRE %s LMAQ".formatted(I.getSchedulingAlgorithm())));
+                    final var lista = ((Machine) icon).getSlaves();
+                    for (final var slv : lista) {
+                        if (this.vertices.contains((Vertex) slv)) {
+                            saida.append(" ").append(slv.getId().getName());
+                        }
+                    }
+                } else {
+                    saida.append("ESCRAVO");
+                }
+                saida.append("\n");
+            }
+        }
+        for (final Icon icon : this.vertices) {
+            if (icon instanceof final Cluster I) {
+                saida.append(String.format(
+                    "CLUSTER %s %d %f %f %f %s\n",
+                    I.getId().getName(),
+                    I.getSlaveCount(),
+                    I.getComputationalPower(),
+                    I.getBandwidth(),
+                    I.getLatency(),
+                    I.getSchedulingAlgorithm()
+                ));
+            }
+        }
+        for (final Icon icon : this.vertices) {
+            if (icon instanceof final Internet I) {
+                saida.append(String.format("INET %s %f %f %f\n",
+                                           I.getId().getName(), I.getBandwidth(), I.getLatency(),
+                                           I.getLoadFactor()
+                ));
+            }
+        }
+        for (final var icon : this.edges) {
+            final var I = (Link) icon;
+            saida.append(String.format(
+                "REDE %s %f %f %f CONECTA",
+                I.getId().getName(),
+                I.getBandwidth(),
+                I.getLatency(),
+                I.getLoadFactor()
+            ));
+            saida.append(" ").append(((GridItem) icon.getSource()).getId().getName());
+            saida.append(" ").append(((GridItem) icon.getDestination()).getId().getName());
+            saida.append("\n");
+        }
+        saida.append("CARGA");
+        if (this.loadConfiguration != null) {
+            switch (this.loadConfiguration.getType()) {
+                case RANDOM -> saida
+                    .append(" RANDOM\n")
+                    .append(this.loadConfiguration.formatForIconicModel())
+                    .append("\n");
+                case PER_NODE -> saida
+                    .append(" MAQUINA\n")
+                    .append(this.loadConfiguration.formatForIconicModel())
+                    .append("\n");
+                case TRACE -> saida
+                    .append(" TRACE\n")
+                    .append(this.loadConfiguration.formatForIconicModel())
+                    .append("\n");
+            }
+        }
+        return saida.toString();
+    }
+
+    /**
+     * Transforma os icones da area de desenho em um Document xml dom
+     */
+    public Document getGrade () {
+        final var xml = new IconicModelDocumentBuilder(this.modelType);
+        xml.addUsers(this.users, this.profiles);
+
+        for (final var vertice : this.vertices) {
+            if (vertice instanceof final Machine m) {
+                final var slaves = m.getSlaves().stream()
+                    .filter(this.vertices::contains)
+                    .map(s -> s.getId().getGlobalId())
+                    .toList();
+
+                if (this.modelType == ModelType.GRID) {
+                    xml.addMachine(m, slaves);
+                } else if (this.modelType == ModelType.IAAS) {
+                    xml.addMachineIaas(m, slaves);
+                }
+            } else if (vertice instanceof final Cluster c) {
+
+                if (this.modelType == ModelType.GRID) {
+                    xml.addCluster(c);
+                } else if (this.modelType == ModelType.IAAS) {
+                    xml.addClusterIaas(c);
+                }
+            } else if (vertice instanceof final Internet i) {
+                xml.addInternet(i);
+            }
+        }
+
+        for (final var link : this.edges) {
+            xml.addLink((Link) link);
+        }
+
+        if (this.virtualMachines != null) {
+            for (final var vm : this.virtualMachines) {
+                xml.addVirtualMachine(vm);
+            }
+        }
+
+        if (this.loadConfiguration != null) {
+            if (this.loadConfiguration instanceof final GlobalWorkloadGenerator load) {
+                xml.addGlobalWorkload(load);
+            } else if (this.loadConfiguration instanceof final CollectionWorkloadGenerator collection) {
+                xml.addPerNodeLoadCollection(collection);
+            } else if (this.loadConfiguration instanceof final TraceFileWorkloadGenerator load) {
+                xml.addTraceLoad(load);
+            }
+        }
+
+        return xml.finishDocument();
+    }
+
+    public void setGrid (final Document document) {
+        //Realiza leitura dos usuários/proprietários do modelo
+        this.users           = IconicModelFactory.userSetFromDocument(document);
+        this.virtualMachines = IconicModelFactory.virtualMachinesFromDocument(document);
+        this.modelType       = this.getModelType(document);
+        this.profiles        = IconicModelFactory.profilesFromDocument(document);
+
+        //Realiza leitura dos icones
+        IconicModelFactory.iconsFromDocument(document, this.vertices, this.edges);
+        //Realiza leitura da configuração de carga do modelo
+        this.loadConfiguration = WorkloadGeneratorFactory.fromDocument(document);
+
+        this.updateVertexAndEdgeCount();
+        this.repaint();
+    }
+
+    private ModelType getModelType (final Document doc) {
+        final var sys = (Element) doc.getElementsByTagName("system").item(0);
+        return switch (sys.getAttribute("version")) {
+            case "2.1" -> ModelType.GRID;
+            case "2.2" -> ModelType.IAAS;
+            case "2.3" -> ModelType.PAAS;
+            default -> this.modelType;
+        };
+    }
+
+    private void updateVertexAndEdgeCount () {
+
+        for (final var icon : this.edges) {
+            final var i = (GridItem) icon;
+            if (this.edgeCount < i.getId().getLocalId()) {
+                this.edgeCount = i.getId().getLocalId();
+            }
+            if (this.iconCount < i.getId().getGlobalId()) {
+                this.iconCount = i.getId().getGlobalId();
+            }
+        }
+
+        for (final var icon : this.vertices) {
+            final var i = (GridItem) icon;
+            if (this.vertexCount < i.getId().getLocalId()) {
+                this.vertexCount = i.getId().getLocalId();
+            }
+            if (this.iconCount < i.getId().getGlobalId()) {
+                this.iconCount = i.getId().getGlobalId();
+            }
+        }
+
+        this.iconCount++;
+        this.vertexCount++;
+        this.edgeCount++;
+    }
+
+    public BufferedImage createImage () {
+        final var greatestX = this.findGreatestX();
+        final var greatestY = this.findGreatestY();
+
+        final var image = new BufferedImage(
+            greatestX + SOME_OFFSET,
+            greatestY + SOME_OFFSET,
+            BufferedImage.TYPE_INT_RGB
+        );
+
+        final var g = (Graphics2D) image.getGraphics();
+
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setColor(Color.WHITE);
+        g.fillRect(
+            0,
+            0,
+            greatestX + SOME_OFFSET,
+            greatestY + SOME_OFFSET
+        );
+
+        g.setColor(ALMOST_WHITE);
+        final var increment = this.unit.getIncrement();
+        if (this.isGridOn) {
+            for (var w = 0; w <= greatestX + SOME_OFFSET; w += increment) {
+                g.drawLine(w, 0, w, greatestY + SOME_OFFSET);
+            }
+            for (var h = 0; h <= greatestY + SOME_OFFSET; h += increment) {
+                g.drawLine(0, h, greatestX + SOME_OFFSET, h);
+            }
+        }
+
+        this.allIcons().forEach(icon -> icon.draw(g));
+
+        return image;
+    }
+
+    private int findGreatestX () {
+        return this.findGreatestCoord(Icon::getX);
+    }
+
+    private int findGreatestY () {
+        return this.findGreatestCoord(Icon::getY);
+    }
+
+    private Stream<Icon> allIcons () {
+        return Stream.concat(this.edges.stream(), this.vertices.stream());
+    }
+
+    private int findGreatestCoord (final Function<? super Icon, Integer> getCoord) {
+        return this.vertices.stream()
+            .mapToInt(getCoord::apply)
+            .max()
+            .orElse(0);
+    }
+
+    /**
+     * Metodo publico para efetuar a copia dos valores de uma conexão de rede especifica informada
+     * pelo usuário para as demais conexões de rede.
+     */
+    public void matchNetwork () {
+        if (this.selectedIcons.size() != 1) {
+            JOptionPane.showMessageDialog(
+                null,
+                getText("Please select a network icon"),
+                getText("WARNING"),
+                JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }
+
+        final var link           = (Link) this.selectedIcons.iterator().next();
+        final var bandwidth      = link.getBandwidth();
+        final var occupationToll = link.getLoadFactor();
+        final var latency        = link.getLatency();
+
+        for (final var e : this.edges) {
+            final var otherLink = (Link) e;
+            otherLink.setBandwidth(bandwidth);
+            otherLink.setLoadFactor(occupationToll);
+            otherLink.setLatency(latency);
+        }
+    }
+
+    /**
+     * Organizes the icons of the DrawingArea in a rectangular grid-like way.
+     */
+    public void iconArrange () {
+
+        final var distanceBetweenIcons = 100;
+
+        var currentX = distanceBetweenIcons;
+        var currentY = distanceBetweenIcons;
+        var currentColumn = 0;
+
+        final var totalColumns = (int) Math.sqrt(this.vertices.size()) + 1;
+
+        for (final var icon : this.vertices) {
+            icon.setPosition(currentX, currentY);
+
+            currentX += distanceBetweenIcons;
+            currentColumn++;
+
+            if (currentColumn == totalColumns) {
+                currentColumn = 0;
+                currentX = distanceBetweenIcons;
+                currentY += distanceBetweenIcons;
+            }
+        }
+    }
+
+    public List<String> getNosEscalonadores () {
+        final List<String> machines = new ArrayList<>(0);
+        for (final var icon : this.vertices) {
+            if (icon instanceof final Machine m && m.isMaster()) {
+                machines.add(m.getId().getName());
+            }
+            if (icon instanceof final Cluster c && c.isMaster()) {
+                machines.add(c.getId().getName());
+            }
+        }
+        return machines;
+    }
+
+    public void setIconeSelecionado (final IconType object) {
+        if (object == IconType.NONE) {
+            this.setIsDrawingEdge(false);
+            this.addVertex = false;
+            this.setCursor(this.normalCursor);
+            return;
+        }
+
+        if (object == IconType.NETWORK) {
+            this.setIsDrawingEdge(true);
+            this.addVertex = false;
+            this.setCursor(this.crossHairCursor);
+        } else {
+            this.vertexType = object;
+            this.setIsDrawingEdge(false);
+            this.addVertex = true;
+            this.setCursor(this.crossHairCursor);
+        }
+    }
+
+    /**
+     * Realiza a adição de uma aresta à area de desenho. Este método é chamado quando se realiza a
+     * conexão entre dois vertices com o addAresta ativo
+     *
+     * @param Origem
+     *     Vertice de origem da aresta
+     * @param Destino
+     *     Vertice de destino da aresta
+     */
+    private void adicionarAresta (final Vertex Origem, final Vertex Destino) {
+        final var link = new Link(Origem, Destino, this.edgeCount, this.iconCount);
+        ((GridItem) Origem).getOutboundConnections().add(link);
+        ((GridItem) Destino).getInboundConnections().add(link);
+        this.edgeCount++;
+        this.iconCount++;
+        this.edges.add(link);
+        for (final var icon : this.selectedIcons) {
+            icon.setSelected(false);
+        }
+        this.selectedIcons.clear();
+        this.selectedIcons.add(link);
+        this.mainWindow.appendNotificacao(getText("Network connection added."));
+        this.mainWindow.modificar();
+        this.setLabelAtributos(link);
+    }
+
+    /**
+     * Realiza a adição de um vertice à area de desenho. Este método é chamado quando o mouse é
+     * precionado com addVertice ativo
+     *
+     * @param x
+     *     posição no eixo X
+     * @param y
+     *     posição no eixo Y
+     */
+    private void adicionarVertice (final int x, final int y) {
+        GridItem vertice = null;
+        switch (this.vertexType) {
+            case MACHINE -> {
+                vertice = new Machine(x, y, this.vertexCount, this.iconCount, 0.0);
+                vertice.getId();
+                this.mainWindow.appendNotificacao(getText("Machine icon added."));
+            }
+            case CLUSTER -> {
+                vertice = new Cluster(x, y, this.vertexCount, this.iconCount, 0.0);
+                vertice.getId();
+                this.mainWindow.appendNotificacao(getText("Cluster icon added."));
+            }
+            case INTERNET -> {
+                vertice = new Internet(x, y, this.vertexCount, this.iconCount);
+                vertice.getId();
+                this.mainWindow.appendNotificacao(getText("Internet icon added."));
+            }
+        }
+        if (vertice != null) {
+            this.vertices.add((Vertex) vertice);
+            this.vertexCount++;
+            this.iconCount++;
+            this.selectedIcons.add((Icon) vertice);
+            this.mainWindow.modificar();
+            this.setLabelAtributos(vertice);
+        }
+    }
+
     /**
      * It initializes the horizontal and the vertical rulers, as well as the unit button used to
      * change the both ruler's unit.
      */
     private void initRuler () {
-        this.updateUnitTo(DrawingArea.DEFAULT_UNIT);
+        this.updateUnitTo(DEFAULT_UNIT);
 
         this.columnRuler = new Ruler(RulerOrientation.HORIZONTAL, this.unit);
         this.columnRuler.setPreferredWidth(this.getWidth());
@@ -380,7 +1031,7 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
         this.vertexPopup = new JPopupMenu();
         this.edgePopup   = new JPopupMenu();
 
-        final JMenuItem jMenuVertice0 = new JMenuItem();
+        final var jMenuVertice0 = new JMenuItem();
         jMenuVertice0.addActionListener(evt -> {});
         this.vertexPopup.add(jMenuVertice0);
         jMenuVertice0.setVisible(false);
@@ -413,14 +1064,6 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
      */
     private void updateUnitTo (final RulerUnit newUnit) {
         this.unit = newUnit;
-
-        if (!this.isPositionFixed) {
-            return;
-        }
-
-        for (final var v : this.vertices) {
-            v.setPosition(this.getPosFixaX(v.getX()), this.getPosFixaY(v.getY()));
-        }
     }
 
     private void onUnitButtonClicked (final ActionEvent evt) {
@@ -437,18 +1080,6 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
         }
     }
 
-    protected int getPosicaoMouseX () {
-        return this.mousePosX;
-    }
-
-    protected int getPosicaoMouseY () {
-        return this.mousePosY;
-    }
-
-    protected void setAddVertice (final boolean addVertice) {
-        this.addVertex = addVertice;
-    }
-
     public Ruler getColumnView () {
         return this.columnRuler;
     }
@@ -459,10 +1090,6 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
 
     public JPanel getCorner () {
         return this.cornerUnitButton;
-    }
-
-    protected RulerUnit getUnit () {
-        return this.unit;
     }
 
     private Icon getSelectedIcon (final int x, final int y) {
@@ -504,41 +1131,13 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
         }
     }
 
-    private int getPosFixaX (final int x) {
-        return this.convertToFixedPosition(x, this.getWidth());
-    }
-
-    private int getPosFixaY (final int y) {
-        return this.convertToFixedPosition(y, this.getHeight());
-    }
-
-    private int convertToFixedPosition (final int pos, final int range) {
-        final var increment     = this.unit.getIncrement();
-        final int offset        = (pos % increment);
-        final int positionIndex = (pos / increment);
-        //Verifica se está na posição correta
-        final int newPosition;
-        if (offset == 0) {
-            newPosition = pos;
-        } else {
-            //verifica para qual ponto deve deslocar a posição
-            if (offset < increment / 2) {
-                newPosition = positionIndex * increment;
-            } else {
-                newPosition = positionIndex * increment + increment;
-            }
-        }
-
-        return clampPosition(newPosition, range, increment);
-    }
-
     private void updateIcons (final int x, final int y) {
         if (!this.selectedIcons.isEmpty()) {
             this.dragSelectedIcons(x, y);
             return;
         }
 
-        if (!this.shouldDrawRect || !this.isRectOn) {
+        if (!this.shouldDrawRect) {
             return;
         }
 
@@ -581,7 +1180,7 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
             .forEach(icon -> icon.setSelected(true));
     }
 
-    protected void setIsDrawingEdge (final boolean isDrawingEdge) {
+    private void setIsDrawingEdge (final boolean isDrawingEdge) {
         this.isDrawingEdge = isDrawingEdge;
         this.edgeOrigin    = null;
     }
@@ -602,30 +1201,16 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
 
         g.setColor(Color.LIGHT_GRAY);
         final var increment = this.unit.getIncrement();
-        for (int w = 0; w <= this.getWidth(); w += increment) {
+        for (var w = 0; w <= this.getWidth(); w += increment) {
             g.drawLine(w, 0, w, this.getHeight());
         }
-        for (int h = 0; h <= this.getHeight(); h += increment) {
+        for (var h = 0; h <= this.getHeight(); h += increment) {
             g.drawLine(0, h, this.getWidth(), h);
         }
     }
 
-    private void drawPoints (final Graphics g) {
-        if (!this.isPositionFixed) {
-            return;
-        }
-
-        g.setColor(Color.GRAY);
-        final var increment = this.unit.getIncrement();
-        for (int i = increment; i <= this.getWidth(); i += increment) {
-            for (int j = increment; j <= this.getHeight(); j += increment) {
-                g.fillRect(i - 1, j - 1, 3, 3);
-            }
-        }
-    }
-
     private void drawRect (final Graphics g) {
-        if (!this.isRectOn || !this.shouldDrawRect) {
+        if (!this.shouldDrawRect) {
             return;
         }
 
@@ -653,12 +1238,8 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
 
         g.setColor(Color.BLACK);
         g.drawRect(x, y, w, h);
-        g.setColor(DrawingArea.RECTANGLE_FILL_COLOR);
+        g.setColor(RECTANGLE_FILL_COLOR);
         g.fillRect(x, y, w, h);
-    }
-
-    protected boolean isGridOn () {
-        return this.isGridOn;
     }
 
     public void setGridOn (final boolean gridOn) {
@@ -666,12 +1247,7 @@ public abstract class DrawingArea extends JPanel implements MouseListener, Mouse
         this.repaint();
     }
 
-    protected void setErrorText (final String message, final String title) {
-        this.errorMessage = message;
-        this.errorTitle   = title;
-    }
-
-    protected void setPopupButtonText (
+    private void setPopupButtonText (
         final String icon,
         final String vertex,
         final String edge,

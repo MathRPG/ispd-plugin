@@ -1,6 +1,6 @@
 package ispd.motor.random;
 
-import jdk.jfr.Percentage;
+import jdk.jfr.*;
 
 /**
  * Utility class to contain information about computing or communication sizes.
@@ -36,7 +36,7 @@ public record TwoStageUniform(
      *         distribution maximum
      */
     public TwoStageUniform (final double minimum, final double maximum) {
-        this(minimum, (minimum + maximum) / 2.0, maximum, TwoStageUniform.EVEN_PROBABILITY);
+        this(minimum, (minimum + maximum) / 2.0, maximum, EVEN_PROBABILITY);
     }
 
     /**
@@ -53,45 +53,7 @@ public record TwoStageUniform(
      *         distribution maximum
      */
     public TwoStageUniform (final double minimum, final double intervalSplit, final double maximum) {
-        this(minimum, intervalSplit, maximum, TwoStageUniform.EVEN_PROBABILITY);
-    }
-
-    /**
-     * Make a 'normalized' instance from this one. {@link #intervalSplit} and
-     * {@link #firstIntervalProbability}
-     * information are copied from the called-from instance (which is left
-     * unchanged), but the minimum and maximum values are normalized. See
-     * {@link #normalizeValue(double, double)}.
-     *
-     * @return normalized instance
-     */
-    public TwoStageUniform rangeNormalized () {
-        return new TwoStageUniform(
-                normalizeValue(this.intervalSplit(), this.minimum()),
-                this.intervalSplit(),
-                normalizeValue(this.intervalSplit(), this.minimum()),
-                this.firstIntervalProbability()
-        );
-    }
-
-    /**
-     * Normalize a value to respect the given boundary and to be within the
-     * range [0, 1].
-     *
-     * @param value
-     *         value to be normalized
-     * @param boundary
-     *         boundary for normalization
-     *
-     * @return normalized value, within [0, 1]; if value is {@code 0}, {@code
-     *         0} is returned.
-     */
-    private static double normalizeValue (final double value, final double boundary) {
-        if (value == 0.0) {
-            return 0.0;
-        }
-        final var d = Math.abs(value - boundary) / value;
-        return Math.min(1.0, d);
+        this(minimum, intervalSplit, maximum, EVEN_PROBABILITY);
     }
 
     /**

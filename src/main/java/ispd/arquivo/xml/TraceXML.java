@@ -1,21 +1,14 @@
 package ispd.arquivo.xml;
 
-import ispd.arquivo.interpretador.cargas.TaskTraceSerializer;
-import ispd.motor.filas.Tarefa;
-import ispd.utils.constants.FileExtensions;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
+import ispd.arquivo.*;
+import ispd.motor.filas.*;
+import ispd.utils.constants.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.logging.*;
+import java.util.regex.*;
 
 /**
  * Class responsible for converting traces into XML files.
@@ -43,7 +36,7 @@ public class TraceXML {
     public TraceXML (final String path) {
         this.path = path;
 
-        final var split = splitAtLast(path, TraceXML.FILE_EXT_DELIMITER);
+        final var split = splitAtLast(path, FILE_EXT_DELIMITER);
 
         this.output = split[0] + FileExtensions.WORKLOAD_MODEL;
         this.type   = split[1].toUpperCase();
@@ -65,7 +58,7 @@ public class TraceXML {
     }
 
     private static String makeSwfTaskTag (final String str) {
-        final var fields = TraceXML.WHITE_SPACE.matcher(str).replaceAll(" ").trim().split(" ");
+        final var fields = WHITE_SPACE.matcher(str).replaceAll(" ").trim().split(" ");
 
         return """
                <task id="%s" arr="%s" sts="%s" cpsz ="%s" cmsz="-1" usr="user%s" />
@@ -74,7 +67,7 @@ public class TraceXML {
 
     private static String makeGwfTaskTag (final String line, final int firstTaskArrival) {
 
-        final var fields = TraceXML.TABS.matcher(line).replaceAll(" ").trim().split(" ");
+        final var fields = TABS.matcher(line).replaceAll(" ").trim().split(" ");
 
         if ("-1".equals(fields[3])) {
             return "";
@@ -93,7 +86,7 @@ public class TraceXML {
     }
 
     private static int parseArrivalTime (final String line) {
-        final var fields = TraceXML.TABS.matcher(line).replaceAll(" ").trim().split(" ");
+        final var fields = TABS.matcher(line).replaceAll(" ").trim().split(" ");
 
         return Integer.parseInt(fields[1]);
     }
@@ -115,7 +108,7 @@ public class TraceXML {
      */
     @Override
     public String toString () {
-        this.output = splitAtLast(this.output, TraceXML.FILE_PATH_DELIMITER)[1];
+        this.output = splitAtLast(this.output, FILE_PATH_DELIMITER)[1];
 
         return """
                File %s was generated sucessfully:
@@ -173,7 +166,7 @@ public class TraceXML {
         throws IOException {
         final var sb = new StringBuilder(0);
 
-        var firstTaskArrival = Optional.<Integer>empty();
+        final var firstTaskArrival = Optional.<Integer>empty();
 
         for (this.taskCount = 0; in.ready(); this.taskCount++) {
             final var line = in.readLine();
@@ -216,7 +209,7 @@ public class TraceXML {
         try (
             final var in = new BufferedReader(new FileReader(this.path, StandardCharsets.UTF_8))
         ) {
-            final var fileName = splitAtLast(this.path, TraceXML.FILE_PATH_DELIMITER)[1];
+            final var fileName = splitAtLast(this.path, FILE_PATH_DELIMITER)[1];
 
             final var sb =
                 new StringBuilder("File %s was opened sucessfully:\n".formatted(fileName));
@@ -237,7 +230,7 @@ public class TraceXML {
             }
 
             // Some lines on the file are not tasks, so discounted.
-            this.taskCount = i - TraceXML.NON_TASK_RELATED_LINES;
+            this.taskCount = i - NON_TASK_RELATED_LINES;
 
             sb.append("\t- File has a workload of %d tasks".formatted(i));
 
