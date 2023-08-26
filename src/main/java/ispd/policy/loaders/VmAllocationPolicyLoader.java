@@ -16,7 +16,7 @@ public class VmAllocationPolicyLoader extends GenericPolicyLoader<VmAllocationPo
     );
 
     public static String[] getPolicyNames () {
-        return NATIVE_VM_POLICIES.toArray(String[]::new);
+        return POLICIES.keySet().toArray(String[]::new);
     }
 
     @Override
