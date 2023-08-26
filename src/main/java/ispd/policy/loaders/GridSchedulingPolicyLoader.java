@@ -1,8 +1,5 @@
 package ispd.policy.loaders;
 
-import static java.util.Collections.*;
-import static java.util.stream.Collectors.*;
-
 import ispd.policy.scheduling.grid.*;
 import ispd.policy.scheduling.grid.impl.*;
 import java.util.*;
@@ -14,15 +11,6 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
 
     public static final Map<String, Supplier<GridSchedulingPolicy>> POLICIES =
         makePolicyMap(policyEntries());
-
-    private static @NotNull Map<String, Supplier<GridSchedulingPolicy>> makePolicyMap (final @NotNull Stream<? extends Map.Entry<String, Supplier<GridSchedulingPolicy>>> entryStream) {
-        return unmodifiableMap(entryStream.collect(toMap(
-            Map.Entry::getKey,
-            Map.Entry::getValue,
-            (x, y) -> y,
-            LinkedHashMap::new
-        )));
-    }
 
     private static @NotNull Stream<Map.Entry<String, Supplier<GridSchedulingPolicy>>> policyEntries () {
         return Stream.of(
