@@ -26,12 +26,4 @@ public class VmAllocationPolicyLoader extends GenericPolicyLoader<VmAllocationPo
     protected @NotNull Map<String, Supplier<VmAllocationPolicy>> getSupplierMap () {
         return SUPPLIER_MAP;
     }
-
-    @Override
-    public VmAllocationPolicy loadPolicy (final String policyName) {
-        return Optional.of(policyName)
-            .map(SUPPLIER_MAP::get)
-            .map(Supplier::get)
-            .orElseThrow(() -> new UnknownPolicyException(policyName));
-    }
 }

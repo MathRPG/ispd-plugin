@@ -23,12 +23,4 @@ public class CloudSchedulingPolicyLoader extends GenericPolicyLoader<CloudSchedu
     protected @NotNull Map<String, Supplier<CloudSchedulingPolicy>> getSupplierMap () {
         return SUPPLIER_MAP;
     }
-
-    @Override
-    public CloudSchedulingPolicy loadPolicy (final String policyName) {
-        return Optional.of(policyName)
-            .map(SUPPLIER_MAP::get)
-            .map(Supplier::get)
-            .orElseThrow(() -> new UnknownPolicyException(policyName));
-    }
 }
