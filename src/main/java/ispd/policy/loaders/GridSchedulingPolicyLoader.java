@@ -8,7 +8,7 @@ import org.jetbrains.annotations.*;
 
 public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridSchedulingPolicy> {
 
-    private static final Map<String, Supplier<GridSchedulingPolicy>> POLICIES = Map.of(
+    public static final Map<String, Supplier<GridSchedulingPolicy>> POLICIES = Map.of(
         "RoundRobin", RoundRobin::new,
         "Workqueue", Workqueue::new,
         "WQR", WQR::new,
