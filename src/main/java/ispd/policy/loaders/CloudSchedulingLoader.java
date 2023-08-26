@@ -2,6 +2,7 @@ package ispd.policy.loaders;
 
 import static java.util.Collections.*;
 
+import ispd.policy.*;
 import ispd.policy.scheduling.cloud.*;
 import ispd.policy.scheduling.cloud.impl.*;
 import java.util.*;

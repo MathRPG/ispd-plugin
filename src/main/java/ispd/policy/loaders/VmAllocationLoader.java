@@ -1,5 +1,6 @@
 package ispd.policy.loaders;
 
+import ispd.policy.*;
 import ispd.policy.allocation.vm.*;
 import ispd.policy.allocation.vm.impl.*;
 import java.util.*;

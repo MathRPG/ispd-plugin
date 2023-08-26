@@ -1,6 +1,6 @@
-package ispd.policy.loaders;
+package ispd.policy;
 
-import ispd.policy.*;
+import ispd.policy.loaders.*;
 import java.text.*;
 import java.util.*;
 import java.util.function.*;
