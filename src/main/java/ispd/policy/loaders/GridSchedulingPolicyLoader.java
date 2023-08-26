@@ -4,6 +4,7 @@ import ispd.policy.scheduling.grid.*;
 import ispd.policy.scheduling.grid.impl.*;
 import java.util.*;
 import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridSchedulingPolicy> {
 
@@ -20,15 +21,19 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
     private static final String CLASS_PATH = "ispd.policy.scheduling.grid.impl.";
 
     @Override
-    protected String getClassPath () {
-        return CLASS_PATH;
-    }
-
-    @Override
     public GridSchedulingPolicy loadPolicy (final String policyName) {
         return Optional.of(policyName)
             .map(SUPPLIER_MAP::get)
             .map(Supplier::get)
             .orElseThrow(() -> new UnknownPolicyException(policyName));
+    }
+
+    @Override
+    protected String getClassPath () {
+        return CLASS_PATH;
+    }
+
+    private @NotNull Map<String, Supplier<GridSchedulingPolicy>> getSupplierMap () {
+        return SUPPLIER_MAP;
     }
 }
