@@ -15,7 +15,5 @@ public abstract class GenericPolicyLoader <T extends Policy<?>> implements Polic
             .orElseThrow(() -> new UnknownPolicyException(policyName));
     }
 
-    protected abstract String getClassPath ();
-
     protected abstract @NotNull Map<String, Supplier<T>> getSupplierMap ();
 }

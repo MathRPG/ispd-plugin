@@ -15,13 +15,6 @@ public class VmAllocationPolicyLoader extends GenericPolicyLoader<VmAllocationPo
         "Volume", Volume::new
     );
 
-    private static final String CLASS_PATH = "ispd.policy.allocation.vm.impl.";
-
-    @Override
-    protected String getClassPath () {
-        return CLASS_PATH;
-    }
-
     @Override
     protected @NotNull Map<String, Supplier<VmAllocationPolicy>> getSupplierMap () {
         return SUPPLIER_MAP;

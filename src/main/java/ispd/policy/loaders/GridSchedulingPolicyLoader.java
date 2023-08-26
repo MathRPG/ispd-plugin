@@ -18,13 +18,6 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
         "EHOSEP", EHOSEP::new
     );
 
-    private static final String CLASS_PATH = "ispd.policy.scheduling.grid.impl.";
-
-    @Override
-    protected String getClassPath () {
-        return CLASS_PATH;
-    }
-
     @Override
     protected @NotNull Map<String, Supplier<GridSchedulingPolicy>> getSupplierMap () {
         return SUPPLIER_MAP;

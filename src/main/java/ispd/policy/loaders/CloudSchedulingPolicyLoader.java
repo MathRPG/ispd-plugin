@@ -12,13 +12,6 @@ public class CloudSchedulingPolicyLoader extends GenericPolicyLoader<CloudSchedu
         "RoundRobin", RoundRobin::new
     );
 
-    private static final String CLASS_PATH = "ispd.policy.scheduling.cloud.impl.";
-
-    @Override
-    protected String getClassPath () {
-        return CLASS_PATH;
-    }
-
     @Override
     protected @NotNull Map<String, Supplier<CloudSchedulingPolicy>> getSupplierMap () {
         return SUPPLIER_MAP;
