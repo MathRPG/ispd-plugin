@@ -23,12 +23,12 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
         POLICIES.put("EHOSEP", EHOSEP::new);
     }
 
-    public static Map<String, Supplier<GridSchedulingPolicy>> getNativePolicies () {
+    public static @Unmodifiable Map<String, Supplier<GridSchedulingPolicy>> getNativePolicies () {
         return unmodifiableMap(POLICIES);
     }
 
     @Override
-    protected @NotNull Map<String, Supplier<GridSchedulingPolicy>> getPolicies () {
+    protected @Unmodifiable @NotNull Map<String, Supplier<GridSchedulingPolicy>> getPolicies () {
         return unmodifiableMap(POLICIES);
     }
 }
