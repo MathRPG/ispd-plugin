@@ -1,15 +1,10 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.policy.PolicyConditions;
-import ispd.policy.scheduling.grid.GridSchedulingPolicy;
-import ispd.policy.scheduling.grid.impl.util.SlaveControl;
-import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.*;
+import ispd.policy.scheduling.grid.*;
+import ispd.policy.scheduling.grid.impl.util.*;
+import java.util.*;
 
 public abstract class AbstractOSEP <T extends UserProcessingControl> extends GridSchedulingPolicy {
 
@@ -19,7 +14,7 @@ public abstract class AbstractOSEP <T extends UserProcessingControl> extends Gri
 
     protected final Map<String, T> userControls = new HashMap<>();
 
-    public AbstractOSEP () {
+    protected AbstractOSEP () {
         this.tarefas     = new ArrayList<>();
         this.escravos    = new ArrayList<>();
         this.filaEscravo = new ArrayList<>();
@@ -27,7 +22,7 @@ public abstract class AbstractOSEP <T extends UserProcessingControl> extends Gri
 
     @Override
     public void iniciar () {
-        this.mestre.setSchedulingConditions(PolicyConditions.ALL);
+        this.mestre.setSchedulingConditions(Conditions.ALL);
 
         for (final var userId : this.metricaUsuarios.getUsuarios()) {
             final var uc = this.makeUserControlFor(userId);
@@ -47,7 +42,7 @@ public abstract class AbstractOSEP <T extends UserProcessingControl> extends Gri
 
     @Override
     public Double getTempoAtualizar () {
-        return AbstractOSEP.REFRESH_TIME;
+        return REFRESH_TIME;
     }
 
     protected T makeUserControlFor (final String userId) {

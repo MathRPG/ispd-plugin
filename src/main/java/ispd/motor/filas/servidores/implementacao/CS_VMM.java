@@ -29,9 +29,9 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
 
     private boolean alocDisponivel = true;
 
-    private Set<PolicyCondition> tipoEscalonamento = PolicyConditions.WHILE_MUST_DISTRIBUTE;
+    private Set<Condition> tipoEscalonamento = Conditions.WHILE_MUST_DISTRIBUTE;
 
-    private Set<PolicyCondition> tipoAlocacao = PolicyConditions.WHILE_MUST_DISTRIBUTE;
+    private Set<Condition> tipoAlocacao = Conditions.WHILE_MUST_DISTRIBUTE;
 
     private List<List> caminhoEscravo = null;
 
@@ -130,7 +130,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
                                        + " adicionada na lista de concluídas");
                     this.escalonador.addTarefaConcluida(cliente);
 
-                    if (this.tipoEscalonamento.contains(PolicyCondition.WHEN_RECEIVES_RESULT)) {
+                    if (this.tipoEscalonamento.contains(Condition.WHEN_RECEIVES_RESULT)) {
                         if (this.escalonador.getFilaTarefas().isEmpty()) {
                             this.escDisponivel = true;
                         } else {
@@ -187,7 +187,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
             );
             // Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
-            if (this.tipoAlocacao.contains(PolicyCondition.WHILE_MUST_DISTRIBUTE)) {
+            if (this.tipoAlocacao.contains(Condition.WHILE_MUST_DISTRIBUTE)) {
                 if (!this.alocadorVM.getMaquinasVirtuais().isEmpty()) {
                     this.executeAllocation();
                 } else {
@@ -204,7 +204,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
             );
             // Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
-            if (this.tipoEscalonamento.contains(PolicyCondition.WHILE_MUST_DISTRIBUTE)) {
+            if (this.tipoEscalonamento.contains(Condition.WHILE_MUST_DISTRIBUTE)) {
                 // se fila de tarefas do servidor não estiver vazia escalona
                 // proxima tarefa
                 if (!this.escalonador.getFilaTarefas().isEmpty()) {
@@ -396,12 +396,12 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     }
 
     @Override
-    public Set<PolicyCondition> getAllocationConditions () {
+    public Set<Condition> getAllocationConditions () {
         return this.tipoAlocacao;
     }
 
     @Override
-    public void setAllocationConditions (final Set<PolicyCondition> tipo) {
+    public void setAllocationConditions (final Set<Condition> tipo) {
         this.tipoAlocacao = tipo;
     }
 
@@ -416,7 +416,7 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     }
 
     @Override
-    public void setSchedulingConditions (final Set<PolicyCondition> newConditions) {
+    public void setSchedulingConditions (final Set<Condition> newConditions) {
         this.tipoEscalonamento = newConditions;
     }
 

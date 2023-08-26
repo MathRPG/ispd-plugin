@@ -1,14 +1,13 @@
 package ispd.policy.allocation;
 
-import ispd.policy.PolicyCondition;
-import ispd.policy.PolicyMaster;
-import java.util.Set;
+import ispd.policy.*;
+import java.util.*;
 
-public interface AllocationMaster extends PolicyMaster {
+public interface AllocationMaster extends Simulable {
 
     void executeAllocation ();
 
-    Set<PolicyCondition> getAllocationConditions ();
+    Set<Condition> getAllocationConditions ();
 
-    void setAllocationConditions (Set<PolicyCondition> tipo);
+    void setAllocationConditions (Set<Condition> tipo);
 }

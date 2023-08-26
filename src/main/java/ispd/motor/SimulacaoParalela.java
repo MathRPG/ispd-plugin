@@ -1,22 +1,13 @@
 package ispd.motor;
 
-import ispd.motor.filas.Client;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.filas.servidores.implementacao.CS_Maquina;
-import ispd.motor.filas.servidores.implementacao.CS_Mestre;
-import ispd.policy.PolicyMaster;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.policy.*;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.PriorityBlockingQueue;
+import java.util.*;
+import java.util.concurrent.*;
 
 public class SimulacaoParalela extends Simulation {
 
@@ -150,7 +141,7 @@ public class SimulacaoParalela extends Simulation {
     @Override
     public void createRouting () {
         for (final CS_Processamento mst : this.getQueueNetwork().getMestres()) {
-            final PolicyMaster temp = (PolicyMaster) mst;
+            final Simulable temp = (Simulable) mst;
             //Cede acesso ao mestre a fila de eventos futuros
             temp.setSimulation(this);
             //Encontra menor caminho entre o mestre e seus escravos
@@ -287,7 +278,7 @@ public class SimulacaoParalela extends Simulation {
 
         private ThreadTrabalhadorDinamico (final CentroServico rec, final Simulation sim) {
             super(rec, sim);
-            if (rec instanceof CS_Mestre mestre) {
+            if (rec instanceof final CS_Mestre mestre) {
                 if (mestre.getEscalonador().getTempoAtualizar() != null) {
                     this.item    = new Object[3];
                     this.item[0] = mestre;

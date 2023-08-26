@@ -1,27 +1,16 @@
 package ispd.motor;
 
-import ispd.gui.PickSimulationFaultsDialog;
-import ispd.motor.falhas.FIHardware;
-import ispd.motor.falhas.FISoftware;
-import ispd.motor.falhas.FIValue;
-import ispd.motor.falhas.FState;
-import ispd.motor.filas.Client;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
-import ispd.motor.filas.servidores.implementacao.CS_Mestre;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
-import ispd.motor.metricas.MetricasGlobais;
-import ispd.policy.PolicyMaster;
-import java.awt.Color;
-import java.util.ArrayList;
+import ispd.gui.*;
+import ispd.motor.falhas.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.metricas.*;
+import ispd.policy.*;
+import java.awt.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 public class SimulacaoSequencialCloud extends Simulation {
 
@@ -60,8 +49,8 @@ public class SimulacaoSequencialCloud extends Simulation {
 
         System.out.println("---------------------------------------");
         for (final CS_Processamento mst : cloudQueueNetwork.getMestres()) {
-            final PolicyMaster temp = (PolicyMaster) mst;
-            final PolicyMaster aux  = (PolicyMaster) mst;
+            final Simulable temp = (Simulable) mst;
+            final Simulable aux  = (Simulable) mst;
             //Cede acesso ao mestre a fila de eventos futuros
             aux.setSimulation(this);
             temp.setSimulation(this);
