@@ -19,12 +19,12 @@ public abstract class Loader <T extends Policy<?>> {
         LOGGER.info(() -> MessageFormat.format(INFO_PATTERN, name));
 
         return Optional.of(name)
-            .map(this::getSupplierByName)
+            .map(this::policySupplierWithName)
             .map(Supplier::get)
             .orElseThrow(() -> new UnknownPolicyException(name));
     }
 
-    private Supplier<T> getSupplierByName (final String name) {
+    private Supplier<T> policySupplierWithName (final String name) {
         return this.policyMap().get(name);
     }
 }
