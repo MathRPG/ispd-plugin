@@ -29,6 +29,6 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
         return Optional.of(policyName)
             .map(map::get)
             .map(Supplier::get)
-            .orElseThrow();
+            .orElseThrow(() -> new UnknownPolicyException(policyName));
     }
 }
