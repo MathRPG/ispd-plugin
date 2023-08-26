@@ -25,6 +25,10 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
             "OSEP", () -> new OSEP(),
             "EHOSEP", () -> new EHOSEP()
         );
-        return super.loadPolicy(policyName);
+
+        return Optional.of(policyName)
+            .map(map::get)
+            .map(Supplier::get)
+            .orElseThrow();
     }
 }
