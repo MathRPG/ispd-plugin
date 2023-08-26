@@ -7,6 +7,16 @@ import java.util.function.*;
 
 public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridSchedulingPolicy> {
 
+    private static final Map<String, Supplier<GridSchedulingPolicy>> SUPPLIER_MAP = Map.of(
+        "RoundRobin", RoundRobin::new,
+        "Workqueue", Workqueue::new,
+        "WQR", WQR::new,
+        "DynamicFPLTF", DynamicFPLTF::new,
+        "HOSEP", HOSEP::new,
+        "OSEP", OSEP::new,
+        "EHOSEP", EHOSEP::new
+    );
+
     private static final String CLASS_PATH = "ispd.policy.scheduling.grid.impl.";
 
     @Override
@@ -16,18 +26,8 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
 
     @Override
     public GridSchedulingPolicy loadPolicy (final String policyName) {
-        final var map = Map.<String, Supplier<GridSchedulingPolicy>>of(
-            "RoundRobin", () -> new RoundRobin(),
-            "Workqueue", () -> new Workqueue(),
-            "WQR", () -> new WQR(),
-            "DynamicFPLTF", () -> new DynamicFPLTF(),
-            "HOSEP", () -> new HOSEP(),
-            "OSEP", () -> new OSEP(),
-            "EHOSEP", () -> new EHOSEP()
-        );
-
         return Optional.of(policyName)
-            .map(map::get)
+            .map(SUPPLIER_MAP::get)
             .map(Supplier::get)
             .orElseThrow(() -> new UnknownPolicyException(policyName));
     }
