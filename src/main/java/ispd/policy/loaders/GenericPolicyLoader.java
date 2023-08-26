@@ -4,6 +4,8 @@ import ispd.arquivo.xml.*;
 import ispd.policy.*;
 import java.lang.reflect.*;
 import java.net.*;
+import java.util.*;
+import java.util.function.*;
 import java.util.logging.*;
 import org.jetbrains.annotations.*;
 
@@ -26,6 +28,8 @@ public abstract class GenericPolicyLoader <T extends Policy<?>> implements Polic
     }
 
     protected abstract String getClassPath ();
+
+    protected abstract @NotNull Map<String, Supplier<T>> getSupplierMap ();
 
     @Override
     public T loadPolicy (final String policyName) {

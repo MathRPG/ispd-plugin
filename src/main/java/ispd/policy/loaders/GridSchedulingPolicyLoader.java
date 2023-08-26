@@ -33,7 +33,8 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
         return CLASS_PATH;
     }
 
-    private @NotNull Map<String, Supplier<GridSchedulingPolicy>> getSupplierMap () {
+    @Override
+    protected @NotNull Map<String, Supplier<GridSchedulingPolicy>> getSupplierMap () {
         return SUPPLIER_MAP;
     }
 }

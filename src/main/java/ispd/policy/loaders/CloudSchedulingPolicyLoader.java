@@ -4,6 +4,7 @@ import ispd.policy.scheduling.cloud.*;
 import ispd.policy.scheduling.cloud.impl.*;
 import java.util.*;
 import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 public class CloudSchedulingPolicyLoader extends GenericPolicyLoader<CloudSchedulingPolicy> {
 
@@ -16,6 +17,11 @@ public class CloudSchedulingPolicyLoader extends GenericPolicyLoader<CloudSchedu
     @Override
     protected String getClassPath () {
         return CLASS_PATH;
+    }
+
+    @Override
+    protected @NotNull Map<String, Supplier<CloudSchedulingPolicy>> getSupplierMap () {
+        return SUPPLIER_MAP;
     }
 
     @Override

@@ -4,6 +4,7 @@ import ispd.policy.allocation.vm.*;
 import ispd.policy.allocation.vm.impl.*;
 import java.util.*;
 import java.util.function.*;
+import org.jetbrains.annotations.*;
 
 public class VmAllocationPolicyLoader extends GenericPolicyLoader<VmAllocationPolicy> {
 
@@ -19,6 +20,11 @@ public class VmAllocationPolicyLoader extends GenericPolicyLoader<VmAllocationPo
     @Override
     protected String getClassPath () {
         return CLASS_PATH;
+    }
+
+    @Override
+    protected @NotNull Map<String, Supplier<VmAllocationPolicy>> getSupplierMap () {
+        return SUPPLIER_MAP;
     }
 
     @Override
