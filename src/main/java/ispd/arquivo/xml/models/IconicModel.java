@@ -1,8 +1,7 @@
 package ispd.arquivo.xml.models;
 
-import ispd.gui.iconico.Edge;
-import ispd.gui.iconico.Vertex;
-import java.util.List;
+import ispd.gui.drawing.icon.*;
+import java.util.*;
 
 /**
  * Simple tuple-like object to represent an iconic model, with vertices and edges

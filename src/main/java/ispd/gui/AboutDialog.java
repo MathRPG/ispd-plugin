@@ -1,20 +1,11 @@
 package ispd.gui;
 
-import ispd.gui.auxiliar.HtmlPane;
-import java.awt.Frame;
-import java.io.IOException;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.GroupLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTabbedPane;
-import javax.swing.LayoutStyle;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
+import ispd.gui.utils.components.*;
+import java.awt.*;
+import java.io.*;
+import java.net.*;
+import java.util.logging.*;
+import javax.swing.*;
 
 public class AboutDialog extends JDialog {
 
@@ -51,7 +42,7 @@ public class AboutDialog extends JDialog {
 
         final var jTabbedPane1 = new JTabbedPane();
         jTabbedPane1.setTabPlacement(SwingConstants.BOTTOM);
-        jTabbedPane1.addTab("About", new JLabel(AboutDialog.ABOUT_TEXT));
+        jTabbedPane1.addTab("About", new JLabel(ABOUT_TEXT));
 
         final var developers = new HtmlPane();
         developers.setText("");

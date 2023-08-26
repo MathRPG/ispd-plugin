@@ -1,6 +1,6 @@
 package ispd.gui;
 
-import static ispd.gui.TextSupplier.*;
+import static ispd.gui.text.TextSupplier.*;
 
 import ispd.gui.utils.*;
 import ispd.gui.utils.fonts.*;

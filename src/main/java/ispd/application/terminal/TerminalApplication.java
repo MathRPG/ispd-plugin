@@ -3,7 +3,7 @@ package ispd.application.terminal;
 import ispd.application.*;
 import ispd.arquivo.*;
 import ispd.arquivo.xml.*;
-import ispd.gui.auxiliar.*;
+import ispd.gui.results.*;
 import ispd.motor.*;
 import ispd.motor.filas.*;
 import ispd.motor.metricas.*;

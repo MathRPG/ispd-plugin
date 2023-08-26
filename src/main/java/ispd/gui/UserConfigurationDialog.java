@@ -1,6 +1,6 @@
 package ispd.gui;
 
-import static ispd.gui.TextSupplier.*;
+import static ispd.gui.text.TextSupplier.*;
 import static ispd.gui.utils.ButtonBuilder.*;
 
 import java.awt.*;

@@ -1,12 +1,13 @@
 package ispd.gui;
 
-import static ispd.gui.TextSupplier.*;
+import static ispd.gui.text.TextSupplier.*;
 
 import ispd.arquivo.xml.*;
-import ispd.gui.auxiliar.*;
 import ispd.gui.configuracao.*;
-import ispd.gui.iconico.*;
+import ispd.gui.drawing.*;
+import ispd.gui.drawing.icon.*;
 import ispd.gui.utils.*;
+import ispd.gui.utils.components.*;
 import ispd.utils.*;
 import ispd.utils.constants.*;
 import java.awt.*;

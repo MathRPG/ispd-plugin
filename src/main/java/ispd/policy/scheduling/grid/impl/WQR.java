@@ -1,15 +1,11 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.annotations.Policy;
-import ispd.motor.Mensagens;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.policy.scheduling.grid.GridSchedulingPolicy;
-import java.util.ArrayList;
-import java.util.List;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.scheduling.grid.*;
+import java.util.*;
 
-@Policy
 public class WQR extends GridSchedulingPolicy {
 
     private Tarefa ultimaTarefaConcluida = null;

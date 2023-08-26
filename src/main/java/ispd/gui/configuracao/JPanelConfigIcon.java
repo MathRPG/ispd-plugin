@@ -1,9 +1,10 @@
 package ispd.gui.configuracao;
 
-import static ispd.gui.TextSupplier.*;
+import static ispd.gui.text.TextSupplier.*;
 
 import ispd.gui.*;
-import ispd.gui.iconico.*;
+import ispd.gui.configuracao.tables.*;
+import ispd.gui.drawing.icon.*;
 import ispd.gui.utils.fonts.*;
 import java.awt.event.*;
 import java.util.function.*;

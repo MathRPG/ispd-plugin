@@ -1,11 +1,9 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.annotations.Policy;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
-import java.util.Optional;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.scheduling.grid.impl.util.*;
+import java.util.*;
 
-@Policy
 public class HOSEP extends AbstractHOSEP<UserProcessingControl> {
 
     @Override

@@ -1,14 +1,10 @@
 package ispd.gui.results;
 
-import ispd.gui.auxiliar.SimulationResultChartMaker;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.metricas.Metricas;
-import java.awt.Dimension;
-import java.awt.Frame;
+import ispd.motor.filas.*;
+import ispd.motor.metricas.*;
+import java.awt.*;
 import java.util.List;
-import javax.swing.JDialog;
-import javax.swing.JTabbedPane;
+import javax.swing.*;
 
 /**
  * A {@link ResultsDialog} class is used to display a window containing all types of information

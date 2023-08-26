@@ -2,7 +2,7 @@ package ispd.gui;
 
 import static ispd.gui.utils.ButtonBuilder.*;
 
-import ispd.gui.iconico.*;
+import ispd.gui.drawing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;

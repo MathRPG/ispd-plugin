@@ -1,15 +1,17 @@
 package ispd.application;
 
 import ispd.gui.*;
+import ispd.gui.text.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
+import javax.swing.plaf.nimbus.*;
 
 public class GuiApplication implements Application {
 
-    private static final String LOOK_AND_FEEL = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
-
     private static final Logger LOGGER = Logger.getLogger(GuiApplication.class.getName());
+
+    private static final String BUNDLE_LOCATION = "text.gui";
 
     private static void openGui () {
         final var splash     = new SplashWindow();
@@ -19,7 +21,7 @@ public class GuiApplication implements Application {
     }
 
     private static MainWindow initializeApplication () {
-        final var exceptionLogger = new LogExceptions(null);
+        final var exceptionLogger = new LogExceptions();
         Thread.setDefaultUncaughtExceptionHandler(exceptionLogger);
 
         setGuiLookAndFeel();
@@ -33,7 +35,7 @@ public class GuiApplication implements Application {
 
     private static void setGuiLookAndFeel () {
         try {
-            UIManager.setLookAndFeel(LOOK_AND_FEEL);
+            UIManager.setLookAndFeel(NimbusLookAndFeel.class.getCanonicalName());
         } catch (final ClassNotFoundException |
                        IllegalAccessException |
                        InstantiationException |
@@ -44,7 +46,7 @@ public class GuiApplication implements Application {
 
     @Override
     public void run () {
-        TextSupplier.setInstance(ResourceBundle.getBundle("text.gui"));
+        TextSupplier.configure(ResourceBundle.getBundle(BUNDLE_LOCATION));
 
         openGui();
     }

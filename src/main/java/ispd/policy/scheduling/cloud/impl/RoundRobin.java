@@ -1,20 +1,14 @@
 package ispd.policy.scheduling.cloud.impl;
 
-import ispd.annotations.Policy;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.policy.scheduling.cloud.CloudSchedulingPolicy;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.scheduling.cloud.*;
+import java.util.*;
 
 /**
  * Implementation of the RoundRobin scheduling algorithm. Hands over the next task on the FIFO
  * queue, for the next resource in a circular queue of resources.
  */
-@Policy
 public class RoundRobin extends CloudSchedulingPolicy {
 
     private ListIterator<CS_Processamento> resources = null;

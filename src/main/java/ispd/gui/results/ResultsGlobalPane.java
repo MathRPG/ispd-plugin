@@ -2,7 +2,7 @@ package ispd.gui.results;
 
 import ispd.arquivo.*;
 import ispd.arquivo.xml.*;
-import ispd.gui.auxiliar.*;
+import ispd.gui.utils.components.*;
 import ispd.gui.utils.fonts.*;
 import ispd.motor.filas.*;
 import ispd.motor.metricas.*;

@@ -1,18 +1,10 @@
 package ispd.gui;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import java.awt.*;
+import java.io.*;
+import java.text.*;
+import java.util.*;
+import javax.swing.*;
 
 public class LogExceptions implements Thread.UncaughtExceptionHandler {
 
@@ -46,15 +38,14 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
 
     private final JScrollPane scrollPane = resizedScrollPaneFrom(this.textArea);
 
-    private Component parentComponent;
+    private Component parentComponent = null;
 
-    public LogExceptions (final Component gui) {
-        this.parentComponent = gui;
+    public LogExceptions () {
         createErrorFolderIfNonExistent();
     }
 
     private static void createErrorFolderIfNonExistent () {
-        final var aux = new File(LogExceptions.ERROR_FOLDER_PATH);
+        final var aux = new File(ERROR_FOLDER_PATH);
 
         if (aux.exists()) {
             return;
@@ -72,8 +63,8 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
     private static JScrollPane resizedScrollPaneFrom (final JTextArea textArea) {
         final JScrollPane scroll = new JScrollPane(textArea);
         scroll.setPreferredSize(new Dimension(
-            LogExceptions.SCROLL_PANE_PREFERRED_WIDTH,
-            LogExceptions.SCROLL_PANE_PREFERRED_HEIGHT
+            SCROLL_PANE_PREFERRED_WIDTH,
+            SCROLL_PANE_PREFERRED_HEIGHT
         ));
         return scroll;
     }
@@ -82,9 +73,9 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
         final var errorCode = buildErrorFileTimestamp(date);
         return String.format(
             "%s%s%s_%s",
-            LogExceptions.ERROR_FOLDER_PATH,
+            ERROR_FOLDER_PATH,
             File.separator,
-            LogExceptions.ERROR_FILE_PREFIX,
+            ERROR_FILE_PREFIX,
             errorCode
         );
     }
@@ -102,7 +93,7 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
     }
 
     private static String buildErrorFileTimestamp (final Date date) {
-        final var dateFormat = new SimpleDateFormat(LogExceptions.ERROR_CODE_DATE_FORMAT);
+        final var dateFormat = new SimpleDateFormat(ERROR_CODE_DATE_FORMAT);
         return dateFormat.format(date);
     }
 
@@ -124,7 +115,7 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
 
         try {
             final var errorMessage =
-                String.format(LogExceptions.ERROR_FILE_MESSAGE_FORMAT, errorStream);
+                String.format(ERROR_FILE_MESSAGE_FORMAT, errorStream);
             this.displayError(errorMessage);
 
             errorStream.reset();
@@ -149,7 +140,7 @@ public class LogExceptions implements Thread.UncaughtExceptionHandler {
     private void displayErrorInGui (final String errorMessage, final File file) {
         final var path = file.getAbsolutePath();
         final var formattedMessage =
-            String.format(LogExceptions.ERROR_GUI_MESSAGE_FORMAT, path, errorMessage);
+            String.format(ERROR_GUI_MESSAGE_FORMAT, path, errorMessage);
 
         this.textArea.setText(formattedMessage);
 

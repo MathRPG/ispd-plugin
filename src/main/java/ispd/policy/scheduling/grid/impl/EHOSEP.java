@@ -1,15 +1,12 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.annotations.Policy;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.policy.scheduling.grid.impl.util.UserEnergyControl;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.function.ToDoubleFunction;
-import java.util.stream.Stream;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.scheduling.grid.impl.util.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
 
-@Policy
 public class EHOSEP extends AbstractHOSEP<UserEnergyControl> {
 
     private static double calculateEnergyConsumptionForTask (

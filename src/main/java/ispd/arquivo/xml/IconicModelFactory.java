@@ -2,7 +2,8 @@ package ispd.arquivo.xml;
 
 import ispd.arquivo.xml.models.builders.*;
 import ispd.arquivo.xml.utils.*;
-import ispd.gui.iconico.*;
+import ispd.gui.drawing.*;
+import ispd.gui.drawing.icon.*;
 import java.util.*;
 import java.util.stream.*;
 import org.w3c.dom.*;

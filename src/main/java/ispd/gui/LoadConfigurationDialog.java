@@ -1,10 +1,10 @@
 package ispd.gui;
 
-import static ispd.gui.TextSupplier.*;
+import static ispd.gui.text.TextSupplier.*;
 import static ispd.gui.utils.ButtonBuilder.*;
 
 import ispd.arquivo.xml.*;
-import ispd.gui.auxiliar.*;
+import ispd.gui.utils.*;
 import ispd.gui.utils.fonts.*;
 import ispd.motor.workload.*;
 import ispd.motor.workload.impl.*;

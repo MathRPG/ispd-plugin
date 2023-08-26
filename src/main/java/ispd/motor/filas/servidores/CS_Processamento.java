@@ -1,13 +1,11 @@
 package ispd.motor.filas.servidores;
 
-import ispd.gui.auxiliar.ParesOrdenadosUso;
-import ispd.motor.filas.servidores.implementacao.CS_Link;
-import ispd.motor.metricas.MetricasProcessamento;
-import ispd.policy.allocation.vm.VmMaster;
-import ispd.policy.scheduling.grid.GridMaster;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import ispd.gui.utils.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.metricas.*;
+import ispd.policy.allocation.vm.*;
+import ispd.policy.scheduling.grid.*;
+import java.util.*;
 
 /**
  * Classe abstrata que representa os servidores de processamento do modelo de fila, Esta classe
@@ -132,7 +130,7 @@ public abstract class CS_Processamento extends CentroServico {
             if (atual instanceof CS_Link) {
                 final var caminhoItem = new Object[4];
                 caminhoItem[0] = atual;
-                if (atual.getConexoesSaida() instanceof CS_Comunicacao cs) {
+                if (atual.getConexoesSaida() instanceof final CS_Comunicacao cs) {
                     caminhoItem[1] = cs.tempoTransmitir(10000) + acumulado;
                     caminhoItem[2] = atual.getConexoesSaida();
                 } else if (atual.getConexoesSaida() instanceof GridMaster
@@ -151,7 +149,7 @@ public abstract class CS_Processamento extends CentroServico {
                 for (final var cs : lista) {
                     final var caminhoItem = new Object[4];
                     caminhoItem[0] = atual;
-                    if (cs instanceof CS_Comunicacao comu) {
+                    if (cs instanceof final CS_Comunicacao comu) {
                         caminhoItem[1] = comu.tempoTransmitir(10000) + acumulado;
                         caminhoItem[2] = cs;
                     } else if (cs instanceof GridMaster || cs == destino) {
@@ -231,7 +229,7 @@ public abstract class CS_Processamento extends CentroServico {
                     && atual.getConexoesSaida() != destino) {
                     caminhoItem[1] = Double.MAX_VALUE;
                     caminhoItem[2] = null;
-                } else if (atual.getConexoesSaida() instanceof CS_Comunicacao cs) {
+                } else if (atual.getConexoesSaida() instanceof final CS_Comunicacao cs) {
                     caminhoItem[1] = cs.tempoTransmitir(10000) + acumulado;
                     caminhoItem[2] = atual.getConexoesSaida();
                 } else {
@@ -249,7 +247,7 @@ public abstract class CS_Processamento extends CentroServico {
                     if (cs instanceof CS_Processamento && cs != destino) {
                         caminhoItem[1] = Double.MAX_VALUE;
                         caminhoItem[2] = null;
-                    } else if (cs instanceof CS_Comunicacao comu) {
+                    } else if (cs instanceof final CS_Comunicacao comu) {
                         caminhoItem[1] = comu.tempoTransmitir(10000) + acumulado;
                         caminhoItem[2] = cs;
                     } else {
@@ -326,7 +324,7 @@ public abstract class CS_Processamento extends CentroServico {
             if (atual instanceof CS_Link) {
                 final var caminhoItem = new Object[4];
                 caminhoItem[0] = atual;
-                if (atual.getConexoesSaida() instanceof CS_Comunicacao cs) {
+                if (atual.getConexoesSaida() instanceof final CS_Comunicacao cs) {
                     caminhoItem[1] = cs.tempoTransmitir(10000) + acumulado;
                     caminhoItem[2] = atual.getConexoesSaida();
                 } else if (atual.getConexoesSaida() instanceof VmMaster
@@ -345,7 +343,7 @@ public abstract class CS_Processamento extends CentroServico {
                 for (final var cs : lista) {
                     final var caminhoItem = new Object[4];
                     caminhoItem[0] = atual;
-                    if (cs instanceof CS_Comunicacao comu) {
+                    if (cs instanceof final CS_Comunicacao comu) {
                         caminhoItem[1] = comu.tempoTransmitir(10000) + acumulado;
                         caminhoItem[2] = cs;
                     } else if (cs instanceof VmMaster || cs == destino) {

@@ -1,7 +1,7 @@
 package ispd.arquivo.xml.models.builders;
 
 import ispd.arquivo.xml.utils.*;
-import ispd.gui.iconico.*;
+import ispd.gui.drawing.*;
 import ispd.motor.filas.servidores.implementacao.*;
 
 /**

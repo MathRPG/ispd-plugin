@@ -1,10 +1,7 @@
 package ispd.gui.results;
 
-import java.util.List;
-
-import ispd.gui.auxiliar.SimulationResultChartMaker;
-import ispd.gui.utils.Multipane;
-import ispd.gui.utils.MultipaneButton;
+import ispd.gui.utils.components.*;
+import java.util.*;
 
 /**
  * A {@link ResultsProcessingPane} is a class that represents a multipane

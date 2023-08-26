@@ -1,18 +1,10 @@
 package ispd.policy.allocation.vm.impl;
 
-import ispd.annotations.Policy;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
-import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
-import ispd.policy.allocation.vm.VmAllocationPolicy;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.policy.allocation.vm.*;
+import java.util.*;
 
-@Policy
 public class RoundRobin extends VmAllocationPolicy {
 
     private ListIterator<CS_Processamento> physicalMachine = null;

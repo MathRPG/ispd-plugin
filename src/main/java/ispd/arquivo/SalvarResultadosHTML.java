@@ -1,21 +1,14 @@
 package ispd.arquivo;
 
-import ispd.gui.MainWindow;
-import ispd.gui.auxiliar.SimulationResultChartMaker;
-import ispd.motor.metricas.Metricas;
-import ispd.motor.metricas.MetricasGlobais;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
-import javax.imageio.ImageIO;
+import ispd.gui.*;
+import ispd.gui.results.*;
+import ispd.motor.metricas.*;
+import java.awt.image.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.stream.*;
+import javax.imageio.*;
 
 /**
  * Stores simulation results and exports them to a html file
@@ -48,9 +41,9 @@ public class SalvarResultadosHTML {
     }
 
     private static String makeEfficiencyDescriptionFromMetrics (final MetricasGlobais metrics) {
-        if (metrics.getEficiencia() > SalvarResultadosHTML.EFFICIENCY_GOOD) {
+        if (metrics.getEficiencia() > EFFICIENCY_GOOD) {
             return getEfficiencyDescription("GOOD", "00ff00");
-        } else if (metrics.getEficiencia() > SalvarResultadosHTML.EFFICIENCY_BAD) {
+        } else if (metrics.getEficiencia() > EFFICIENCY_BAD) {
             return getEfficiencyDescription("MEDIA", "");
         } else {
             return getEfficiencyDescription("BAD", "ff0000");

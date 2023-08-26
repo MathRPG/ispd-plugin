@@ -1,7 +1,7 @@
 package ispd.arquivo.xml.models.builders;
 
 import ispd.arquivo.xml.utils.*;
-import ispd.gui.iconico.*;
+import ispd.gui.drawing.icon.*;
 
 /**
  * Utility class with static methods to build grid items for the gui, from {@link WrappedElement}s
