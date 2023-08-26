@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import ispd.annotations.*;
+import ispd.policy.loaders.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
@@ -275,16 +276,12 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenModelWithInvalidSchedulingPolicy_thenThrowsWhileInterpretingModel () {
-        final var cause = assertThrowsExactly(
-            RuntimeException.class,
+        final var exception = assertThrowsExactly(
+            UnknownPolicyException.class,
             () -> this.runApplicationOnModelWith("oneMachineMasterIcon")
-        ).getCause();
-
-        assertThat(
-            cause,
-            both(is(instanceOf(ClassNotFoundException.class)))
-                .and(hasProperty("message", containsString("---")))
         );
+
+        assertThat(exception, hasProperty("message", containsString("---")));
 
         verify(this.outStream);
     }

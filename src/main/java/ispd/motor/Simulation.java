@@ -1,17 +1,11 @@
 package ispd.motor;
 
-import ispd.motor.filas.Client;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.RedeDeFilasCloud;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.filas.servidores.implementacao.CS_Maquina;
-import ispd.motor.filas.servidores.implementacao.CS_Mestre;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
-import ispd.motor.metricas.Metricas;
-import ispd.policy.PolicyMaster;
-import java.awt.Color;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.metricas.*;
+import ispd.policy.*;
+import java.awt.*;
 import java.util.List;
 
 public abstract class Simulation {
@@ -109,7 +103,7 @@ public abstract class Simulation {
 
     public void createRouting () {
         for (final CS_Processamento master : this.queueNetwork.getMestres()) {
-            final PolicyMaster temp = (PolicyMaster) master;
+            final Simulable temp = (Simulable) master;
 
             // Give access to the master of the queue of future events.
             temp.setSimulation(this);

@@ -1,10 +1,9 @@
 package ispd.policy;
 
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import java.util.List;
+import ispd.motor.filas.servidores.*;
+import java.util.*;
 
-public abstract class Policy <T extends PolicyMaster> {
+public abstract class Policy <T extends Simulable> {
 
     protected T mestre = null;
 

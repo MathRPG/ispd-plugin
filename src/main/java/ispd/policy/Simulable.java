@@ -1,8 +1,8 @@
 package ispd.policy;
 
-import ispd.motor.Simulation;
+import ispd.motor.*;
 
-public interface PolicyMaster {
+public interface Simulable {
 
     Simulation getSimulation ();
 

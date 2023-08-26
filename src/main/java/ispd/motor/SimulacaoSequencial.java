@@ -1,21 +1,13 @@
 package ispd.motor;
 
-import ispd.motor.filas.Client;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.filas.servidores.implementacao.CS_Maquina;
-import ispd.motor.filas.servidores.implementacao.CS_Mestre;
-import ispd.policy.PolicyMaster;
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Iterator;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.motor.filas.servidores.implementacao.*;
+import ispd.policy.*;
+import java.awt.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.PriorityQueue;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.stream.*;
 
 public class SimulacaoSequencial extends Simulation {
 
@@ -49,7 +41,7 @@ public class SimulacaoSequencial extends Simulation {
         window.print("Creating failuresSS.");
 
         for (final CS_Processamento mst : queueNetwork.getMestres()) {
-            final PolicyMaster temp = (PolicyMaster) mst;
+            final Simulable temp = (Simulable) mst;
             //Cede acesso ao mestre a fila de eventos futuros
             temp.setSimulation(this);
             //Encontra menor caminho entre o mestre e seus escravos

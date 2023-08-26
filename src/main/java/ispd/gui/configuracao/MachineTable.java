@@ -3,7 +3,7 @@ package ispd.gui.configuracao;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.*;
-import ispd.policy.*;
+import ispd.policy.loaders.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -44,7 +44,7 @@ public class MachineTable extends AbstractTableModel {
     private final JButton slaves = this.setButton();
 
     private final JComboBox<?> schedulers =
-        new JComboBox<>(PolicyLoader.NATIVE_GRID_POLICIES.toArray(String[]::new));
+        new JComboBox<>(GridSchedulingLoader.getPolicyNames());
 
     private final JComboBox<String> users = new JComboBox<>();
 
@@ -176,8 +176,8 @@ public class MachineTable extends AbstractTableModel {
         switch (rowIndex) {
             case LABEL -> this.machine.getId().setName(value.toString());
             case OWNER -> this.machine.setOwner(this.users
-                                                                 .getSelectedItem()
-                                                                 .toString());
+                                                    .getSelectedItem()
+                                                    .toString());
             case PROCESSOR -> this.machine.setComputationalPower(Double.valueOf(value.toString()));
             case LOAD_FACTOR -> this.machine.setLoadFactor(Double.valueOf(value.toString()));
             case RAM -> this.machine.setRam(Double.valueOf(value.toString()));

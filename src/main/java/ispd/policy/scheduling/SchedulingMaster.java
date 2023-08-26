@@ -1,16 +1,15 @@
 package ispd.policy.scheduling;
 
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.policy.PolicyCondition;
-import ispd.policy.PolicyMaster;
-import java.util.Set;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.*;
+import java.util.*;
 
-public interface SchedulingMaster extends PolicyMaster {
+public interface SchedulingMaster extends Simulable {
 
     void executeScheduling ();
 
-    void setSchedulingConditions (Set<PolicyCondition> newConditions);
+    void setSchedulingConditions (Set<Condition> newConditions);
 
     void sendTask (Tarefa task);
 

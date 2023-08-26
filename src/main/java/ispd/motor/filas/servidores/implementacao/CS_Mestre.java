@@ -1,22 +1,12 @@
 package ispd.motor.filas.servidores.implementacao;
 
-import ispd.motor.FutureEvent;
-import ispd.motor.Mensagens;
-import ispd.motor.Simulation;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Comunicacao;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.policy.PolicyCondition;
-import ispd.policy.PolicyConditions;
-import ispd.policy.loaders.GridSchedulingPolicyLoader;
-import ispd.policy.scheduling.grid.GridMaster;
-import ispd.policy.scheduling.grid.GridSchedulingPolicy;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import ispd.motor.*;
+import ispd.motor.filas.*;
+import ispd.motor.filas.servidores.*;
+import ispd.policy.*;
+import ispd.policy.loaders.*;
+import ispd.policy.scheduling.grid.*;
+import java.util.*;
 
 public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens, Vertice {
 
@@ -32,7 +22,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
 
     private boolean escDisponivel = true;
 
-    private Set<PolicyCondition> tipoEscalonamento = PolicyConditions.WHILE_MUST_DISTRIBUTE;
+    private Set<Condition> tipoEscalonamento = Conditions.WHILE_MUST_DISTRIBUTE;
 
     private Simulation simulacao = null;
 
@@ -45,7 +35,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
         final Double energia
     ) {
         super(id, proprietario, PoderComputacional, 1, Ocupacao, 0, energia);
-        this.escalonador = new GridSchedulingPolicyLoader().loadPolicy(Escalonador);
+        this.escalonador = new GridSchedulingLoader().loadPolicy(Escalonador);
         this.escalonador.setMestre(this);
     }
 
@@ -68,7 +58,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
                     simulacao.addFutureEvent(evtFut);
                 }
                 this.escalonador.addTarefaConcluida(cliente);
-                if (this.tipoEscalonamento.contains(PolicyCondition.WHEN_RECEIVES_RESULT)) {
+                if (this.tipoEscalonamento.contains(Condition.WHEN_RECEIVES_RESULT)) {
                     if (this.escalonador.getFilaTarefas().isEmpty()) {
                         this.escDisponivel = true;
                     } else {
@@ -149,7 +139,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
             );
             //Event adicionado a lista de evntos futuros
             simulacao.addFutureEvent(evtFut);
-            if (this.tipoEscalonamento.contains(PolicyCondition.WHILE_MUST_DISTRIBUTE)) {
+            if (this.tipoEscalonamento.contains(Condition.WHILE_MUST_DISTRIBUTE)) {
                 //se fila de tarefas do servidor não estiver vazia escalona
                 // proxima tarefa
                 if (this.escalonador.getFilaTarefas().isEmpty()) {
@@ -394,7 +384,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
     }
 
     @Override
-    public void setSchedulingConditions (final Set<PolicyCondition> newConditions) {
+    public void setSchedulingConditions (final Set<Condition> newConditions) {
         this.tipoEscalonamento = newConditions;
     }
 
@@ -461,7 +451,7 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
         /**
          * Armazena os caminhos possiveis para alcançar cada escravo
          */
-        List<List> caminhoEscravo = new ArrayList<>(escravos.size());
+        final List<List> caminhoEscravo = new ArrayList<>(escravos.size());
         //Busca pelo melhor caminho
         for (int i = 0; i < escravos.size(); i++) {
             caminhoEscravo.add(i, CS_Processamento.getMenorCaminho(this, escravos.get(i)));

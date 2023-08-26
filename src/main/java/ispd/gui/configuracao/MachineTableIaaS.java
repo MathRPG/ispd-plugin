@@ -3,7 +3,7 @@ package ispd.gui.configuracao;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.*;
-import ispd.policy.*;
+import ispd.policy.loaders.*;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -53,7 +53,7 @@ public class MachineTableIaaS extends AbstractTableModel {
 
     private final JComboBox<?> schedulers =
         toolTippedComboBox(
-            PolicyLoader.NATIVE_CLOUD_POLICIES.toArray(String[]::new),
+            CloudSchedulingLoader.getPolicyNames(),
             "Select the task scheduling policy"
         );
 
@@ -61,7 +61,7 @@ public class MachineTableIaaS extends AbstractTableModel {
         toolTippedComboBox(NO_USERS, "Select the resource owner");
 
     private final JComboBox<String> allocators = toolTippedComboBox(
-        PolicyLoader.NATIVE_VM_POLICIES.toArray(String[]::new),
+        VmAllocationLoader.getPolicyNames(),
         "Select the virtual machine allocation policy"
     );
 

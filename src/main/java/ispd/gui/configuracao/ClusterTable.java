@@ -3,7 +3,7 @@ package ispd.gui.configuracao;
 import static ispd.gui.TextSupplier.*;
 
 import ispd.gui.iconico.*;
-import ispd.policy.*;
+import ispd.policy.loaders.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -18,7 +18,7 @@ public class ClusterTable extends AbstractTableModel {
     private static final int VALUE = 1;
 
     private final JComboBox<Object> schedulers =
-        new JComboBox<>(PolicyLoader.NATIVE_GRID_POLICIES.toArray(String[]::new));
+        new JComboBox<>(GridSchedulingLoader.getPolicyNames());
 
     private final JComboBox<Object> users = new JComboBox<>();
 
