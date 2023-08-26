@@ -1,6 +1,5 @@
 package ispd.policy.loaders;
 
-import static java.util.Collections.*;
 import static java.util.stream.Collectors.*;
 
 import ispd.policy.*;
@@ -14,12 +13,12 @@ public abstract class GenericPolicyLoader <T extends Policy<?>> implements Polic
     protected static @NotNull <T> Map<String, Supplier<T>> makePolicyMap (
         final @NotNull Stream<? extends Map.Entry<String, Supplier<T>>> entryStream
     ) {
-        return unmodifiableMap(entryStream.collect(toMap(
+        return entryStream.collect(toMap(
             Map.Entry::getKey,
             Map.Entry::getValue,
             (x, y) -> y,
             LinkedHashMap::new
-        )));
+        ));
     }
 
     protected abstract @NotNull Map<String, Supplier<T>> getPolicies ();

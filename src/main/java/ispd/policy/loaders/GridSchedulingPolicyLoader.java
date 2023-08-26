@@ -9,7 +9,7 @@ import org.jetbrains.annotations.*;
 
 public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridSchedulingPolicy> {
 
-    public static final Map<String, Supplier<GridSchedulingPolicy>> POLICIES =
+    private static final Map<String, Supplier<GridSchedulingPolicy>> POLICIES =
         makePolicyMap(policyEntries());
 
     private static @NotNull Stream<Map.Entry<String, Supplier<GridSchedulingPolicy>>> policyEntries () {
@@ -22,6 +22,10 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
             Map.entry("OSEP", OSEP::new),
             Map.entry("EHOSEP", EHOSEP::new)
         );
+    }
+
+    public static Map<String, Supplier<GridSchedulingPolicy>> getNativePolicies () {
+        return Collections.unmodifiableMap(POLICIES);
     }
 
     @Override

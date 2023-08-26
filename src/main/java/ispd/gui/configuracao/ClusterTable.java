@@ -18,7 +18,10 @@ public class ClusterTable extends AbstractTableModel {
     private static final int VALUE = 1;
 
     private final JComboBox<Object> schedulers =
-        new JComboBox<>(GridSchedulingPolicyLoader.POLICIES.keySet().toArray(String[]::new));
+        new JComboBox<>(GridSchedulingPolicyLoader
+                            .getNativePolicies()
+                            .keySet()
+                            .toArray(String[]::new));
 
     private final JComboBox<Object> users = new JComboBox<>();
 
