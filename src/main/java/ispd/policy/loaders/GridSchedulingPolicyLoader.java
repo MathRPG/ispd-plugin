@@ -1,5 +1,7 @@
 package ispd.policy.loaders;
 
+import static java.util.Collections.*;
+
 import ispd.policy.scheduling.grid.*;
 import ispd.policy.scheduling.grid.impl.*;
 import java.util.*;
@@ -22,11 +24,11 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
     }
 
     public static Map<String, Supplier<GridSchedulingPolicy>> getNativePolicies () {
-        return Collections.unmodifiableMap(POLICIES);
+        return unmodifiableMap(POLICIES);
     }
 
     @Override
     protected @NotNull Map<String, Supplier<GridSchedulingPolicy>> getPolicies () {
-        return POLICIES;
+        return unmodifiableMap(POLICIES);
     }
 }
