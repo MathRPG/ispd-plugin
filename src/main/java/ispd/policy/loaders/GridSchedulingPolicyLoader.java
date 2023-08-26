@@ -27,6 +27,12 @@ public class GridSchedulingPolicyLoader extends GenericPolicyLoader<GridScheduli
         return unmodifiableMap(POLICIES);
     }
 
+    public static String[] getPolicyNames () {
+        return getNativePolicies()
+            .keySet()
+            .toArray(String[]::new);
+    }
+
     @Override
     protected @Unmodifiable @NotNull Map<String, Supplier<GridSchedulingPolicy>> getPolicies () {
         return unmodifiableMap(POLICIES);
