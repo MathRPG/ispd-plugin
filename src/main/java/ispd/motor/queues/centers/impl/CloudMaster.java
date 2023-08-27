@@ -279,14 +279,10 @@ public class CloudMaster extends Processing implements VmMaster,
     @Override
     public void handleAllocationAck (final Simulation simulacao, final Request request) {
         // se este VMM for o de origem ele deve atender senão deve encaminhar a request para frente
-        System.out.println("--------------------------------------");
         final var trf    = (CloudTask) request.getTarefa();
         final var auxVM  = trf.getVM_enviada();
         final var auxMaq = auxVM.getMaquinaHospedeira();
-        System.out.println("Atendendo ACK de alocação da vm "
-                           + auxVM.id()
-                           + " na máquina "
-                           + auxMaq.id());
+
         if (auxVM.getVmmResponsavel().equals(this)) {
             // se o VMM responsável da VM for este.. tratar o ack
             // primeiro encontrar o caminho pra máquina onde a vm está alocada
@@ -301,12 +297,8 @@ public class CloudMaster extends Processing implements VmMaster,
             } else {
                 caminho = new ArrayList<Service>(this.caminhoEscravo.get(index));
             }
-            System.out.println(this.id()
-                               + ": Caminho encontrado para a vm"
-                               + " com tamanho: "
-                               + caminho.size());
+
             this.determinarCaminhoVM(auxVM, caminho);
-            System.out.println(auxVM.id() + " Alocada");
             auxVM.setStatus(VirtualMachineState.ALLOCATED);
             auxVM.setInstanteAloc(simulacao.getTime(this));
             if (!this.vmsAlocadas) {
@@ -316,11 +308,7 @@ public class CloudMaster extends Processing implements VmMaster,
         } else {
             // passar adiante, encontrando antes o caminho intermediário para poder escalonar tarefas desse VMM tbm
             //  para a vm hierarquica
-            System.out.println(
-                this.id()
-                + ": VMM intermediário, definindo"
-                + " caminho intermediário para "
-                + auxVM.id());
+
             if (this.escalonador.getEscravos().contains(auxVM)) {
                 final var index =
                     this.alocadorVM.getEscravos().indexOf(auxMaq);
@@ -332,9 +320,7 @@ public class CloudMaster extends Processing implements VmMaster,
                 } else {
                     caminho = new ArrayList<Service>(this.caminhoEscravo.get(index));
                 }
-                System.out.println("Caminho encontrado para a vm com tamanho:"
-                                   + " "
-                                   + caminho.size());
+
                 this.determinarCaminhoVM(auxVM, caminho);
             }
             final var evt = new Event(
