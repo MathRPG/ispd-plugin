@@ -1,7 +1,7 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.task.*;
 import ispd.policy.scheduling.grid.*;
 import java.util.*;
 
@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class RoundRobin extends GridSchedulingPolicy {
 
-    private ListIterator<CS_Processamento> resources = null;
+    private ListIterator<Processing> resources = null;
 
     public RoundRobin () {
         this.tarefas  = new ArrayList<>(0);
@@ -24,9 +24,9 @@ public class RoundRobin extends GridSchedulingPolicy {
     }
 
     @Override
-    public List<CentroServico> escalonarRota (final CentroServico destino) {
+    public List<Service> escalonarRota (final Service destino) {
         final int index = this.escravos.indexOf(destino);
-        return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
+        return new ArrayList<>((List<Service>) this.caminhoEscravo.get(index));
     }
 
     @Override
@@ -39,7 +39,7 @@ public class RoundRobin extends GridSchedulingPolicy {
     }
 
     @Override
-    public CS_Processamento escalonarRecurso () {
+    public Processing escalonarRecurso () {
         if (!this.resources.hasNext()) {
             this.resources = this.escravos.listIterator(0);
         }
@@ -47,7 +47,7 @@ public class RoundRobin extends GridSchedulingPolicy {
     }
 
     @Override
-    public Tarefa escalonarTarefa () {
+    public GridTask escalonarTarefa () {
         return this.tarefas.remove(0);
     }
 }

@@ -1,7 +1,7 @@
 package ispd.gui.results;
 
 import ispd.gui.utils.fonts.*;
-import ispd.motor.metricas.*;
+import ispd.motor.metrics.*;
 import javax.swing.*;
 
 /**
@@ -21,7 +21,7 @@ public class ResultsTasksPane extends JScrollPane {
      * @param metrics
      *         the simulation metrics
      */
-    public ResultsTasksPane (final Metricas metrics) {
+    public ResultsTasksPane (final General metrics) {
         final var textArea = new JTextArea();
 
         this.setPreferredSize(ResultsDialog.CHART_PREFERRED_SIZE);
@@ -43,7 +43,7 @@ public class ResultsTasksPane extends JScrollPane {
      *
      * @return the task results text
      */
-    private String makeTasksResultsText (final Metricas metrics) {
+    private String makeTasksResultsText (final General metrics) {
         final var sb                         = new StringBuilder();
         final var avgSystemCommunicationTime =
                 metrics.getTempoMedioFilaComunicacao() + metrics.getTempoMedioComunicacao();

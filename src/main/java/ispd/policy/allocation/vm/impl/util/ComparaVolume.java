@@ -1,13 +1,13 @@
 package ispd.policy.allocation.vm.impl.util;
 
-import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
+import ispd.motor.queues.centers.impl.*;
 
-public class ComparaVolume extends MachineComparator<CS_MaquinaCloud> {
+public class ComparaVolume extends MachineComparator<CloudMachine> {
 
     private static final int VOLUME = 1_000_000;
 
-    protected int calculateMachineValue (final CS_MaquinaCloud m) {
-        return ComparaVolume.VOLUME * (
+    protected int calculateMachineValue (final CloudMachine m) {
+        return VOLUME * (
             m.getProcessadoresDisponiveis()
             * (int) m.getMemoriaDisponivel()
             * (int) m.getDiscoDisponivel()

@@ -1,16 +1,16 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.request.*;
+import ispd.motor.queues.task.*;
 import ispd.policy.scheduling.grid.*;
 import java.util.*;
 
 public class WQR extends GridSchedulingPolicy {
 
-    private Tarefa ultimaTarefaConcluida = null;
+    private GridTask ultimaTarefaConcluida = null;
 
-    private List<Tarefa> tarefaEnviada = null;
+    private List<GridTask> tarefaEnviada = null;
 
     private int servidoresOcupados = 0;
 
@@ -30,23 +30,23 @@ public class WQR extends GridSchedulingPolicy {
     }
 
     @Override
-    public List<CentroServico> escalonarRota (final CentroServico destino) {
+    public List<Service> escalonarRota (final Service destino) {
         final int index = this.escravos.indexOf(destino);
-        return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
+        return new ArrayList<>((List<Service>) this.caminhoEscravo.get(index));
     }
 
     @Override
     public void escalonar () {
-        final CS_Processamento rec  = this.escalonarRecurso();
-        boolean                sair = false;
+        final Processing rec  = this.escalonarRecurso();
+        boolean          sair = false;
         if (rec != null) {
-            final Tarefa trf = this.escalonarTarefa();
+            final GridTask trf = this.escalonarTarefa();
             if (trf != null) {
                 if (this.tarefaEnviada.get(this.escravos.indexOf(rec)) != null) {
                     this.mestre.sendMessage(
                         this.tarefaEnviada.get(this.escravos.indexOf(rec)),
                         rec,
-                        Mensagens.CANCELAR
+                        RequestType.CANCEL
                     );
                 } else {
                     this.servidoresOcupados++;
@@ -65,7 +65,7 @@ public class WQR extends GridSchedulingPolicy {
             && this.tarefas.isEmpty()
             &&
             !sair) {
-            for (final Tarefa tar : this.tarefaEnviada) {
+            for (final GridTask tar : this.tarefaEnviada) {
                 if (tar != null && tar.getOrigem().equals(this.mestre)) {
                     this.mestre.executeScheduling();
                     break;
@@ -75,7 +75,7 @@ public class WQR extends GridSchedulingPolicy {
     }
 
     @Override
-    public CS_Processamento escalonarRecurso () {
+    public Processing escalonarRecurso () {
         final int index =
             this.tarefaEnviada.indexOf(this.ultimaTarefaConcluida);
         if (this.ultimaTarefaConcluida != null && index != -1) {
@@ -96,7 +96,7 @@ public class WQR extends GridSchedulingPolicy {
     }
 
     @Override
-    public Tarefa escalonarTarefa () {
+    public GridTask escalonarTarefa () {
         if (!this.tarefas.isEmpty()) {
             return this.tarefas.remove(0);
         }
@@ -120,7 +120,7 @@ public class WQR extends GridSchedulingPolicy {
     }
 
     @Override
-    public void addTarefaConcluida (final Tarefa tarefa) {
+    public void addTarefaConcluida (final GridTask tarefa) {
         super.addTarefaConcluida(tarefa);
         final int index = this.tarefaEnviada.indexOf(tarefa);
         if (index != -1) {
@@ -130,7 +130,7 @@ public class WQR extends GridSchedulingPolicy {
         for (int i = 0; i < this.tarefaEnviada.size(); i++) {
             if (this.tarefaEnviada.get(i) != null && this.tarefaEnviada.get(i).isCopyOf(tarefa)) {
                 this.mestre.sendMessage(this.tarefaEnviada.get(i),
-                                        this.escravos.get(i), Mensagens.CANCELAR
+                                        this.escravos.get(i), RequestType.CANCEL
                 );
                 this.servidoresOcupados--;
                 this.tarefaEnviada.set(i, null);

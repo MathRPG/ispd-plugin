@@ -1,12 +1,7 @@
 package ispd.arquivo.xml.utils;
 
 import ispd.arquivo.xml.models.builders.*;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.filas.servidores.implementacao.CS_Maquina;
-import ispd.motor.filas.servidores.implementacao.CS_MaquinaCloud;
-import ispd.motor.filas.servidores.implementacao.CS_Mestre;
-import ispd.motor.filas.servidores.implementacao.CS_Switch;
-import ispd.motor.filas.servidores.implementacao.CS_VMM;
+import ispd.motor.queues.centers.impl.*;
 
 /**
  * Class with utility methods to interconnect service centers and switches.
@@ -20,46 +15,32 @@ public enum SwitchConnection {
     /**
      * Connect switch to master
      */
-    public static void toMaster (final CS_Switch theSwitch, final CS_Mestre master) {
-        master.addConexoesEntrada(theSwitch);
+    public static void toMaster (final Switch theSwitch, final GridMaster master) {
         master.addConexoesSaida(theSwitch);
-        connectSwitchToServiceCenter(theSwitch, master);
-    }
-
-    private static void connectSwitchToServiceCenter (
-        final CS_Switch theSwitch,
-        final CentroServico serviceCenter
-    ) {
-        theSwitch.addConexoesEntrada(serviceCenter);
-        theSwitch.addConexoesSaida(serviceCenter);
+        theSwitch.addConexoesSaida(master);
     }
 
     /**
      * Connect switch to machine.
      */
-    public static void toMachine (final CS_Switch theSwitch, final CS_Maquina machine) {
+    public static void toMachine (final Switch theSwitch, final GridMachine machine) {
         machine.addConexoesSaida(theSwitch);
-        machine.addConexoesEntrada(theSwitch);
-        connectSwitchToServiceCenter(theSwitch, machine);
+        theSwitch.addConexoesSaida(machine);
     }
 
     /**
      * Connect switch to cloud machine.
      */
-    public static void toCloudMachine (final CS_Switch theSwitch, final CS_MaquinaCloud maq) {
+    public static void toCloudMachine (final Switch theSwitch, final CloudMachine maq) {
         maq.addConexoesSaida(theSwitch);
-        maq.addConexoesEntrada(theSwitch);
-        theSwitch.addConexoesEntrada(maq);
         theSwitch.addConexoesSaida(maq);
     }
 
     /**
      * Connect switch to a vmm.
      */
-    public static void toVirtualMachineMaster (final CS_Switch theSwitch, final CS_VMM vmm) {
-        vmm.addConexoesEntrada(theSwitch);
+    public static void toVirtualMachineMaster (final Switch theSwitch, final CloudMaster vmm) {
         vmm.addConexoesSaida(theSwitch);
-        theSwitch.addConexoesEntrada(vmm);
         theSwitch.addConexoesSaida(vmm);
     }
 }

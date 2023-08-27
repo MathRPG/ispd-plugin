@@ -4,10 +4,11 @@ import ispd.arquivo.*;
 import ispd.gui.utils.*;
 import ispd.gui.utils.components.*;
 import ispd.gui.utils.fonts.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
-import ispd.motor.filas.servidores.implementacao.*;
-import ispd.motor.metricas.*;
+import ispd.motor.metrics.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.centers.impl.*;
+import ispd.motor.queues.task.*;
 import ispd.utils.constants.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -35,7 +36,7 @@ public class CloudResultsDialog extends JDialog {
 
     private static final int BUFFERED_IMAGE_HEIGHT = 600;
 
-    private final List<? extends Tarefa> tarefas;
+    private final List<? extends GridTask> tarefas;
 
     private final Object[][] tabelaRecurso;
 
@@ -96,23 +97,23 @@ public class CloudResultsDialog extends JDialog {
     private double poderComputacionalTotal = 0;
 
     public CloudResultsDialog (
-        final Frame parent, final Metricas metricas, final RedeDeFilasCloud rdf,
-        final List<? extends Tarefa> tarefas
+        final Frame parent, final General general, final CloudQueueNetwork rdf,
+        final List<? extends GridTask> tarefas
     ) {
         super(parent, true);
         this.tarefas = tarefas;
-        this.gerarGraficosProcessamento(metricas.getMetricasProcessamento());
-        this.gerarGraficosComunicacao(metricas.getMetricasComunicacao());
-        this.gerarGraficosAlocacao(metricas.getMetricasAlocacao());
-        this.gerarGraficosCusto(metricas.getMetricasCusto());
-        this.tabelaRecurso = setTabelaRecurso(metricas);
+        this.gerarGraficosProcessamento(general.getMetricasProcessamento());
+        this.gerarGraficosComunicacao(general.getMetricasComunicacao());
+        this.gerarGraficosAlocacao(general.getMetricasAlocacao());
+        this.gerarGraficosCusto(general.getMetricasCusto());
+        this.tabelaRecurso = setTabelaRecurso(general);
         this.initComponents();
-        this.jTextAreaGlobal.setText(getResultadosGlobais(metricas.getMetricasGlobais()));
-        this.html.setMetricasGlobais(metricas.getMetricasGlobais());
-        this.jTextAreaTarefa.setText(getResultadosTarefas(metricas));
-        this.html.setMetricasTarefas(metricas);
-        final var mestre = (CS_VMM) rdf.getMestres().get(0);
-        this.setResultadosUsuario(mestre.getEscalonador().getMetricaUsuarios(), metricas);
+        this.jTextAreaGlobal.setText(getResultadosGlobais(general.getMetricasGlobais()));
+        this.html.setMetricasGlobais(general.getMetricasGlobais());
+        this.jTextAreaTarefa.setText(getResultadosTarefas(general));
+        this.html.setMetricasTarefas(general);
+        final var mestre = (CloudMaster) rdf.getMestres().get(0);
+        this.setResultadosUsuario(mestre.getEscalonador().getMetricaUsuarios(), general);
 
         if (rdf.getVMs().size() < 21) {
             this.graficoProcessamentoTempo =
@@ -120,7 +121,7 @@ public class CloudResultsDialog extends JDialog {
             this.graficoProcessamentoTempo.setPreferredSize(new Dimension(600, 300));
         } else {
             this.jButtonProcessamentoMaquina.setVisible(false);
-            for (final CS_Processamento maq : rdf.getVMs()) {
+            for (final Processing maq : rdf.getVMs()) {
                 this.poderComputacionalTotal +=
                     (
                         maq.getPoderComputacional() - (
@@ -149,15 +150,15 @@ public class CloudResultsDialog extends JDialog {
         this.jScrollPaneProcessamentoTempo.setViewportView(this.graficoProcessamentoTempo);
     }
 
-    private static Object[][] setTabelaRecurso (final Metricas metricas) {
+    private static Object[][] setTabelaRecurso (final General general) {
         final List<Object[]> tabela = new ArrayList<>();
         //linha [Nome] [Proprietario] [Processamento] [comunicacao]
         String nome;
         String prop;
         double proc;
         double comu;
-        if (metricas.getMetricasProcessamento() != null) {
-            for (final var entry : metricas
+        if (general.getMetricasProcessamento() != null) {
+            for (final var entry : general
                 .getMetricasProcessamento()
                 .entrySet()) {
                 final var maq = entry.getValue();
@@ -172,8 +173,8 @@ public class CloudResultsDialog extends JDialog {
                 tabela.add(Arrays.asList(nome, prop, proc, comu).toArray());
             }
         }
-        if (metricas.getMetricasComunicacao() != null) {
-            for (final var entry : metricas
+        if (general.getMetricasComunicacao() != null) {
+            for (final var entry : general
                 .getMetricasComunicacao()
                 .entrySet()) {
                 final var link = entry.getValue();
@@ -191,7 +192,7 @@ public class CloudResultsDialog extends JDialog {
         return temp;
     }
 
-    private static String getResultadosGlobais (final MetricasGlobais globais) {
+    private static String getResultadosGlobais (final Global globais) {
         var texto = "\t\tSimulation Results:\n\n";
         texto += String.format("\tTotal Simulated Time = %g \n", globais.getTempoSimulacao());
         texto += String.format("\tSatisfaction = %g %%\n", globais.getSatisfacaoMedia());
@@ -222,7 +223,7 @@ public class CloudResultsDialog extends JDialog {
         return texto;
     }
 
-    private static String getResultadosTarefas (final Metricas metrica) {
+    private static String getResultadosTarefas (final General metrica) {
         var texto = "\n\n\t\tTASKS\n ";
         final var tempoMedioSistemaComunicacao =
             metrica.getTempoMedioFilaComunicacao() + metrica.getTempoMedioComunicacao();
@@ -260,7 +261,7 @@ public class CloudResultsDialog extends JDialog {
         return texto;
     }
 
-    private void gerarGraficosProcessamento (final Map<String, MetricasProcessamento> mProcess) {
+    private void gerarGraficosProcessamento (final Map<String, ProcessingMetrics> mProcess) {
         final var dadosGraficoProcessamento      = new DefaultCategoryDataset();
         final var dadosGraficoPizzaProcessamento = new DefaultPieDataset();
 
@@ -328,7 +329,7 @@ public class CloudResultsDialog extends JDialog {
         this.graficoPizzaProcessamento.setPreferredSize(new Dimension(600, 300));
     }
 
-    private void gerarGraficosComunicacao (final Map<String, MetricasComunicacao> mComunicacao) {
+    private void gerarGraficosComunicacao (final Map<String, CommunicationMetrics> mComunicacao) {
         final var dadosGraficoComunicacao      = new DefaultCategoryDataset();
         final var dadosGraficoPizzaComunicacao = new DefaultPieDataset();
 
@@ -375,7 +376,7 @@ public class CloudResultsDialog extends JDialog {
         this.graficoPizzaComunicacao.setPreferredSize(new Dimension(600, 300));
     }
 
-    private void gerarGraficosAlocacao (final Map<String, MetricasAlocacao> mAloc) {
+    private void gerarGraficosAlocacao (final Map<String, Allocation> mAloc) {
         final var dadosGraficoAloc      = new DefaultCategoryDataset();
         final var dadosGraficoPizzaAloc = new DefaultPieDataset();
 
@@ -426,7 +427,7 @@ public class CloudResultsDialog extends JDialog {
         this.graficoPizzaAlocacao.setPreferredSize(new Dimension(600, 300));
     }
 
-    private void gerarGraficosCusto (final Map<String, MetricasCusto> mCusto) {
+    private void gerarGraficosCusto (final Map<String, Cost> mCusto) {
         final var dadosGraficoCustoTotal = new DefaultCategoryDataset();
         final var dadosGraficoCustoDisco = new DefaultCategoryDataset();
         final var dadosGraficoCustoMem   = new DefaultCategoryDataset();
@@ -975,8 +976,8 @@ public class CloudResultsDialog extends JDialog {
     }
 
     private void setResultadosUsuario (
-        final MetricasUsuarios metricasUsuarios,
-        final Metricas metricas
+        final User metricasUsuarios,
+        final General general
     ) {
         if (metricasUsuarios == null || metricasUsuarios.getUsuarios().size() <= 1) {
             this.jTabbedPaneGrid.remove(this.jScrollPaneUsuario);
@@ -1041,7 +1042,7 @@ public class CloudResultsDialog extends JDialog {
 
                      Satisfação dos usuários em porcentagem
                      """);
-        for (final var entry : metricas
+        for (final var entry : general
             .getMetricasSatisfacao()
             .entrySet()) {
             final var user       = entry.getKey();
@@ -1055,12 +1056,12 @@ public class CloudResultsDialog extends JDialog {
      * Cria o gráfico que demonstra o uso de cada recurso do sistema através do tempo. Ele recebe
      * como parâmetro a lista com as maquinas que processaram durante a simulação.
      */
-    private JFreeChart criarGraficoProcessamentoTempo (final RedeDeFilasCloud rdf) {
+    private JFreeChart criarGraficoProcessamentoTempo (final CloudQueueNetwork rdf) {
         final var dadosGrafico = new XYSeriesCollection();
         //Se tiver alguma máquina na lista.
         if (rdf.getVMs() != null) {
             //Laço foreach que percorre as máquinas.
-            for (final CS_Processamento maq : rdf.getVMs()) {
+            for (final Processing maq : rdf.getVMs()) {
                 //Lista que recebe os pares de intervalo de tempo em que a
                 // máquina executou.
                 final var lista = maq.getListaProcessamento();
@@ -1079,12 +1080,12 @@ public class CloudResultsDialog extends JDialog {
                     // nó de um cluster.
                     if (maq.getnumeroMaquina() == 0) //Estancia com o nome puro.
                     {
-                        tmp_series = new XYSeries(maq.getId());
+                        tmp_series = new XYSeries(maq.id());
                     } //Se for 1 ou mais, ou seja, é um nó de cluster.
                     else //Estancia tmp_series com o nome concatenado com a
                     // palavra node e seu numero.
                     {
-                        tmp_series = new XYSeries(maq.getId() + " node " + maq.getnumeroMaquina());
+                        tmp_series = new XYSeries(maq.id() + " node " + maq.getnumeroMaquina());
                     }
                     //Laço que vai adicionando os pontos para a criação do gráfico.
                     for (var i = 0; i < lista.size(); i++) {
@@ -1123,13 +1124,13 @@ public class CloudResultsDialog extends JDialog {
         );
     }
 
-    private JFreeChart criarGraficoProcessamentoTempoTarefa (final Collection<? extends Tarefa> tarefas) {
+    private JFreeChart criarGraficoProcessamentoTempoTarefa (final Collection<? extends GridTask> tarefas) {
         final var dadosGrafico = new XYSeriesCollection();
         if (!tarefas.isEmpty()) {
-            for (final Tarefa task : tarefas) {
+            for (final GridTask task : tarefas) {
                 final XYSeries tmp_series;
                 tmp_series = new XYSeries("task " + task.getIdentificador());
-                final var temp = (CS_Processamento) task.getLocalProcessamento();
+                final var temp = (Processing) task.getLocalProcessamento();
                 if (temp != null) {
                     final Double uso =
                         (temp.getPoderComputacional() / this.poderComputacionalTotal) * 100;
@@ -1155,7 +1156,7 @@ public class CloudResultsDialog extends JDialog {
     }
 
     private JFreeChart[] gerarGraficoProcessamentoTempoUser (
-        final Collection<? extends Tarefa> tarefas, final RedeDeFilas rdf
+        final Collection<? extends GridTask> tarefas, final GridQueueNetwork rdf
     ) {
         final List<UserOperationTime> lista           = new ArrayList<>();
         final var                     numberUsers     = rdf.getUsuarios().size();
@@ -1175,8 +1176,8 @@ public class CloudResultsDialog extends JDialog {
         }
         if (!tarefas.isEmpty()) {
             //Insere cada tarefa como dois pontos na lista
-            for (final Tarefa task : tarefas) {
-                final var local = (CS_Processamento) task.getLocalProcessamento();
+            for (final GridTask task : tarefas) {
+                final var local = (Processing) task.getLocalProcessamento();
                 if (local != null) {
                     for (var i = 0; i < task.getTempoInicial().size(); i++) {
                         final Double uso = (

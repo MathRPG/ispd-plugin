@@ -1,6 +1,6 @@
 package ispd.policy;
 
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
 import java.util.*;
 
 public abstract class Policy <T extends Simulable> {
@@ -9,15 +9,15 @@ public abstract class Policy <T extends Simulable> {
 
     protected List<List> caminhoEscravo = null;
 
-    protected List<CS_Processamento> escravos = null;
+    protected List<Processing> escravos = null;
 
     public abstract void iniciar ();
 
-    public abstract List<CentroServico> escalonarRota (CentroServico destino);
+    public abstract List<Service> escalonarRota (Service destino);
 
     public abstract void escalonar ();
 
-    public abstract CS_Processamento escalonarRecurso ();
+    public abstract Processing escalonarRecurso ();
 
     public Double getTempoAtualizar () {
         return null;
@@ -39,11 +39,11 @@ public abstract class Policy <T extends Simulable> {
         this.caminhoEscravo = caminhoEscravo;
     }
 
-    public List<CS_Processamento> getEscravos () {
+    public List<Processing> getEscravos () {
         return this.escravos;
     }
 
-    public void addEscravo (final CS_Processamento newSlave) {
+    public void addEscravo (final Processing newSlave) {
         this.escravos.add(newSlave);
     }
 }

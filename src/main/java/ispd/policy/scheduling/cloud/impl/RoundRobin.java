@@ -1,7 +1,7 @@
 package ispd.policy.scheduling.cloud.impl;
 
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.task.*;
 import ispd.policy.scheduling.cloud.*;
 import java.util.*;
 
@@ -11,9 +11,9 @@ import java.util.*;
  */
 public class RoundRobin extends CloudSchedulingPolicy {
 
-    private ListIterator<CS_Processamento> resources = null;
+    private ListIterator<Processing> resources = null;
 
-    private LinkedList<CS_Processamento> slavesUser = null;
+    private LinkedList<Processing> slavesUser = null;
 
     public RoundRobin () {
         this.tarefas  = new ArrayList<>();
@@ -28,12 +28,12 @@ public class RoundRobin extends CloudSchedulingPolicy {
     }
 
     @Override
-    public List<CentroServico> escalonarRota (final CentroServico destino) {
-        final var destination = (CS_Processamento) destino;
+    public List<Service> escalonarRota (final Service destino) {
+        final var destination = (Processing) destino;
         final int index       = this.escravos.indexOf(destination);
 
-        System.out.println("traçando rota para a VM: " + destination.getId());
-        return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
+        System.out.println("traçando rota para a VM: " + destination.id());
+        return new ArrayList<>((List<Service>) this.caminhoEscravo.get(index));
     }
 
     @Override
@@ -41,7 +41,7 @@ public class RoundRobin extends CloudSchedulingPolicy {
         System.out.println("---------------------------");
         final var task      = this.escalonarTarefa();
         final var taskOwner = task.getProprietario();
-        this.slavesUser = (LinkedList<CS_Processamento>) this.getVMsAdequadas(taskOwner);
+        this.slavesUser = (LinkedList<Processing>) this.getVMsAdequadas(taskOwner);
 
         if (this.slavesUser.isEmpty()) {
             this.noAllocatedVms(task);
@@ -53,7 +53,7 @@ public class RoundRobin extends CloudSchedulingPolicy {
     }
 
     @Override
-    public CS_Processamento escalonarRecurso () {
+    public Processing escalonarRecurso () {
         if (!this.resources.hasNext()) {
             this.resources = this.slavesUser.listIterator(0);
         }
@@ -61,11 +61,11 @@ public class RoundRobin extends CloudSchedulingPolicy {
     }
 
     @Override
-    public Tarefa escalonarTarefa () {
+    public GridTask escalonarTarefa () {
         return this.tarefas.remove(0);
     }
 
-    private void noAllocatedVms (final Tarefa task) {
+    private void noAllocatedVms (final GridTask task) {
         System.out.printf(
             "Não existem VMs alocadas ainda, devolvendo tarefa %d%n",
             task.getIdentificador()
@@ -74,12 +74,12 @@ public class RoundRobin extends CloudSchedulingPolicy {
         this.mestre.freeScheduler();
     }
 
-    private void scheduleTask (final Tarefa task) {
+    private void scheduleTask (final GridTask task) {
         final var resource = this.escalonarRecurso();
         System.out.printf(
             "escalonando tarefa %d para:%s%n",
             task.getIdentificador(),
-            resource.getId()
+            resource.id()
         );
         task.setLocalProcessamento(resource);
         task.setCaminho(this.escalonarRota(resource));

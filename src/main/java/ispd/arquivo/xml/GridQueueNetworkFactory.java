@@ -2,7 +2,7 @@ package ispd.arquivo.xml;
 
 import ispd.arquivo.xml.models.builders.*;
 import ispd.arquivo.xml.utils.*;
-import ispd.motor.filas.*;
+import ispd.motor.queues.*;
 import org.w3c.dom.*;
 
 public enum GridQueueNetworkFactory {
@@ -16,7 +16,7 @@ public enum GridQueueNetworkFactory {
      *
      * @return Simulable queue network, in accordance to given model
      */
-    public static RedeDeFilas fromDocument (final Document document) {
+    public static GridQueueNetwork fromDocument (final Document document) {
         return new GridQueueNetworkParser().parseDocument(new WrappedDocument(document)).build();
     }
 }

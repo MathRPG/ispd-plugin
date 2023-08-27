@@ -2,9 +2,10 @@ package ispd.arquivo.xml.models.builders;
 
 import ispd.arquivo.xml.*;
 import ispd.arquivo.xml.utils.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
-import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.centers.impl.CloudMaster;
+import ispd.motor.queues.centers.impl.*;
 import ispd.policy.scheduling.cloud.*;
 import java.util.*;
 
@@ -18,15 +19,15 @@ import java.util.*;
 public class CloudQueueNetworkParser extends GridQueueNetworkParser {
 
     /**
-     * Overridden from superclass to support {@link CS_MaquinaCloud}s.
+     * Overridden from superclass to support {@link CloudMachine}s.
      */
-    private final Map<CentroServico, List<CS_MaquinaCloud>> clusterSlaves = new HashMap<>();
+    private final Map<Service, List<CloudMachine>> clusterSlaves = new HashMap<>();
 
-    private final List<CS_MaquinaCloud> cloudMachines = new ArrayList<>();
+    private final List<CloudMachine> cloudMachines = new ArrayList<>();
 
-    private final List<CS_VirtualMac> virtualMachines = new ArrayList<>();
+    private final List<VirtualMachine> virtualMachines = new ArrayList<>();
 
-    private final List<CS_Processamento> virtualMachineMasters = new ArrayList<>();
+    private final List<Processing> virtualMachineMasters = new ArrayList<>();
 
     /**
      * Process the represented cluster in {@link WrappedElement} very similarly to the superclass,
@@ -74,7 +75,7 @@ public class CloudQueueNetworkParser extends GridQueueNetworkParser {
 
             final int slaveCount = e.nodes();
 
-            final List<CS_MaquinaCloud> slaves = new ArrayList<>(slaveCount);
+            final List<CloudMachine> slaves = new ArrayList<>(slaveCount);
 
             for (int j = 0; j < slaveCount; j++) {
                 final var machine = ServiceCenterFactory.aCloudMachineWithId(e, j);
@@ -88,7 +89,7 @@ public class CloudQueueNetworkParser extends GridQueueNetworkParser {
     }
 
     /**
-     * Parse the required {@link CentroServico}s and {@link CS_VirtualMac}s from the given
+     * Parse the required {@link Service}s and {@link VirtualMachine}s from the given
      * {@link WrappedDocument}.
      *
      * @param doc
@@ -113,21 +114,21 @@ public class CloudQueueNetworkParser extends GridQueueNetworkParser {
      * {@link #virtualMachineMasters} or {@link #cloudMachines}.
      *
      * @param e
-     *     {@link WrappedElement} representing a {@link CS_Processamento}.
+     *     {@link WrappedElement} representing a {@link Processing}.
      *
-     * @return The interpreted {@link CS_Processamento} from the given {@link WrappedElement}. May
-     * either be a {@link CS_VMM} or a {@link CS_MaquinaCloud}.
+     * @return The interpreted {@link Processing} from the given {@link WrappedElement}. May
+     * either be a {@link CloudMaster} or a {@link CloudMachine}.
      */
     @Override
-    protected CS_Processamento makeAndAddMachine (final WrappedElement e) {
-        final CS_Processamento machine;
+    protected Processing makeAndAddMachine (final WrappedElement e) {
+        final Processing machine;
 
         if (e.hasMasterAttribute()) {
             machine = ServiceCenterFactory.aVirtualMachineMaster(e);
             this.virtualMachineMasters.add(machine);
         } else {
             machine = ServiceCenterFactory.aCloudMachine(e);
-            this.cloudMachines.add((CS_MaquinaCloud) machine);
+            this.cloudMachines.add((CloudMachine) machine);
         }
 
         return machine;
@@ -137,28 +138,28 @@ public class CloudQueueNetworkParser extends GridQueueNetworkParser {
      * Differences from the overridden method:
      * <ul>
      *     <li>Always interprets {@code master} as an instance of
-     *     {@link CS_VMM}</li>
-     *     <li>{@code slave} may be a {@link CS_MaquinaCloud} instead of a
-     *     {@link CS_Maquina}</li>
+     *     {@link CloudMaster}</li>
+     *     <li>{@code slave} may be a {@link CloudMachine} instead of a
+     *     {@link GridMachine}</li>
      * </ul>
      *
      * @param master
-     *     the <b>master</b> {@link CS_Processamento}.
+     *     the <b>master</b> {@link Processing}.
      * @param slave
-     *     <b>slave</b> {@link CentroServico}.
+     *     <b>slave</b> {@link Service}.
      */
     @Override
     protected void addSlavesToProcessingCenter (
-        final CS_Processamento master,
-        final CentroServico slave
+        final Processing master,
+        final Service slave
     ) {
-        final var theMaster = (CS_VMM) master;
-        if (slave instanceof final CS_Processamento proc) {
+        final var theMaster = (CloudMaster) master;
+        if (slave instanceof final Processing proc) {
             theMaster.addEscravo(proc);
-            if (slave instanceof final CS_MaquinaCloud machine) {
+            if (slave instanceof final CloudMachine machine) {
                 machine.addMestre(theMaster);
             }
-        } else if (slave instanceof CS_Switch) {
+        } else if (slave instanceof Switch) {
             for (final var clusterSlave : this.clusterSlaves.get(slave)) {
                 clusterSlave.addMestre(theMaster);
                 theMaster.addEscravo(clusterSlave);
@@ -167,7 +168,7 @@ public class CloudQueueNetworkParser extends GridQueueNetworkParser {
     }
 
     /**
-     * Differently from the overridden method, iterates over {@link CS_VMM}s and updates
+     * Differently from the overridden method, iterates over {@link CloudMaster}s and updates
      * {@link CloudSchedulingPolicy}.
      *
      * @param helper
@@ -176,20 +177,20 @@ public class CloudQueueNetworkParser extends GridQueueNetworkParser {
     @Override
     protected void setSchedulersUserMetrics (final UserPowerLimit helper) {
         this.virtualMachineMasters.stream()
-            .map(CS_VMM.class::cast)
-            .map(CS_VMM::getEscalonador)
+            .map(CloudMaster.class::cast)
+            .map(CloudMaster::getEscalonador)
             .forEach(helper::setSchedulerUserMetrics);
     }
 
     /**
-     * Constructs a {@link RedeDeFilasCloud}. <b>It does not take power limit information into
+     * Constructs a {@link CloudQueueNetwork}. <b>It does not take power limit information into
      * account.</b>
      *
-     * @return initialized {@link RedeDeFilasCloud}.
+     * @return initialized {@link CloudQueueNetwork}.
      */
     @Override
-    protected RedeDeFilas initQueueNetwork () {
-        return new RedeDeFilasCloud(
+    protected GridQueueNetwork initQueueNetwork () {
+        return new CloudQueueNetwork(
             this.virtualMachineMasters,
             this.cloudMachines, this.virtualMachines,
             this.links, this.internets
@@ -202,8 +203,8 @@ public class CloudQueueNetworkParser extends GridQueueNetworkParser {
         final var masterId = e.vmm();
 
         this.virtualMachineMasters.stream()
-            .filter(cs -> cs.getId().equals(masterId))
-            .map(CS_VMM.class::cast)
+            .filter(cs -> cs.id().equals(masterId))
+            .map(CloudMaster.class::cast)
             .forEach(master -> {
                 virtualMachine.addVMM(master);
                 master.addVM(virtualMachine);

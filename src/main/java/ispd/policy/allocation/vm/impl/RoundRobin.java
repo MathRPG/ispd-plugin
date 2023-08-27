@@ -1,13 +1,13 @@
 package ispd.policy.allocation.vm.impl;
 
-import ispd.motor.filas.servidores.*;
-import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.centers.impl.*;
 import ispd.policy.allocation.vm.*;
 import java.util.*;
 
 public class RoundRobin extends VmAllocationPolicy {
 
-    private ListIterator<CS_Processamento> physicalMachine = null;
+    private ListIterator<Processing> physicalMachine = null;
 
     public RoundRobin () {
         this.maquinasVirtuais = new ArrayList<>();
@@ -32,9 +32,9 @@ public class RoundRobin extends VmAllocationPolicy {
     }
 
     @Override
-    public List<CentroServico> escalonarRota (final CentroServico destino) {
+    public List<Service> escalonarRota (final Service destino) {
         final int index = this.escravos.indexOf(destino);
-        return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
+        return new ArrayList<>((List<Service>) this.caminhoEscravo.get(index));
     }
 
     @Override
@@ -46,7 +46,7 @@ public class RoundRobin extends VmAllocationPolicy {
     }
 
     @Override
-    public CS_Processamento escalonarRecurso () {
+    public Processing escalonarRecurso () {
         if (!this.physicalMachine.hasNext()) {
             this.physicalMachine = this.escravos.listIterator(0);
         }
@@ -54,7 +54,7 @@ public class RoundRobin extends VmAllocationPolicy {
     }
 
     @Override
-    public CS_VirtualMac escalonarVM () {
+    public VirtualMachine escalonarVM () {
         return this.maquinasVirtuais.remove(0);
     }
 
@@ -64,11 +64,11 @@ public class RoundRobin extends VmAllocationPolicy {
         }
         System.out.println("Lista de VMs");
         this.maquinasVirtuais.stream()
-            .map(CS_Processamento::getId)
+            .map(Processing::id)
             .forEach(System.out::println);
     }
 
-    private void findMachineForTask (final CS_VirtualMac vm) {
+    private void findMachineForTask (final VirtualMachine vm) {
         int machines = this.escravos.size();
         while (machines >= 0) {
             if (machines == 0) {
@@ -79,13 +79,13 @@ public class RoundRobin extends VmAllocationPolicy {
 
             final var resource = this.escalonarRecurso();
 
-            if (resource instanceof CS_VMM) {
+            if (resource instanceof CloudMaster) {
                 this.redirectVm(vm, resource);
                 return;
             }
 
             System.out.println("Checagem de recursos:");
-            final var    maq    = (CS_MaquinaCloud) resource;
+            final var maq = (CloudMachine) resource;
             final double memory = maq.getMemoriaDisponivel();
             System.out.println("memoriaMaq: " + memory);
             final double neededMemory = vm.getMemoriaDisponivel();
@@ -114,10 +114,10 @@ public class RoundRobin extends VmAllocationPolicy {
             final int newProcessors = processors - procVM;
             maq.setProcessadoresDisponiveis(newProcessors);
             System.out.printf("proc atual: %d%n", newProcessors);
-            vm.setMaquinaHospedeira((CS_MaquinaCloud) resource);
+            vm.setMaquinaHospedeira((CloudMachine) resource);
             vm.setCaminho(this.escalonarRota(resource));
             System.out.printf(
-                "%s enviada para %s%n", vm.getId(), resource.getId());
+                "%s enviada para %s%n", vm.id(), resource.id());
             this.mestre.sendVm(vm);
             System.out.println("---------------------------------------");
 
@@ -125,21 +125,21 @@ public class RoundRobin extends VmAllocationPolicy {
         }
     }
 
-    private void rejectVm (final CS_VirtualMac auxVm) {
-        System.out.printf("%s foi rejeitada%n", auxVm.getId());
-        auxVm.setStatus(CS_VirtualMac.REJEITADA);
+    private void rejectVm (final VirtualMachine auxVm) {
+        System.out.printf("%s foi rejeitada%n", auxVm.id());
+        auxVm.setStatus(VirtualMachineState.REJECTED);
         this.VMsRejeitadas.add(auxVm);
         System.out.println("Adicionada na lista de rejeitadas");
         System.out.println("---------------------------------------");
     }
 
     private void redirectVm (
-        final CS_VirtualMac vm, final CS_Processamento resource
+        final VirtualMachine vm, final Processing resource
     ) {
         System.out.printf(
-            "%s é um VMM, a VM será redirecionada%n", resource.getId());
+            "%s é um VMM, a VM será redirecionada%n", resource.id());
         vm.setCaminho(this.escalonarRota(resource));
-        System.out.printf("%s enviada para %s%n", vm.getId(), resource.getId());
+        System.out.printf("%s enviada para %s%n", vm.id(), resource.id());
         this.mestre.sendVm(vm);
         System.out.println("---------------------------------------");
     }

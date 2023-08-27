@@ -1,18 +1,18 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.request.*;
+import ispd.motor.queues.task.*;
 import ispd.policy.scheduling.grid.impl.util.*;
 import java.util.*;
 
 public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
 
-    private final List<Tarefa> tasksInWaiting = new ArrayList<>();
+    private final List<GridTask> tasksInWaiting = new ArrayList<>();
 
     private final List<PreemptionEntry> preemptionEntries = new ArrayList<>();
 
-    private Tarefa selectedTask = null;
+    private GridTask selectedTask = null;
 
     private int slaveCounter = 0;
 
@@ -73,7 +73,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public CS_Processamento escalonarRecurso () {
+    public Processing escalonarRecurso () {
         final var selec = this.escravos.stream()
             .filter(this::isMachineAvailable)
             .min(Comparator.comparingDouble(
@@ -89,7 +89,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public Tarefa escalonarTarefa () {
+    public GridTask escalonarTarefa () {
         // Usuários com maior diferença entre uso e posse terão preferência
         double difUsuarioMinimo   = -1;
         int    indexUsuarioMinimo = -1;
@@ -160,7 +160,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public void addTarefaConcluida (final Tarefa tarefa) {
+    public void addTarefaConcluida (final GridTask tarefa) {
         super.addTarefaConcluida(tarefa);
         final var maq = tarefa.getCSLProcessamento();
         this.userControls.get(tarefa.getProprietario())
@@ -168,11 +168,11 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public void resultadoAtualizar (final Mensagem mensagem) {
-        super.resultadoAtualizar(mensagem);
+    public void resultadoAtualizar (final Request request) {
+        super.resultadoAtualizar(request);
 
-        this.slaveControls.get((CS_Processamento) mensagem.getOrigem())
-            .setTasksInProcessing(mensagem.getProcessadorEscravo());
+        this.slaveControls.get((Processing) request.getOrigem())
+            .setTasksInProcessing(request.getProcessadorEscravo());
 
         this.slaveCounter++;
         if (this.slaveCounter != this.escravos.size()) {
@@ -194,9 +194,9 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public void adicionarTarefa (final Tarefa tarefa) {
+    public void adicionarTarefa (final GridTask tarefa) {
         super.adicionarTarefa(tarefa);
-        final var maq = (CS_Processamento) tarefa.getLocalProcessamento();
+        final var maq = (Processing) tarefa.getLocalProcessamento();
 
         if (tarefa.getLocalProcessamento() == null) {
             this.mestre.executeScheduling();
@@ -234,18 +234,18 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
         }
     }
 
-    private boolean isMachineAvailable (final CS_Processamento slave) {
+    private boolean isMachineAvailable (final Processing slave) {
         final var sc = this.slaveControls.get(slave);
         return !sc.hasTasksInProcessing() && sc.isFree();
     }
 
     private double fitForSelectedTask (
-        final CS_Processamento s, final Tarefa task
+        final Processing s, final GridTask task
     ) {
         return Math.abs(s.getPoderComputacional() - task.getTamProcessamento());
     }
 
-    private CS_Processamento preemptedMachine () {
+    private Processing preemptedMachine () {
         final var bestUser = this.userControls.values().stream()
             .filter(uc2 -> uc2.isOwnerOf(this.selectedTask))
             .filter(UserProcessingControl::hasExcessProcessingPower)
@@ -259,7 +259,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
         final var machine = this.escravos.stream()
             .filter(this::isMachineOccupied)
             .filter(m -> bestUser.get().isOwnerOf(this.taskToPreemptIn(m)))
-            .min(Comparator.comparingDouble(CS_Processamento::getPoderComputacional))
+            .min(Comparator.comparingDouble(Processing::getPoderComputacional))
             .orElse(null);
 
         if (machine == null) {
@@ -267,7 +267,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
         }
 
         // Fazer a preempção Verifica se vale apena fazer preempção
-        final Tarefa tar =
+        final GridTask tar =
             this.taskToPreemptIn(machine);
 
         //Penalidade do usuário dono da tarefa em execução, caso a
@@ -292,7 +292,7 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
             this.mestre.sendMessage(
                 tar,
                 machine,
-                Mensagens.DEVOLVER_COM_PREEMPCAO
+                RequestType.PREEMPTIVE_RETURN
             );
             return machine;
         }
@@ -300,12 +300,12 @@ public class M_OSEP extends AbstractOSEP<UserProcessingControl> {
         return null;
     }
 
-    private boolean isMachineOccupied (final CS_Processamento machine) {
+    private boolean isMachineOccupied (final Processing machine) {
         final var sc = this.slaveControls.get(machine);
         return sc.hasTasksInProcessing() && sc.isOccupied();
     }
 
-    private Tarefa taskToPreemptIn (final CS_Processamento machine) {
+    private GridTask taskToPreemptIn (final Processing machine) {
         return this.slaveControls.get(machine).firstTaskInProcessing();
     }
 }

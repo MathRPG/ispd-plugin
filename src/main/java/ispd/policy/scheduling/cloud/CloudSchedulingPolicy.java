@@ -1,19 +1,18 @@
 package ispd.policy.scheduling.cloud;
 
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
-import ispd.policy.scheduling.SchedulingPolicy;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.centers.impl.*;
+import ispd.policy.scheduling.*;
+import java.util.*;
+import java.util.stream.*;
 
 public abstract class CloudSchedulingPolicy extends SchedulingPolicy<CloudMaster> {
 
-    protected List<CS_Processamento> getVMsAdequadas (final String user) {
+    protected List<Processing> getVMsAdequadas (final String user) {
         return this.escravos.stream()
             .filter(s -> s.getProprietario().equals(user))
-            .map(CS_VirtualMac.class::cast)
-            .filter(s -> s.getStatus() == CS_VirtualMac.ALOCADA)
+            .map(VirtualMachine.class::cast)
+            .filter(s -> s.getStatus() == VirtualMachineState.ALLOCATED)
             .collect(Collectors.toCollection(LinkedList::new));
     }
 }

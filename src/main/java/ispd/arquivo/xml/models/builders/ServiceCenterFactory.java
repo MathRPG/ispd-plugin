@@ -1,8 +1,7 @@
 package ispd.arquivo.xml.models.builders;
 
 import ispd.arquivo.xml.utils.*;
-import ispd.gui.drawing.*;
-import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.queues.centers.impl.*;
 
 /**
  * Utility class with static methods to build service centers for simulable models and,
@@ -14,8 +13,8 @@ public enum ServiceCenterFactory {
     /**
      * @return a master from the given {@link WrappedElement}
      */
-    public static CS_Mestre aMaster (final WrappedElement e) {
-        return new CS_Mestre(
+    public static GridMaster aMaster (final WrappedElement e) {
+        return new GridMaster(
             e.id(),
             e.owner(),
             e.power(),
@@ -28,55 +27,55 @@ public enum ServiceCenterFactory {
     /**
      * @return a master (with load set to 0) from the given {@link WrappedElement}
      */
-    public static CS_Mestre aMasterWithNoLoadFactor (final WrappedElement e) {
-        return new CS_Mestre(e.id(), e.owner(), e.power(), 0.0, e.scheduler(), e.energy());
+    public static GridMaster aMasterWithNoLoadFactor (final WrappedElement e) {
+        return new GridMaster(e.id(), e.owner(), e.power(), 0.0, e.scheduler(), e.energy());
     }
 
     /**
      * @return a machine (with one core) from the given {@link WrappedElement}
      */
-    public static CS_Maquina aMachine (final WrappedElement e) {
-        return new CS_Maquina(e.id(), e.owner(), e.power(), 1, e.load(), e.energy());
+    public static GridMachine aMachine (final WrappedElement e) {
+        return new GridMachine(e.id(), e.owner(), e.power(), 1, e.load(), e.energy());
     }
 
     /**
      * @return a switch (with load set to 0) from the given {@link WrappedElement}
      */
-    public static CS_Switch aSwitch (final WrappedElement e) {
-        return new CS_Switch(e.id(), e.bandwidth(), 0.0, e.latency());
+    public static Switch aSwitch (final WrappedElement e) {
+        return new Switch(e.id(), e.bandwidth(), 0.0, e.latency());
     }
 
     /**
      * @return a machine with the given number from the given {@link WrappedElement}. Its core count
      * is set to 1 and its load factor, to zero.
      */
-    public static CS_Maquina aMachineWithNumber (final WrappedElement e, final int number) {
-        return new CS_Maquina(e.id(), e.owner(), e.power(), 1, 0.0, number + 1, e.energy());
+    public static GridMachine aMachineWithNumber (final WrappedElement e, final int number) {
+        return new GridMachine(e.id(), e.owner(), e.power(), 1, 0.0, number + 1, e.energy());
     }
 
     /**
      * @return an internet from the given {@link WrappedElement}
      */
-    public static CS_Internet anInternet (final WrappedElement e) {
-        return new CS_Internet(e.id(), e.bandwidth(), e.load(), e.latency());
+    public static Internet anInternet (final WrappedElement e) {
+        return new Internet(e.id(), e.bandwidth(), e.load(), e.latency());
     }
 
     /**
      * @return a link from the given {@link WrappedElement}
      */
-    public static CS_Link aLink (final WrappedElement e) {
-        return new CS_Link(e.id(), e.bandwidth(), e.load(), e.latency());
+    public static Link aLink (final WrappedElement e) {
+        return new Link(e.id(), e.bandwidth(), e.load(), e.latency());
     }
 
     /**
      * @return a cloud machine from the given {@link WrappedElement}
      */
-    public static CS_MaquinaCloud aCloudMachine (final WrappedElement e) {
+    public static CloudMachine aCloudMachine (final WrappedElement e) {
         final var characteristics = e.characteristics();
         final var processor       = characteristics.processor();
         final var costs           = characteristics.costs();
 
-        return new CS_MaquinaCloud(
+        return new CloudMachine(
             e.id(),
             e.owner(),
             processor.power(),
@@ -93,10 +92,10 @@ public enum ServiceCenterFactory {
     /**
      * @return a vmm from the given {@link WrappedElement}
      */
-    public static CS_VMM aVirtualMachineMaster (final WrappedElement e) {
+    public static CloudMaster aVirtualMachineMaster (final WrappedElement e) {
         final var characteristics = e.characteristics();
 
-        return new CS_VMM(
+        return new CloudMaster(
             e.id(),
             e.owner(),
             characteristics.processor().power(),
@@ -111,9 +110,9 @@ public enum ServiceCenterFactory {
     /**
      * @return a vmm (with load set to 0) from the given {@link WrappedElement}
      */
-    public static CS_VMM aVmmNoLoad (final WrappedElement e) {
+    public static CloudMaster aVmmNoLoad (final WrappedElement e) {
         final var characteristics = e.characteristics();
-        return new CS_VMM(
+        return new CloudMaster(
             e.id(),
             e.owner(),
             characteristics.processor().power(),
@@ -129,11 +128,11 @@ public enum ServiceCenterFactory {
      * @return a cloud machine with the given id from the given {@link WrappedElement}. Its load is
      * set to 0.
      */
-    public static CS_MaquinaCloud aCloudMachineWithId (final WrappedElement e, final int j) {
+    public static CloudMachine aCloudMachineWithId (final WrappedElement e, final int j) {
         final var characteristics = e.characteristics();
         final var costs           = characteristics.costs();
 
-        return new CS_MaquinaCloud(
+        return new CloudMachine(
             "%s.%d".formatted(e.id(), j),
             e.owner(),
             characteristics.processor().power(),
@@ -152,8 +151,8 @@ public enum ServiceCenterFactory {
      * @return a virtual machine from the given {@link WrappedElement}. Its power is treated as an
      * integral value.
      */
-    public static CS_VirtualMac aVirtualMachine (final WrappedElement e) {
-        return new CS_VirtualMac(
+    public static VirtualMachine aVirtualMachine (final WrappedElement e) {
+        return new VirtualMachine(
             e.id(),
             e.owner(),
             (int) e.power(),
@@ -166,8 +165,8 @@ public enum ServiceCenterFactory {
      * @return a virtual machine from the given {@link WrappedElement}. Its power is treated as an
      * integral value and it fetches its master's id.
      */
-    public static VirtualMachine aVirtualMachineWithVmm (final WrappedElement e) {
-        return new VirtualMachine(
+    public static ispd.gui.drawing.VirtualMachine aVirtualMachineWithVmm (final WrappedElement e) {
+        return new ispd.gui.drawing.VirtualMachine(
             e.id(),
             e.owner(),
             e.vmm(),

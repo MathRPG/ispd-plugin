@@ -1,12 +1,10 @@
 package ispd.motor.workload.impl.task;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.motor.random.Distribution;
-import ispd.motor.random.TwoStageUniform;
-import java.util.List;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.task.*;
+import ispd.motor.random.*;
+import java.util.*;
 
 /**
  * Specialization of task building from traces for external models. Its behavioral differences are:
@@ -19,7 +17,7 @@ import java.util.List;
  *     {@link TwoStageUniform} distribution.</li>
  * </ul>
  *
- * @see #makeTaskFor(CS_Processamento)
+ * @see #makeTaskFor(Processing)
  * @see #makeTaskComputationSize()
  * @see #makeTaskCommunicationSize()
  */
@@ -41,7 +39,7 @@ public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
      * @param random
      *     random double generator to produce communication sizes.
      * @param averageCompPower
-     *     average computational power of the {@link RedeDeFilas} containing the masters which tasks
+     *     average computational power of the {@link GridQueueNetwork} containing the masters which tasks
      *     will be generated for.
      */
     public ExternalTraceTaskBuilder (
@@ -56,20 +54,20 @@ public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
 
     /**
      * Generate a task with information from the inner list. If it is determined that the task
-     * should be cancelled, its processing local is set to the given {@link CS_Processamento} and it
+     * should be cancelled, its processing local is set to the given {@link Processing} and it
      * is set to be cancelled instantly (on instant {@literal 0.0}).
      *
      * @param master
-     *     {@link CS_Processamento} that will host the task.
+     *     {@link Processing} that will host the task.
      *
-     * @return created (and possibly cancelled) {@link Tarefa}.
+     * @return created (and possibly cancelled) {@link GridTask}.
      *
      * @see TraceTaskInfo#shouldBeCanceled()
-     * @see Tarefa#setLocalProcessamento(CentroServico)
-     * @see Tarefa#cancelar(double)
+     * @see GridTask#setLocalProcessamento(Service)
+     * @see GridTask#cancelar(double)
      */
     @Override
-    public Tarefa makeTaskFor (final CS_Processamento master) {
+    public GridTask makeTaskFor (final Processing master) {
         final var task = super.makeTaskFor(master);
 
         if (this.currTaskInfo.shouldBeCanceled()) {
@@ -88,7 +86,7 @@ public class ExternalTraceTaskBuilder extends TraceTaskBuilder {
      */
     @Override
     protected double makeTaskCommunicationSize () {
-        return ExternalTraceTaskBuilder.TASK_COMM_SIZE.generateValue(this.random);
+        return TASK_COMM_SIZE.generateValue(this.random);
     }
 
     /**

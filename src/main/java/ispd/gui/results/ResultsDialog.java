@@ -1,7 +1,8 @@
 package ispd.gui.results;
 
-import ispd.motor.filas.*;
-import ispd.motor.metricas.*;
+import ispd.motor.metrics.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.task.*;
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
@@ -14,11 +15,11 @@ public class ResultsDialog extends JDialog {
 
     public static final Dimension CHART_PREFERRED_SIZE = new Dimension(600, 400);
 
-    private final Metricas metrics;
+    private final General metrics;
 
-    private final RedeDeFilas queueNetwork;
+    private final GridQueueNetwork queueNetwork;
 
-    private final List<Tarefa> tasks;
+    private final List<GridTask> tasks;
 
     private final SimulationResultChartMaker charts;
 
@@ -41,9 +42,9 @@ public class ResultsDialog extends JDialog {
      */
     public ResultsDialog (
         final Frame owner,
-        final Metricas metrics,
-        final RedeDeFilas queueNetwork,
-        final List<Tarefa> tasks
+        final General metrics,
+        final GridQueueNetwork queueNetwork,
+        final List<GridTask> tasks
     ) {
         super(owner, true);
 

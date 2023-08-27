@@ -1,29 +1,20 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.Mensagens;
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.motor.filas.servidores.CentroServico;
-import ispd.policy.scheduling.SchedulingPolicy;
-import ispd.policy.scheduling.grid.impl.util.PreemptionEntry;
-import ispd.policy.scheduling.grid.impl.util.SlaveControl;
-import ispd.policy.scheduling.grid.impl.util.UserProcessingControl;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-import java.util.stream.Stream;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.request.*;
+import ispd.motor.queues.task.*;
+import ispd.policy.scheduling.*;
+import ispd.policy.scheduling.grid.impl.util.*;
+import java.util.*;
+import java.util.stream.*;
 
 public abstract class AbstractHOSEP <T extends UserProcessingControl> extends AbstractOSEP<T> {
 
-    private final Collection<Tarefa> tasksToSchedule = new HashSet<>();
+    private final Collection<GridTask> tasksToSchedule = new HashSet<>();
 
     private final Collection<PreemptionEntry> preemptionEntries = new HashSet<>();
 
-    private static boolean hasProcessingCenter (final Tarefa t) {
+    private static boolean hasProcessingCenter (final GridTask t) {
         return t.getLocalProcessamento() != null;
     }
 
@@ -41,7 +32,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      * <ul>
      * <li>{@link #findTaskSuitableFor(UserProcessingControl) Task selection}
      * </li>
-     * <li>{@link #findMachineBestSuitedFor(Tarefa, UserProcessingControl)
+     * <li>{@link #findMachineBestSuitedFor(GridTask, UserProcessingControl)
      * Machine
      * selection}</li>
      * </ul>
@@ -66,7 +57,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      *     whenever called.
      */
     @Override
-    public CS_Processamento escalonarRecurso () {
+    public Processing escalonarRecurso () {
         throw new UnsupportedOperationException(
             """
             Do not call method .escalonarRecurso() on HOSEP-like algorithms."""
@@ -86,7 +77,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
      *     whenever called.
      */
     @Override
-    public Tarefa escalonarTarefa () {
+    public GridTask escalonarTarefa () {
         throw new UnsupportedOperationException(
             """
             Do not call method .escalonarTarefa() on HOSEP-like algorithms."""
@@ -94,7 +85,7 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
     }
 
     @Override
-    public void addTarefaConcluida (final Tarefa tarefa) {
+    public void addTarefaConcluida (final GridTask tarefa) {
         super.addTarefaConcluida(tarefa);
 
         final var maq = tarefa.getCSLProcessamento();
@@ -112,16 +103,16 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
     }
 
     @Override
-    public void resultadoAtualizar (final Mensagem mensagem) {
+    public void resultadoAtualizar (final Request request) {
         final var sc = this.slaveControls
-            .get((CS_Processamento) mensagem.getOrigem());
+            .get((Processing) request.getOrigem());
 
-        sc.setTasksInProcessing(mensagem.getProcessadorEscravo());
+        sc.setTasksInProcessing(request.getProcessadorEscravo());
         sc.updateStatusIfNeeded();
     }
 
     @Override
-    public void adicionarTarefa (final Tarefa tarefa) {
+    public void adicionarTarefa (final GridTask tarefa) {
         super.adicionarTarefa(tarefa);
 
         this.userControls
@@ -195,17 +186,17 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         this.tryHostTaskFromUserInMachine(task, uc, machine);
     }
 
-    private Optional<Tarefa> findTaskSuitableFor (final T uc) {
+    private Optional<GridTask> findTaskSuitableFor (final T uc) {
         if (!uc.isEligibleForTask()) {
             return Optional.empty();
         }
 
         return this.tasksOwnedBy(uc)
-            .min(Comparator.comparingDouble(Tarefa::getTamProcessamento));
+            .min(Comparator.comparingDouble(GridTask::getTamProcessamento));
     }
 
-    private Optional<CS_Processamento> findMachineBestSuitedFor (
-        final Tarefa task,
+    private Optional<Processing> findMachineBestSuitedFor (
+        final GridTask task,
         final T taskOwner
     ) {
         return this
@@ -214,30 +205,30 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
     }
 
     /**
-     * Attempts to initiate the execution (host) of the given {@link Tarefa task} in the given
-     * {@link CS_Processamento processing center}.<br> If it is determined that the given
+     * Attempts to initiate the execution (host) of the given {@link GridTask task} in the given
+     * {@link Processing processing center}.<br> If it is determined that the given
      * {@code machine}'s <i>status</i> {@link SlaveControl#canHostNewTask() is not suited} for
      * hosting a new task, an {@link IllegalStateException} is thrown; otherwise, will host the task
      * in the given machine.<br> Once it is determined that the machine is suitable for receiving a
      * new task, the hosting process is <i>guaranteed to succeed</i>.<br>
      *
      * @param task
-     *     {@link Tarefa task} to host in the given {@link CS_Processamento machine}
+     *     {@link GridTask task} to host in the given {@link Processing machine}
      * @param taskOwner
-     *     {@link UserProcessingControl} representing the owner of the given {@link Tarefa task}
+     *     {@link UserProcessingControl} representing the owner of the given {@link GridTask task}
      * @param machine
-     *     {@link CS_Processamento processing center} that may host the task; it must be in a valid
+     *     {@link Processing processing center} that may host the task; it must be in a valid
      *     state to do so
      *
      * @throws IllegalStateException
-     *     if the given {@link CS_Processamento machine} is not in a suitable state for hosting a
+     *     if the given {@link Processing machine} is not in a suitable state for hosting a
      *     new task
-     * @see #canMachineHostNewTask(CS_Processamento) Machine Status Validation
+     * @see #canMachineHostNewTask(Processing) Machine Status Validation
      */
     private void tryHostTaskFromUserInMachine (
-        final Tarefa task,
+        final GridTask task,
         final T taskOwner,
-        final CS_Processamento machine
+        final Processing machine
     ) {
         if (!this.canMachineHostNewTask(machine)) {
             throw new IllegalStateException(
@@ -249,19 +240,19 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         this.hostTaskFromUserInMachine(task, taskOwner, machine);
     }
 
-    private Stream<Tarefa> tasksOwnedBy (final T uc) {
+    private Stream<GridTask> tasksOwnedBy (final T uc) {
         return this.tarefas.stream().filter(uc::isOwnerOf);
     }
 
-    private Optional<CS_Processamento> findAvailableMachineBestSuitedFor (
-        final Tarefa task,
+    private Optional<Processing> findAvailableMachineBestSuitedFor (
+        final GridTask task,
         final T taskOwner
     ) {
         return this.availableMachinesFor(taskOwner)
             .max(this.compareAvailableMachinesFor(task));
     }
 
-    private Optional<CS_Processamento> findOccupiedMachineBestSuitedFor (final T taskOwner) {
+    private Optional<Processing> findOccupiedMachineBestSuitedFor (final T taskOwner) {
         // If no available machine is found, preemption may be used to force
         // the task into one. However, if the task owner has excess
         // processing power, preemption will NOT be used to accommodate them
@@ -273,14 +264,14 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         return this.findMachineToPreemptFor(taskOwner);
     }
 
-    private boolean canMachineHostNewTask (final CS_Processamento machine) {
+    private boolean canMachineHostNewTask (final Processing machine) {
         return this.slaveControls.get(machine).canHostNewTask();
     }
 
     private void hostTaskFromUserInMachine (
-        final Tarefa task,
+        final GridTask task,
         final T taskOwner,
-        final CS_Processamento machine
+        final Processing machine
     ) {
         this.sendTaskToResource(task, machine);
         this.tarefas.remove(task);
@@ -294,12 +285,12 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         this.slaveControls.get(machine).setAsBlocked();
     }
 
-    protected Stream<CS_Processamento> availableMachinesFor (final T taskOwner) {
+    protected Stream<Processing> availableMachinesFor (final T taskOwner) {
         return this.escravos.stream().filter(this::isMachineAvailable);
     }
 
-    protected Comparator<CS_Processamento> compareAvailableMachinesFor (final Tarefa task) {
-        return Comparator.comparingDouble(CS_Processamento::getPoderComputacional);
+    protected Comparator<Processing> compareAvailableMachinesFor (final GridTask task) {
+        return Comparator.comparingDouble(Processing::getPoderComputacional);
     }
 
     protected T theBestUser () {
@@ -308,33 +299,33 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
             .orElseThrow();
     }
 
-    protected Optional<CS_Processamento> findMachineToPreemptFor (final T taskOwner) {
+    protected Optional<Processing> findMachineToPreemptFor (final T taskOwner) {
         return this.findUserToPreemptFor(taskOwner).flatMap(
             userToPreempt -> this.findMachineToTransferBetween(userToPreempt, taskOwner));
     }
 
     private void sendTaskToResource (
-        final Tarefa task, final CentroServico resource
+        final GridTask task, final Service resource
     ) {
         task.setLocalProcessamento(resource);
         task.setCaminho(this.escalonarRota(resource));
     }
 
-    private boolean isMachineAvailable (final CS_Processamento machine) {
+    private boolean isMachineAvailable (final Processing machine) {
         return this.slaveControls.get(machine).isFree();
     }
 
-    private void hostTaskNormally (final Tarefa task, final T uc, final CS_Processamento machine) {
+    private void hostTaskNormally (final GridTask task, final T uc, final Processing machine) {
         this.sendTaskFromUserToMachine(task, uc, machine);
         uc.decreaseTaskDemand();
     }
 
-    private boolean isMachineOccupied (final CS_Processamento machine) {
+    private boolean isMachineOccupied (final Processing machine) {
         return this.slaveControls.get(machine).isOccupied();
     }
 
     private void hostTaskWithPreemption (
-        final Tarefa taskToSchedule, final T taskOwner, final CS_Processamento machine
+        final GridTask taskToSchedule, final T taskOwner, final Processing machine
     ) {
         final var taskToPreempt = this.taskToPreemptIn(machine);
 
@@ -347,13 +338,13 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
         this.mestre.sendMessage(
             taskToPreempt,
             machine,
-            Mensagens.DEVOLVER_COM_PREEMPCAO
+            RequestType.PREEMPTIVE_RETURN
         );
 
         taskOwner.decreaseTaskDemand();
     }
 
-    protected Optional<CS_Processamento> findMachineToTransferBetween (
+    protected Optional<Processing> findMachineToTransferBetween (
         final T userToPreempt, final T taskOwner
     ) {
         return this.machinesTransferableBetween(userToPreempt, taskOwner)
@@ -363,42 +354,42 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
     }
 
     private void sendTaskFromUserToMachine (
-        final Tarefa task,
+        final GridTask task,
         final T taskOwner,
-        final CS_Processamento machine
+        final Processing machine
     ) {
         this.mestre.sendTask(task);
         taskOwner.startTaskFrom(machine);
     }
 
-    protected Tarefa taskToPreemptIn (final CS_Processamento machine) {
+    protected GridTask taskToPreemptIn (final Processing machine) {
         return this.slaveControls.get(machine).firstTaskInProcessing();
     }
 
-    protected Stream<CS_Processamento> machinesTransferableBetween (
+    protected Stream<Processing> machinesTransferableBetween (
         final T userToPreempt, final T taskOwner
     ) {
         return this.machinesOccupiedBy(userToPreempt);
     }
 
-    protected Comparator<CS_Processamento> compareOccupiedMachines () {
-        return Comparator.comparingDouble(CS_Processamento::getPoderComputacional);
+    protected Comparator<Processing> compareOccupiedMachines () {
+        return Comparator.comparingDouble(Processing::getPoderComputacional);
     }
 
     protected boolean shouldTransferMachine (
-        final CS_Processamento machine,
+        final Processing machine,
         final T machineOwner, final T nextOwner
     ) {
         return machineOwner.canConcedeProcessingPower(machine);
     }
 
-    private Stream<CS_Processamento> machinesOccupiedBy (final T userToPreempt) {
+    private Stream<Processing> machinesOccupiedBy (final T userToPreempt) {
         return this.escravos.stream()
             .filter(this::isMachineOccupied)
             .filter(machine -> userToPreempt.isOwnerOf(this.taskToPreemptIn(machine)));
     }
 
-    private void processPreemptedTask (final Tarefa task) {
+    private void processPreemptedTask (final GridTask task) {
         final var pe = this.findEntryForPreemptedTask(task);
 
         this.tasksToSchedule.stream()
@@ -408,14 +399,17 @@ public abstract class AbstractHOSEP <T extends UserProcessingControl> extends Ab
                 .insertTaskIntoPreemptedTaskSlot(t, task));
     }
 
-    private PreemptionEntry findEntryForPreemptedTask (final Tarefa t) {
+    private PreemptionEntry findEntryForPreemptedTask (final GridTask t) {
         return this.preemptionEntries.stream()
             .filter(pe -> pe.willPreemptTask(t))
             .findFirst()
             .orElseThrow();
     }
 
-    private void insertTaskIntoPreemptedTaskSlot (final Tarefa scheduled, final Tarefa preempted) {
+    private void insertTaskIntoPreemptedTaskSlot (
+        final GridTask scheduled,
+        final GridTask preempted
+    ) {
         this.tasksToSchedule.remove(scheduled);
 
         final var mach = preempted.getCSLProcessamento();

@@ -1,7 +1,8 @@
 package ispd.motor.workload.impl;
 
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.task.*;
 import ispd.motor.random.*;
 import ispd.motor.workload.*;
 import java.util.*;
@@ -9,7 +10,7 @@ import java.util.function.*;
 import java.util.stream.*;
 
 /**
- * Generates a workload for a single master node in a {@link RedeDeFilas}.<br> Some
+ * Generates a workload for a single master node in a {@link GridQueueNetwork}.<br> Some
  * particularities:
  * <ul>
  *     <li>This class generates computation and communication sizes with
@@ -127,13 +128,13 @@ public class PerNodeWorkloadGenerator extends RandomicWorkloadGenerator {
      * {@link ArrayList}.
      *
      * @param qn
-     *     {@link RedeDeFilas} with the master that will host the {@link Tarefa}s.
+     *     {@link GridQueueNetwork} with the master that will host the {@link GridTask}s.
      *
-     * @return {@link List} of {@link Tarefa}s, configured for the correct master, or an empty
-     * {@link ArrayList}, if the {@link RedeDeFilas} has no master with the correct id.
+     * @return {@link List} of {@link GridTask}s, configured for the correct master, or an empty
+     * {@link ArrayList}, if the {@link GridQueueNetwork} has no master with the correct id.
      */
     @Override
-    public List<Tarefa> makeTaskList (final RedeDeFilas qn) {
+    public List<GridTask> makeTaskList (final GridQueueNetwork qn) {
         return qn.getMestres().stream()
             .filter(this::hasCorrectId)
             .findFirst()
@@ -196,7 +197,7 @@ public class PerNodeWorkloadGenerator extends RandomicWorkloadGenerator {
     }
 
     @Override
-    protected String makeTaskUser (final CS_Processamento master) {
+    protected String makeTaskUser (final Processing master) {
         return this.owner;
     }
 
@@ -253,20 +254,20 @@ public class PerNodeWorkloadGenerator extends RandomicWorkloadGenerator {
         return temp;
     }
 
-    private boolean hasCorrectId (final CentroServico m) {
-        return m.getId().equals(this.schedulerId);
+    private boolean hasCorrectId (final Service m) {
+        return m.id().equals(this.schedulerId);
     }
 
     /**
      * Make a task list of appropriate size, with all tasks originating at the given
-     * {@link CS_Processamento}.
+     * {@link Processing}.
      *
      * @param origin
      *     that hosts all generated tasks.
      *
-     * @return {@link List} with generated {@link Tarefa}s.
+     * @return {@link List} with generated {@link GridTask}s.
      */
-    private List<Tarefa> makeTaskListOriginatingAt (final CS_Processamento origin) {
+    private List<GridTask> makeTaskListOriginatingAt (final Processing origin) {
         return IntStream.range(0, this.taskCount)
             .mapToObj(i -> this.makeTaskFor(origin))
             .collect(Collectors.toList());

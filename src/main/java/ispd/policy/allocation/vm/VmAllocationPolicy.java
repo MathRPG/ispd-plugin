@@ -1,28 +1,28 @@
 package ispd.policy.allocation.vm;
 
-import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
-import ispd.policy.allocation.AllocationPolicy;
-import java.util.List;
+import ispd.motor.queues.centers.impl.*;
+import ispd.policy.allocation.*;
+import java.util.*;
 
 public abstract class VmAllocationPolicy extends AllocationPolicy<VmMaster> {
 
-    protected List<CS_VirtualMac> maquinasVirtuais = null;
+    protected List<VirtualMachine> maquinasVirtuais = null;
 
-    protected List<CS_VirtualMac> VMsRejeitadas = null;
+    protected List<VirtualMachine> VMsRejeitadas = null;
 
     protected List<List> infoMaquinas = null;
 
-    public abstract CS_VirtualMac escalonarVM ();
+    public abstract VirtualMachine escalonarVM ();
 
-    public void addVM (final CS_VirtualMac vm) {
+    public void addVM (final VirtualMachine vm) {
         this.maquinasVirtuais.add(vm);
     }
 
-    public List<CS_VirtualMac> getMaquinasVirtuais () {
+    public List<VirtualMachine> getMaquinasVirtuais () {
         return this.maquinasVirtuais;
     }
 
-    public List<CS_VirtualMac> getVMsRejeitadas () {
+    public List<VirtualMachine> getVMsRejeitadas () {
         return this.VMsRejeitadas;
     }
 }

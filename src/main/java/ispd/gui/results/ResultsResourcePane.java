@@ -1,10 +1,8 @@
 package ispd.gui.results;
 
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-
-import ispd.motor.metricas.Metricas;
+import ispd.motor.metrics.*;
+import javax.swing.*;
+import javax.swing.table.*;
 
 /**
  * A {@link ResultsResourcePane} is a class that represents a pane containing
@@ -20,7 +18,7 @@ public class ResultsResourcePane extends JScrollPane {
      * @param metrics
      *         the simulation metrics
      */
-    public ResultsResourcePane (final Metricas metrics) {
+    public ResultsResourcePane (final General metrics) {
         final var table = new JTable();
         final var columns = new Object[] {
                 "Label", "Owner", "Processing performed", "Communication performed"

@@ -1,9 +1,10 @@
 package ispd.gui.results;
 
 import ispd.gui.utils.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
-import ispd.motor.metricas.*;
+import ispd.motor.metrics.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.task.*;
 import ispd.utils.*;
 import java.util.*;
 import org.jfree.chart.*;
@@ -79,7 +80,7 @@ public final class SimulationResultChartMaker {
      *     the task list
      */
     public SimulationResultChartMaker (
-        final Metricas metrics, final RedeDeFilas queueNetwork, final List<Tarefa> taskList
+        final General metrics, final GridQueueNetwork queueNetwork, final List<GridTask> taskList
     ) {
         this(metrics);
 
@@ -102,7 +103,7 @@ public final class SimulationResultChartMaker {
      * @param metrics
      *     the metrics
      */
-    public SimulationResultChartMaker (final Metricas metrics) {
+    public SimulationResultChartMaker (final General metrics) {
         final var processingCharts =
             this.makeProcessingCharts(metrics.getMetricasProcessamento());
         final var communicationCharts =
@@ -159,7 +160,7 @@ public final class SimulationResultChartMaker {
      * @return an instance of {@link Pair} containing the bar chart for the computing power per
      * machine results and the total computational power, respectively
      */
-    private Pair<ChartPanel, Double> makeComputingPowerPerMachineChart (final RedeDeFilas queueNetwork) {
+    private Pair<ChartPanel, Double> makeComputingPowerPerMachineChart (final GridQueueNetwork queueNetwork) {
         final var chartData               = new XYSeriesCollection();
         var       totalComputationalPower = 0.0;
 
@@ -191,9 +192,9 @@ public final class SimulationResultChartMaker {
             final XYSeries xySeries;
 
             if (machine.getnumeroMaquina() == 0) {
-                xySeries = new XYSeries(machine.getId());
+                xySeries = new XYSeries(machine.id());
             } else {
-                xySeries = new XYSeries(machine.getId() + " node " + machine.getnumeroMaquina());
+                xySeries = new XYSeries(machine.id() + " node " + machine.getnumeroMaquina());
             }
 
             for (final var interval : useIntervals) {
@@ -237,8 +238,8 @@ public final class SimulationResultChartMaker {
      * @return the bar chart for the computing power per user results
      */
     private ChartPanel makeComputingPowerPerUserChart (
-        final Collection<? extends Tarefa> tasks, final double totalComputationalPower,
-        final RedeDeFilas queueNetwork
+        final Collection<? extends GridTask> tasks, final double totalComputationalPower,
+        final GridQueueNetwork queueNetwork
     ) {
         final var userOperationTimeList = new ArrayList<UserOperationTime>();
         final var usersNumber           = queueNetwork.getUsuarios().size();
@@ -261,7 +262,7 @@ public final class SimulationResultChartMaker {
 
         /* Add each task as two points in the user operation time list */
         for (final var task : tasks) {
-            final var serviceCenterProcessing = (CS_Processamento) task.getLocalProcessamento();
+            final var serviceCenterProcessing = (Processing) task.getLocalProcessamento();
 
             if (serviceCenterProcessing == null) {
                 continue;
@@ -346,7 +347,7 @@ public final class SimulationResultChartMaker {
      * @return the bar chart for the computing power per task results
      */
     private ChartPanel makeComputingPowerPerTaskChart (
-        final Collection<? extends Tarefa> tasks, final double totalComputingPower
+        final Collection<? extends GridTask> tasks, final double totalComputingPower
     ) {
         /* Ensure the tasks is not null */
         if (tasks == null) {
@@ -364,7 +365,7 @@ public final class SimulationResultChartMaker {
 
         for (final var task : tasks) {
             final var xySeries                = new XYSeries("task " + task.getIdentificador());
-            final var serviceCenterProcessing = (CS_Processamento) task.getLocalProcessamento();
+            final var serviceCenterProcessing = (Processing) task.getLocalProcessamento();
 
             if (serviceCenterProcessing == null) {
                 continue;
@@ -419,7 +420,7 @@ public final class SimulationResultChartMaker {
      *     if processing map is {@code null}
      */
     private Pair<ChartPanel, ChartPanel> makeProcessingCharts (
-        final Map<String, MetricasProcessamento> processingMap
+        final Map<String, ProcessingMetrics> processingMap
     ) {
         /* It ensures that the processing map is not null */
         if (processingMap == null) {
@@ -481,7 +482,7 @@ public final class SimulationResultChartMaker {
      *     if communication map is {@code null}
      */
     private Pair<ChartPanel, ChartPanel> makeCommunicationCharts (
-        final Map<String, MetricasComunicacao> communicationMap
+        final Map<String, CommunicationMetrics> communicationMap
     ) {
         /* It ensures that the processing map is not null */
         if (communicationMap == null) {

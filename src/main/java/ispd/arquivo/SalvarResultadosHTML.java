@@ -2,7 +2,7 @@ package ispd.arquivo;
 
 import ispd.gui.*;
 import ispd.gui.results.*;
-import ispd.motor.metricas.*;
+import ispd.motor.metrics.*;
 import java.awt.image.*;
 import java.io.*;
 import java.nio.charset.*;
@@ -40,7 +40,7 @@ public class SalvarResultadosHTML {
             .formatted(item[0], item[1], item[2], item[3]);
     }
 
-    private static String makeEfficiencyDescriptionFromMetrics (final MetricasGlobais metrics) {
+    private static String makeEfficiencyDescriptionFromMetrics (final Global metrics) {
         if (metrics.getEficiencia() > EFFICIENCY_GOOD) {
             return getEfficiencyDescription("GOOD", "00ff00");
         } else if (metrics.getEficiencia() > EFFICIENCY_BAD) {
@@ -132,7 +132,7 @@ public class SalvarResultadosHTML {
      * @param metrics
      *     Global simulation metrics
      */
-    public void setMetricasGlobais (final MetricasGlobais metrics) {
+    public void setMetricasGlobais (final Global metrics) {
         this.globalMetrics = """
                              <li><strong>Total Simulated Time </strong>= %s</li>
                              <li><strong>Satisfaction</strong> = %s %%</li>
@@ -159,7 +159,7 @@ public class SalvarResultadosHTML {
     /**
      * Creates a string with client metrics in the queue network
      */
-    public void setMetricasTarefas (final Metricas metrics) {
+    public void setMetricasTarefas (final General metrics) {
         final double commQueueAvgTime = metrics.getTempoMedioFilaComunicacao();
         final double commAvgTime      = metrics.getTempoMedioComunicacao();
         final double procQueueAvgTime = metrics.getTempoMedioFilaProcessamento();

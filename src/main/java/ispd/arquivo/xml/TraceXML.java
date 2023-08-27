@@ -1,7 +1,7 @@
 package ispd.arquivo.xml;
 
 import ispd.arquivo.*;
-import ispd.motor.filas.*;
+import ispd.motor.queues.task.*;
 import ispd.utils.constants.*;
 import java.io.*;
 import java.nio.charset.*;
@@ -91,7 +91,7 @@ public class TraceXML {
         return Integer.parseInt(fields[1]);
     }
 
-    private static String makeTaskDescription (final Tarefa t) {
+    private static String makeTaskDescription (final GridTask t) {
         return """
                <task id="%d" arr="%s" sts="1" cpsz ="%s" cmsz="%s" usr="%s" />
                """.formatted(
@@ -247,7 +247,7 @@ public class TraceXML {
      *
      * @see TaskTraceSerializer
      */
-    public void geraTraceSim (final Collection<? extends Tarefa> tasks) {
+    public void geraTraceSim (final Collection<? extends GridTask> tasks) {
         try (
             final var out = new BufferedWriter(new FileWriter(this.path, StandardCharsets.UTF_8))
         ) {
@@ -264,7 +264,7 @@ public class TraceXML {
             final var descriptions =
                 tasks
                     .stream()
-                    .filter(Predicate.not(Tarefa::isCopy))
+                    .filter(Predicate.not(GridTask::isCopy))
                     .map(TraceXML::makeTaskDescription)
                     .toList();
 

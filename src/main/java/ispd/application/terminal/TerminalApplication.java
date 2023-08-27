@@ -4,9 +4,11 @@ import ispd.application.*;
 import ispd.arquivo.*;
 import ispd.arquivo.xml.*;
 import ispd.gui.results.*;
-import ispd.motor.*;
-import ispd.motor.filas.*;
-import ispd.motor.metricas.*;
+import ispd.motor.metrics.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.task.*;
+import ispd.motor.simul.*;
+import ispd.motor.simul.impl.*;
 import ispd.utils.constants.*;
 import java.io.*;
 import java.net.*;
@@ -38,7 +40,7 @@ public class TerminalApplication implements Application {
 
     private final int nExecutions;
 
-    private final ProgressoSimulacao simulationProgress = new SilentSimulationProgress();
+    private final ProgressTracker simulationProgress = new ProgressTracker();
 
     private final @NotNull SystemTimeProvider systemTimeProvider;
 
@@ -223,9 +225,9 @@ public class TerminalApplication implements Application {
      *
      * @return The respective job list from the model
      */
-    private static List<Tarefa> createJobsList (
+    private static List<GridTask> createJobsList (
         final Document model,
-        final RedeDeFilas queueNetwork
+        final GridQueueNetwork queueNetwork
     ) {
         System.out.print("  Creating tasks: ");
         final var jobs =
@@ -244,7 +246,7 @@ public class TerminalApplication implements Application {
      *
      * @return A queue network from the model
      */
-    private static RedeDeFilas createQueueNetwork (final Document model) {
+    private static GridQueueNetwork createQueueNetwork (final Document model) {
         System.out.print("  Mounting network queue: ");
         final var queueNetwork = GridQueueNetworkFactory.fromDocument(model);
         System.out.println(ConsoleColors.surroundGreen("OK!"));
@@ -335,7 +337,7 @@ public class TerminalApplication implements Application {
             return;
         }
 
-        final var metrics = new Metricas(IconicModelFactory.userListFromDocument(model));
+        final var metrics = new General(IconicModelFactory.userListFromDocument(model));
         var       totalDuration = 0.0;
         for (var i = 1; i <= this.nExecutions; i++) {
             System.out.printf("* Simulation %d%n", i);
@@ -362,7 +364,7 @@ public class TerminalApplication implements Application {
      * @param totalDuration
      *     The total duration of the simulations
      */
-    private void printSimulationResults (final Metricas metrics, final double totalDuration) {
+    private void printSimulationResults (final General metrics, final double totalDuration) {
         System.out.println("Results:");
         metrics.calculaMedia();
 
@@ -413,7 +415,7 @@ public class TerminalApplication implements Application {
      *
      * @return The metrics resulted from the simulation
      */
-    private Metricas runASimulation (final Document model) {
+    private General runASimulation (final Document model) {
         final var queueNetwork = createQueueNetwork(model);
         final var jobs         = createJobsList(model, queueNetwork);
 
@@ -434,10 +436,13 @@ public class TerminalApplication implements Application {
      *
      * @return The chosen simulation
      */
-    private Simulation selectSimulation (final RedeDeFilas queueNetwork, final List<Tarefa> jobs) {
+    private Simulation selectSimulation (
+        final GridQueueNetwork queueNetwork,
+        final List<GridTask> jobs
+    ) {
         return this.parallel
-               ? new SimulacaoParalela(this.simulationProgress, queueNetwork, jobs, this.nThreads)
-               : new SimulacaoSequencial(this.simulationProgress, queueNetwork, jobs);
+               ? new Parallel(this.simulationProgress, queueNetwork, jobs, this.nThreads)
+               : new GridSequential(this.simulationProgress, queueNetwork, jobs);
     }
 
     /**

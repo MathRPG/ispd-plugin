@@ -6,7 +6,7 @@ Opening iconic model. ->[0;32mOK[0m
 Simulation Execution Time = 0.001000 seconds
 Results:
 Usuário 	 SatisfaçãoGeralTempoSim	SatisfaçãoGeralTempoUso	SatisfaçãoDesempenho	ConsumoTotal	LimiteConsumoTempoSimulado	LimiteConsumoTempoUso	ConsumoLocal	ConsumoLocalProprio	ConsumoLocalEstrangeiro	ConsumoMaxLocal	TarefasPreemp	Alpha	BetaTempoSim	BetaTempoUso	Desperdicio	ConsumoKJS	TurnaroundTime	TempoSIM
-user1	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0	0	0	0	0.00	0.00	0.2	0.2
+user1	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0.00	0	0	0	0	0.00	0.00	0.15000000000000002	0.2
 
 
 

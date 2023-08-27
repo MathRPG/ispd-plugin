@@ -1,13 +1,14 @@
 package ispd.motor.workload.impl;
 
-import ispd.motor.filas.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.task.*;
 import ispd.motor.workload.*;
 import java.util.*;
 import java.util.stream.*;
 
 /**
  * Represents a workload from a homogeneous collection of other workloads. Specifically, when used
- * to host a collection of per-node tasks, the method {@link #makeTaskList(RedeDeFilas)} can be used
+ * to host a collection of per-node tasks, the method {@link #makeTaskList(GridQueueNetwork)} can be used
  * to collect all per-node tasks into a single new workload.
  */
 public class CollectionWorkloadGenerator implements WorkloadGenerator {
@@ -48,7 +49,7 @@ public class CollectionWorkloadGenerator implements WorkloadGenerator {
      * {@link PerNodeWorkloadGenerator}.
      */
     @Override
-    public List<Tarefa> makeTaskList (final RedeDeFilas qn) {
+    public List<GridTask> makeTaskList (final GridQueueNetwork qn) {
         return this.list.stream()
             .flatMap(load -> load.makeTaskList(qn).stream())
             .collect(Collectors.toList());

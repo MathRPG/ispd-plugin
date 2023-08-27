@@ -1,13 +1,12 @@
 package ispd.policy.scheduling.grid.impl.util;
 
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import ispd.policy.scheduling.grid.GridMaster;
-import java.util.Collection;
-import java.util.function.Predicate;
-import java.util.stream.Stream;
-import jdk.jfr.Percentage;
-import jdk.jfr.Unsigned;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.task.*;
+import ispd.policy.scheduling.grid.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.*;
+import jdk.jfr.*;
 
 public class UserProcessingControl {
 
@@ -30,13 +29,13 @@ public class UserProcessingControl {
 
     public UserProcessingControl (
         final String userId,
-        final Collection<? extends CS_Processamento> systemMachines
+        final Collection<? extends Processing> systemMachines
     ) {
         this.userId = userId;
 
         this.ownedMachinesProcessingPower = this
             .ownedNonMasterMachinesIn(systemMachines)
-            .mapToDouble(CS_Processamento::getPoderComputacional)
+            .mapToDouble(Processing::getPoderComputacional)
             .sum();
 
         this.ownedMachinesCount = systemMachines.stream()
@@ -44,15 +43,15 @@ public class UserProcessingControl {
             .toList().size();
     }
 
-    protected Stream<? extends CS_Processamento> ownedNonMasterMachinesIn (
-        final Collection<? extends CS_Processamento> systemMachines
+    protected Stream<? extends Processing> ownedNonMasterMachinesIn (
+        final Collection<? extends Processing> systemMachines
     ) {
         return systemMachines.stream()
             .filter(this::hasMachine)
             .filter(Predicate.not(GridMaster.class::isInstance));
     }
 
-    private boolean hasMachine (final CS_Processamento machine) {
+    private boolean hasMachine (final Processing machine) {
         return machine.getProprietario().equals(this.userId);
     }
 
@@ -65,7 +64,7 @@ public class UserProcessingControl {
                / this.ownedMachinesProcessingPower;
     }
 
-    public void stopTaskFrom (final CS_Processamento machine) {
+    public void stopTaskFrom (final Processing machine) {
         this.decreaseUsedMachines();
         this.decreaseUsedProcessingPower(machine.getPoderComputacional());
     }
@@ -78,7 +77,7 @@ public class UserProcessingControl {
         this.usedProcessingPower -= amount;
     }
 
-    public boolean canConcedeProcessingPower (final CS_Processamento machine) {
+    public boolean canConcedeProcessingPower (final Processing machine) {
         return this.excessProcessingPower() >= machine.getPoderComputacional();
     }
 
@@ -86,11 +85,11 @@ public class UserProcessingControl {
         return this.ownedMachinesProcessingPower - this.usedProcessingPower;
     }
 
-    public boolean isOwnerOf (final Tarefa task) {
+    public boolean isOwnerOf (final GridTask task) {
         return this.userId.equals(task.getProprietario());
     }
 
-    public void startTaskFrom (final CS_Processamento machine) {
+    public void startTaskFrom (final Processing machine) {
         this.increaseUsedMachines();
         this.increaseUsedProcessingPower(machine.getPoderComputacional());
     }
