@@ -120,8 +120,7 @@ public class CloudSequential extends Simulation {
             if (selecionarFalhas.cbxEstado != null) {
                 window.println("There are injected State failures.");
                 window.println("Creating state fault.");
-                final State state = new State();
-                state.FIState1(window);
+                State.showMessage(window);
             } else {
                 window.println("There aren't injected State failures.");
             }
