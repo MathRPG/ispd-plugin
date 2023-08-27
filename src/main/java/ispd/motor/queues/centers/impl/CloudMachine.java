@@ -147,10 +147,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             final var caminhoMsg =
                 new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
 
-            for (final var cs : caminhoVMM) {
-                System.out.println(cs.id());
-            }
-
             vm.setCaminhoVMM(caminhoVMM);
             msg.setCaminho(caminhoMsg);
         } else {
@@ -159,9 +155,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             final var caminhoMsg =
                 new ArrayList<Service>(this.caminhoMestre.get(index));
 
-            for (final var cs : caminhoVMM) {
-                System.out.println(cs.id());
-            }
             vm.setCaminhoVMM(caminhoVMM);
             msg.setCaminho(caminhoMsg);
         }
