@@ -82,11 +82,6 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
     public void clientProcessing (final Simulation simulacao, final GridTask cliente) {
         cliente.finalizarEsperaProcessamento(simulacao.getTime(this));
         cliente.iniciarAtendimentoProcessamento(simulacao.getTime(this));
-        if (cliente == null) {
-            System.out.println("cliente nao existe");
-        } else {
-            System.out.println("cliente é a tarefa " + cliente.getIdentificador());
-        }
         this.tarefaEmExecucao.add(cliente);
         final Double next = simulacao.getTime(this)
                             + this.tempoProcessar(cliente.getTamProcessamento()
