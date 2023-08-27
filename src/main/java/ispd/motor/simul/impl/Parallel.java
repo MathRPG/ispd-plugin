@@ -20,7 +20,7 @@ public class Parallel extends Simulation {
 
     private final List<Service> recursos;
 
-    private final Map<Service, PriorityBlockingQueue<ispd.motor.Event>> threadFilaEventos;
+    private final Map<Service, PriorityBlockingQueue<Event>> threadFilaEventos;
 
     private final HashMap<Service, ThreadTrabalhador> threadTrabalhador;
 
@@ -117,7 +117,7 @@ public class Parallel extends Simulation {
     }
 
     @Override
-    public void addFutureEvent (final ispd.motor.Event ev) {
+    public void addFutureEvent (final Event ev) {
         if (ev.getType() == EventType.ARRIVAL) {
             this.threadFilaEventos.get(ev.getServidor()).offer(ev);
         } else {
