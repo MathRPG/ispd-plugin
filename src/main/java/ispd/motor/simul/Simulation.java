@@ -90,11 +90,6 @@ public abstract class Simulation {
     protected void initCloudSchedulers () {
         for (final var genericMaster : this.cloudQueueNetwork.getMestres()) {
             final var master = (CloudMaster) genericMaster;
-            System.out.printf(
-                "VMM %s iniciando escalonador %s%n",
-                genericMaster.id(),
-                master.getEscalonador().toString()
-            );
             master.getEscalonador().iniciar();
             master.instanciarCaminhosVMs();
         }
