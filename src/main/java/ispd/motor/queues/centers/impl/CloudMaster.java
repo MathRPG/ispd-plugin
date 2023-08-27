@@ -364,7 +364,6 @@ public class CloudMaster extends Processing implements VmMaster,
 
     @Override
     public void executeScheduling () {
-        System.out.println(this.id() + " solicitando escalonamento");
         final var evtFut = new Event(
             this.simulacao.getTime(this), EventType.SCHEDULING, this, null
         );
@@ -380,10 +379,6 @@ public class CloudMaster extends Processing implements VmMaster,
     @Override
     public void sendTask (final GridTask task) {
         // Gera evento para atender proximo cliente da lista
-        System.out.println(
-            "Tarefa:" + task.getIdentificador() + "escalonada para vm:" + task
-                .getLocalProcessamento()
-                .id());
         final var evtFut = new Event(
             this.simulacao.getTime(this), EventType.EXIT, this, task
         );
@@ -420,8 +415,6 @@ public class CloudMaster extends Processing implements VmMaster,
 
     @Override
     public void sendVm (final VirtualMachine vm) {
-        System.out.println("Enviar VM: alocando VM " + vm.id());
-        System.out.println("------------------------------------------");
         final var tarefa = new CloudTask(vm.getVmmResponsavel(), vm, 300.0, 0.0);
         tarefa.setCaminho(vm.getCaminho());
         final var evtFut =
