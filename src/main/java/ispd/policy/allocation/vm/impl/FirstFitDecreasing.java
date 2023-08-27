@@ -29,17 +29,12 @@ public class FirstFitDecreasing extends VmAllocationPolicy {
         this.maqIndex     = 0;
         this.VMsOrdenadas = new ArrayList<>(this.maquinasVirtuais);
         for (final VirtualMachine aux : this.VMsOrdenadas) {
-            System.out.println(aux.id());
         }
         this.VMsOrdenadas.sort(this.comparaReq);
-        System.out.println("Ordem crescente");
         for (final VirtualMachine aux : this.VMsOrdenadas) {
-            System.out.println(aux.id());
         }
         Collections.reverse(this.VMsOrdenadas);
-        System.out.println("Ordem decrescente");
         for (final VirtualMachine aux : this.VMsOrdenadas) {
-            System.out.println(aux.id());
         }
         if (!this.escravos.isEmpty() && !this.maquinasVirtuais.isEmpty()) {
             this.escalonar();
@@ -55,7 +50,6 @@ public class FirstFitDecreasing extends VmAllocationPolicy {
     @Override
     public void escalonar () {
         while (!(this.maquinasVirtuais.isEmpty())) {
-            System.out.println("------------------------------------------");
             int num_escravos = this.escravos.size();
 
             final VirtualMachine auxVM = this.escalonarVM();
@@ -66,30 +60,18 @@ public class FirstFitDecreasing extends VmAllocationPolicy {
                     // escalona o recurso
                     if (auxMaq instanceof CloudMaster) {
 
-                        System.out.println(auxMaq.id()
-                                           + " é um VMM, a VM "
-                                           + "será redirecionada");
                         auxVM.setCaminho(this.escalonarRota(auxMaq));
                         // salvando uma lista de VMMs intermediarios no caminho da vm e seus respectivos caminhos
-                        System.out.println(auxVM.id() + " enviada para " + auxMaq.id());
                         this.mestre.sendVm(auxVM);
-                        System.out.println("---------------------------------------");
                         break;
                     } else {
-                        System.out.println("Checagem de recursos:");
                         final CloudMachine maq        = (CloudMachine) auxMaq;
                         final double       memoriaMaq = maq.getMemoriaDisponivel();
-                        System.out.println("memoriaMaq: " + memoriaMaq);
                         final double memoriaNecessaria = auxVM.getMemoriaDisponivel();
-                        System.out.println("memorianecessaria: " + memoriaNecessaria);
                         final double discoMaq = maq.getDiscoDisponivel();
-                        System.out.println("discoMaq: " + discoMaq);
                         final double discoNecessario = auxVM.getDiscoDisponivel();
-                        System.out.println("disconecessario: " + discoNecessario);
                         final int maqProc = maq.getProcessadoresDisponiveis();
-                        System.out.println("ProcMaq: " + maqProc);
                         final int procVM = auxVM.getProcessadoresDisponiveis();
-                        System.out.println("ProcVM: " + procVM);
 
                         if ((
                             memoriaNecessaria <= memoriaMaq
@@ -97,23 +79,12 @@ public class FirstFitDecreasing extends VmAllocationPolicy {
                             && procVM <= maqProc
                         )) {
                             maq.setMemoriaDisponivel(memoriaMaq - memoriaNecessaria);
-                            System.out.println("Realizando o controle de " + "recurso:");
-                            System.out.println("memoria atual da maq: " + (
-                                memoriaMaq
-                                - memoriaNecessaria
-                            ));
+
                             maq.setDiscoDisponivel(discoMaq - discoNecessario);
-                            System.out.println("disco atual maq: " + (discoMaq - discoNecessario));
                             maq.setProcessadoresDisponiveis(maqProc - procVM);
-                            System.out.println("proc atual: " + (maqProc - procVM));
                             auxVM.setMaquinaHospedeira((CloudMachine) auxMaq);
                             auxVM.setCaminho(this.escalonarRota(auxMaq));
-                            System.out.println(auxVM.id()
-                                               + " enviada para"
-                                               + " "
-                                               + auxMaq.id());
                             this.mestre.sendVm(auxVM);
-                            System.out.println("---------------------------------------");
 
                             break;
                         } else {
@@ -121,12 +92,9 @@ public class FirstFitDecreasing extends VmAllocationPolicy {
                         }
                     }
                 } else {
-                    System.out.println(auxVM.id() + " foi rejeitada");
                     auxVM.setStatus(VirtualMachineState.REJECTED);
                     this.VMsRejeitadas.add(auxVM);
-                    System.out.println("Adicionada na lista de rejeitadas");
                     num_escravos--;
-                    System.out.println("---------------------------------------");
                 }
             }
         }
