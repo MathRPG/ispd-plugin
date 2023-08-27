@@ -128,7 +128,6 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
         if (Origem.equals(this.vmmResponsavel)) {
             caminho = new ArrayList<>(this.caminhoVMM);
         } else {
-            System.out.println("A tarefa não saiu do vmm desta vm!!!!!");
             final var index = this.VMMsIntermediarios.indexOf((CloudMaster) Origem);
             if (index == -1) {
                 final var auxMaq = this.maquinaHospedeira;
@@ -146,7 +145,6 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
             }
         }
         cliente.setCaminho(caminho);
-        System.out.println("Saida -" + this.id() + "- caminho size:" + caminho.size());
 
         //Gera evento para chegada da tarefa no proximo servidor
         final var evtFut = new Event(
