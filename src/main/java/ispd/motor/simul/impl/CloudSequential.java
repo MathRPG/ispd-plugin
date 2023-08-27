@@ -1,6 +1,7 @@
 package ispd.motor.simul.impl;
 
 import ispd.gui.*;
+import ispd.motor.Event;
 import ispd.motor.*;
 import ispd.motor.faults.*;
 import ispd.motor.metrics.*;
@@ -18,7 +19,7 @@ import java.util.stream.*;
 
 public class CloudSequential extends Simulation {
 
-    private final PriorityQueue<ispd.motor.Event> eventos = new PriorityQueue<>();
+    private final PriorityQueue<Event> eventos = new PriorityQueue<>();
 
     private double time = 0;
 
@@ -231,7 +232,7 @@ public class CloudSequential extends Simulation {
     }
 
     @Override
-    public void addFutureEvent (final ispd.motor.Event ev) {
+    public void addFutureEvent (final Event ev) {
         this.eventos.offer(ev);
     }
 
@@ -262,7 +263,7 @@ public class CloudSequential extends Simulation {
 
     private void addEventos (final List<GridTask> tarefas) {
         for (final var tarefa : tarefas) {
-            final var evt = new ispd.motor.Event(
+            final var evt = new Event(
                 tarefa.getTimeCriacao(),
                 EventType.ARRIVAL,
                 tarefa.getOrigem(),
