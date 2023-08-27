@@ -1,15 +1,13 @@
 package ispd.motor.faults;
 
 import ispd.gui.*;
-import ispd.motor.queues.*;
 import ispd.motor.simul.*;
 import javax.swing.*;
 
 public class Hardware {
 
     public void showMessage (
-        final ProgressTracker janela,
-        final CloudQueueNetwork gridQueueNetwork
+        final ProgressTracker janela
     ) {
         new PickSimulationFaultsDialog();
         JOptionPane.showMessageDialog(null, "Hardware Failure selected.");
