@@ -52,7 +52,6 @@ public class CloudSequential extends Simulation {
         window.print("Creating routing.");
         window.print(" -> ");
 
-        System.out.println("---------------------------------------");
         for (final Processing mst : cloudQueueNetwork.getMestres()) {
             final Simulable temp = (Simulable) mst;
             final Simulable aux  = (Simulable) mst;
@@ -60,7 +59,6 @@ public class CloudSequential extends Simulation {
             aux.setSimulation(this);
             temp.setSimulation(this);
             //Encontra menor caminho entre o mestre e seus escravos
-            System.out.printf("Mestre %s encontrando seus escravos\n", mst.id());
             mst.determinarCaminhos(); //mestre encontra caminho para seus escravos
         }
 
@@ -204,7 +202,6 @@ public class CloudSequential extends Simulation {
             .isEmpty()) {
             window.println("The model has no phisical machines.", Color.orange);
         } else {
-            System.out.println("---------------------------------------");
             for (final CloudMachine maq : cloudQueueNetwork.getMaquinasCloud()) {
                 // Encontra menor caminho entre o escravo e seu mestre
                 maq.determinarCaminhos(); // escravo encontra caminhos para seu mestre
@@ -218,14 +215,10 @@ public class CloudSequential extends Simulation {
     @Override
     public void simulate () {
         //inicia os escalonadores
-        System.out.println("---------------------------------------");
         this.initCloudSchedulers();
-        System.out.println("---------------------------------------");
-
         this.initCloudAllocators();
-        System.out.println("---------------------------------------");
+
         this.addEventos(this.getJobs());
-        System.out.println("---------------------------------------");
 
         if (this.atualizarEscalonadores()) {
             this.realizarSimulacaoAtualizaTime();
@@ -269,7 +262,6 @@ public class CloudSequential extends Simulation {
     }
 
     public void addEventos (final List<GridTask> tarefas) {
-        System.out.println("Tarefas sendo adicionadas na lista de eventos futuros");
         for (final GridTask tarefa : tarefas) {
             final var evt = new ispd.motor.Event(
                 tarefa.getTimeCriacao(),
