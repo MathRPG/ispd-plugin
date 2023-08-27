@@ -74,9 +74,10 @@ public abstract class Simulation {
     }
 
     protected void initSchedulers () {
-        for (final var master : this.queueNetwork.getMestres()) {
-            ((GridMaster) master).getEscalonador().iniciar();
-        }
+        this.queueNetwork.getMestres().stream()
+            .map(GridMaster.class::cast)
+            .map(GridMaster::getEscalonador)
+            .forEach(Policy::iniciar);
     }
 
     protected void initCloudAllocators () {
