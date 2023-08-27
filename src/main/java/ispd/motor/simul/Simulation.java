@@ -82,11 +82,6 @@ public abstract class Simulation {
     protected void initCloudAllocators () {
         for (final var genericMaster : this.cloudQueueNetwork.getMestres()) {
             final var master = (CloudMaster) genericMaster;
-            System.out.printf(
-                "VMM %s iniciando o alocador %s%n",
-                genericMaster.id(),
-                master.getAlocadorVM().toString()
-            );
             master.getAlocadorVM().iniciar();
         }
     }
