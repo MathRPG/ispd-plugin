@@ -93,10 +93,9 @@ public abstract class Simulation {
     }
 
     protected void initCloudSchedulers () {
-        for (final var genericMaster : this.cloudQueueNetwork.getMestres()) {
-            final var master = (CloudMaster) genericMaster;
-            initCloudMaster(master);
-        }
+        this.cloudQueueNetwork.getMestres().stream()
+            .map(CloudMaster.class::cast)
+            .forEach(Simulation::initCloudMaster);
     }
 
     public void createRouting () {
