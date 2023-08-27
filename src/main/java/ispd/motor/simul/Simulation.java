@@ -74,39 +74,33 @@ public abstract class Simulation {
     }
 
     protected void initSchedulers () {
-        for (final Processing master : this.queueNetwork.getMestres()) {
-            ((GridMaster) master).getEscalonador().iniciar();
-        }
+        this.queueNetwork.getMestres().stream()
+            .map(GridMaster.class::cast)
+            .map(GridMaster::getEscalonador)
+            .forEach(Policy::iniciar);
     }
 
     protected void initCloudAllocators () {
-        for (final Processing genericMaster : this.cloudQueueNetwork.getMestres()) {
-            final CloudMaster master = (CloudMaster) genericMaster;
-            System.out.printf(
-                "VMM %s iniciando o alocador %s%n",
-                genericMaster.id(),
-                master.getAlocadorVM().toString()
-            );
-            master.getAlocadorVM().iniciar();
-        }
+        this.cloudQueueNetwork.getMestres().stream()
+            .map(CloudMaster.class::cast)
+            .map(CloudMaster::getAlocadorVM)
+            .forEach(Policy::iniciar);
+    }
+
+    private static void initCloudMaster (final CloudMaster master) {
+        master.getEscalonador().iniciar();
+        master.instanciarCaminhosVMs();
     }
 
     protected void initCloudSchedulers () {
-        for (final Processing genericMaster : this.cloudQueueNetwork.getMestres()) {
-            final CloudMaster master = (CloudMaster) genericMaster;
-            System.out.printf(
-                "VMM %s iniciando escalonador %s%n",
-                genericMaster.id(),
-                master.getEscalonador().toString()
-            );
-            master.getEscalonador().iniciar();
-            master.instanciarCaminhosVMs();
-        }
+        this.cloudQueueNetwork.getMestres().stream()
+            .map(CloudMaster.class::cast)
+            .forEach(Simulation::initCloudMaster);
     }
 
     public void createRouting () {
-        for (final Processing master : this.queueNetwork.getMestres()) {
-            final Simulable temp = (Simulable) master;
+        for (final var master : this.queueNetwork.getMestres()) {
+            final var temp = (Simulable) master;
 
             // Give access to the master of the queue of future events.
             temp.setSimulation(this);
@@ -118,14 +112,14 @@ public abstract class Simulation {
             this.window.println("The model has no processing slaves.", Color.orange);
         } else {
             // Find the shortest path between each slave and the master.
-            for (final GridMachine machine : this.queueNetwork.getMaquinas()) {
+            for (final var machine : this.queueNetwork.getMaquinas()) {
                 machine.determinarCaminhos();
             }
         }
     }
 
     public General getMetrics () {
-        final General metric = new General(this.queueNetwork, this.getTime(null), this.jobs);
+        final var metric = new General(this.queueNetwork, this.getTime(null), this.jobs);
 
         this.window.print("Getting Results.");
         this.window.print(" -> ");
@@ -143,7 +137,7 @@ public abstract class Simulation {
         this.window.print("Getting Results.");
         this.window.print(" -> ");
 
-        final General metric = new General(this.cloudQueueNetwork, this.getTime(null), this.jobs);
+        final var metric = new General(this.cloudQueueNetwork, this.getTime(null), this.jobs);
 
         this.window.incProgresso(5);
         this.window.println("OK", Color.green);

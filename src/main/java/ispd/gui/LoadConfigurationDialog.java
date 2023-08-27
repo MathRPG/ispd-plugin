@@ -1351,10 +1351,7 @@ public class LoadConfigurationDialog extends JDialog {
         try {
             final var interpret = new TraceXML(this.jTextFieldCaminhoTrace.getText());
             try {//inicia a conversão do arquivo
-                final double t1 = System.currentTimeMillis();
                 interpret.convert();
-                final double t2 = System.currentTimeMillis();
-                System.out.println((t2 - t1) / 1000);
                 this.file            = new File(interpret.getSaida());
                 this.traceTaskNumber = interpret.getNum_Tasks();
                 this.traceType       = interpret.getTipo();

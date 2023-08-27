@@ -24,6 +24,12 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
 
     private final List<Processing> mestres = new ArrayList<>();
 
+    private final double custoProc;
+
+    private final double custoMemoria;
+
+    private final double custoDisco;
+
     private List<List> caminhoMestre = null;
 
     private int processadoresDisponiveis;
@@ -31,12 +37,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     private double memoriaDisponivel;
 
     private double discoDisponivel;
-
-    private final double custoProc;
-
-    private final double custoMemoria;
-
-    private final double custoDisco;
 
     private double custoTotalDisco = 0.0;
 
@@ -94,27 +94,17 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
 
     @Override
     public void clientEnter (final Simulation simulacao, final GridTask cliente) {
-        System.out.println("----------------------------------------------");
-        System.out.println("Chegada de evento na  máquina " + this.id());
         if (cliente instanceof final CloudTask trf) {
-            final VirtualMachine vm = trf.getVM_enviada();
-            if (vm.getMaquinaHospedeira().equals(this)) {
-                if (this.VMs.contains(vm)) {
-                    System.out.println("Cliente duplicado!");
-                } else {
-                    System.out.println(vm.id()
-                                       + " enviada para evento de atendimento nesta máquina");
-                    System.out.println("----------------------------------------------");
-                    final Event evtFut = new Event(
+            final var vm = trf.getVM_enviada();
+            if (this.isHosting(vm)) {
+                if (!this.VMs.contains(vm)) {
+                    final var evtFut = new Event(
                         simulacao.getTime(this), EventType.SERVICE, this, cliente
                     );
                     simulacao.addFutureEvent(evtFut);
                 }
             } else {
-                System.out.println(vm.id()
-                                   + " encaminhada para seu destino, esta máquina é intermediária");
-                System.out.println("----------------------------------------------");
-                final Event evtFut = new Event(
+                final var evtFut = new Event(
                     simulacao.getTime(this),
                     EventType.ARRIVAL,
                     cliente.getCaminho().remove(0),
@@ -124,73 +114,53 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             }
         } else {
             //procedimento caso cliente seja uma tarefa!
-            final VirtualMachine vm = (VirtualMachine) cliente.getLocalProcessamento();
-            if (vm.getMaquinaHospedeira().equals(this)) {
+            final var vm = (VirtualMachine) cliente.getLocalProcessamento();
+            final Event evtFut;
+            if (this.isHosting(vm)) {
                 //se a tarefa é endereçada pra uma VM qu está alocada nessa máquina
-                System.out.println(this.id() + ": Tarefa " + cliente.getIdentificador() +
-                                   " sendo enviada para execução na vm " + vm.id());
-                System.out.println("----------------------------------------------");
-                final Event evtFut = new Event(
+                evtFut = new Event(
                     simulacao.getTime(this), EventType.ARRIVAL, vm, cliente
                 );
-                simulacao.addFutureEvent(evtFut);
             } else {
-                System.out.println(
-                    this.id()
-                    + ": Tarefa "
-                    + cliente.getIdentificador()
-                    + " sendo encaminhada para próximo CS");
-                System.out.println("----------------------------------------------");
-                final Event evtFut = new Event(
+                evtFut = new Event(
                     simulacao.getTime(this), EventType.EXIT, this, cliente
                 );
-                simulacao.addFutureEvent(evtFut);
             }
+            simulacao.addFutureEvent(evtFut);
         }
     }
 
     @Override
     public void clientProcessing (final Simulation simulacao, final GridTask cliente) {
-        final CloudTask trf = (CloudTask) cliente;
-        final VirtualMachine vm  = trf.getVM_enviada();
-        System.out.println("--------------------------------------------------");
-        System.out.println("atendimento da vm:" + vm.id() + "na maquina:" + this.id());
+        final var trf = (CloudTask) cliente;
+        final var vm  = trf.getVM_enviada();
         this.addVM(vm); //incluir a VM na lista de VMs
         this.metricaAloc.incVMsAlocadas();
         //Setar o caminho da vm para o VMM e o caminho do ACK da mensagem >>>
-        final CloudMaster vmm   = vm.getVmmResponsavel();
-        final int         index = this.mestres.indexOf(vmm);
-        final Request     msg   = new Request(this, RequestType.ALLOCATION_ACK, cliente);
+        final var vmm   = vm.getVmmResponsavel();
+        final var index = this.mestres.indexOf(vmm);
+        final var msg   = new Request(this, RequestType.ALLOCATION_ACK, cliente);
 
         if (index == -1) {
-            final ArrayList<Service> caminhoVMM =
+            final var caminhoVMM =
                 new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
-            final ArrayList<Service> caminhoMsg =
+            final var caminhoMsg =
                 new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
-
-            System.out.println("Imprimindo caminho para o mestre:");
-            for (final Service cs : caminhoVMM) {
-                System.out.println(cs.id());
-            }
 
             vm.setCaminhoVMM(caminhoVMM);
             msg.setCaminho(caminhoMsg);
         } else {
-            final ArrayList<Service> caminhoVMM =
+            final var caminhoVMM =
                 new ArrayList<Service>(this.caminhoMestre.get(index));
-            final ArrayList<Service> caminhoMsg =
+            final var caminhoMsg =
                 new ArrayList<Service>(this.caminhoMestre.get(index));
 
-            System.out.println("Imprimindo caminho para o mestre:");
-            for (final Service cs : caminhoVMM) {
-                System.out.println(cs.id());
-            }
             vm.setCaminhoVMM(caminhoVMM);
             msg.setCaminho(caminhoMsg);
         }
 
         //enviar mensagem de ACK para o VMM
-        final Event NovoEvt =
+        final var NovoEvt =
             new Event(simulacao.getTime(this), EventType.MESSAGE, this, msg);
         simulacao.addFutureEvent(NovoEvt);
 
@@ -202,14 +172,10 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
         this.custoTotalDisco   = this.custoTotalDisco + (vm.getDiscoDisponivel() * this.custoDisco);
         //setar o poder de processamento da VM.
         vm.setPoderProcessamentoPorNucleo(this.getPoderComputacional());
-        System.out.println("----------------------------------------------------");
     }
 
     @Override
     public void clientExit (final Simulation simulacao, final GridTask cliente) {
-        System.out.println("--------------------------------------");
-        System.out.println(this.id() + ": Saída de cliente");
-        System.out.println("--------------------------------------");
     }
 
     @Override
@@ -254,9 +220,9 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
 
     @Override
     public void handleReturn (final Simulation simulacao, final Request request) {
-        final boolean remover = this.filaTarefas.remove(request.getTarefa());
+        final var remover = this.filaTarefas.remove(request.getTarefa());
         if (remover) {
-            final Event evtFut = new Event(
+            final var evtFut = new Event(
                 simulacao.getTime(this),
                 EventType.ARRIVAL,
                 request.getTarefa().getOrigem(),
@@ -279,17 +245,17 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                final GridTask proxCliente = this.filaTarefas.remove(0);
-                final Event evtFut = new Event(
+                final var proxCliente = this.filaTarefas.remove(0);
+                final var evtFut = new Event(
                     simulacao.getTime(this), EventType.SERVICE, this, proxCliente
                 );
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
         }
-        final double inicioAtendimento = request.getTarefa().cancelar(simulacao.getTime(this));
-        final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-        final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
+        final var inicioAtendimento = request.getTarefa().cancelar(simulacao.getTime(this));
+        final var tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+        final var mflopsProcessados = this.getMflopsProcessados(tempoProc);
         //Incrementa o número de Mflops processados por este recurso
         this.getMetrica().incMflopsProcessados(mflopsProcessados);
         //Incrementa o tempo de processamento
@@ -301,16 +267,16 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     @Override
     public void handleUpdate (final Simulation simulacao, final Request request) {
         //enviar resultados
-        final int index = this.mestres.indexOf(request.getOrigem());
+        final var index = this.mestres.indexOf(request.getOrigem());
         final List<Service> caminho =
             new ArrayList<>((List<Service>) this.caminhoMestre.get(index));
-        final Request novaRequest =
+        final var novaRequest =
             new Request(this, request.getTamComunicacao(), RequestType.UPDATE_RESULT);
         //Obtem informações dinâmicas
         novaRequest.setProcessadorEscravo(new ArrayList<>(this.tarefaEmExecucao));
         novaRequest.setFilaEscravo(new ArrayList<>(this.filaTarefas));
         novaRequest.setCaminho(caminho);
-        final Event evtFut = new Event(
+        final var evtFut = new Event(
             simulacao.getTime(this),
             EventType.MESSAGE,
             novaRequest.getCaminho().remove(0),
@@ -328,25 +294,25 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     @Override
     public void handleFailure (final Simulation simulacao, final Request request) {
         final double tempoRec = this.recuperacao.remove(0);
-        for (final GridTask tar : this.tarefaEmExecucao) {
+        for (final var tar : this.tarefaEmExecucao) {
             if (tar.getEstado() == TaskState.PROCESSING) {
-                final double inicioAtendimento = tar.parar(simulacao.getTime(this));
-                final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-                final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
+                final var inicioAtendimento = tar.parar(simulacao.getTime(this));
+                final var tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+                final var mflopsProcessados = this.getMflopsProcessados(tempoProc);
                 //Incrementa o número de Mflops processados por este recurso
                 this.getMetrica().incMflopsProcessados(mflopsProcessados);
                 //Incrementa o tempo de processamento
                 this.getMetrica().incSegundosDeProcessamento(tempoProc);
                 //Incrementa procentagem da tarefa processada
                 // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
-                final int numCP = (int) (mflopsProcessados / 0.0);
+                final var numCP = (int) (mflopsProcessados / 0.0);
                 // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
                 tar.setMflopsProcessado(numCP * 0.0);
                 if (false) {
                     //Reiniciar atendimento da tarefa
                     tar.iniciarEsperaProcessamento(simulacao.getTime(this));
                     //cria evento para iniciar o atendimento imediatamente
-                    final Event novoEvt = new Event(
+                    final var novoEvt = new Event(
                         simulacao.getTime(this) + tempoRec,
                         EventType.SERVICE, this, tar
                     );
@@ -365,9 +331,7 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     public void handleAllocationAck (final Simulation simulacao, final Request request) {
         //quem deve resolver esse método é o VMM de origem
         //portanto as maquinas só encaminham pro próximo centro de serviço.
-        System.out.println("--------------------------------------");
-        System.out.println("Encaminhando ACK de alocação para " + request.getOrigem().id());
-        final Event evt = new Event(
+        final var evt = new Event(
             simulacao.getTime(this), EventType.MESSAGE, request.getCaminho().remove(0), request
         );
         simulacao.addFutureEvent(evt);
@@ -384,8 +348,8 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                final GridTask proxCliente = this.filaTarefas.remove(0);
-                final Event evtFut =
+                final var proxCliente = this.filaTarefas.remove(0);
+                final var evtFut =
                     new Event(
                         simulacao.getTime(this),
                         EventType.SERVICE,
@@ -395,9 +359,9 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
-            final double inicioAtendimento = request.getTarefa().parar(simulacao.getTime(this));
-            final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-            final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
+            final var inicioAtendimento = request.getTarefa().parar(simulacao.getTime(this));
+            final var tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+            final var mflopsProcessados = this.getMflopsProcessados(tempoProc);
             //Incrementa o número de Mflops processados por este recurso
             this.getMetrica().incMflopsProcessados(mflopsProcessados);
             //Incrementa o tempo de processamento
@@ -411,7 +375,7 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
 
     @Override
     public void handleCancel (final Simulation simulacao, final Request request) {
-        boolean remover = false;
+        var remover = false;
         if (request.getTarefa().getEstado() == TaskState.BLOCKED) {
             remover = this.filaTarefas.remove(request.getTarefa());
         } else if (request.getTarefa().getEstado() == TaskState.PROCESSING) {
@@ -422,8 +386,8 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                final GridTask proxCliente = this.filaTarefas.remove(0);
-                final Event evtFut =
+                final var proxCliente = this.filaTarefas.remove(0);
+                final var evtFut =
                     new Event(
                         simulacao.getTime(this),
                         EventType.SERVICE,
@@ -433,22 +397,22 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
-            final double inicioAtendimento = request.getTarefa().parar(simulacao.getTime(this));
-            final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-            final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
+            final var inicioAtendimento = request.getTarefa().parar(simulacao.getTime(this));
+            final var tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+            final var mflopsProcessados = this.getMflopsProcessados(tempoProc);
             //Incrementa o número de Mflops processados por este recurso
             this.getMetrica().incMflopsProcessados(mflopsProcessados);
             //Incrementa o tempo de processamento
             this.getMetrica().incSegundosDeProcessamento(tempoProc);
             //Incrementa procentagem da tarefa processada
             // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
-            final int numCP = (int) (mflopsProcessados / 0.0);
+            final var numCP = (int) (mflopsProcessados / 0.0);
             // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
             request.getTarefa().setMflopsProcessado(numCP * 0.0);
             this.tarefaEmExecucao.remove(request.getTarefa());
         }
         if (remover) {
-            final Event evtFut = new Event(
+            final var evtFut = new Event(
                 simulacao.getTime(this),
                 EventType.ARRIVAL,
                 request.getTarefa().getOrigem(),
@@ -460,19 +424,12 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     }
 
     @Override
-    public void determinarCaminhos ()
-        throws LinkageError {
+    public void determinarCaminhos () throws LinkageError {
         //Instancia objetos
         this.caminhoMestre = new ArrayList<>(this.mestres.size());
-        System.out.println(
-            "maquina "
-            + this.id()
-            + " determinando caminhos para "
-            + this.mestres.size()
-            + " mestres");
 
         //Busca pelos caminhos
-        for (int i = 0; i < this.mestres.size(); i++) {
+        for (var i = 0; i < this.mestres.size(); i++) {
             this.caminhoMestre.add(i, getMenorCaminhoCloud(
                 this,
                 this.mestres.get(i)
@@ -480,7 +437,7 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
         }
 
         //verifica se todos os mestres são alcansaveis
-        for (int i = 0; i < this.mestres.size(); i++) {
+        for (var i = 0; i < this.mestres.size(); i++) {
             if (this.caminhoMestre.get(i).isEmpty()) {
                 throw new LinkageError();
             }
@@ -490,6 +447,10 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     @Override
     public void addConexoesSaida (final Link conexao) {
         this.conexoesSaida.add(conexao);
+    }
+
+    private boolean isHosting (final VirtualMachine vm) {
+        return vm.getMaquinaHospedeira().equals(this);
     }
 
     private void addVM (final VirtualMachine vm) {
@@ -533,7 +494,7 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     }
 
     public void desligar (final Simulation simulacao) {
-        for (final VirtualMachine vm : this.VMs) {
+        for (final var vm : this.VMs) {
             vm.setStatus(VirtualMachineState.DESTROYED);
             vm.setTempoDeExec(simulacao.getTime(this));
             vm
