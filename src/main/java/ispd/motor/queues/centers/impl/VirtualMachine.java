@@ -83,8 +83,8 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
         cliente.finalizarEsperaProcessamento(simulacao.getTime(this));
         cliente.iniciarAtendimentoProcessamento(simulacao.getTime(this));
         this.tarefaEmExecucao.add(cliente);
-        final Double next = simulacao.getTime(this)
-                            + this.tempoProcessar(cliente.getTamProcessamento()
+        final var next = simulacao.getTime(this)
+                         + this.tempoProcessar(cliente.getTamProcessamento()
                                                   - cliente.getMflopsProcessado());
         if (!this.falhas.isEmpty() && next > this.falhas.get(0)) {
             var tFalha = this.falhas.remove(0);
