@@ -121,7 +121,7 @@ public class CloudSequential extends Simulation {
                 window.println("There are injected State failures.");
                 window.println("Creating state fault.");
                 final State state = new State();
-                state.FIState1(window, cloudQueueNetwork);
+                state.FIState1(window);
             } else {
                 window.println("There aren't injected State failures.");
             }
