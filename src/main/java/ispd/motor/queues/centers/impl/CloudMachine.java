@@ -148,9 +148,9 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
 
         if (index == -1) {
             final var caminhoVMM =
-                new ArrayList<Service>(getMenorCaminhoIndiretoCloud(this, vmm));
+                new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
             final var caminhoMsg =
-                new ArrayList<Service>(getMenorCaminhoIndiretoCloud(this, vmm));
+                new ArrayList<>(getMenorCaminhoIndiretoCloud(this, vmm));
 
             for (final var cs : caminhoVMM) {
                 System.out.println(cs.id());
