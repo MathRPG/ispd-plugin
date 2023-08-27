@@ -59,22 +59,12 @@ public class CloudMaster extends Processing implements VmMaster,
 
     @Override
     public void clientEnter (final Simulation simulacao, final GridTask cliente) {
-        System.out.println("------------------------------------------");
-        System.out.println("Evento de chegada no vmm " + this.id());
         if (cliente instanceof final CloudTask trf) {
             final VirtualMachine vm = trf.getVM_enviada();
             if (cliente.getCaminho().isEmpty()) {
                 // trecho dbg
                 if (this.maquinasVirtuais.contains(vm)) {
-                    System.out.println("VM duplicada");
-                    System.out.println("------------------------------------------");
                 } else {
-                    System.out.println("vm "
-                                       + vm.id()
-                                       + " adicionada no "
-                                       + "alocador do VMM "
-                                       + this.id());
-                    System.out.println("------------------------------------------");
                     this.maquinasVirtuais.add(vm); // adiciona na lista de
                     // maquinas virtuais
                     if (this.alocDisponivel) {
@@ -88,10 +78,6 @@ public class CloudMaster extends Processing implements VmMaster,
                     }
                 }
             } else {// se não for ele a origem ele precisa encaminhá-la
-                System.out.println(this.id()
-                                   + ": sou VMM intermediario, "
-                                   + "encamininhando "
-                                   + vm.id());
                 final Event evtFut = new Event(
                     simulacao.getTime(this),
                     EventType.ARRIVAL,
@@ -101,17 +87,10 @@ public class CloudMaster extends Processing implements VmMaster,
                 simulacao.addFutureEvent(evtFut);
             }
         } else { // cliente é tarefa comum
-            System.out.println(
-                "cliente é a tarefa "
-                + cliente.getIdentificador()
-                + " com status "
-                + cliente.getEstado());
-
             if (cliente.getEstado() != TaskState.CANCELLED) {
                 // Tarefas concluida possuem tratamento diferencial
                 if (cliente.getEstado() == TaskState.DONE) {
-                    System.out.println("cliente é o retorno de tarefa "
-                                       + cliente.getIdentificador());
+
                     // se não for origem da tarefa ela deve ser encaminhada
                     if (!cliente.getOrigem().equals(this)) {
                         // encaminhar tarefa!
@@ -126,9 +105,7 @@ public class CloudMaster extends Processing implements VmMaster,
                         simulacao.addFutureEvent(evtFut);
                     }
                     // caso seja este o centro de serviço de origem
-                    System.out.println("Tarefa "
-                                       + cliente.getIdentificador()
-                                       + " adicionada na lista de concluídas");
+
                     this.escalonador.addTarefaConcluida(cliente);
 
                     if (this.tipoEscalonamento.contains(Condition.WHEN_RECEIVES_RESULT)) {
@@ -150,10 +127,7 @@ public class CloudMaster extends Processing implements VmMaster,
                         simulacao.addFutureEvent(evtFut);
                     } else {
                         if (this.escDisponivel) {
-                            System.out.println(
-                                "Tarefa "
-                                + cliente.getIdentificador()
-                                + " chegando para ser escalonada");
+
                             this.escDisponivel = false;
                             // escalonador adiciona nova tarefa
                             this.escalonador.adicionarTarefa(cliente);
