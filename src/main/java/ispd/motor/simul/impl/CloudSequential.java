@@ -1,7 +1,6 @@
 package ispd.motor.simul.impl;
 
 import ispd.gui.*;
-import ispd.motor.Event;
 import ispd.motor.*;
 import ispd.motor.faults.*;
 import ispd.motor.metrics.*;
@@ -52,9 +51,9 @@ public class CloudSequential extends Simulation {
         window.print("Creating routing.");
         window.print(" -> ");
 
-        for (final Processing mst : cloudQueueNetwork.getMestres()) {
-            final Simulable temp = (Simulable) mst;
-            final Simulable aux  = (Simulable) mst;
+        for (final var mst : cloudQueueNetwork.getMestres()) {
+            final var temp = (Simulable) mst;
+            final var aux  = (Simulable) mst;
             //Cede acesso ao mestre a fila de eventos futuros
             aux.setSimulation(this);
             temp.setSimulation(this);
@@ -202,7 +201,7 @@ public class CloudSequential extends Simulation {
             .isEmpty()) {
             window.println("The model has no phisical machines.", Color.orange);
         } else {
-            for (final CloudMachine maq : cloudQueueNetwork.getMaquinasCloud()) {
+            for (final var maq : cloudQueueNetwork.getMaquinasCloud()) {
                 // Encontra menor caminho entre o escravo e seu mestre
                 maq.determinarCaminhos(); // escravo encontra caminhos para seu mestre
             }
@@ -245,7 +244,7 @@ public class CloudSequential extends Simulation {
         // remover evento de saida do cliente do servidor
         final var interator = this.eventos.iterator();
         while (interator.hasNext()) {
-            final ispd.motor.Event ev = interator.next();
+            final var ev = interator.next();
             if (ev.getType() == eventType
                 && ev.getServidor().equals(eventServer)
                 && ev.getClient().equals(eventClient)) {
@@ -262,7 +261,7 @@ public class CloudSequential extends Simulation {
     }
 
     private void addEventos (final List<GridTask> tarefas) {
-        for (final GridTask tarefa : tarefas) {
+        for (final var tarefa : tarefas) {
             final var evt = new ispd.motor.Event(
                 tarefa.getTimeCriacao(),
                 EventType.ARRIVAL,
@@ -274,8 +273,8 @@ public class CloudSequential extends Simulation {
     }
 
     private boolean atualizarEscalonadores () {
-        for (final Processing mst : this.getCloudQueueNetwork().getMestres()) {
-            final CloudMaster mestre = (CloudMaster) mst;
+        for (final var mst : this.getCloudQueueNetwork().getMestres()) {
+            final var mestre = (CloudMaster) mst;
             if (mestre.getEscalonador().getTempoAtualizar() != null) {
                 return true;
             }
@@ -295,12 +294,12 @@ public class CloudSequential extends Simulation {
             //executa estes eventos de acordo com sua ordem de chegada
             //de forma a evitar a execução de um evento antes de outro
             //que seria criado anteriormente
-            for (final Object[] ob : updateArray) {
+            for (final var ob : updateArray) {
                 final var event = this.eventos.peek();
                 Objects.requireNonNull(event);
                 if ((Double) ob[2] < event.getCreationTime()) {
-                    final GridMaster mestre = (GridMaster) ob[0];
-                    for (final Processing maq : mestre.getEscalonador().getEscravos()) {
+                    final var mestre = (GridMaster) ob[0];
+                    for (final var maq : mestre.getEscalonador().getEscravos()) {
                         mestre.atualizar(maq, (Double) ob[2]);
                     }
                     ob[2] = (Double) ob[2] + (Double) ob[1];
@@ -321,7 +320,7 @@ public class CloudSequential extends Simulation {
     }
 
     private void desligarMaquinas (final Simulation simulation, final CloudQueueNetwork qn) {
-        for (final CloudMachine aux : qn.getMaquinasCloud()) {
+        for (final var aux : qn.getMaquinasCloud()) {
             aux.desligar(simulation);
         }
     }
@@ -339,7 +338,7 @@ public class CloudSequential extends Simulation {
     }
 
     private void processTopEvent () {
-        final Event eventoAtual = this.eventos.poll();
+        final var eventoAtual = this.eventos.poll();
         Objects.requireNonNull(eventoAtual);
         this.time = eventoAtual.getCreationTime();
         switch (eventoAtual.getType()) {
