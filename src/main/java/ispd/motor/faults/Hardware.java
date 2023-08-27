@@ -9,15 +9,6 @@ import javax.swing.*;
 
 public class Hardware {
 
-    private static void printNewQueueNetwork (
-        final List<VirtualMachine> vms,
-        final List<CloudMachine> machines
-    ) {
-        final int qn = machines.size() - 1;
-        for (int i = 0; i <= qn; i++) {
-        }
-    }
-
     private static void selectFaults (final ProgressTracker janela) {
         new PickSimulationFaultsDialog();
         JOptionPane.showMessageDialog(null, "Hardware Failure selected.");
@@ -65,7 +56,5 @@ public class Hardware {
                           id,
                           CloudMachine.DESLIGADO
         );
-
-        printNewQueueNetwork(vms, machines);
     }
 }
