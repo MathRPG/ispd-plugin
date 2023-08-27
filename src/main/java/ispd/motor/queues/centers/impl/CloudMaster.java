@@ -148,9 +148,7 @@ public class CloudMaster extends Processing implements VmMaster,
 
     @Override
     public void clientExit (final Simulation simulacao, final GridTask cliente) {
-        System.out.println("Evento de Saída: VMM " + this.id());
-        if (cliente instanceof final CloudTask trf) {
-            System.out.println("cliente é a vm " + trf.getVM_enviada().id());
+        if (cliente instanceof CloudTask) {
             final var evtFut = new Event(
                 simulacao.getTime(this),
                 EventType.ARRIVAL,
@@ -167,7 +165,6 @@ public class CloudMaster extends Processing implements VmMaster,
                 }
             }
         } else {
-            System.out.println("cliente é uma tarefa " + cliente.getIdentificador());
             final var evtFut = new Event(
                 simulacao.getTime(this),
                 EventType.ARRIVAL,
