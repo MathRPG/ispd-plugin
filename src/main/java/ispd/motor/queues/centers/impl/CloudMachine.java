@@ -96,7 +96,7 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     public void clientEnter (final Simulation simulacao, final GridTask cliente) {
         if (cliente instanceof final CloudTask trf) {
             final var vm = trf.getVM_enviada();
-            if (vm.getMaquinaHospedeira().equals(this)) {
+            if (this.hostsVm(vm)) {
                 if (this.VMs.contains(vm)) {
                 } else {
                     final var evtFut = new Event(
@@ -117,7 +117,7 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             //procedimento caso cliente seja uma tarefa!
             final var vm = (VirtualMachine) cliente.getLocalProcessamento();
             final Event evtFut;
-            if (vm.getMaquinaHospedeira().equals(this)) {
+            if (this.hostsVm(vm)) {
                 //se a tarefa é endereçada pra uma VM qu está alocada nessa máquina
                 evtFut = new Event(
                     simulacao.getTime(this), EventType.ARRIVAL, vm, cliente
@@ -129,6 +129,10 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             }
             simulacao.addFutureEvent(evtFut);
         }
+    }
+
+    private boolean hostsVm (final VirtualMachine vm) {
+        return vm.getMaquinaHospedeira().equals(this);
     }
 
     @Override
