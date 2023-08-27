@@ -24,6 +24,12 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
 
     private final List<Processing> mestres = new ArrayList<>();
 
+    private final double custoProc;
+
+    private final double custoMemoria;
+
+    private final double custoDisco;
+
     private List<List> caminhoMestre = null;
 
     private int processadoresDisponiveis;
@@ -31,12 +37,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     private double memoriaDisponivel;
 
     private double discoDisponivel;
-
-    private final double custoProc;
-
-    private final double custoMemoria;
-
-    private final double custoDisco;
 
     private double custoTotalDisco = 0.0;
 
@@ -128,10 +128,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             }
             simulacao.addFutureEvent(evtFut);
         }
-    }
-
-    private boolean isHosting (final VirtualMachine vm) {
-        return vm.getMaquinaHospedeira().equals(this);
     }
 
     @Override
@@ -435,16 +431,9 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     }
 
     @Override
-    public void determinarCaminhos ()
-        throws LinkageError {
+    public void determinarCaminhos () throws LinkageError {
         //Instancia objetos
         this.caminhoMestre = new ArrayList<>(this.mestres.size());
-        System.out.println(
-            "maquina "
-            + this.id()
-            + " determinando caminhos para "
-            + this.mestres.size()
-            + " mestres");
 
         //Busca pelos caminhos
         for (var i = 0; i < this.mestres.size(); i++) {
@@ -465,6 +454,10 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     @Override
     public void addConexoesSaida (final Link conexao) {
         this.conexoesSaida.add(conexao);
+    }
+
+    private boolean isHosting (final VirtualMachine vm) {
+        return vm.getMaquinaHospedeira().equals(this);
     }
 
     private void addVM (final VirtualMachine vm) {
