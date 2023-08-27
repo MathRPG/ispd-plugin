@@ -81,7 +81,6 @@ public class Parallel extends Simulation {
 
     @Override
     public void simulate () {
-        System.out.println("Iniciando: " + this.numThreads + " threads");
         this.threadPool = Executors.newFixedThreadPool(this.numThreads);
         this.initSchedulers();
         //Adiciona tarefas iniciais
@@ -91,7 +90,6 @@ public class Parallel extends Simulation {
         this.threadPool.shutdown();
         while (!this.threadPool.isTerminated()) {
         }
-        System.out.println("Iniciando: " + this.numThreads + " threads");
         this.threadPool = Executors.newFixedThreadPool(this.numThreads);
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
@@ -373,11 +371,6 @@ public class Parallel extends Simulation {
         @Override
         public void run () {
             synchronized (Parallel.this.threadFilaEventos.get(this.mestre)) {
-                System.out.println(
-                    "Nome: "
-                    + Thread.currentThread().getName()
-                    + " Vou criar tarefas do "
-                    + this.mestre.id());
                 for (final GridTask tarefa : Parallel.this.getJobs()) {
                     if (tarefa.getOrigem() == this.mestre) {
                         //criar evento...
@@ -387,10 +380,6 @@ public class Parallel extends Simulation {
                         Parallel.this.threadFilaEventos.get(this.mestre).add(evt);
                     }
                 }
-                System.out.println("Nome: " + Thread.currentThread().getName() + " foram criadas " +
-                                   Parallel.this.threadFilaEventos
-                                       .get(this.mestre)
-                                       .size());
             }
         }
     }
