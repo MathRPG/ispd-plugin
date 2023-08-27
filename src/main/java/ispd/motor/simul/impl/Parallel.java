@@ -113,29 +113,6 @@ public class Parallel extends Simulation {
     }
 
     @Override
-    public void createRouting () {
-        for (final var mst : this.getQueueNetwork().getMestres()) {
-            final var temp = (Simulable) mst;
-            //Cede acesso ao mestre a fila de eventos futuros
-            temp.setSimulation(this);
-            //Encontra menor caminho entre o mestre e seus escravos
-            this.threadPool.execute(new determinarCaminho(mst));
-        }
-        if (this.getQueueNetwork().getMaquinas() == null || this
-            .getQueueNetwork()
-            .getMaquinas()
-            .isEmpty()) {
-            this.getWindow().println("The model has no processing slaves.", Color.orange);
-        } else {
-            for (final var maq : this.getQueueNetwork().getMaquinas()) {
-                //Encontra menor caminho entre o escravo e seu mestre
-                this.threadPool.execute(new determinarCaminho(maq));
-            }
-        }
-        this.terminateThreadPool();
-    }
-
-    @Override
     public void addFutureEvent (final Event ev) {
         this.threadFilaEventos.get(ev.getServidor()).offer(ev);
     }
@@ -171,6 +148,29 @@ public class Parallel extends Simulation {
             }
             return val;
         }
+    }
+
+    @Override
+    public void createRouting () {
+        for (final var mst : this.getQueueNetwork().getMestres()) {
+            final var temp = (Simulable) mst;
+            //Cede acesso ao mestre a fila de eventos futuros
+            temp.setSimulation(this);
+            //Encontra menor caminho entre o mestre e seus escravos
+            this.threadPool.execute(new determinarCaminho(mst));
+        }
+        if (this.getQueueNetwork().getMaquinas() == null || this
+            .getQueueNetwork()
+            .getMaquinas()
+            .isEmpty()) {
+            this.getWindow().println("The model has no processing slaves.", Color.orange);
+        } else {
+            for (final var maq : this.getQueueNetwork().getMaquinas()) {
+                //Encontra menor caminho entre o escravo e seu mestre
+                this.threadPool.execute(new determinarCaminho(maq));
+            }
+        }
+        this.terminateThreadPool();
     }
 
     private void terminateThreadPool () {
@@ -282,12 +282,13 @@ public class Parallel extends Simulation {
 
         private ThreadTrabalhadorDinamico (final Service rec, final Simulation sim) {
             super(rec, sim);
-            if (rec instanceof final GridMaster mestre) {
-                if (mestre.getEscalonador().getTempoAtualizar() != null) {
+            if (rec instanceof final GridMaster master) {
+                final var updateTime = master.getEscalonador().getTempoAtualizar();
+                if (updateTime != null) {
                     this.item    = new Object[3];
-                    this.item[0] = mestre;
-                    this.item[1] = mestre.getEscalonador().getTempoAtualizar();
-                    this.item[2] = mestre.getEscalonador().getTempoAtualizar();
+                    this.item[0] = master;
+                    this.item[1] = updateTime;
+                    this.item[2] = updateTime;
                 }
             }
         }
