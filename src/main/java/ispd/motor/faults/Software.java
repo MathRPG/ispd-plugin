@@ -4,9 +4,10 @@ import ispd.gui.*;
 import ispd.motor.simul.*;
 import javax.swing.*;
 
-public class Software {
+public enum Software {
+    ;
 
-    public void showMessage (final ProgressTracker janela) {
+    public static void showMessage (final ProgressTracker janela) {
         new PickSimulationFaultsDialog();
         JOptionPane.showMessageDialog(null, "Falha de Omissão de software selecionada.");
         janela.println("Software failure created.");
