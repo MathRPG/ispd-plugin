@@ -306,16 +306,6 @@ class TerminalApplicationCharacterizationTest {
         verify(this.outStream);
     }
 
-    @Test
-    void givenModelWithImproperMachineConfig_thenThrowsNumberFormatException () {
-        assertThrows(
-            NumberFormatException.class,
-            () -> this.runApplicationOnModelWith("schedulerValidLinkSlaveIcons")
-        );
-
-        verify(this.outStream);
-    }
-
     @ParameterizedTest
     @ValueSource(
         strings = {

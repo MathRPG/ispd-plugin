@@ -4,7 +4,6 @@ import ispd.motor.filas.*;
 import ispd.motor.filas.servidores.*;
 import ispd.motor.filas.servidores.implementacao.*;
 import java.io.*;
-import java.math.*;
 import java.util.*;
 import java.util.stream.*;
 
@@ -15,7 +14,7 @@ public class Metricas implements Serializable {
      */
     private final MetricasGlobais metricasGlobais;
 
-    private final List<String> usuarios;
+    private final Iterable<String> usuarios;
 
     private int numeroDeSimulacoes;
 
@@ -48,22 +47,22 @@ public class Metricas implements Serializable {
     /**
      * Satisfação geral do usuário considerando beta calculado com tempo de simulação
      */
-    private Map<String, BigDecimal> satisfacaoGeralSim = null;
+    private Map<String, Double> satisfacaoGeralSim = null;
 
     /**
      * Satisfação geral do usuário considerando beta calculado com tempo de uso
      */
-    private Map<String, BigDecimal> satisfacaoGeralUso = null;
+    private Map<String, Double> satisfacaoGeralUso = null;
 
     /**
      * Consumo de energia em Joules, total do usuário
      */
-    private Map<String, BigDecimal> consumoEnergiaTotalUsuario = null;
+    private Map<String, Double> consumoEnergiaTotalUsuario = null;
 
     /**
      * Satisfação sobre desempenho, idêntica à utilizada no HOSEP
      */
-    private Map<String, BigDecimal> satisfacaoDesempenho = null;
+    private Map<String, Double> satisfacaoDesempenho = null;
 
     /**
      * Número de tarefas que sofreram preempção
@@ -73,104 +72,104 @@ public class Metricas implements Serializable {
     /**
      * Consumo da porção de cada usuário
      */
-    private Map<String, BigDecimal> consumoLocal = null;
+    private Map<String, Double> consumoLocal = null;
 
     /**
      * Consumo total do sistema
      */
-    private BigDecimal consumoTotalSistema = null;
+    private double consumoTotalSistema = 0.0;
 
     /**
      * Consumo máximo da porção de cada usuário, como se a porção ficasse ativa por completo durante
      * toda a simulação
      */
-    private Map<String, BigDecimal> consumoMaxLocal = null;
+    private Map<String, Double> consumoMaxLocal = null;
 
     /**
      * Limite de consumo em Joules, considerando o tempo total de simulação
      */
-    private Map<String, BigDecimal> limitesConsumoTempoUso = null;
+    private Map<String, Double> limitesConsumoTempoUso = null;
 
     /**
      * Energia consumida na porção com tarefas de usuários não proprietários
      */
-    private Map<String, BigDecimal> consumoLocalEstrangeiro = null;
+    private Map<String, Double> consumoLocalEstrangeiro = null;
 
     /**
      * Energia consumida na porção com tarefas do usuário proprietário
      */
-    private Map<String, BigDecimal> consumoLocalProprio = null;
+    private Map<String, Double> consumoLocalProprio = null;
 
     /**
      * Energia desperdiçada para cada usuário
      */
-    private Map<String, BigDecimal> energiaDespercicada = null;
+    private Map<String, Double> energiaDespercicada = null;
 
     /**
      * Limite de consumo em Joules, considerando em o usuário teve tarefas no sistema
      */
-    private Map<String, BigDecimal> limitesConsumoTempoSim = null;
+    private Map<String, Double> limitesConsumoTempoSim = null;
 
     /**
      * Energia desperdiçada para cada usuário
      */
-    private Map<String, BigDecimal> alphaUsuarios = null;
+    private Map<String, Double> alphaUsuarios = null;
 
     /**
      * Energia desperdiçada para cada usuário
      */
-    private Map<String, BigDecimal> betaTempoSim = null;
+    private Map<String, Double> betaTempoSim = null;
 
     /**
      * Energia desperdiçada para cada usuário
      */
-    private Map<String, BigDecimal> betaTempoUso = null;
+    private Map<String, Double> betaTempoUso = null;
 
-    private Map<String, BigDecimal> tempoInicialExec = null;
+    private Map<String, Double> tempoInicialExec = null;
 
-    private Map<String, BigDecimal> tempoFinalExec = null;
+    private Map<String, Double> tempoFinalExec = null;
 
-    private Map<String, BigDecimal> turnaroundTime = null;
+    private Map<String, Double> turnaroundTime = null;
 
-    private Double tempoSIM = null;
+    private double tempoSIM = 0.0;
 
-    private List<Map<String, BigDecimal>> historicoConsumoTotalUsuario = null;
+    private List<Map<String, Double>> historicoConsumoTotalUsuario = null;
 
-    private List<Map<String, BigDecimal>> historicoSatisfacaoGeralTempoSim = null;
+    private List<Map<String, Double>> historicoSatisfacaoGeralTempoSim = null;
 
-    private List<Map<String, BigDecimal>> historicoSatisfacaoGeralTempoUso = null;
+    private List<Map<String, Double>> historicoSatisfacaoGeralTempoUso = null;
 
-    private List<Map<String, BigDecimal>> historicoConsumoLocal = null;
+    private List<Map<String, Double>> historicoConsumoLocal = null;
 
-    private List<Map<String, BigDecimal>> historicoSatisfacaoDesempenho = null;
+    private List<Map<String, Double>> historicoSatisfacaoDesempenho = null;
 
     private List<Map<String, Integer>> historicoTarefasPreemp = null;
 
-    private List<Map<String, BigDecimal>> historicoConsumoMaxLocal = null;
+    private List<Map<String, Double>> historicoConsumoMaxLocal = null;
 
-    private List<BigDecimal> historicoConsumoTotalSistema = null;
+    private Collection<Double> historicoConsumoTotalSistema = null;
 
-    private List<Map<String, BigDecimal>> historicoLimitesConsumoTempoSim = null;
+    private List<Map<String, Double>> historicoLimitesConsumoTempoSim = null;
 
-    private List<Map<String, BigDecimal>> historicoLimitesConsumoTempoUso = null;
+    private List<Map<String, Double>> historicoLimitesConsumoTempoUso = null;
 
-    private List<Map<String, BigDecimal>> historicoEnergiaDeperdicada = null;
+    private List<Map<String, Double>> historicoEnergiaDeperdicada = null;
 
-    private List<Map<String, BigDecimal>> historicoAlpha = null;
+    private List<Map<String, Double>> historicoAlpha = null;
 
-    private List<Map<String, BigDecimal>> historicoBetaTempoSim = null;
+    private List<Map<String, Double>> historicoBetaTempoSim = null;
 
-    private List<Map<String, BigDecimal>> historicoBetaTempoUso = null;
+    private List<Map<String, Double>> historicoBetaTempoUso = null;
 
-    private List<Map<String, BigDecimal>> historicoConsumoLocalProprio = null;
+    private List<Map<String, Double>> historicoConsumoLocalProprio = null;
 
-    private List<Map<String, BigDecimal>> historicoConsumoLocalEstrangeiro = null;
+    private List<Map<String, Double>> historicoConsumoLocalEstrangeiro = null;
 
-    private List<Map<String, BigDecimal>> historicoTempoInicial = null;
+    private Collection<Map<String, Double>> historicoTempoInicial = null;
 
-    private List<Map<String, BigDecimal>> historicoTempoFinal = null;
+    private Collection<Map<String, Double>> historicoTempoFinal = null;
 
-    private List<Map<String, BigDecimal>> historicoTurnaroundTime = null;
+    private List<Map<String, Double>> historicoTurnaroundTime = null;
 
     private List<Double> historicoTempoSim = null;
 
@@ -197,9 +196,9 @@ public class Metricas implements Serializable {
         this.alphaUsuarios              = new HashMap<>();
         this.betaTempoSim               = new HashMap<>();
         this.betaTempoUso               = new HashMap<>();
-        this.tempoInicialExec           = new HashMap<>();
-        this.tempoFinalExec             = new HashMap<>();
-        this.turnaroundTime             = new HashMap<>();
+        this.tempoInicialExec = new HashMap<>();
+        this.tempoFinalExec   = new HashMap<>();
+        this.turnaroundTime   = new HashMap<>();
 
         //Historicos
         this.historicoSatisfacaoGeralTempoSim = new ArrayList<>();
@@ -218,9 +217,9 @@ public class Metricas implements Serializable {
         this.historicoAlpha                   = new ArrayList<>();
         this.historicoBetaTempoSim            = new ArrayList<>();
         this.historicoBetaTempoUso            = new ArrayList<>();
-        this.historicoTempoInicial            = new ArrayList<>();
-        this.historicoTempoFinal              = new ArrayList<>();
-        this.historicoTurnaroundTime          = new ArrayList<>();
+        this.historicoTempoInicial   = new ArrayList<>();
+        this.historicoTempoFinal     = new ArrayList<>();
+        this.historicoTurnaroundTime = new ArrayList<>();
         this.historicoTempoSim                = new ArrayList<>();
     }
 
@@ -247,9 +246,9 @@ public class Metricas implements Serializable {
         this.alphaUsuarios              = new HashMap<>();
         this.betaTempoSim               = new HashMap<>();
         this.betaTempoUso               = new HashMap<>();
-        this.tempoInicialExec           = new HashMap<>();
-        this.tempoFinalExec             = new HashMap<>();
-        this.turnaroundTime             = new HashMap<>();
+        this.tempoInicialExec = new HashMap<>();
+        this.tempoFinalExec   = new HashMap<>();
+        this.turnaroundTime   = new HashMap<>();
         this.tempoSIM                   = 0.0;
 
         //Historicos
@@ -269,45 +268,44 @@ public class Metricas implements Serializable {
         this.historicoAlpha                   = new ArrayList<>();
         this.historicoBetaTempoSim            = new ArrayList<>();
         this.historicoBetaTempoUso            = new ArrayList<>();
-        this.historicoTempoInicial            = new ArrayList<>();
-        this.historicoTempoFinal              = new ArrayList<>();
-        this.historicoTurnaroundTime          = new ArrayList<>();
+        this.historicoTempoInicial   = new ArrayList<>();
+        this.historicoTempoFinal     = new ArrayList<>();
+        this.historicoTurnaroundTime = new ArrayList<>();
         this.historicoTempoSim                = new ArrayList<>();
-        this.consumoTotalSistema              = BigDecimal.ZERO;
+        this.consumoTotalSistema              = 0.0;
 
         for (final var user : this.usuarios) {
-            this.satisfacaoDesempenho.put(user, BigDecimal.ZERO);
-            this.satisfacaoGeralSim.put(user, BigDecimal.ZERO);
-            this.satisfacaoGeralUso.put(user, BigDecimal.ZERO);
-            this.consumoEnergiaTotalUsuario.put(user, BigDecimal.ZERO);
-            this.consumoLocal.put(user, BigDecimal.ZERO);
-            this.consumoMaxLocal.put(user, BigDecimal.ZERO);
-            this.limitesConsumoTempoSim.put(user, BigDecimal.ZERO);
-            this.limitesConsumoTempoUso.put(user, BigDecimal.ZERO);
-            this.energiaDespercicada.put(user, BigDecimal.ZERO);
+            this.satisfacaoDesempenho.put(user, 0.0);
+            this.satisfacaoGeralSim.put(user, 0.0);
+            this.satisfacaoGeralUso.put(user, 0.0);
+            this.consumoEnergiaTotalUsuario.put(user, 0.0);
+            this.consumoLocal.put(user, 0.0);
+            this.consumoMaxLocal.put(user, 0.0);
+            this.limitesConsumoTempoSim.put(user, 0.0);
+            this.limitesConsumoTempoUso.put(user, 0.0);
+            this.energiaDespercicada.put(user, 0.0);
             this.tarefasPreemp.put(user, 0);
-            this.consumoLocalEstrangeiro.put(user, BigDecimal.ZERO);
-            this.consumoLocalProprio.put(user, BigDecimal.ZERO);
-            this.alphaUsuarios.put(user, BigDecimal.ZERO);
-            this.betaTempoSim.put(user, BigDecimal.ZERO);
-            this.betaTempoUso.put(user, BigDecimal.ZERO);
-            this.tempoInicialExec.put(user, BigDecimal.ZERO);
-            this.tempoFinalExec.put(user, BigDecimal.ZERO);
-            this.turnaroundTime.put(user, BigDecimal.ZERO);
+            this.consumoLocalEstrangeiro.put(user, 0.0);
+            this.consumoLocalProprio.put(user, 0.0);
+            this.alphaUsuarios.put(user, 0.0);
+            this.betaTempoSim.put(user, 0.0);
+            this.betaTempoUso.put(user, 0.0);
+            this.tempoInicialExec.put(user, 0.0);
+            this.tempoFinalExec.put(user, 0.0);
+            this.turnaroundTime.put(user, 0.0);
         }
 
         for (final CS_Processamento maq : redeDeFilas.getMaquinas()) {
             final var propMaq = maq.getProprietario();
             this.consumoMaxLocal.put(
                 propMaq,
-                this.consumoMaxLocal.get(propMaq).add(BigDecimal.valueOf(maq.getConsumoEnergia()))
+                this.consumoMaxLocal.get(propMaq) + maq.getConsumoEnergia()
             );
 
             this.limitesConsumoTempoSim.put(
                 propMaq,
-                this.limitesConsumoTempoSim
-                    .get(propMaq)
-                    .add(BigDecimal.valueOf(maq.getConsumoEnergia()))
+                this.limitesConsumoTempoSim.get(propMaq)
+                + maq.getConsumoEnergia()
             );
         }
 
@@ -322,7 +320,7 @@ public class Metricas implements Serializable {
             final var porcentLimite = limits.get(user) / 100;
             this.limitesConsumoTempoSim.put(
                 user,
-                this.limitesConsumoTempoSim.get(user).multiply(BigDecimal.valueOf(porcentLimite))
+                this.limitesConsumoTempoSim.get(user) * porcentLimite
             );
             this.limitesConsumoTempoUso.put(user, this.limitesConsumoTempoSim.get(user));
         }
@@ -355,9 +353,7 @@ public class Metricas implements Serializable {
     }
 
     public Metricas (
-        final RedeDeFilasCloud redeDeFilas,
-        final double time,
-        final List<Tarefa> tarefas
+        final RedeDeFilasCloud redeDeFilas, final double time, final List<Tarefa> tarefas
     ) {
         this.numeroDeSimulacoes = 1;
         this.metricasGlobais    = new MetricasGlobais(redeDeFilas, time, tarefas);
@@ -376,8 +372,7 @@ public class Metricas implements Serializable {
     }
 
     private void getMetricaFilaTarefa (
-        final List<? extends Tarefa> tarefas,
-        final RedeDeFilas rede
+        final Collection<? extends Tarefa> tarefas, final RedeDeFilas rede
     ) {
         this.tempoMedioFilaComunicacao   = 0;
         this.tempoMedioComunicacao       = 0;
@@ -387,7 +382,9 @@ public class Metricas implements Serializable {
         this.MflopsDesperdicio           = 0;
         this.numTarefas                  = 0;
 
-        final double mediaPoder = rede.getMaquinas().stream()
+        final double mediaPoder = rede
+            .getMaquinas()
+            .stream()
             .collect(Collectors.averagingDouble(CS_Processamento::getPoderComputacional));
 
         for (final var user : this.usuarios) {
@@ -395,7 +392,7 @@ public class Metricas implements Serializable {
             this.tarefasConcluidas.put(user, 0);
         }
 
-        BigDecimal satis;
+        Double satis;
         for (final Tarefa tar : tarefas) {
             if (tar.getEstado() == TaskState.DONE) {
 
@@ -409,32 +406,28 @@ public class Metricas implements Serializable {
                 this.tarefasConcluidas.put(propTar, this.tarefasConcluidas.get(propTar) + 1);
 
                 // Instante de tempo de submissão da tarefa
-                final var tempoInicio = BigDecimal.valueOf(tar.getTimeCriacao());
+                final Double tempoInicio = tar.getTimeCriacao();
 
                 // Instante de tempo em que a terafa é concluída
-                final var tempoFinal =
-                    BigDecimal.valueOf(tar.getTempoFinal().get(tar.getTempoFinal().size() - 1));
+                final var tempoFinal = tar.lastFinalizationTime();
 
                 // Intervalo entre término e submissão
-                final var intervaloReal = tempoFinal.subtract(tempoInicio);
+                final var intervaloReal = tempoFinal - tempoInicio;
 
                 // Tempo de execução esperado pelo usuário, em que não há espera nem preempção, com a tarefa
                 //  executando em uma máquina média do sistema
-                final var intervaloIdeal =
-                    BigDecimal.valueOf(tar.getTamProcessamento() / mediaPoder);
+                final var intervaloIdeal = tar.getTamProcessamento() / mediaPoder;
 
                 // Satisfação em relação a desempenho do usuário i, sobre a tarefa j submetida por i
                 // Dividir os intervalos e multiplicar o resultado por 100
-                final var suij =
-                    (intervaloIdeal.divide(intervaloReal, 2, RoundingMode.DOWN)).multiply(
-                        BigDecimal.valueOf(100.0));
+                final Double suij = (intervaloIdeal / intervaloReal) * 100.0;
 
                 if (this.satisfacaoGeralSim.putIfAbsent(propTar, suij) != null) {
                     //Faz a primeira incersão testando se o hashmap está vazio e, se não estiver, entra no
                     // corpo no if
 
                     satis = this.satisfacaoGeralSim.get(propTar);
-                    this.satisfacaoGeralSim.put(propTar, satis.add(suij));
+                    this.satisfacaoGeralSim.put(propTar, satis + suij);
                     this.satisfacaoGeralUso.put(propTar, this.satisfacaoGeralSim.get(propTar));
                 }
 
@@ -443,44 +436,38 @@ public class Metricas implements Serializable {
                     // corpo no if
 
                     satis = this.satisfacaoDesempenho.get(propTar);
-                    this.satisfacaoDesempenho.put(propTar, satis.add(suij));
+                    this.satisfacaoDesempenho.put(propTar, satis + suij);
                 }
 
                 int i;
                 for (i = 0; i < tar.getHistoricoProcessamento().size(); i++) {
 
                     //Consumo da máquina corrente no histórico multiplicado pelo tempo em que permaneceu na máquina
-                    final var consumo = BigDecimal.valueOf(tar
-                                                               .getHistoricoProcessamento()
-                                                               .get(i)
-                                                               .getConsumoEnergia()
-                                                           * (
-                                                               tar.getTempoFinal().get(i) - tar
-                                                                   .getTempoInicial()
-                                                                   .get(i)
-                                                           )
-                    );
+                    final Double consumo =
+                        tar.getHistoricoProcessamento().get(i).getConsumoEnergia() * (
+                            tar.getTempoFinal().get(i) - tar.getTempoInicial().get(i)
+                        );
 
                     final var propMaq = tar.getHistoricoProcessamento().get(i).getProprietario();
 
-                    this.consumoTotalSistema = this.consumoTotalSistema.add(consumo);
+                    this.consumoTotalSistema += consumo;
 
-                    final var temp =
-                        this.consumoEnergiaTotalUsuario.get(propTar).add(consumo);
+                    final Double temp = this.consumoEnergiaTotalUsuario.get(propTar) + consumo;
                     this.consumoEnergiaTotalUsuario.put(propTar, temp);
 
-                    this.consumoLocal.put(propMaq, this.consumoLocal.get(propMaq).add(consumo));
+                    this.consumoLocal.put(propMaq, this.consumoLocal.get(propMaq) + consumo);
 
                     if (propTar.equals(propMaq)) {
                         this.consumoLocalProprio.put(
                             propMaq,
-                            this.consumoLocalProprio
-                                .get(propMaq)
-                                .add(consumo)
+                            this.consumoLocalProprio.get(propMaq) + consumo
                         );
                     } else {
                         this.consumoLocalEstrangeiro.put(
-                            propMaq, this.consumoLocalEstrangeiro.get(propMaq).add(consumo));
+                            propMaq,
+                            this.consumoLocalEstrangeiro.get(propMaq)
+                            + consumo
+                        );
                     }
                 }
 
@@ -496,20 +483,22 @@ public class Metricas implements Serializable {
                     //Calcular Desperdício
                     for (i = 0; i < tar.getHistoricoProcessamento().size(); i++) {
                         mflopsProcessado +=
-                            (tar.getTempoFinal().get(i) - tar.getTempoInicial().get(i)) *
-                            tar.getHistoricoProcessamento().get(i).getPoderComputacional();
-                        final Double tempoDesperdicio = (
-                            mflopsProcessado / tar
+                            (tar.getTempoFinal().get(i) - tar.getTempoInicial().get(i)) * tar
                                 .getHistoricoProcessamento()
                                 .get(i)
-                                .getPoderComputacional()
-                        );
+                                .getPoderComputacional();
+                        final Double tempoDesperdicio = mflopsProcessado / tar
+                            .getHistoricoProcessamento()
+                            .get(i)
+                            .getPoderComputacional();
                         this.energiaDespercicada.put(
                             propTar,
-                            this.energiaDespercicada
-                                .get(propTar)
-                                .add(BigDecimal.valueOf(tempoDesperdicio * tar
-                                    .getHistoricoProcessamento().get(i).getConsumoEnergia()))
+                            this.energiaDespercicada.get(propTar) + (
+                                tempoDesperdicio * tar
+                                    .getHistoricoProcessamento()
+                                    .get(i)
+                                    .getConsumoEnergia()
+                            )
                         );
                     }
                 }
@@ -530,27 +519,11 @@ public class Metricas implements Serializable {
             }
         }
 
-        this.tempoSIM = -1.0;
-        for (final Tarefa tarefa : tarefas) {
-            if (this.tempoSIM == -1.0) {
-                this.tempoSIM =
-                    tarefa.getTempoFinal().get(tarefa.getTempoFinal().size() - 1);
-            } else {
-                if (tarefa.getTempoFinal().get(tarefa.getTempoFinal().size() - 1)
-                    > this.tempoSIM) {
-                    this.tempoSIM = tarefa
-                        .getTempoFinal()
-                        .get(tarefa.getTempoFinal().size() - 1);
-                }
-            }
-        }
+        this.tempoSIM =
+            tarefas.stream().mapToDouble(Tarefa::lastFinalizationTime).max().orElse(-1.0);
 
         for (final var user : this.usuarios) {
-            satis = this.satisfacaoGeralSim.get(user)
-                .divide(
-                    BigDecimal.valueOf(this.tarefasConcluidas.get(user)), 2,
-                    RoundingMode.DOWN
-                );
+            satis = this.satisfacaoGeralSim.get(user) / this.tarefasConcluidas.get(user);
             final var consMaxLocal  = this.consumoMaxLocal.get(user);
             final var limiteConsSim = this.limitesConsumoTempoSim.get(user);
             final var limiteConsUso = this.limitesConsumoTempoUso.get(user);
@@ -558,13 +531,10 @@ public class Metricas implements Serializable {
             this.satisfacaoGeralSim.put(user, satis);
             this.satisfacaoGeralUso.put(user, satis);
             this.satisfacaoDesempenho.put(user, satis);
-            this.consumoMaxLocal.put(
-                user,
-                consMaxLocal.multiply(BigDecimal.valueOf(this.metricasGlobais.getTempoSimulacao()))
-            );
+            this.consumoMaxLocal.put(user, consMaxLocal * this.metricasGlobais.getTempoSimulacao());
             this.limitesConsumoTempoSim.put(
                 user,
-                limiteConsSim.multiply(BigDecimal.valueOf(this.metricasGlobais.getTempoSimulacao()))
+                limiteConsSim * this.metricasGlobais.getTempoSimulacao()
             );
 
             Double inicio = -1.0;
@@ -573,83 +543,59 @@ public class Metricas implements Serializable {
                 if (tarefa.getProprietario().equals(user)) {
                     if (inicio == -1.0 || fim == -1.0) {
                         inicio = tarefa.getTempoInicial().get(0);
-                        fim    = tarefa
-                            .getTempoFinal()
-                            .get(tarefa.getTempoFinal().size() - 1);
+                        fim = tarefa.lastFinalizationTime();
                     } else {
                         if (tarefa.getTempoInicial().get(0) < inicio) {
                             inicio = tarefa.getTempoInicial().get(0);
                         }
-                        if (tarefa
-                                .getTempoFinal()
-                                .get(tarefa.getTempoFinal().size() - 1) > fim) {
-                            fim = tarefa
-                                .getTempoFinal()
-                                .get(tarefa.getTempoFinal().size() - 1);
+                        if (tarefa.lastFinalizationTime() > fim) {
+                            fim = tarefa.lastFinalizationTime();
                         }
                     }
 
-                    this.turnaroundTime.put(
-                        user,
-                        this.turnaroundTime.get(user).add(BigDecimal.valueOf(
-                            tarefa
-                                .getTempoFinal()
-                                .get(tarefa.getTempoFinal().size() - 1)
-                            -
-                            tarefa.getTimeCriacao()))
-                    );
+                    this.turnaroundTime.put(user, this.turnaroundTime.get(user) + (
+                        tarefa.lastFinalizationTime() - tarefa.getTimeCriacao()
+                    ));
                 }
             }
 
-            this.limitesConsumoTempoUso.put(
-                user,
-                limiteConsUso.multiply(BigDecimal.valueOf(fim - inicio))
-            );
-            this.tempoFinalExec.put(user, BigDecimal.valueOf(fim));
-            this.tempoInicialExec.put(user, BigDecimal.valueOf(inicio));
+            this.limitesConsumoTempoUso.put(user, limiteConsUso * (fim - inicio));
+            this.tempoFinalExec.put(user, fim);
+            this.tempoInicialExec.put(user, inicio);
 
-            final BigDecimal alpha;
-            if (this.consumoLocal.get(user).compareTo(BigDecimal.ZERO) == 0) {
-                alpha = BigDecimal.ZERO;
+            final double alpha;
+            if (this.consumoLocal.get(user).compareTo(0.0) == 0) {
+                alpha = 0.0;
             } else {
-                alpha = this.consumoMaxLocal
-                    .get(user)
-                    .divide(this.consumoLocal.get(user), 2, RoundingMode.DOWN);
+                alpha = this.consumoMaxLocal.get(user) / this.consumoLocal.get(user);
             }
 
-            final BigDecimal betaSim;
-            if (this.limitesConsumoTempoSim.get(user).compareTo(BigDecimal.ZERO) == 0) {
-                betaSim = BigDecimal.ZERO;
+            final double betaSim;
+            if (this.limitesConsumoTempoSim.get(user).compareTo(0.0) == 0) {
+                betaSim = 0.0;
             } else {
-                betaSim = (
+                betaSim = 1.0 + (
                     (
-                        (
-                            this.consumoEnergiaTotalUsuario
-                                .get(user)
-                                .negate()
-                        ).add(this.consumoTotalSistema)
-                    ).divide(
-                        this.limitesConsumoTempoSim.get(user), 2, RoundingMode.DOWN)
-                ).add(BigDecimal.ONE);
+                        this.consumoTotalSistema - this.consumoEnergiaTotalUsuario.get(user)
+                    ) / this.limitesConsumoTempoSim.get(user)
+                );
             }
 
             this.alphaUsuarios.put(user, alpha);
             this.betaTempoSim.put(user, betaSim);
 
-            final var satisGeralSim =
-                (this.satisfacaoGeralSim.get(user)).multiply((alpha.multiply(betaSim)));
+            final Double satisGeralSim = this.satisfacaoGeralSim.get(user) * (alpha * betaSim);
 
             this.satisfacaoGeralSim.put(user, satisGeralSim);
             this.betaTempoUso.put(user, betaSim);
 
-            final var satisGeralUso =
-                (this.satisfacaoGeralUso.get(user)).multiply((alpha.multiply(betaSim)));
+            final Double satisGeralUso = this.satisfacaoGeralUso.get(user) * (alpha * betaSim);
 
             this.satisfacaoGeralUso.put(user, satisGeralUso);
-            this.turnaroundTime.put(user, this.turnaroundTime.get(user).divide(
-                BigDecimal.valueOf(this.tarefasConcluidas.get(user)),
-                RoundingMode.UP
-            ));
+            this.turnaroundTime.put(
+                user,
+                this.turnaroundTime.get(user) / this.tarefasConcluidas.get(user)
+            );
         }
 
         this.tempoMedioFilaComunicacao   = this.tempoMedioFilaComunicacao / this.numTarefas;
@@ -679,8 +625,7 @@ public class Metricas implements Serializable {
     }
 
     private void getMetricaFilaTarefaCloud (
-        final List<Tarefa> tarefas,
-        final RedeDeFilasCloud rede
+        final Iterable<Tarefa> tarefas, final RedeDeFilasCloud rede
     ) {
         this.tempoMedioFilaComunicacao   = 0;
         this.tempoMedioComunicacao       = 0;
@@ -690,21 +635,23 @@ public class Metricas implements Serializable {
         this.MflopsDesperdicio           = 0;
         this.numTarefas                  = 0;
 
-        final var mediaPoder = rede.getVMs().stream()
+        final var mediaPoder = rede
+            .getVMs()
+            .stream()
             .collect(Collectors.averagingDouble(CS_Processamento::getPoderComputacional));
 
         for (final var no : tarefas) {
             if (no.getEstado() == TaskState.DONE) {
 
                 final Double suij = (
-                                        no.getTamProcessamento() / mediaPoder /
-                                        (
-                                            no.getTempoFinal().get(no.getTempoFinal().size() - 1) -
-                                            no.getTimeCriacao()
+                                        no.getTamProcessamento() / mediaPoder / (
+                                            no.lastFinalizationTime() - no.getTimeCriacao()
                                         )
                                     ) * 100;
                 this.metricasSatisfacao.put(
-                    no.getProprietario(), suij + this.metricasSatisfacao.get(no.getProprietario()));
+                    no.getProprietario(),
+                    suij + this.metricasSatisfacao.get(no.getProprietario())
+                );
                 this.tarefasConcluidas.put(
                     no.getProprietario(),
                     1 + this.tarefasConcluidas.get(no.getProprietario())
@@ -813,12 +760,12 @@ public class Metricas implements Serializable {
     private void addMetricasGlobais (final MetricasGlobais global) {
         this.metricasGlobais.setTempoSimulacao(this.metricasGlobais.getTempoSimulacao()
                                                + global.getTempoSimulacao());
-        this.metricasGlobais.setSatisfacaoMedia(
-            this.metricasGlobais.getSatisfacaoMedia() + global.getSatisfacaoMedia());
-        this.metricasGlobais.setOciosidadeComputacao(
-            this.metricasGlobais.getOciosidadeComputacao() + global.getOciosidadeComputacao());
-        this.metricasGlobais.setOciosidadeComunicacao(
-            this.metricasGlobais.getOciosidadeComunicacao() + global.getOciosidadeComunicacao());
+        this.metricasGlobais.setSatisfacaoMedia(this.metricasGlobais.getSatisfacaoMedia()
+                                                + global.getSatisfacaoMedia());
+        this.metricasGlobais.setOciosidadeComputacao(this.metricasGlobais.getOciosidadeComputacao()
+                                                     + global.getOciosidadeComputacao());
+        this.metricasGlobais.setOciosidadeComunicacao(this.metricasGlobais.getOciosidadeComunicacao()
+                                                      + global.getOciosidadeComunicacao());
         this.metricasGlobais.setEficiencia(this.metricasGlobais.getEficiencia()
                                            + global.getEficiencia());
     }
@@ -860,11 +807,11 @@ public class Metricas implements Serializable {
         }
     }
 
-    private void addMetricaSatisfacaoGeralTempoSim (final Map<String, BigDecimal> metricasSatisfacao) {
+    private void addMetricaSatisfacaoGeralTempoSim (final Map<String, Double> metricasSatisfacao) {
         this.historicoSatisfacaoGeralTempoSim.add(metricasSatisfacao);
     }
 
-    private void addMetricaConsumo (final Map<String, BigDecimal> metricasConsumo) {
+    private void addMetricaConsumo (final Map<String, Double> metricasConsumo) {
         this.historicoConsumoTotalUsuario.add(metricasConsumo);
     }
 
@@ -969,10 +916,10 @@ public class Metricas implements Serializable {
                                                / this.numeroDeSimulacoes);
         this.metricasGlobais.setSatisfacaoMedia(this.metricasGlobais.getSatisfacaoMedia()
                                                 / this.numeroDeSimulacoes);
-        this.metricasGlobais.setOciosidadeComputacao(
-            this.metricasGlobais.getOciosidadeComputacao() / this.numeroDeSimulacoes);
-        this.metricasGlobais.setOciosidadeComunicacao(
-            this.metricasGlobais.getOciosidadeComunicacao() / this.numeroDeSimulacoes);
+        this.metricasGlobais.setOciosidadeComputacao(this.metricasGlobais.getOciosidadeComputacao()
+                                                     / this.numeroDeSimulacoes);
+        this.metricasGlobais.setOciosidadeComunicacao(this.metricasGlobais.getOciosidadeComunicacao()
+                                                      / this.numeroDeSimulacoes);
         this.metricasGlobais.setEficiencia(this.metricasGlobais.getEficiencia()
                                            / this.numeroDeSimulacoes);
         //Média das Metricas da rede de filas
@@ -1005,65 +952,46 @@ public class Metricas implements Serializable {
         for (final var usuario : this.usuarios) {
             for (var i = 0; i < this.numeroDeSimulacoes; i++) {
                 System.out.printf(
-                    "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\t%s\t%s\t%s\t%s\t%s\t%s\t%s%n",
+                    "%s\t%.2f\t%.2f\t%.2f\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%d\t%.0f\t%.0f\t%.0f\t%s\t%s\t%s\t%s%n",
                     usuario,
                     this.historicoSatisfacaoGeralTempoSim.get(i).get(usuario),
                     this.historicoSatisfacaoGeralTempoUso.get(i).get(usuario),
                     this.historicoSatisfacaoDesempenho.get(i).get(usuario),
                     String.format(
                         "%.2f",
-                        this.historicoConsumoTotalUsuario
-                            .get(i)
-                            .get(usuario)
-                            .doubleValue()
+                        this.historicoConsumoTotalUsuario.get(i).get(usuario) / 1_000_000
+                    ),
+                    String.format(
+                        "%.2f",
+                        this.historicoLimitesConsumoTempoSim.get(i).get(usuario)
                         / 1_000_000
                     ),
                     String.format(
                         "%.2f",
-                        this.historicoLimitesConsumoTempoSim
-                            .get(i)
-                            .get(usuario)
-                            .doubleValue()
-                        / 1_000_000
-                    ),
-                    String.format(
-                        "%.2f",
-                        this.historicoLimitesConsumoTempoUso
-                            .get(i)
-                            .get(usuario)
-                            .doubleValue()
+                        this.historicoLimitesConsumoTempoUso.get(i).get(usuario)
                         / 1_000_000
                     ),
                     String.format(
                         "%.2f",
                         this.historicoConsumoLocal.get(i).get(usuario)
-                            .divide(
-                                BigDecimal.valueOf(this.historicoTempoSim.get(i)),
-                                RoundingMode.UP
-                            ).doubleValue() / 1_000
+                        / this.historicoTempoSim.get(i)
+                        / 1_000
                     ),
                     String.format(
                         "%.2f",
                         this.historicoConsumoLocalProprio.get(i).get(usuario)
-                            .divide(
-                                BigDecimal.valueOf(
-                                    this.historicoTempoSim.get(i)),
-                                RoundingMode.UP
-                            ).doubleValue() / 1000
+                        / this.historicoTempoSim.get(i)
+                        / 1000
                     ),
                     String.format(
                         "%.2f",
                         this.historicoConsumoLocalEstrangeiro.get(i).get(usuario)
-                            .divide(
-                                BigDecimal.valueOf(
-                                    this.historicoTempoSim.get(i)),
-                                RoundingMode.UP
-                            ).doubleValue() / 1_000
+                        / this.historicoTempoSim.get(i)
+                        / 1_000
                     ),
                     String.format(
                         "%.2f",
-                        this.historicoConsumoMaxLocal.get(i).get(usuario).doubleValue()
-                        / 1_000_000
+                        this.historicoConsumoMaxLocal.get(i).get(usuario) / 1_000_000
                     ),
                     this.historicoTarefasPreemp.get(i).get(usuario),
                     this.historicoAlpha.get(i).get(usuario),
@@ -1071,20 +999,13 @@ public class Metricas implements Serializable {
                     this.historicoBetaTempoUso.get(i).get(usuario),
                     String.format(
                         "%.2f",
-                        this.historicoEnergiaDeperdicada
-                            .get(i)
-                            .get(usuario)
-                            .doubleValue()
-                        / 1_000_000
+                        this.historicoEnergiaDeperdicada.get(i).get(usuario) / 1_000_000
                     ),
                     String.format(
                         "%.2f",
                         this.historicoConsumoTotalUsuario.get(i).get(usuario)
-                            .divide(
-                                BigDecimal.valueOf(
-                                    this.historicoTempoSim.get(i)),
-                                RoundingMode.UP
-                            ).doubleValue() / 1_000
+                        / this.historicoTempoSim.get(i)
+                        / 1_000
                     ),
                     this.historicoTurnaroundTime.get(i).get(usuario),
                     this.historicoTempoSim.get(i)

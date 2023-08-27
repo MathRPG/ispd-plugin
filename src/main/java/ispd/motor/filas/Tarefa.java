@@ -138,6 +138,10 @@ public class Tarefa implements Client {
             .collect(Collectors.joining());
     }
 
+    public double lastFinalizationTime () {
+        return this.tempoFinal.get(this.tempoFinal.size() - 1);
+    }
+
     public double getTamComunicacao () {
         return this.tamComunicacao;
     }
