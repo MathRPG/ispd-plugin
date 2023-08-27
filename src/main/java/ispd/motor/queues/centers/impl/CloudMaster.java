@@ -462,19 +462,13 @@ public class CloudMaster extends Processing implements VmMaster,
         final List<Service> caminhoVM
     ) {
         final var indVM = this.escalonador.getEscravos().indexOf(vm);
-        System.out.println("indice da vm: " + indVM);
         if (indVM >= this.caminhoVMs.size()) {
             this.caminhoVMs.add(indVM, caminhoVM);
         } else {
             this.caminhoVMs.set(indVM, caminhoVM);
         }
-        System.out.println("Lista atualizada de caminho para as vms:");
-        for (var i = 0; i < this.caminhoVMs.size(); i++) {
-            System.out.println(this.escalonador.getEscravos().get(i).id());
-            System.out.println(this.caminhoVMs.get(i).toString());
-        }
+
         this.escalonador.setCaminhoEscravo(this.caminhoVMs);
-        System.out.println("------------------------------");
     }
 
     public CloudSchedulingPolicy getEscalonador () {
