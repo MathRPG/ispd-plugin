@@ -94,26 +94,17 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
 
     @Override
     public void clientEnter (final Simulation simulacao, final GridTask cliente) {
-        System.out.println("----------------------------------------------");
-        System.out.println("Chegada de evento na  máquina " + this.id());
         if (cliente instanceof final CloudTask trf) {
             final VirtualMachine vm = trf.getVM_enviada();
             if (vm.getMaquinaHospedeira().equals(this)) {
                 if (this.VMs.contains(vm)) {
-                    System.out.println("Cliente duplicado!");
                 } else {
-                    System.out.println(vm.id()
-                                       + " enviada para evento de atendimento nesta máquina");
-                    System.out.println("----------------------------------------------");
                     final Event evtFut = new Event(
                         simulacao.getTime(this), EventType.SERVICE, this, cliente
                     );
                     simulacao.addFutureEvent(evtFut);
                 }
             } else {
-                System.out.println(vm.id()
-                                   + " encaminhada para seu destino, esta máquina é intermediária");
-                System.out.println("----------------------------------------------");
                 final Event evtFut = new Event(
                     simulacao.getTime(this),
                     EventType.ARRIVAL,
@@ -127,20 +118,11 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             final VirtualMachine vm = (VirtualMachine) cliente.getLocalProcessamento();
             if (vm.getMaquinaHospedeira().equals(this)) {
                 //se a tarefa é endereçada pra uma VM qu está alocada nessa máquina
-                System.out.println(this.id() + ": Tarefa " + cliente.getIdentificador() +
-                                   " sendo enviada para execução na vm " + vm.id());
-                System.out.println("----------------------------------------------");
                 final Event evtFut = new Event(
                     simulacao.getTime(this), EventType.ARRIVAL, vm, cliente
                 );
                 simulacao.addFutureEvent(evtFut);
             } else {
-                System.out.println(
-                    this.id()
-                    + ": Tarefa "
-                    + cliente.getIdentificador()
-                    + " sendo encaminhada para próximo CS");
-                System.out.println("----------------------------------------------");
                 final Event evtFut = new Event(
                     simulacao.getTime(this), EventType.EXIT, this, cliente
                 );
