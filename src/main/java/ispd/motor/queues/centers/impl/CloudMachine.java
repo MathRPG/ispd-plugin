@@ -97,8 +97,7 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
         if (cliente instanceof final CloudTask trf) {
             final var vm = trf.getVM_enviada();
             if (this.isHosting(vm)) {
-                if (this.VMs.contains(vm)) {
-                } else {
+                if (!this.VMs.contains(vm)) {
                     final var evtFut = new Event(
                         simulacao.getTime(this), EventType.SERVICE, this, cliente
                     );
