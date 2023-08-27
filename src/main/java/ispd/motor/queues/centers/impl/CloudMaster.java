@@ -192,10 +192,8 @@ public class CloudMaster extends Processing implements VmMaster,
         final EventType tipo
     ) {
         if (tipo == EventType.SCHEDULING) {
-            System.out.println("Iniciando escalonamento...");
             this.escalonador.escalonar();
         } else if (tipo == EventType.ALLOCATION) {
-            System.out.println("Iniciando Alocação...");
             this.alocadorVM.escalonar();// realizar a rotina de alocar a máquina virtual
         } else if (request != null) {
             if (request.getTipo() == RequestType.UPDATE) {
