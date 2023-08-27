@@ -1,7 +1,7 @@
 package ispd.policy.scheduling.grid.impl.util;
 
-import ispd.motor.filas.servidores.CS_Processamento;
-import java.util.Collection;
+import ispd.motor.queues.centers.*;
+import java.util.*;
 
 public class UserEnergyControl extends UserProcessingControl {
 
@@ -15,14 +15,14 @@ public class UserEnergyControl extends UserProcessingControl {
 
     public UserEnergyControl (
         final String userId,
-        final Collection<? extends CS_Processamento> systemMachines,
+        final Collection<? extends Processing> systemMachines,
         final double energyConsPercentage
     ) {
         super(userId, systemMachines);
 
         this.ownedMachinesEnergyConsumption = this
             .ownedNonMasterMachinesIn(systemMachines)
-            .mapToDouble(CS_Processamento::getConsumoEnergia)
+            .mapToDouble(Processing::getConsumoEnergia)
             .sum();
 
         this.energyConsumptionLimit =
@@ -39,13 +39,13 @@ public class UserEnergyControl extends UserProcessingControl {
     }
 
     @Override
-    public void stopTaskFrom (final CS_Processamento machine) {
+    public void stopTaskFrom (final Processing machine) {
         super.stopTaskFrom(machine);
         this.decreaseEnergyConsumption(machine.getConsumoEnergia());
     }
 
     @Override
-    public void startTaskFrom (final CS_Processamento machine) {
+    public void startTaskFrom (final Processing machine) {
         super.startTaskFrom(machine);
         this.increaseEnergyConsumption(machine.getConsumoEnergia());
     }
@@ -55,14 +55,14 @@ public class UserEnergyControl extends UserProcessingControl {
     }
 
     private double calculateEnergyEfficiencyRatioAgainst (
-        final Collection<? extends CS_Processamento> machines
+        final Collection<? extends Processing> machines
     ) {
         final var sysComputationPower = machines.stream()
-            .mapToDouble(CS_Processamento::getPoderComputacional)
+            .mapToDouble(Processing::getPoderComputacional)
             .sum();
 
         final var sysEnergyConsumption = machines.stream()
-            .mapToDouble(CS_Processamento::getConsumoEnergia)
+            .mapToDouble(Processing::getConsumoEnergia)
             .sum();
 
         final var sysEnergyEff = sysComputationPower / sysEnergyConsumption;
@@ -93,7 +93,7 @@ public class UserEnergyControl extends UserProcessingControl {
         return this.energyConsumptionLimit <= other.energyConsumptionLimit;
     }
 
-    public boolean canUseMachineWithoutExceedingEnergyLimit (final CS_Processamento machine) {
+    public boolean canUseMachineWithoutExceedingEnergyLimit (final Processing machine) {
         return this.currentEnergyConsumption + machine.getConsumoEnergia()
                <= this.energyConsumptionLimit;
     }

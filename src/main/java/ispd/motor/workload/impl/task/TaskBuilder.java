@@ -1,11 +1,10 @@
 package ispd.motor.workload.impl.task;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.CS_Processamento;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.task.*;
+import java.util.*;
+import java.util.stream.*;
 
 /**
  * <p>Abstract class with the purpose to create a task from some data source.
@@ -31,15 +30,15 @@ public abstract class TaskBuilder {
 
     /**
      * Select a suitable user for a new task. Such generation may involve the given
-     * {@link CS_Processamento}, or not.
+     * {@link Processing}, or not.
      *
      * @param master
-     *     {@link CS_Processamento} that may host information about which user the task will be
+     *     {@link Processing} that may host information about which user the task will be
      *     linked with.
      *
      * @return a user id for the new task.
      */
-    protected abstract String makeTaskUser (CS_Processamento master);
+    protected abstract String makeTaskUser (Processing master);
 
     /**
      * @return the task communication size (in MBits), usually random.
@@ -58,7 +57,7 @@ public abstract class TaskBuilder {
 
     /**
      * Make the given {@code taskCount} number of tasks, distributed as fairly as possible among the
-     * masters in the given {@link RedeDeFilas}.<br> The distribution functions as follows:
+     * masters in the given {@link GridQueueNetwork}.<br> The distribution functions as follows:
      * <ul>
      *     <li>If there are {@code k * n} tasks to distribute and {@code n}
      *     masters, each master receives {@code k} tasks, as expected.
@@ -73,14 +72,14 @@ public abstract class TaskBuilder {
      * </ul>
      *
      * @param qn
-     *     {@link RedeDeFilas} with the masters that will host the tasks.
+     *     {@link GridQueueNetwork} with the masters that will host the tasks.
      * @param taskCount
      *     amount of tasks to be created. <b>Must be positive</b>.
      *
-     * @return collection of created {@link Tarefa}s.
+     * @return collection of created {@link GridTask}s.
      */
-    public List<Tarefa> makeTasksDistributedAmongMasters (
-        final RedeDeFilas qn,
+    public List<GridTask> makeTasksDistributedAmongMasters (
+        final GridQueueNetwork qn,
         final int taskCount
     ) {
         final var masters = qn.getMestres();
@@ -93,21 +92,21 @@ public abstract class TaskBuilder {
     }
 
     /**
-     * Create a {@link Tarefa} originating at the given {@link CS_Processamento} instance.
+     * Create a {@link GridTask} originating at the given {@link Processing} instance.
      *
      * @param master
-     *     {@link CS_Processamento} that will host the task.
+     *     {@link Processing} that will host the task.
      *
-     * @return a generated {@link Tarefa}.
+     * @return a generated {@link GridTask}.
      */
-    public Tarefa makeTaskFor (final CS_Processamento master) {
-        return new Tarefa(
+    public GridTask makeTaskFor (final Processing master) {
+        return new GridTask(
             this.makeTaskId(),
             this.makeTaskUser(master),
             this.makeTaskApplication(),
             master,
             this.makeTaskCommunicationSize(),
-            TaskBuilder.FILE_MASTER_RECEIVE_SIZE,
+            FILE_MASTER_RECEIVE_SIZE,
             this.makeTaskComputationSize(),
             this.makeTaskCreationTime()
         );

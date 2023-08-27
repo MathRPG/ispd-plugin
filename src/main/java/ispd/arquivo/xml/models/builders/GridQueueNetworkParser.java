@@ -2,9 +2,10 @@ package ispd.arquivo.xml.models.builders;
 
 import ispd.arquivo.xml.*;
 import ispd.arquivo.xml.utils.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
-import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.centers.impl.GridMaster;
+import ispd.motor.queues.centers.impl.*;
 import ispd.policy.scheduling.grid.*;
 import java.util.*;
 
@@ -22,27 +23,27 @@ import java.util.*;
 public class GridQueueNetworkParser {
 
     /**
-     * Map or {@link CentroServico}s parsed from the document, indexed by id.
+     * Map or {@link Service}s parsed from the document, indexed by id.
      */
-    protected final Map<Integer, CentroServico> serviceCenters = new HashMap<>();
+    protected final Map<Integer, Service> serviceCenters = new HashMap<>();
 
     /**
-     * Map of {@link CS_Internet}s parsed from the document.
+     * Map of {@link Internet}s parsed from the document.
      */
-    protected final List<CS_Internet> internets = new ArrayList<>();
+    protected final List<Internet> internets = new ArrayList<>();
 
     /**
-     * Map of {@link CS_Link}s parsed from the document.
+     * Map of {@link Link}s parsed from the document.
      */
-    protected final List<CS_Comunicacao> links = new ArrayList<>();
+    protected final List<Communication> links = new ArrayList<>();
 
     private final Map<String, Double> powerLimits = new HashMap<>();
 
-    private final List<CS_Maquina> machines = new ArrayList<>();
+    private final List<GridMachine> machines = new ArrayList<>();
 
-    private final List<CS_Processamento> masters = new ArrayList<>();
+    private final List<Processing> masters = new ArrayList<>();
 
-    private final Map<CentroServico, List<CS_Maquina>> clusterSlaves = new HashMap<>();
+    private final Map<Service, List<GridMachine>> clusterSlaves = new HashMap<>();
 
     /**
      * Whether this instance has already parsed a document successfully. Each instance should be
@@ -51,16 +52,16 @@ public class GridQueueNetworkParser {
     private boolean hasParsedADocument = false;
 
     private static void connectLinkAndVertices (
-        final CS_Link link, final Vertice origination, final Vertice destination
+        final Link link, final Vertex origination, final Vertex destination
     ) {
-        link.setConexoesSaida((CentroServico) destination);
+        link.setConexoesSaida((Service) destination);
         origination.addConexoesSaida(link);
         destination.addConexoesEntrada(link);
     }
 
     /**
-     * Process a {@link WrappedElement} that is representing a cluster of {@link CentroServico}s.
-     * The {@link CS_Mestre}, {@link CS_Maquina}s and {@link CS_Link}s in the cluster are
+     * Process a {@link WrappedElement} that is representing a cluster of {@link Service}s.
+     * The {@link GridMaster}, {@link GridMachine}s and {@link Link}s in the cluster are
      * differentiated and all processed individually.
      *
      * @param e
@@ -104,7 +105,7 @@ public class GridQueueNetworkParser {
 
             final int slaveCount = e.nodes();
 
-            final var slaves = new ArrayList<CS_Maquina>(slaveCount);
+            final var slaves = new ArrayList<GridMachine>(slaveCount);
 
             for (int i = 0; i < slaveCount; i++) {
                 final var machine = ServiceCenterFactory.aMachineWithNumber(e, i);
@@ -118,7 +119,7 @@ public class GridQueueNetworkParser {
     }
 
     /**
-     * Parse the required {@link CentroServico}s and user power limits from the given
+     * Parse the required {@link Service}s and user power limits from the given
      * {@link WrappedDocument}.
      *
      * @param doc
@@ -156,7 +157,7 @@ public class GridQueueNetworkParser {
     }
 
     private void addSlavesToMachine (final WrappedElement e) {
-        final var master = (CS_Processamento) this.serviceCenters.get(e.globalIconId());
+        final var master = (Processing) this.serviceCenters.get(e.globalIconId());
 
         e.master().slaves()
             .map(WrappedElement::id)
@@ -166,25 +167,25 @@ public class GridQueueNetworkParser {
     }
 
     /**
-     * Build and process the machine (more specifically, the {@link CS_Processamento} represented by
+     * Build and process the machine (more specifically, the {@link Processing} represented by
      * the {@link WrappedElement} {@code e}. Since the machine may or may not be a master, it can be
      * added to either the collection of {@link #masters} or {@link #machines}.
      *
      * @param e
-     *     {@link WrappedElement} representing a {@link CS_Processamento}.
+     *     {@link WrappedElement} representing a {@link Processing}.
      *
-     * @return the interpreted {@link CS_Processamento} from the given {@link WrappedElement}. May
-     * either be a {@link CS_Mestre} or a {@link CS_Maquina}.
+     * @return the interpreted {@link Processing} from the given {@link WrappedElement}. May
+     * either be a {@link GridMaster} or a {@link GridMachine}.
      */
-    protected CS_Processamento makeAndAddMachine (final WrappedElement e) {
-        final CS_Processamento machine;
+    protected Processing makeAndAddMachine (final WrappedElement e) {
+        final Processing machine;
 
         if (e.hasMasterAttribute()) {
             machine = ServiceCenterFactory.aMaster(e);
             this.masters.add(machine);
         } else {
             machine = ServiceCenterFactory.aMachine(e);
-            this.machines.add((CS_Maquina) machine);
+            this.machines.add((GridMachine) machine);
         }
 
         return machine;
@@ -205,9 +206,9 @@ public class GridQueueNetworkParser {
     }
 
     /**
-     * Add {@link CentroServico} {@code slave} to the list of slaves of the {@link CS_Processamento}
-     * {@code master} (which is always interpreted as an instance of {@link CS_Mestre}. Note that
-     * {@code master} <b>is a master</b>, and {@link CS_Processamento} may either be:
+     * Add {@link Service} {@code slave} to the list of slaves of the {@link Processing}
+     * {@code master} (which is always interpreted as an instance of {@link GridMaster}. Note that
+     * {@code master} <b>is a master</b>, and {@link Processing} may either be:
      * <ul>
      *      <li>another master</li>
      *      <li>a non-master machine</li>
@@ -217,28 +218,28 @@ public class GridQueueNetworkParser {
      * the necessary master-slave relations.
      *
      * @param master
-     *     an instance of {@link CS_Mestre}.
+     *     an instance of {@link GridMaster}.
      * @param slave
-     *     <b>slave</b> {@link CentroServico}.
+     *     <b>slave</b> {@link Service}.
      *
      * @throws ClassCastException
-     *     if the given {@link CS_Processamento} {@code master} is not an instance of
-     *     {@link CS_Mestre}.
-     * @apiNote the parameter {@code master} is typed as a {@link CS_Processamento} to support
+     *     if the given {@link Processing} {@code master} is not an instance of
+     *     {@link GridMaster}.
+     * @apiNote the parameter {@code master} is typed as a {@link Processing} to support
      * overrides that deal with other types of masters. See
      * {@link CloudQueueNetworkParser#addSlavesToProcessingCenter} for an example.
      */
     protected void addSlavesToProcessingCenter (
-        final CS_Processamento master,
-        final CentroServico slave
+        final Processing master,
+        final Service slave
     ) {
-        final var theMaster = (CS_Mestre) master;
-        if (slave instanceof final CS_Processamento proc) {
+        final var theMaster = (GridMaster) master;
+        if (slave instanceof final Processing proc) {
             theMaster.addEscravo(proc);
-            if (slave instanceof final CS_Maquina machine) {
+            if (slave instanceof final GridMachine machine) {
                 machine.addMestre(theMaster);
             }
-        } else if (slave instanceof CS_Switch) {
+        } else if (slave instanceof Switch) {
             for (final var clusterSlave : this.clusterSlaves.get(slave)) {
                 clusterSlave.addMestre(theMaster);
                 theMaster.addEscravo(clusterSlave);
@@ -247,13 +248,13 @@ public class GridQueueNetworkParser {
     }
 
     /**
-     * Create a {@link RedeDeFilas} with the collections parsed from the document. The method
+     * Create a {@link GridQueueNetwork} with the collections parsed from the document. The method
      * {@link #parseDocument(WrappedDocument)} must already have been called on the instance.
      *
-     * @return {@link RedeDeFilas} with the appropriate service centers, links, and user
+     * @return {@link GridQueueNetwork} with the appropriate service centers, links, and user
      * configurations found in the document.
      */
-    public RedeDeFilas build () {
+    public GridQueueNetwork build () {
         this.throwIfNoDocumentWasParsed();
 
         final var helper = new UserPowerLimit(this.powerLimits);
@@ -272,7 +273,7 @@ public class GridQueueNetworkParser {
     }
 
     /**
-     * For all {@link CS_Mestre}s parsed from the document, update its
+     * For all {@link GridMaster}s parsed from the document, update its
      * {@link GridSchedulingPolicy}'s user metrics with the obtained user power limit information.
      *
      * @param helper
@@ -280,19 +281,19 @@ public class GridQueueNetworkParser {
      */
     protected void setSchedulersUserMetrics (final UserPowerLimit helper) {
         this.masters.stream()
-            .map(CS_Mestre.class::cast)
-            .map(CS_Mestre::getEscalonador)
+            .map(GridMaster.class::cast)
+            .map(GridMaster::getEscalonador)
             .forEach(helper::setSchedulerUserMetrics);
     }
 
     /**
-     * Construct a {@link RedeDeFilas} with the parsed {@link CentroServico}s and user power limit
+     * Construct a {@link GridQueueNetwork} with the parsed {@link Service}s and user power limit
      * information.
      *
-     * @return initialized {@link RedeDeFilas}.
+     * @return initialized {@link GridQueueNetwork}.
      */
-    protected RedeDeFilas initQueueNetwork () {
-        return new RedeDeFilas(
+    protected GridQueueNetwork initQueueNetwork () {
+        return new GridQueueNetwork(
             this.masters,
             this.machines,
             this.links,
@@ -320,7 +321,7 @@ public class GridQueueNetworkParser {
         this.links.add(link);
     }
 
-    private Vertice getVertex (final int e) {
-        return (Vertice) this.serviceCenters.get(e);
+    private Vertex getVertex (final int e) {
+        return (Vertex) this.serviceCenters.get(e);
     }
 }

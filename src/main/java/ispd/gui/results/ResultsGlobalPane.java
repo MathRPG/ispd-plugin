@@ -4,8 +4,8 @@ import ispd.arquivo.*;
 import ispd.arquivo.xml.*;
 import ispd.gui.utils.components.*;
 import ispd.gui.utils.fonts.*;
-import ispd.motor.filas.*;
-import ispd.motor.metricas.*;
+import ispd.motor.metrics.*;
+import ispd.motor.queues.task.*;
 import ispd.utils.constants.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -21,8 +21,10 @@ import javax.swing.*;
 public class ResultsGlobalPane extends JScrollPane {
 
     private final SimulationResultChartMaker charts;
-    private final List<Tarefa>               tasks;
-    private final SalvarResultadosHTML       html;
+
+    private final List<GridTask>       tasks;
+
+    private final SalvarResultadosHTML html;
 
     /**
      * Constructor which creates a pane that contains information about the
@@ -32,7 +34,7 @@ public class ResultsGlobalPane extends JScrollPane {
      *         the simulation metrics
      */
     public ResultsGlobalPane (
-            final Metricas metrics, final SimulationResultChartMaker charts, final List<Tarefa> tasks
+        final General metrics, final SimulationResultChartMaker charts, final List<GridTask> tasks
     ) {
         this.html   = new SalvarResultadosHTML();
         this.charts = charts;
@@ -113,7 +115,7 @@ public class ResultsGlobalPane extends JScrollPane {
      *
      * @return the global results text
      */
-    private String makeGlobalResultsText (final MetricasGlobais globalMetrics) {
+    private String makeGlobalResultsText (final Global globalMetrics) {
         final var sb = new StringBuilder();
 
         sb.append("\t\tSimulation Results\n\n");

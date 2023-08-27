@@ -1,6 +1,6 @@
 package ispd.utils.constants;
 
-import ispd.motor.filas.Tarefa;
+import ispd.motor.queues.task.*;
 
 /**
  * Hosts various {@link String} constants used throughout the project.
@@ -40,11 +40,11 @@ public enum StringConstants {
      * <p>
      * The expected attribute order is:
      * <ol>
-     *     <li>The task's ID, as returned from {@link Tarefa#getIdentificador() getIdentificador}.</li>
-     *     <li>The task's arrival/creation time, returned from {@link Tarefa#getTimeCriacao() getTimeCriacao}.</li>
-     *     <li>The task's computation load size, from {@link Tarefa#getTamProcessamento() getTamProcessamento}.</li>
-     *     <li>The task's communication load size, from {@link Tarefa#getTamComunicacao()} getTamComunicacao}.</li>
-     *     <li>Finally, the tasks's user, from {@link Tarefa#getProprietario() getProprietario}.</li>
+     *     <li>The task's ID, as returned from {@link GridTask#getIdentificador() getIdentificador}.</li>
+     *     <li>The task's arrival/creation time, returned from {@link GridTask#getTimeCriacao() getTimeCriacao}.</li>
+     *     <li>The task's computation load size, from {@link GridTask#getTamProcessamento() getTamProcessamento}.</li>
+     *     <li>The task's communication load size, from {@link GridTask#getTamComunicacao()} getTamComunicacao}.</li>
+     *     <li>Finally, the tasks's user, from {@link GridTask#getProprietario() getProprietario}.</li>
      * </ol>
      */
     public static final String TASK_TAG_TEMPLATE =

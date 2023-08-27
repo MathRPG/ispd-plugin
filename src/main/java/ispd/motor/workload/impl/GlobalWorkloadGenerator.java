@@ -1,7 +1,8 @@
 package ispd.motor.workload.impl;
 
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.task.*;
 import ispd.motor.random.*;
 import ispd.motor.workload.*;
 import ispd.utils.*;
@@ -9,7 +10,7 @@ import java.util.*;
 
 /**
  * Generates a workload with randomly-decided sizes from a collection of uniform intervals, and
- * evenly distributes the tasks of such workload across all masters in a {@link RedeDeFilas}.<br>
+ * evenly distributes the tasks of such workload across all masters in a {@link GridQueueNetwork}.<br>
  * Some particularities:
  * <ul>
  *     <li>This class generates task ids sequentially, starting from {@code 0
@@ -97,13 +98,13 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
 
     /**
      * Generates tasks as configured, and distributes then evenly among the masters in the given
-     * {@link RedeDeFilas}.
+     * {@link GridQueueNetwork}.
      *
-     * @see ispd.motor.workload.impl.task.TaskBuilder#makeTasksDistributedAmongMasters(RedeDeFilas,
+     * @see ispd.motor.workload.impl.task.TaskBuilder#makeTasksDistributedAmongMasters(GridQueueNetwork,
      * int)
      */
     @Override
-    public List<Tarefa> makeTaskList (final RedeDeFilas qn) {
+    public List<GridTask> makeTaskList (final GridQueueNetwork qn) {
         return this.makeTasksDistributedAmongMasters(qn, this.taskCount);
     }
 
@@ -167,18 +168,18 @@ public class GlobalWorkloadGenerator extends RandomicWorkloadGenerator {
 
     /**
      * The task user decided by this workload generator is simply the owner of the
-     * {@link CS_Processamento} that will host the task.
+     * {@link Processing} that will host the task.
      *
      * @param master
-     *     {@link CS_Processamento} that hosts information about which user the task will be linked
+     *     {@link Processing} that hosts information about which user the task will be linked
      *     with.
      *
      * @return user id of the owner of the given master, to be used to generate a new task.
      *
-     * @see CS_Processamento#getProprietario()
+     * @see Processing#getProprietario()
      */
     @Override
-    protected String makeTaskUser (final CS_Processamento master) {
+    protected String makeTaskUser (final Processing master) {
         return master.getProprietario();
     }
 

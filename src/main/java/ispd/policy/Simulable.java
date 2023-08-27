@@ -1,6 +1,6 @@
 package ispd.policy;
 
-import ispd.motor.*;
+import ispd.motor.simul.*;
 
 public interface Simulable {
 

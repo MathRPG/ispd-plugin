@@ -1,8 +1,8 @@
 package ispd.gui.results;
 
 import ispd.gui.utils.fonts.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.implementacao.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.impl.*;
 import javax.swing.*;
 
 /**
@@ -19,7 +19,7 @@ public class ResultsUsersPane extends JScrollPane {
      * @param queueNetwork
      *         the simulation queue network
      */
-    public ResultsUsersPane (final RedeDeFilas queueNetwork) {
+    public ResultsUsersPane (final GridQueueNetwork queueNetwork) {
         final var textArea = new JTextArea();
 
         this.setPreferredSize(ResultsDialog.CHART_PREFERRED_SIZE);
@@ -42,8 +42,8 @@ public class ResultsUsersPane extends JScrollPane {
      * @return this text contains the queue time and time for processing and
      *         communication for each user.
      */
-    private String makeUsersResultText (final RedeDeFilas queueNetwork) {
-        final var master      = (CS_Mestre) queueNetwork.getMestres().get(0);
+    private String makeUsersResultText (final GridQueueNetwork queueNetwork) {
+        final var master = (GridMaster) queueNetwork.getMestres().get(0);
         final var userMetrics = master.getEscalonador().getMetricaUsuarios();
 
         final var sb = new StringBuilder();

@@ -1,8 +1,8 @@
 package ispd.policy.scheduling;
 
-import ispd.motor.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.request.*;
+import ispd.motor.queues.task.*;
 import ispd.policy.*;
 import java.util.*;
 
@@ -12,9 +12,9 @@ public interface SchedulingMaster extends Simulable {
 
     void setSchedulingConditions (Set<Condition> newConditions);
 
-    void sendTask (Tarefa task);
+    void sendTask (GridTask task);
 
-    Tarefa cloneTask (Tarefa task);
+    GridTask cloneTask (GridTask task);
 
-    void sendMessage (Tarefa task, CS_Processamento slave, MessageType messageType);
+    void sendMessage (GridTask task, Processing slave, RequestType requestType);
 }

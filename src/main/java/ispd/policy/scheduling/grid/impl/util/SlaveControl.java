@@ -1,14 +1,13 @@
 package ispd.policy.scheduling.grid.impl.util;
 
-import ispd.motor.filas.Tarefa;
-import java.util.ArrayList;
-import java.util.List;
+import ispd.motor.queues.task.*;
+import java.util.*;
 
 public class SlaveControl {
 
     private SlaveStatus status = SlaveStatus.FREE;
 
-    private List<? extends Tarefa> tasksInProcessing = new ArrayList<>();
+    private List<? extends GridTask> tasksInProcessing = new ArrayList<>();
 
     public boolean canHostNewTask () {
         return switch (this.status) {
@@ -31,7 +30,7 @@ public class SlaveControl {
                : SlaveStatus.OCCUPIED;
     }
 
-    public Tarefa firstTaskInProcessing () {
+    public GridTask firstTaskInProcessing () {
         return this.tasksInProcessing.get(0);
     }
 
@@ -75,7 +74,7 @@ public class SlaveControl {
         this.status = SlaveStatus.PREEMPTED;
     }
 
-    public void setTasksInProcessing (final List<? extends Tarefa> tasksInProcessing) {
+    public void setTasksInProcessing (final List<? extends GridTask> tasksInProcessing) {
         this.tasksInProcessing = tasksInProcessing;
     }
 

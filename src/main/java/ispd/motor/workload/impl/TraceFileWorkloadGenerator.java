@@ -1,38 +1,29 @@
 package ispd.motor.workload.impl;
 
-import ispd.motor.filas.RedeDeFilas;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.filas.servidores.implementacao.CS_Mestre;
-import ispd.motor.random.Distribution;
-import ispd.motor.workload.WorkloadGenerator;
-import ispd.motor.workload.WorkloadGeneratorType;
-import ispd.motor.workload.impl.task.ExternalTraceTaskBuilder;
-import ispd.motor.workload.impl.task.TraceTaskBuilder;
-import ispd.motor.workload.impl.task.TraceTaskInfo;
-import ispd.policy.scheduling.SchedulingPolicy;
-import ispd.utils.CollectionUtils;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import jdk.jfr.Unsigned;
+import ispd.motor.queues.*;
+import ispd.motor.queues.centers.impl.*;
+import ispd.motor.queues.task.*;
+import ispd.motor.random.*;
+import ispd.motor.workload.*;
+import ispd.motor.workload.impl.task.*;
+import ispd.policy.scheduling.*;
+import ispd.utils.*;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
+import java.util.function.*;
+import java.util.logging.*;
+import jdk.jfr.*;
 
 /**
  * Generates a workload from parsing a trace file, and evenly distributes the tasks of such workload
- * among all masters in a {@link RedeDeFilas}.<br> Some particularities:
+ * among all masters in a {@link GridQueueNetwork}.<br> Some particularities:
  * <ul>
  *     <li>How the class interprets information gathered from the trace file
  *     about a task depends on its {@link #traceType}. See
  *     {@link TraceTaskBuilder} and {@link ExternalTraceTaskBuilder} for
  *     their differences.</li>
- *     <li>It <b>updates the {@link RedeDeFilas}</b> with information about
+ *     <li>It <b>updates the {@link GridQueueNetwork}</b> with information about
  *     the users found in the tasks read from the trace file.</li>
  * </ul>
  *
@@ -65,8 +56,8 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
      *     the type of trace being processed; it will affect the interpretation of certain task
      *     properties read from the file. It must be one of {@code {iSPD, SWF, GWF}}
      *
-     * @see #makeTaskList(RedeDeFilas)
-     * @see #makeTaskBuilder(RedeDeFilas)
+     * @see #makeTaskList(GridQueueNetwork)
+     * @see #makeTaskBuilder(GridQueueNetwork)
      */
     public TraceFileWorkloadGenerator (
         final File traceFile,
@@ -80,16 +71,16 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
     }
 
     /**
-     * Update the {@link RedeDeFilas}'s scheduler metrics with the given user ids. All added users
+     * Update the {@link GridQueueNetwork}'s scheduler metrics with the given user ids. All added users
      * have, by default, {@literal 0} computational power and {@literal 100} usage limit.
      *
      * @param qn
-     *     {@link RedeDeFilas} with schedulers to be updated.
+     *     {@link GridQueueNetwork} with schedulers to be updated.
      * @param users
      *     {@link List} of user ids.
      */
     private static void updateSchedulerUserMetrics (
-        final RedeDeFilas qn,
+        final GridQueueNetwork qn,
         final List<String> users
     ) {
         final var count     = users.size();
@@ -97,14 +88,14 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
         final var limits    = CollectionUtils.filledList(100.0, count);
 
         qn.getMestres().stream()
-            .map(CS_Mestre.class::cast)
-            .map(CS_Mestre::getEscalonador)
+            .map(GridMaster.class::cast)
+            .map(GridMaster::getEscalonador)
             .map(SchedulingPolicy::getMetricaUsuarios)
             .forEach(m -> m.addAllUsuarios(users, compPower, limits));
     }
 
     /**
-     * Creates a task list from the trace file, updates the given {@link RedeDeFilas} and its
+     * Creates a task list from the trace file, updates the given {@link GridQueueNetwork} and its
      * schedulers with information about the users found in the trace, and distributes the generated
      * tasks evenly among all masters.
      *
@@ -116,7 +107,7 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
      * @see TraceTaskBuilder
      */
     @Override
-    public List<Tarefa> makeTaskList (final RedeDeFilas qn) {
+    public List<GridTask> makeTaskList (final GridQueueNetwork qn) {
         this.updateQueueNetworkWithTaskUsers(qn);
 
         return this.makeTaskBuilder(qn)
@@ -172,7 +163,7 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
             ))
         ) {
             return br.lines()
-                .skip(TraceFileWorkloadGenerator.HEADER_LINE_COUNT)
+                .skip(HEADER_LINE_COUNT)
                 .map(TraceTaskInfo::new)
                 .toList();
         } catch (final IOException | UncheckedIOException ex) {
@@ -183,13 +174,13 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
     }
 
     /**
-     * Update the given {@link RedeDeFilas} and its scheduler metrics with all user ids (found in
+     * Update the given {@link GridQueueNetwork} and its scheduler metrics with all user ids (found in
      * the trace file) that don't exist in it already.
      *
      * @param qn
-     *     {@link RedeDeFilas} to be updated.
+     *     {@link GridQueueNetwork} to be updated.
      */
-    private void updateQueueNetworkWithTaskUsers (final RedeDeFilas qn) {
+    private void updateQueueNetworkWithTaskUsers (final GridQueueNetwork qn) {
         final var userIds = this.tasks.stream()
             .map(TraceTaskInfo::user)
             .distinct()
@@ -205,7 +196,7 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
      * initialized with.
      *
      * @param qn
-     *     {@link RedeDeFilas} that will host tasks found in the trace file, necessary in this
+     *     {@link GridQueueNetwork} that will host tasks found in the trace file, necessary in this
      *     method for normalizing the computational size of external trace models.
      *
      * @return appropriate {@link TraceTaskBuilder} to interpret {@link TraceTaskInfo}s found in the
@@ -214,7 +205,7 @@ public class TraceFileWorkloadGenerator implements WorkloadGenerator {
      * @throws IllegalArgumentException
      *     if {@link #traceType} is none of {@code {iSPD, SWF, GWF}}.
      */
-    private TraceTaskBuilder makeTaskBuilder (final RedeDeFilas qn) {
+    private TraceTaskBuilder makeTaskBuilder (final GridQueueNetwork qn) {
         return switch (this.traceType) {
             case "iSPD" -> new TraceTaskBuilder(this.tasks);
             case "SWF", "GWF" -> new ExternalTraceTaskBuilder(

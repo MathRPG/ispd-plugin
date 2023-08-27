@@ -6,7 +6,8 @@ import static ispd.gui.utils.ButtonBuilder.*;
 import ispd.arquivo.xml.*;
 import ispd.gui.results.*;
 import ispd.gui.utils.fonts.*;
-import ispd.motor.*;
+import ispd.motor.simul.*;
+import ispd.motor.simul.impl.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -24,7 +25,7 @@ public class SimulationDialog extends JDialog implements Runnable {
 
     private final Document model;
 
-    private final ProgressoSimulacao progressTracker = new BasicProgressTracker();
+    private final ProgressTracker progressTracker = new BasicProgressTracker();
 
     private final ModelType gridOrCloud;
 
@@ -72,7 +73,7 @@ public class SimulationDialog extends JDialog implements Runnable {
                 this.incrementProgress(10);//[10%] --> 45%
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
-                final var sim = new SimulacaoSequencial(
+                final var sim = new GridSequential(
                     this.progressTracker,
                     queueNetwork,
                     tasks
@@ -119,7 +120,7 @@ public class SimulationDialog extends JDialog implements Runnable {
                 this.progressTracker.println("OK", Color.green);
                 //Verifica recursos do modelo e define roteamento
                 final var sim =
-                    new SimulacaoSequencialCloud(
+                    new CloudSequential(
                         this.progressTracker,
                         cloudQueueNetwork,
                         tasks
@@ -259,7 +260,7 @@ public class SimulationDialog extends JDialog implements Runnable {
         }
     }
 
-    private class BasicProgressTracker extends ProgressoSimulacao {
+    private class BasicProgressTracker extends ProgressTracker {
 
         @Override
         public void incProgresso (final int n) {

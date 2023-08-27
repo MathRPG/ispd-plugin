@@ -1,9 +1,9 @@
 package ispd.policy.allocation.vm;
 
-import ispd.motor.filas.servidores.implementacao.CS_VirtualMac;
-import ispd.policy.allocation.AllocationMaster;
+import ispd.motor.queues.centers.impl.*;
+import ispd.policy.allocation.*;
 
 public interface VmMaster extends AllocationMaster {
 
-    void sendVm (CS_VirtualMac vm);
+    void sendVm (VirtualMachine vm);
 }

@@ -1,15 +1,10 @@
 package ispd.application.terminal;
 
-import ispd.motor.metricas.Metricas;
-import ispd.utils.constants.StringConstants;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import org.w3c.dom.Document;
+import ispd.motor.metrics.*;
+import ispd.utils.constants.*;
+import java.io.*;
+import java.net.*;
+import org.w3c.dom.*;
 
 /**
  * A helper class for the server part of the terminal application simulation.
@@ -56,7 +51,7 @@ public class Server {
      * @param modelMetrics
      *     Metrics from a simulation result
      */
-    public void returnMetricsToClient (final Metricas modelMetrics) {
+    public void returnMetricsToClient (final General modelMetrics) {
         try (
             final var outputSocket = new Socket(this.clientAddress, this.clientPort);
             final var outputStream = new ObjectOutputStream(outputSocket.getOutputStream())

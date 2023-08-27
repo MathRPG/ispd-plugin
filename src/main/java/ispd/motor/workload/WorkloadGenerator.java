@@ -1,24 +1,25 @@
 package ispd.motor.workload;
 
-import ispd.motor.filas.*;
+import ispd.motor.queues.*;
+import ispd.motor.queues.task.*;
 import java.util.*;
 
 /**
  * Represents a workload generator from some data source.<br> Workloads are represented as a
- * {@link List} of {@link Tarefa}s.
+ * {@link List} of {@link GridTask}s.
  */
 public interface WorkloadGenerator {
 
     /**
-     * Create a {@link Tarefa} list as currently configured, distributed between the masters in the
-     * given {@link RedeDeFilas}.
+     * Create a {@link GridTask} list as currently configured, distributed between the masters in the
+     * given {@link GridQueueNetwork}.
      *
      * @param qn
-     *     {@link RedeDeFilas} with masters that will host the {@link Tarefa}s.
+     *     {@link GridQueueNetwork} with masters that will host the {@link GridTask}s.
      *
-     * @return {@link List} of {@link Tarefa}s generated.
+     * @return {@link List} of {@link GridTask}s generated.
      */
-    List<Tarefa> makeTaskList (RedeDeFilas qn);
+    List<GridTask> makeTaskList (GridQueueNetwork qn);
 
     /**
      * @return the generator type of this instance.

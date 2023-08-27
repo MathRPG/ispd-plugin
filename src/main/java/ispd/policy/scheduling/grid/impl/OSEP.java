@@ -1,18 +1,18 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.*;
-import ispd.motor.filas.*;
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
+import ispd.motor.queues.request.*;
+import ispd.motor.queues.task.*;
 import ispd.policy.scheduling.grid.impl.util.*;
 import java.util.*;
 
 public class OSEP extends AbstractOSEP<UserProcessingControl> {
 
-    private final List<Tarefa> tasksInWaiting = new ArrayList<>();
+    private final List<GridTask> tasksInWaiting = new ArrayList<>();
 
     private final List<PreemptionEntry> preemptionEntries = new ArrayList<>();
 
-    private Tarefa selectedTask = null;
+    private GridTask selectedTask = null;
 
     private int slaveCount = 0;
 
@@ -56,10 +56,10 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public CS_Processamento escalonarRecurso () {
+    public Processing escalonarRecurso () {
         String user;
         // Buscando recurso livre
-        CS_Processamento selec = null;
+        Processing selec = null;
 
         for (int i = 0; i < this.escravos.size(); i++) {
             final var slave = this.escravos.get(i);
@@ -117,20 +117,20 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
 
         //Fazer a preempção
         if (index != -1) {
-            final CS_Processamento cs_processamento = this.escravos.get(index);
+            final Processing processingCenter = this.escravos.get(index);
             this.mestre.sendMessage(
-                this.slaveControls.get(cs_processamento).firstTaskInProcessing(),
-                cs_processamento,
-                MessageType.PREEMPTIVE_RETURN
+                this.slaveControls.get(processingCenter).firstTaskInProcessing(),
+                processingCenter,
+                RequestType.PREEMPTIVE_RETURN
             );
-            return cs_processamento;
+            return processingCenter;
         }
 
         return null;
     }
 
     @Override
-    public Tarefa escalonarTarefa () {
+    public GridTask escalonarTarefa () {
         return this.getBestUserForSomeTask()
             .flatMap(this::findAnyTaskOf)
             .map(this::popTaskFromQueue)
@@ -139,7 +139,7 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public void addTarefaConcluida (final Tarefa tarefa) {
+    public void addTarefaConcluida (final GridTask tarefa) {
         super.addTarefaConcluida(tarefa);
         final var maq = tarefa.getCSLProcessamento();
         final var uc  = this.userControls.get(tarefa.getProprietario());
@@ -149,11 +149,11 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public void resultadoAtualizar (final Mensagem mensagem) {
-        super.resultadoAtualizar(mensagem);
+    public void resultadoAtualizar (final Request request) {
+        super.resultadoAtualizar(request);
 
-        this.slaveControls.get((CS_Processamento) mensagem.getOrigem())
-            .setTasksInProcessing(mensagem.getProcessadorEscravo());
+        this.slaveControls.get((Processing) request.getOrigem())
+            .setTasksInProcessing(request.getProcessadorEscravo());
 
         this.slaveCount++;
 
@@ -164,7 +164,7 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
         this.slaveCount = 0;
 
         boolean shouldSchedule = false;
-        for (final CS_Processamento s : this.escravos) {
+        for (final Processing s : this.escravos) {
             final var sc = this.slaveControls.get(s);
             if (sc.isBlocked()) {
                 sc.setAsUncertain();
@@ -185,10 +185,10 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
     }
 
     @Override
-    public void adicionarTarefa (final Tarefa tarefa) {
+    public void adicionarTarefa (final GridTask tarefa) {
         super.adicionarTarefa(tarefa);
-        final CS_Processamento maq        = tarefa.getCSLProcessamento();
-        final var              estadoUser = this.userControls.get(tarefa.getProprietario());
+        final Processing maq        = tarefa.getCSLProcessamento();
+        final var        estadoUser = this.userControls.get(tarefa.getProprietario());
 
         if (tarefa.getLocalProcessamento() == null) {
             this.mestre.executeScheduling();
@@ -241,18 +241,18 @@ public class OSEP extends AbstractOSEP<UserProcessingControl> {
                      .comparingLong(UserProcessingControl::excessMachines));
     }
 
-    private Optional<Tarefa> findAnyTaskOf (final UserProcessingControl uc) {
+    private Optional<GridTask> findAnyTaskOf (final UserProcessingControl uc) {
         return this.tarefas.stream()
             .filter(uc::isOwnerOf)
             .findAny();
     }
 
-    private Tarefa popTaskFromQueue (final Tarefa task) {
+    private GridTask popTaskFromQueue (final GridTask task) {
         this.tarefas.remove(task);
         return task;
     }
 
-    private Optional<Tarefa> firstAvailableTask () {
+    private Optional<GridTask> firstAvailableTask () {
         return this.tarefas.stream()
             .findFirst()
             .map(this::popTaskFromQueue);

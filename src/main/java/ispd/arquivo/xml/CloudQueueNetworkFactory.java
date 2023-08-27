@@ -2,7 +2,7 @@ package ispd.arquivo.xml;
 
 import ispd.arquivo.xml.models.builders.*;
 import ispd.arquivo.xml.utils.*;
-import ispd.motor.filas.*;
+import ispd.motor.queues.*;
 import org.w3c.dom.*;
 
 public enum CloudQueueNetworkFactory {
@@ -16,8 +16,8 @@ public enum CloudQueueNetworkFactory {
      *
      * @return Simulable cloud queue network, in accordance to given model
      */
-    public static RedeDeFilasCloud fromDocument (final Document document) {
-        return (RedeDeFilasCloud) new CloudQueueNetworkParser()
+    public static CloudQueueNetwork fromDocument (final Document document) {
+        return (CloudQueueNetwork) new CloudQueueNetworkParser()
             .parseDocument(new WrappedDocument(document))
             .build();
     }

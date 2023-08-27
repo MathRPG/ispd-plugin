@@ -1,13 +1,9 @@
 package ispd.application.terminal;
 
-import ispd.motor.metricas.Metricas;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import org.w3c.dom.Document;
+import ispd.motor.metrics.*;
+import java.io.*;
+import java.net.*;
+import org.w3c.dom.*;
 
 /**
  * A helper class for the client part of the terminal application simulation.
@@ -49,12 +45,12 @@ public class Client {
      *
      * @return The metrics from a simulation
      */
-    public Metricas receiveMetricsFromServer () {
+    public General receiveMetricsFromServer () {
         try (
             final var serverSocket = new ServerSocket(this.clientPort);
             final var inputStream = new ObjectInputStream(serverSocket.accept().getInputStream())
         ) {
-            return (Metricas) inputStream.readObject();
+            return (General) inputStream.readObject();
         } catch (final IOException | ClassNotFoundException e) {
             throw new AssertionError(e);
         }

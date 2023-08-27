@@ -1,45 +1,45 @@
 package ispd.policy.scheduling;
 
-import ispd.motor.filas.Mensagem;
-import ispd.motor.filas.Tarefa;
-import ispd.motor.metricas.MetricasUsuarios;
-import ispd.policy.Policy;
-import java.util.List;
+import ispd.motor.metrics.*;
+import ispd.motor.queues.request.*;
+import ispd.motor.queues.task.*;
+import ispd.policy.*;
+import java.util.*;
 
 public abstract class SchedulingPolicy <T extends SchedulingMaster> extends Policy<T> {
 
-    protected List<Tarefa> tarefas = null;
+    protected List<GridTask> tarefas = null;
 
-    protected MetricasUsuarios metricaUsuarios = null;
+    protected User metricaUsuarios = null;
 
     protected List<List> filaEscravo = null;
 
-    public abstract Tarefa escalonarTarefa ();
+    public abstract GridTask escalonarTarefa ();
 
-    public void addTarefaConcluida (final Tarefa tarefa) {
+    public void addTarefaConcluida (final GridTask tarefa) {
         if (tarefa.getOrigem().equals(this.mestre)) {
             this.metricaUsuarios.incTarefasConcluidas(tarefa);
         }
     }
 
-    public MetricasUsuarios getMetricaUsuarios () {
+    public User getMetricaUsuarios () {
         return this.metricaUsuarios;
     }
 
-    public void setMetricaUsuarios (final MetricasUsuarios metricaUsuarios) {
+    public void setMetricaUsuarios (final User metricaUsuarios) {
         this.metricaUsuarios = metricaUsuarios;
     }
 
-    public List<Tarefa> getFilaTarefas () {
+    public List<GridTask> getFilaTarefas () {
         return this.tarefas;
     }
 
-    public void resultadoAtualizar (final Mensagem mensagem) {
-        final int index = this.escravos.indexOf(mensagem.getOrigem());
-        this.filaEscravo.set(index, mensagem.getFilaEscravo());
+    public void resultadoAtualizar (final Request request) {
+        final int index = this.escravos.indexOf(request.getOrigem());
+        this.filaEscravo.set(index, request.getFilaEscravo());
     }
 
-    public void adicionarTarefa (final Tarefa tarefa) {
+    public void adicionarTarefa (final GridTask tarefa) {
         if (tarefa.getOrigem().equals(this.mestre)) {
             this.metricaUsuarios.incTarefasSubmetidas(tarefa);
         }

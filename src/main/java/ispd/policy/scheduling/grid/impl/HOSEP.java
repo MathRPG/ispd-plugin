@@ -1,6 +1,6 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
 import ispd.policy.scheduling.grid.impl.util.*;
 import java.util.*;
 
@@ -13,7 +13,7 @@ public class HOSEP extends AbstractHOSEP<UserProcessingControl> {
 
     @Override
     protected boolean shouldTransferMachine (
-        final CS_Processamento machine, final UserProcessingControl machineOwner,
+        final Processing machine, final UserProcessingControl machineOwner,
         final UserProcessingControl nextOwner
     ) {
         if (super.shouldTransferMachine(machine, machineOwner, nextOwner)) {

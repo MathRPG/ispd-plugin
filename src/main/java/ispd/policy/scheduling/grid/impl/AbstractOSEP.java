@@ -1,6 +1,6 @@
 package ispd.policy.scheduling.grid.impl;
 
-import ispd.motor.filas.servidores.*;
+import ispd.motor.queues.centers.*;
 import ispd.policy.*;
 import ispd.policy.scheduling.grid.*;
 import ispd.policy.scheduling.grid.impl.util.*;
@@ -10,7 +10,7 @@ public abstract class AbstractOSEP <T extends UserProcessingControl> extends Gri
 
     private static final double REFRESH_TIME = 15.0;
 
-    protected final Map<CS_Processamento, SlaveControl> slaveControls = new HashMap<>();
+    protected final Map<Processing, SlaveControl> slaveControls = new HashMap<>();
 
     protected final Map<String, T> userControls = new HashMap<>();
 
@@ -35,9 +35,9 @@ public abstract class AbstractOSEP <T extends UserProcessingControl> extends Gri
     }
 
     @Override
-    public List<CentroServico> escalonarRota (final CentroServico destino) {
+    public List<Service> escalonarRota (final Service destino) {
         final int index = this.escravos.indexOf(destino);
-        return new ArrayList<>((List<CentroServico>) this.caminhoEscravo.get(index));
+        return new ArrayList<>((List<Service>) this.caminhoEscravo.get(index));
     }
 
     @Override

@@ -263,7 +263,7 @@ public class Machine extends VertexGridItem {
                 (GridItem) outboundLink.getDestination();
 
             /* If the destination item is a Cluster or */
-            /* a Machine, then just add them */
+            /* a GridMachine, then just add them */
             if (destinationItem instanceof Cluster || destinationItem instanceof Machine) {
                 outboundConnectedNodes.add(destinationItem);
             }
@@ -316,7 +316,7 @@ public class Machine extends VertexGridItem {
             final var inboundLink = (Link) gridItemLink;
             final var sourceItem  = (GridItem) inboundLink.getSource();
 
-            /* If the source item is a Cluster or a Machine, */
+            /* If the source item is a Cluster or a GridMachine, */
             /* then just add them */
             if (sourceItem instanceof Cluster || sourceItem instanceof Machine) {
                 inboundConnectedNodes.add(sourceItem);
@@ -371,7 +371,7 @@ public class Machine extends VertexGridItem {
             final var destinationItem = (GridItem) outboundLink.getDestination();
 
             /* If the destination item is a Cluster or is */
-            /* a Machine, then just add them */
+            /* a GridMachine, then just add them */
             if (destinationItem instanceof Cluster || destinationItem instanceof Machine) {
                 /* Prevent duplicates */
                 if (!schedulableItems.contains(destinationItem)) {
