@@ -87,11 +87,15 @@ public abstract class Simulation {
             .forEach(Policy::iniciar);
     }
 
+    private static void initCloudMaster (final CloudMaster master) {
+        master.getEscalonador().iniciar();
+        master.instanciarCaminhosVMs();
+    }
+
     protected void initCloudSchedulers () {
         for (final var genericMaster : this.cloudQueueNetwork.getMestres()) {
             final var master = (CloudMaster) genericMaster;
-            master.getEscalonador().iniciar();
-            master.instanciarCaminhosVMs();
+            initCloudMaster(master);
         }
     }
 
