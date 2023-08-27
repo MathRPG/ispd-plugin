@@ -139,8 +139,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     public void clientProcessing (final Simulation simulacao, final GridTask cliente) {
         final var trf = (CloudTask) cliente;
         final var vm  = trf.getVM_enviada();
-        System.out.println("--------------------------------------------------");
-        System.out.println("atendimento da vm:" + vm.id() + "na maquina:" + this.id());
         this.addVM(vm); //incluir a VM na lista de VMs
         this.metricaAloc.incVMsAlocadas();
         //Setar o caminho da vm para o VMM e o caminho do ACK da mensagem >>>
@@ -154,7 +152,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             final var caminhoMsg =
                 new ArrayList<Service>(getMenorCaminhoIndiretoCloud(this, vmm));
 
-            System.out.println("Imprimindo caminho para o mestre:");
             for (final var cs : caminhoVMM) {
                 System.out.println(cs.id());
             }
@@ -167,7 +164,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
             final var caminhoMsg =
                 new ArrayList<Service>(this.caminhoMestre.get(index));
 
-            System.out.println("Imprimindo caminho para o mestre:");
             for (final var cs : caminhoVMM) {
                 System.out.println(cs.id());
             }
@@ -188,7 +184,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
         this.custoTotalDisco   = this.custoTotalDisco + (vm.getDiscoDisponivel() * this.custoDisco);
         //setar o poder de processamento da VM.
         vm.setPoderProcessamentoPorNucleo(this.getPoderComputacional());
-        System.out.println("----------------------------------------------------");
     }
 
     @Override
