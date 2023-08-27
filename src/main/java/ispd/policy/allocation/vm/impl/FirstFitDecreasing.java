@@ -28,14 +28,8 @@ public class FirstFitDecreasing extends VmAllocationPolicy {
         this.fit          = true;
         this.maqIndex     = 0;
         this.VMsOrdenadas = new ArrayList<>(this.maquinasVirtuais);
-        for (final VirtualMachine aux : this.VMsOrdenadas) {
-        }
         this.VMsOrdenadas.sort(this.comparaReq);
-        for (final VirtualMachine aux : this.VMsOrdenadas) {
-        }
         Collections.reverse(this.VMsOrdenadas);
-        for (final VirtualMachine aux : this.VMsOrdenadas) {
-        }
         if (!this.escravos.isEmpty() && !this.maquinasVirtuais.isEmpty()) {
             this.escalonar();
         }
