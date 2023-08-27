@@ -15,7 +15,7 @@ public class Software {
 
         janela.println("Software failure created.");
 
-        if (redeDeFilas.getVMs() != null && (redeDeFilas.getVMs() != null)) {
+        if (redeDeFilas.getVMs() != null) {
             System.out.println("---------------------------------------");
             System.out.println("Rede de filas das VMs não é nula na classe CloudSequential.java");
             System.out.println("Listagem da rede de filas: ");
