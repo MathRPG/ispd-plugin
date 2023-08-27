@@ -342,8 +342,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
     public void handleAllocationAck (final Simulation simulacao, final Request request) {
         //quem deve resolver esse método é o VMM de origem
         //portanto as maquinas só encaminham pro próximo centro de serviço.
-        System.out.println("--------------------------------------");
-        System.out.println("Encaminhando ACK de alocação para " + request.getOrigem().id());
         final var evt = new Event(
             simulacao.getTime(this), EventType.MESSAGE, request.getCaminho().remove(0), request
         );
