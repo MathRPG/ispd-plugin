@@ -261,7 +261,7 @@ public class CloudSequential extends Simulation {
         return this.time;
     }
 
-    public void addEventos (final List<GridTask> tarefas) {
+    private void addEventos (final List<GridTask> tarefas) {
         for (final GridTask tarefa : tarefas) {
             final var evt = new ispd.motor.Event(
                 tarefa.getTimeCriacao(),
