@@ -6,10 +6,11 @@ import ispd.motor.simul.*;
 import java.util.*;
 import javax.swing.*;
 
-public class Value {
+public enum Value {
+    ;
 
     //Método para inserção de falha de resposta
-    public void setFaults (
+    public static void setFaults (
         final ProgressTracker janela,
         final CloudQueueNetwork redeDeFilas,
         final Global global

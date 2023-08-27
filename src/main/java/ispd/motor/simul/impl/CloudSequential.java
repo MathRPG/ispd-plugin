@@ -112,9 +112,7 @@ public class CloudSequential extends Simulation {
             if (selecionarFalhas.cbxValores != null) {
                 window.println("There are injected Values failures.");
                 window.println("Creating value fault.");
-                final Global global = new Global();
-                final Value  value  = new Value();
-                value.setFaults(window, cloudQueueNetwork, global);
+                Value.setFaults(window, cloudQueueNetwork, new Global());
             } else {
                 window.println("There aren't injected Value failures.");
             }
