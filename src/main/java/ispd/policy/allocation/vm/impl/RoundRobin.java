@@ -17,8 +17,6 @@ public class RoundRobin extends VmAllocationPolicy {
 
     @Override
     public void iniciar () {
-        this.test();
-
         this.physicalMachine = this.escravos.listIterator(0);
 
         if (this.maquinasVirtuais.isEmpty()) {
@@ -52,16 +50,6 @@ public class RoundRobin extends VmAllocationPolicy {
     @Override
     public VirtualMachine escalonarVM () {
         return this.maquinasVirtuais.remove(0);
-    }
-
-    private void test () {
-        if (this.maquinasVirtuais.isEmpty()) {
-            System.out.println("sem vms setadas");
-        }
-        System.out.println("Lista de VMs");
-        this.maquinasVirtuais.stream()
-            .map(Processing::id)
-            .forEach(System.out::println);
     }
 
     private void findMachineForTask (final VirtualMachine vm) {
