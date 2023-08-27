@@ -62,10 +62,8 @@ public class CloudMaster extends Processing implements VmMaster,
         if (cliente instanceof final CloudTask trf) {
             final var vm = trf.getVM_enviada();
             if (cliente.getCaminho().isEmpty()) {
-                // trecho dbg
                 if (!this.maquinasVirtuais.contains(vm)) {
-                    this.maquinasVirtuais.add(vm); // adiciona na lista de
-                    // maquinas virtuais
+                    this.maquinasVirtuais.add(vm);
                     if (this.alocDisponivel) {
                         this.alocDisponivel = false;
                         this.alocadorVM.addVM(vm);
