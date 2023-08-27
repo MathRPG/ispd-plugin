@@ -9,7 +9,7 @@ import javax.swing.*;
 public class Value {
 
     //Método para inserção de falha de resposta
-    public void FIValue1 (
+    public void setFaults (
         final ProgressTracker janela,
         final CloudQueueNetwork redeDeFilas,
         final Global global

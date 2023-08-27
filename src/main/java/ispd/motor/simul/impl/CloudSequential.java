@@ -114,7 +114,7 @@ public class CloudSequential extends Simulation {
                 window.println("Creating value fault.");
                 final Global global = new Global();
                 final Value  value  = new Value();
-                value.FIValue1(window, cloudQueueNetwork, global);
+                value.setFaults(window, cloudQueueNetwork, global);
             } else {
                 window.println("There aren't injected Value failures.");
             }
