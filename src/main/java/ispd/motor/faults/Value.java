@@ -22,9 +22,7 @@ public class Value {
         //Criação de filas vazias para armazenamento das máquinas antes da falha
 
         //Processo de falha e tratamento
-        if (redeDeFilas.getVMs() == null) {
-
-        } else if (redeDeFilas.getVMs() != null) {
+        if ((redeDeFilas.getVMs() != null) && (redeDeFilas.getVMs() != null)) {
             //Variáveis para recuperação
             final double OciosidadeComputacaoOri  = global.getOciosidadeComputacao();
             final double OciosidadeComunicacaoOri = global.getOciosidadeComunicacao();
@@ -34,7 +32,8 @@ public class Value {
             //Criação de números aleatórios para alterações das respostas para usuários
             final Random cloudMachines = new Random(); //Máquinas da nuvem
 
-            final double metricsCloud = cloudMachines.nextInt(redeDeFilas.getMaquinasCloud().size());
+            final double metricsCloud =
+                cloudMachines.nextInt(redeDeFilas.getMaquinasCloud().size());
 
             global.setOciosidadeComputacao(metricsCloud / 100);
             global.setOciosidadeComunicacao(metricsCloud);
@@ -52,6 +51,7 @@ public class Value {
                 global.setSatisfacaoMedia(SatisfacaoMediaOri);
                 global.setEficiencia(EficienciaOri);
             }
+
         }
     }
 }
