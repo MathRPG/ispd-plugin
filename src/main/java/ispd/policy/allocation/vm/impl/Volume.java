@@ -51,7 +51,6 @@ public class Volume extends VmAllocationPolicy {
     @Override
     public void escalonar () {
         while (!(this.maquinasVirtuais.isEmpty())) {
-            System.out.println("------------------------------------------");
             int num_escravos = this.escravos.size();
 
             final VirtualMachine auxVM = this.escalonarVM();
@@ -61,31 +60,18 @@ public class Volume extends VmAllocationPolicy {
                     final Processing auxMaq = this.escalonarRecurso();
                     // escalona o recurso
                     if (auxMaq instanceof CloudMaster) {
-
-                        System.out.println(auxMaq.id()
-                                           + " é um VMM, a VM "
-                                           + "será redirecionada");
                         auxVM.setCaminho(this.escalonarRota(auxMaq));
                         // salvando uma lista de VMMs intermediarios no caminho da vm e seus respectivos caminhos
-                        System.out.println(auxVM.id() + " enviada para " + auxMaq.id());
                         this.mestre.sendVm(auxVM);
-                        System.out.println("---------------------------------------");
                         break;
                     } else {
-                        System.out.println("Checagem de recursos:");
-                        final CloudMachine maq        = (CloudMachine) auxMaq;
-                        final double       memoriaMaq = maq.getMemoriaDisponivel();
-                        System.out.println("memoriaMaq: " + memoriaMaq);
-                        final double memoriaNecessaria = auxVM.getMemoriaDisponivel();
-                        System.out.println("memorianecessaria: " + memoriaNecessaria);
-                        final double discoMaq = maq.getDiscoDisponivel();
-                        System.out.println("discoMaq: " + discoMaq);
-                        final double discoNecessario = auxVM.getDiscoDisponivel();
-                        System.out.println("disconecessario: " + discoNecessario);
-                        final int maqProc = maq.getProcessadoresDisponiveis();
-                        System.out.println("ProcMaq: " + maqProc);
-                        final int procVM = auxVM.getProcessadoresDisponiveis();
-                        System.out.println("ProcVM: " + procVM);
+                        final CloudMachine maq               = (CloudMachine) auxMaq;
+                        final double       memoriaMaq        = maq.getMemoriaDisponivel();
+                        final double       memoriaNecessaria = auxVM.getMemoriaDisponivel();
+                        final double       discoMaq          = maq.getDiscoDisponivel();
+                        final double       discoNecessario   = auxVM.getDiscoDisponivel();
+                        final int          maqProc           = maq.getProcessadoresDisponiveis();
+                        final int          procVM            = auxVM.getProcessadoresDisponiveis();
 
                         if ((
                             memoriaNecessaria <= memoriaMaq
@@ -93,20 +79,11 @@ public class Volume extends VmAllocationPolicy {
                             && procVM <= maqProc
                         )) {
                             maq.setMemoriaDisponivel(memoriaMaq - memoriaNecessaria);
-                            System.out.println("Realizando o controle de recurso:");
-                            System.out.println("memoria atual da maq: " + (
-                                memoriaMaq
-                                - memoriaNecessaria
-                            ));
                             maq.setDiscoDisponivel(discoMaq - discoNecessario);
-                            System.out.println("disco atual maq: " + (discoMaq - discoNecessario));
                             maq.setProcessadoresDisponiveis(maqProc - procVM);
-                            System.out.println("proc atual: " + (maqProc - procVM));
                             auxVM.setMaquinaHospedeira((CloudMachine) auxMaq);
                             auxVM.setCaminho(this.escalonarRota(auxMaq));
-                            System.out.println(auxVM.id() + " enviada para " + auxMaq.id());
                             this.mestre.sendVm(auxVM);
-                            System.out.println("---------------------------------------");
                             this.atualizarVolume();
                             break;
                         } else {
@@ -114,12 +91,9 @@ public class Volume extends VmAllocationPolicy {
                         }
                     }
                 } else {
-                    System.out.println(auxVM.id() + " foi rejeitada");
                     auxVM.setStatus(VirtualMachineState.REJECTED);
                     this.VMsRejeitadas.add(auxVM);
-                    System.out.println("Adicionada na lista de rejeitadas");
                     num_escravos--;
-                    System.out.println("---------------------------------------");
                 }
             }
         }
