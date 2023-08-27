@@ -23,8 +23,6 @@ public class Value {
 
         //Processo de falha e tratamento
         if (redeDeFilas.getVMs() == null) {
-            System.out.println("---------------------------------------");
-            System.out.println("Rede de filas é nula.");
 
         } else if (redeDeFilas.getVMs() != null) {
             //Variáveis para recuperação
