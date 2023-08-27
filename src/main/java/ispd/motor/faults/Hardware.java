@@ -14,13 +14,7 @@ public class Hardware {
         final List<CloudMachine> machines
     ) {
         final int qn = machines.size() - 1;
-        System.out.printf("Novo redeDeFilas: %d\n", qn);
         for (int i = 0; i <= qn; i++) {
-            System.out.printf("""
-                              Novo Rede de Filas: %d
-                              Novo Rede de Filas Cloud get VMs: %s
-                              Novo Rede de Filas Cloud: getMaquinasCloud: %s
-                              """, qn, vms, machines);
         }
     }
 
