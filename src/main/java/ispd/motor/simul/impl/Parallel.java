@@ -54,7 +54,7 @@ public class Parallel extends Simulation {
             }
         }
 
-        for (final Service rec : this.recursos) {
+        for (final var rec : this.recursos) {
             this.threadFilaEventos.put(rec, new PriorityBlockingQueue<>());
             this.threadTrabalhador.put(rec, new ThreadTrabalhador(rec, this));
         }
@@ -94,10 +94,10 @@ public class Parallel extends Simulation {
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         // Realizar a simulação
-        boolean fim = false;
+        var fim = false;
         while (!fim) {
             fim = true;
-            for (final Service rec : this.recursos) {
+            for (final var rec : this.recursos) {
                 if (!this.threadFilaEventos.get(rec).isEmpty()
                     && !this.threadTrabalhador.get(rec).executando) {
                     this.threadTrabalhador.get(rec).executando = true;
@@ -149,7 +149,7 @@ public class Parallel extends Simulation {
             return this.threadTrabalhador.get(origin).getRelogioLocal();
         } else {
             double val = 0;
-            for (final Service rec : this.recursos) {
+            for (final var rec : this.recursos) {
                 if (this.threadTrabalhador.get(rec).getRelogioLocal() > val) {
                     val = this.threadTrabalhador.get(rec).getRelogioLocal();
                 }
@@ -160,8 +160,8 @@ public class Parallel extends Simulation {
 
     @Override
     public void createRouting () {
-        for (final Processing mst : this.getQueueNetwork().getMestres()) {
-            final Simulable temp = (Simulable) mst;
+        for (final var mst : this.getQueueNetwork().getMestres()) {
+            final var temp = (Simulable) mst;
             //Cede acesso ao mestre a fila de eventos futuros
             temp.setSimulation(this);
             //Encontra menor caminho entre o mestre e seus escravos
@@ -173,7 +173,7 @@ public class Parallel extends Simulation {
             .isEmpty()) {
             this.getWindow().println("The model has no processing slaves.", Color.orange);
         } else {
-            for (final GridMachine maq : this.getQueueNetwork().getMaquinas()) {
+            for (final var maq : this.getQueueNetwork().getMaquinas()) {
                 //Encontra menor caminho entre o escravo e seu mestre
                 this.threadPool.execute(new determinarCaminho(maq));
             }
@@ -218,7 +218,7 @@ public class Parallel extends Simulation {
             synchronized (this) {
                 while (!Parallel.this.threadFilaEventos.get(this.recurso).isEmpty()) {
                     // Verificando ocorencia de erro
-                    final ispd.motor.Event eventoAtual =
+                    final var eventoAtual =
                         Parallel.this.threadFilaEventos.get(this.recurso).poll();
                     if (eventoAtual.getCreationTime() > this.relogioLocal) {
                         this.relogioLocal = eventoAtual.getCreationTime();
@@ -306,15 +306,15 @@ public class Parallel extends Simulation {
                             .get(this.getRecurso())
                             .peek()
                             .getCreationTime()) {
-                        final GridMaster mestre = (GridMaster) this.item[0];
-                        for (final Processing maq :
+                        final var mestre = (GridMaster) this.item[0];
+                        for (final var maq :
                             mestre.getEscalonador().getEscravos()) {
                             mestre.atualizar(maq, (Double) this.item[2]);
                         }
                         this.item[2] =
                             (Double) this.item[2] + (Double) this.item[1];
                     }
-                    final ispd.motor.Event eventoAtual =
+                    final var eventoAtual =
                         Parallel.this.threadFilaEventos.get(this.getRecurso()).poll();
                     if (eventoAtual.getCreationTime() > this.getRelogioLocal()) {
                         this.setRelogioLocal(eventoAtual.getCreationTime());
@@ -371,10 +371,10 @@ public class Parallel extends Simulation {
         @Override
         public void run () {
             synchronized (Parallel.this.threadFilaEventos.get(this.mestre)) {
-                for (final GridTask tarefa : Parallel.this.getJobs()) {
+                for (final var tarefa : Parallel.this.getJobs()) {
                     if (tarefa.getOrigem() == this.mestre) {
                         //criar evento...
-                        final ispd.motor.Event evt = new Event(
+                        final var evt = new Event(
                             tarefa.getTimeCriacao(), EventType.ARRIVAL, tarefa.getOrigem(), tarefa
                         );
                         Parallel.this.threadFilaEventos.get(this.mestre).add(evt);
