@@ -10,8 +10,6 @@ import java.util.*;
 
 public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens, Vertice {
 
-    private final List<CS_Comunicacao> conexoesEntrada = new ArrayList<>();
-
     private final List<CS_Comunicacao> conexoesSaida = new ArrayList<>();
 
     private final GridSchedulingPolicy escalonador;
@@ -435,11 +433,6 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
     }
 
     @Override
-    public void addConexoesEntrada (final CS_Link link) {
-        this.conexoesEntrada.add(link);
-    }
-
-    @Override
     public void addConexoesSaida (final CS_Link link) {
         this.conexoesSaida.add(link);
     }
@@ -490,10 +483,6 @@ public class CS_Mestre extends CS_Processamento implements GridMaster, Mensagens
 
     public void addConexoesSaida (final CS_Comunicacao Switch) {
         this.conexoesSaida.add(Switch);
-    }
-
-    public void addConexoesEntrada (final CS_Comunicacao Switch) {
-        this.conexoesEntrada.add(Switch);
     }
 
     public void addEscravo (final CS_Processamento maquina) {

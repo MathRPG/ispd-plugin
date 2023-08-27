@@ -7,8 +7,6 @@ import java.util.*;
 
 public class CS_Switch extends CS_Comunicacao implements Vertice {
 
-    private final List<CentroServico> conexoesEntrada = new ArrayList<>();
-
     private final List<CentroServico> conexoesSaida = new ArrayList<>();
 
     private final List<Tarefa> filaPacotes = new ArrayList<>();
@@ -143,10 +141,6 @@ public class CS_Switch extends CS_Comunicacao implements Vertice {
     @Override
     public void addConexoesSaida (final CS_Link conexao) {
         this.conexoesSaida.add(conexao);
-    }
-
-    public void addConexoesEntrada (final CentroServico conexao) {
-        this.conexoesEntrada.add(conexao);
     }
 
     public void addConexoesSaida (final CentroServico conexao) {

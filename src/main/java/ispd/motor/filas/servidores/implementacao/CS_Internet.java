@@ -7,19 +7,12 @@ import java.util.*;
 
 public class CS_Internet extends CS_Comunicacao implements Vertice {
 
-    private final List<CS_Link> conexoesEntrada = new ArrayList<>();
-
     private final List<CS_Link> conexoesSaida = new ArrayList<>();
 
     public CS_Internet (
         final String id, final double LarguraBanda, final double Ocupacao, final double Latencia
     ) {
         super(id, LarguraBanda, Ocupacao, Latencia);
-    }
-
-    @Override
-    public void addConexoesEntrada (final CS_Link conexao) {
-        this.conexoesEntrada.add(conexao);
     }
 
     @Override

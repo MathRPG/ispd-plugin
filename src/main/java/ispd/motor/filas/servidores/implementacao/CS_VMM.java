@@ -11,8 +11,6 @@ import java.util.*;
 
 public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, Mensagens, Vertice {
 
-    private final List<CS_Comunicacao> conexoesEntrada = new ArrayList<>();
-
     private final List<CS_Comunicacao> conexoesSaida = new ArrayList<>();
 
     private final CloudSchedulingPolicy escalonador;
@@ -488,11 +486,6 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
     }
 
     @Override
-    public void addConexoesEntrada (final CS_Link link) {
-        this.conexoesEntrada.add(link);
-    }
-
-    @Override
     public void addConexoesSaida (final CS_Link link) {
         this.conexoesSaida.add(link);
     }
@@ -546,10 +539,6 @@ public class CS_VMM extends CS_Processamento implements VmMaster, CloudMaster, M
 
     public void addConexoesSaida (final CS_Comunicacao Switch) {
         this.conexoesSaida.add(Switch);
-    }
-
-    public void addConexoesEntrada (final CS_Comunicacao Switch) {
-        this.conexoesEntrada.add(Switch);
     }
 
     public void addEscravo (final CS_Processamento maquina) {

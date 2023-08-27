@@ -7,8 +7,6 @@ import java.util.*;
 
 public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
 
-    private final List<CS_Comunicacao> conexoesEntrada = new ArrayList<>();
-
     private final List<CS_Comunicacao> conexoesSaida = new ArrayList<>();
 
     private final List<Tarefa> filaTarefas = new ArrayList<>();
@@ -139,11 +137,6 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
         final double loadFactor, final int machineNumber
     ) {
         this(id, owner, computationalPower, coreCount, loadFactor, machineNumber, 0.0);
-    }
-
-    @Override
-    public void addConexoesEntrada (final CS_Link conexao) {
-        this.conexoesEntrada.add(conexao);
     }
 
     @Override
@@ -498,10 +491,6 @@ public class CS_Maquina extends CS_Processamento implements Mensagens, Vertice {
                 throw new LinkageError();
             }
         }
-    }
-
-    public void addConexoesEntrada (final CS_Switch conexao) {
-        this.conexoesEntrada.add(conexao);
     }
 
     public void addConexoesSaida (final CS_Switch conexao) {

@@ -10,8 +10,6 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
 
     public static final int DESLIGADO = 2;
 
-    private final List<CS_Comunicacao> conexoesEntrada = new ArrayList<>();
-
     private final List<CS_Comunicacao> conexoesSaida = new ArrayList<>();
 
     private final List<Tarefa> filaTarefas = new ArrayList<>();
@@ -488,11 +486,6 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
     }
 
     @Override
-    public void addConexoesEntrada (final CS_Link conexao) {
-        this.conexoesEntrada.add(conexao);
-    }
-
-    @Override
     public void addConexoesSaida (final CS_Link conexao) {
         this.conexoesSaida.add(conexao);
     }
@@ -527,10 +520,6 @@ public class CS_MaquinaCloud extends CS_Processamento implements Mensagens, Vert
 
     public void setProcessadoresDisponiveis (final int processadoresDisponiveis) {
         this.processadoresDisponiveis = processadoresDisponiveis;
-    }
-
-    public void addConexoesEntrada (final CS_Switch conexao) {
-        this.conexoesEntrada.add(conexao);
     }
 
     public void addConexoesSaida (final CS_Switch conexao) {
