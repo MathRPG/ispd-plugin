@@ -188,9 +188,6 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
 
     @Override
     public void clientExit (final Simulation simulacao, final GridTask cliente) {
-        System.out.println("--------------------------------------");
-        System.out.println(this.id() + ": Saída de cliente");
-        System.out.println("--------------------------------------");
     }
 
     @Override
