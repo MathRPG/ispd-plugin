@@ -116,18 +116,18 @@ public class CloudMachine extends Processing implements RequestHandler, Vertex {
         } else {
             //procedimento caso cliente seja uma tarefa!
             final var vm = (VirtualMachine) cliente.getLocalProcessamento();
+            final Event evtFut;
             if (vm.getMaquinaHospedeira().equals(this)) {
                 //se a tarefa é endereçada pra uma VM qu está alocada nessa máquina
-                final var evtFut = new Event(
+                evtFut = new Event(
                     simulacao.getTime(this), EventType.ARRIVAL, vm, cliente
                 );
-                simulacao.addFutureEvent(evtFut);
             } else {
-                final var evtFut = new Event(
+                evtFut = new Event(
                     simulacao.getTime(this), EventType.EXIT, this, cliente
                 );
-                simulacao.addFutureEvent(evtFut);
             }
+            simulacao.addFutureEvent(evtFut);
         }
     }
 
