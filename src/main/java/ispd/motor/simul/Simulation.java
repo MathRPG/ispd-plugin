@@ -80,11 +80,10 @@ public abstract class Simulation {
     }
 
     protected void initCloudAllocators () {
-        this.cloudQueueNetwork
-            .getMestres()
-            .stream()
+        this.cloudQueueNetwork.getMestres().stream()
             .map(CloudMaster.class::cast)
-            .forEach(master -> master.getAlocadorVM().iniciar());
+            .map(CloudMaster::getAlocadorVM)
+            .forEach(Policy::iniciar);
     }
 
     protected void initCloudSchedulers () {
