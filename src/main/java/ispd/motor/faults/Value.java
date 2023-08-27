@@ -22,7 +22,7 @@ public class Value {
         //Criação de filas vazias para armazenamento das máquinas antes da falha
 
         //Processo de falha e tratamento
-        if ((redeDeFilas.getVMs() != null) && (redeDeFilas.getVMs() != null)) {
+        if (redeDeFilas.getVMs() != null) {
             //Variáveis para recuperação
             final double OciosidadeComputacaoOri  = global.getOciosidadeComputacao();
             final double OciosidadeComunicacaoOri = global.getOciosidadeComunicacao();
