@@ -78,7 +78,7 @@ public class CloudSequential extends Simulation {
                 window.println("There are injected hardware omission failures.");
                 window.println("Creating Hardware fault.");
                 final Hardware fihardware = new Hardware();
-                fihardware.FIHardware1(window, cloudQueueNetwork);
+                fihardware.showMessage(window, cloudQueueNetwork);
             } else {
                 window.println("There aren't injected hardware omission failures.");
             }

@@ -7,7 +7,7 @@ import javax.swing.*;
 
 public class Hardware {
 
-    public void FIHardware1 (
+    public void showMessage (
         final ProgressTracker janela,
         final CloudQueueNetwork gridQueueNetwork
     ) {
