@@ -118,11 +118,7 @@ public class Parallel extends Simulation {
 
     @Override
     public void addFutureEvent (final Event ev) {
-        if (ev.getType() == EventType.ARRIVAL) {
-            this.threadFilaEventos.get(ev.getServidor()).offer(ev);
-        } else {
-            this.threadFilaEventos.get(ev.getServidor()).offer(ev);
-        }
+        this.threadFilaEventos.get(ev.getServidor()).offer(ev);
     }
 
     @Override
