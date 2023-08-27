@@ -88,7 +88,7 @@ public class CloudSequential extends Simulation {
                 window.println("Creating software fault.");
                 window.println("Software failure created.");
                 final Software fisoftdware = new Software();
-                fisoftdware.FISfotware1(window, cloudQueueNetwork);
+                fisoftdware.FISfotware1(window);
             } else {
                 window.println("There aren't injected software omission failures.");
             }
