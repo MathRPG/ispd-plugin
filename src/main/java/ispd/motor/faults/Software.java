@@ -10,11 +10,7 @@ import javax.swing.*;
 public class Software {
 
     public void FISfotware1 (final ProgressTracker janela, final CloudQueueNetwork redeDeFilas) {
-        System.out.println("Estou em public FISoftware!! XD ");
-        //declaração das variáveis locais
-        //Criação de um instância para a classe JSelecionarFalhas
         new PickSimulationFaultsDialog();
-        //Confirmação do tipo de falha selecionada: Falha por omissão de hardware
         JOptionPane.showMessageDialog(null, "Falha de Omissão de software selecionada.");
 
         janela.println("Software failure created.");
