@@ -18,8 +18,6 @@ public class State {
 
         // Processo de falha e tratamento
         if (redeDeFilas.getVMs() == null) {
-            System.out.println("---------------------------------------");
-            System.out.println("Rede de filas é nula.");
         } else if (redeDeFilas.getVMs() != null) {
             // Criação de números aleatórios para impedir o estado de transmissão
             final Random cloudMachines = new Random(); //Máquinas da nuvem
