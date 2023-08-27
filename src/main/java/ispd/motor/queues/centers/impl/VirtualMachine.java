@@ -132,7 +132,7 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
             if (index == -1) {
                 final var auxMaq = this.maquinaHospedeira;
                 final var caminhoInter =
-                    new ArrayList<Service>(getMenorCaminhoIndiretoCloud(
+                    new ArrayList<>(getMenorCaminhoIndiretoCloud(
                         auxMaq,
                         (Processing) Origem
                     ));
