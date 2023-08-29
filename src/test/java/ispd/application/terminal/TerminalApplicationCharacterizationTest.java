@@ -113,6 +113,8 @@ class TerminalApplicationCharacterizationTest {
             .isInstanceOf(RuntimeException.class)
             .cause().isInstanceOf(UnrecognizedOptionException.class)
             .message().isSubstringOf(this.systemOutContents());
+
+        verify(this.outStream);
     }
 
     @ParameterizedTest
