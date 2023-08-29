@@ -2,7 +2,6 @@ package ispd.application.terminal;
 
 import static ispd.application.terminal.HasMessageIn.*;
 import static org.approvaltests.Approvals.verify;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -97,12 +96,9 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @NullAndEmptySource
     void givenEmptyOrNullOptions_whenInit_thenThrowsAndPrints (final String options) {
-        final var exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> this.initTerminalApplication(options)
-        );
-
-        assertThat(exception).message().isSubstringOf(this.systemOutContents());
+        assertThatThrownBy(() -> this.initTerminalApplication(options))
+            .isInstanceOf(IllegalArgumentException.class)
+            .message().isSubstringOf(this.systemOutContents());
 
         verify(this.outStream);
     }
