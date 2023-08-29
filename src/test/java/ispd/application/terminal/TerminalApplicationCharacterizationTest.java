@@ -3,6 +3,7 @@ package ispd.application.terminal;
 import static ispd.application.terminal.HasMessageIn.*;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -108,14 +109,10 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenUnrecognizedOption_whenInit_thenThrowsAndPrints () {
-        final var cause = assertThrows(
-            RuntimeException.class,
-            () -> this.initTerminalApplication("-z")
-        ).getCause();
-
-        assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnrecognizedOptionException.class));
-
-        verify(this.outStream);
+        assertThatThrownBy(() -> this.initTerminalApplication("-z"))
+            .isInstanceOf(RuntimeException.class)
+            .cause().isInstanceOf(UnrecognizedOptionException.class)
+            .message().isSubstringOf(this.systemOutContents());
     }
 
     @ParameterizedTest
