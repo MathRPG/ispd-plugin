@@ -139,12 +139,9 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenOptionWithInvalidNumberArgument_thenThrowsOnInit (final String options) {
-        final var cause = assertThrows(
-            RuntimeException.class,
-            () -> this.initTerminalApplication(options)
-        ).getCause();
-
-        assertThat(cause, is(instanceOf(NumberFormatException.class)));
+        assertThatThrownBy(() -> this.initTerminalApplication(options))
+            .isInstanceOf(RuntimeException.class)
+            .cause().isInstanceOf(NumberFormatException.class);
 
         verify(this.outStream);
     }
