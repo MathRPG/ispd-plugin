@@ -42,9 +42,8 @@ What design pattern applies here?
 
 ### File Editor
 
-Abstraction to encapsulate logic present in MainWindow and Policy Text Editor.
-
-Logic about maintaining a file (and potentially undoable actions) and keeping track of when changes are made.
+Abstraction to encapsulate logic present in MainWindow:
+maintaining a file (and potentially undoable actions) and keeping track of what and when changes are made.
 
 ### Configuration Window
 
@@ -111,11 +110,7 @@ Need to study use cases in code; Factory pattern might be more applicable.
 
 ### Logging Facility
 
-Again, Singleton probably applies here.
-
-Furthermore, a _proper_ logging library should be added to the project.
-
-Also, a logging _standard_ needs to be developed.
+Logging _standards_ needs to be developed.
 - Be careful to not revert to log-and-throw!
 
 ### ResourceManager
@@ -123,10 +118,6 @@ Also, a logging _standard_ needs to be developed.
 To manage resources such as external files, generated policies, etc.
 
 ### Translation Module
-
-UI and, in general, text translation needs to be localized to its own module.
-
-Perhaps a Singleton pattern applies here.
 
 `BundleKey`: Wrapper around `String`, to aid against primitive obsession.
 
