@@ -155,14 +155,16 @@
         <icon_id global="62" local="43"/>
     </link>
     <machine id="icon6" load="0.05" owner="user1" power="16000.0">
+        <icon_id global="6" local="6"/>
+        <position x="362" y="37"/>
         <master scheduler="RoundRobin">
             <slave id="4"/>
             <slave id="5"/>
         </master>
-        <position x="362" y="37"/>
-        <icon_id global="6" local="6"/>
     </machine>
     <machine id="icon0" load="0.05" owner="user1" power="33000.0">
+        <icon_id global="0" local="0"/>
+        <position x="243" y="224"/>
         <master scheduler="DynamicFPLTF">
             <slave id="1"/>
             <slave id="2"/>
@@ -172,8 +174,6 @@
             <slave id="4"/>
             <slave id="5"/>
         </master>
-        <position x="243" y="224"/>
-        <icon_id global="0" local="0"/>
     </machine>
     <link bandwidth="100.0" id="lan11" latency="0.005" load="0.05">
         <connect destination="1" origination="0"/>

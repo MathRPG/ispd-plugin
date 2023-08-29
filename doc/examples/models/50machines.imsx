@@ -795,6 +795,8 @@
         <icon_id global="113" local="62"/>
     </link>
     <machine id="icon0" load="0.05" owner="user1" power="33000.0">
+        <icon_id global="0" local="0"/>
+        <position x="437" y="274"/>
         <master scheduler="DynamicFPLTF">
             <slave id="1"/>
             <slave id="2"/>
@@ -847,8 +849,6 @@
             <slave id="66"/>
             <slave id="67"/>
         </master>
-        <position x="437" y="274"/>
-        <icon_id global="0" local="0"/>
     </machine>
     <machine id="icon60" load="0.05" owner="user1" power="33000.0">
         <position x="797" y="52"/>

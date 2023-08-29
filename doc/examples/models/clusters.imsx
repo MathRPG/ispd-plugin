@@ -143,6 +143,8 @@
         <icon_id global="34" local="14"/>
     </cluster>
     <machine id="icon0" load="0.05" owner="user1" power="33000.0">
+        <icon_id global="0" local="0"/>
+        <position x="303" y="202"/>
         <master scheduler="DynamicFPLTF">
             <slave id="1"/>
             <slave id="2"/>
@@ -195,8 +197,6 @@
             <slave id="66"/>
             <slave id="67"/>
         </master>
-        <position x="303" y="202"/>
-        <icon_id global="0" local="0"/>
     </machine>
     <link bandwidth="100.0" id="lan11" latency="0.005" load="0.05">
         <connect destination="1" origination="0"/>
