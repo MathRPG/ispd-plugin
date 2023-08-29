@@ -132,12 +132,10 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenInvalidAddress_whenInit_thenThrowsAndPrints () {
-        final var cause = assertThrows(
-            IllegalArgumentException.class,
-            () -> this.initTerminalApplication("-a NotAnAddress")
-        ).getCause();
-
-        assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnknownHostException.class));
+        assertThatThrownBy(() -> this.initTerminalApplication("-a NotAnAddress"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .cause().isInstanceOf(UnknownHostException.class)
+            .message().isSubstringOf(this.systemOutContents());
 
         verify(this.outStream);
     }
