@@ -2,7 +2,8 @@ package ispd.application.terminal;
 
 import static ispd.application.terminal.HasMessageIn.*;
 import static org.approvaltests.Approvals.verify;
-import static org.hamcrest.MatcherAssert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -100,7 +101,7 @@ class TerminalApplicationCharacterizationTest {
             () -> this.initTerminalApplication(options)
         );
 
-        assertThat(exception, hasMessageIn(this.systemOutContents()));
+        assertThat(exception).message().isSubstringOf(this.systemOutContents());
 
         verify(this.outStream);
     }
