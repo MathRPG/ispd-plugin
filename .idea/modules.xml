@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ispd-plugin.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ispd-plugin.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ispd-plugin.iml" filepath="$PROJECT_DIR$/.idea/modules/ispd-plugin.iml" />
     </modules>
   </component>
 </project>
