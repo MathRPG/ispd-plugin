@@ -251,12 +251,9 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenModelWithInvalidSchedulingPolicy_thenThrowsWhileInterpretingModel () {
-        final var exception = assertThrowsExactly(
-            UnknownPolicyException.class,
-            () -> this.runApplicationOnModelWith("oneMachineMasterIcon")
-        );
-
-        assertThat(exception, hasProperty("message", containsString("---")));
+        assertThatThrownBy(() -> this.runApplicationOnModelWith("oneMachineMasterIcon"))
+            .isInstanceOf(UnknownPolicyException.class)
+            .message().contains("---");
 
         verify(this.outStream);
     }
