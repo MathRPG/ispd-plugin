@@ -1,7 +1,8 @@
 package ispd.gui.text;
 
 import static java.util.Collections.*;
-import static org.hamcrest.MatcherAssert.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -20,19 +21,17 @@ class TextSupplierTest {
     private static final String VALUE = "value";
 
     @BeforeAll
-    static void givenNoBundle_whenGetText_thenThrowsMissingResourceException () {
-        assertThrowsExactly(
-            MissingTextSupplierException.class,
-            () -> TextSupplier.getText(KEY)
-        );
+    static void givenNoBundle_whenGetText_thenThrowsNoConfiguredBundleException () {
+        assertThatThrownBy(() -> TextSupplier.getText(KEY))
+            .isInstanceOf(NoConfiguredBundleException.class);
     }
 
     private static void assertThrowsNpe (final Executable executable) {
         assertThrows(NullPointerException.class, executable);
     }
 
-    private static Supplier<String> messageContains (final CharSequence cs) {
-        return argThat(sup -> sup.get().contains(cs));
+    private static Supplier<String> messageContainsKey () {
+        return argThat(sup -> sup.get().contains(KEY));
     }
 
     @Test
@@ -58,7 +57,7 @@ class TextSupplierTest {
         TextSupplier.configure(MapBundle.EMPTY, logger);
 
         assertThat(TextSupplier.getText(KEY), is(KEY));
-        verify(logger, times(1)).warning(messageContains(KEY));
+        verify(logger, times(1)).warning(messageContainsKey());
     }
 
     @Test

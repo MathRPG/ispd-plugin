@@ -25,7 +25,7 @@ public class TextSupplier {
     public static @Nls String getText (final @NonNls @NotNull String key) {
         return theInstance
             .map(ins -> ins.getBundleText(key))
-            .orElseThrow(MissingTextSupplierException::new);
+            .orElseThrow(NoConfiguredBundleException::new);
     }
 
     private static String missingTextMessage (final String key) {
