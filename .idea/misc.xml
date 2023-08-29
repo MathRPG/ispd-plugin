@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
     <list size="1">
@@ -10,6 +11,11 @@
   </component>
   <component name="JavaccProjectSettings">
     <option name="injectionSupportLevel" value="FULL" />
+  </component>
+  <component name="JavadocGenerationManager">
+    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/doc/javadoc" />
+    <option name="OPTION_INCLUDE_LIBS" value="true" />
+    <option name="OPTION_LINK_TO_JDK_DOCS" value="true" />
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="17" project-jdk-type="JavaSDK" />
 </project>
