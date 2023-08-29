@@ -124,12 +124,10 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenOptionWithMissingArgument_whenInit_thenThrowsAndPrints (final String options) {
-        final var cause = assertThrows(
-            RuntimeException.class,
-            () -> this.initTerminalApplication(options)
-        ).getCause();
-
-        assertThat(cause, this.hasMessageInSysOut_andIsOfType(MissingArgumentException.class));
+        assertThatThrownBy(() -> this.initTerminalApplication(options))
+            .isInstanceOf(RuntimeException.class)
+            .cause().isInstanceOf(MissingArgumentException.class)
+            .message().isSubstringOf(this.systemOutContents());
     }
 
     @Test
