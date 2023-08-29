@@ -84,7 +84,7 @@ Currently thinking the final target value would be a `String`, but perhaps the c
 - `Key` needs a unique identifier to be bound safely, and that's it.
 - Target 'thing' only needs to be composable.
 
-Binds do not need to happen instantaneously, things could be lazily evaluated.
+Binds do not need to happen instantaneously, things could be lazily evaluated. (Use of Suppliers)
 
 Partial results might or might not be returnable; if so, need a way to nest `Key` within target `String` (or type).
 
