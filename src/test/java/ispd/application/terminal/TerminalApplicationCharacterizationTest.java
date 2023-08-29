@@ -12,7 +12,6 @@ import ispd.policy.loaders.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.nio.file.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
 import org.approvaltests.*;
@@ -22,8 +21,6 @@ import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
 class TerminalApplicationCharacterizationTest {
-
-    public static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
 
     private static final CharSequence FILE_NAME_DELIMITER = "_";
 

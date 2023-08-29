@@ -12,7 +12,7 @@ public enum ModelFolder {
     private final Path path;
 
     ModelFolder (final String folderName) {
-        this.path = TerminalApplicationCharacterizationTest.MODEL_FOLDER_PATH.resolve(folderName);
+        this.path = BasePathHolder.BASE_PATH.resolve(folderName);
     }
 
     public @NotNull String pathToModel (final String modelName) {
@@ -21,5 +21,10 @@ public enum ModelFolder {
 
     public @NotNull String pathToFile (final String fileName) {
         return this.path.resolve(fileName).toString();
+    }
+
+    private static class BasePathHolder {
+
+        private static final Path BASE_PATH = Path.of("src", "test", "resources", "models");
     }
 }
