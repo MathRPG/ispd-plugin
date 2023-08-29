@@ -1,8 +1,8 @@
 package ispd.application.terminal;
 
-import static ispd.application.terminal.HasMessageIn.*;
 import static org.approvaltests.Approvals.verify;
-import static org.hamcrest.MatcherAssert.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -12,19 +12,15 @@ import ispd.policy.loaders.*;
 import java.io.*;
 import java.net.*;
 import java.nio.charset.*;
-import java.nio.file.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
 import org.approvaltests.*;
-import org.hamcrest.core.*;
 import org.jetbrains.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
 import org.junit.jupiter.params.provider.*;
 
 class TerminalApplicationCharacterizationTest {
-
-    public static final Path MODEL_FOLDER_PATH = Path.of("src", "test", "resources", "models");
 
     private static final CharSequence FILE_NAME_DELIMITER = "_";
 
@@ -77,11 +73,6 @@ class TerminalApplicationCharacterizationTest {
         return this.outStream.toString();
     }
 
-    private <T> CombinableMatcher<Throwable> hasMessageInSysOut_andIsOfType (final Class<T> type) {
-        return both(hasMessageIn(this.systemOutContents()))
-            .and(is(instanceOf(type)));
-    }
-
     @BeforeEach
     void replaceSystemOut () {
         System.setOut(new PrintStream(this.outStream, true, StandardCharsets.UTF_8));
@@ -95,24 +86,19 @@ class TerminalApplicationCharacterizationTest {
     @ParameterizedTest
     @NullAndEmptySource
     void givenEmptyOrNullOptions_whenInit_thenThrowsAndPrints (final String options) {
-        final var exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> this.initTerminalApplication(options)
-        );
-
-        assertThat(exception, hasMessageIn(this.systemOutContents()));
+        assertThatThrownBy(() -> this.initTerminalApplication(options))
+            .isInstanceOf(IllegalArgumentException.class)
+            .message().isSubstringOf(this.systemOutContents());
 
         verify(this.outStream);
     }
 
     @Test
     void givenUnrecognizedOption_whenInit_thenThrowsAndPrints () {
-        final var cause = assertThrows(
-            RuntimeException.class,
-            () -> this.initTerminalApplication("-z")
-        ).getCause();
-
-        assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnrecognizedOptionException.class));
+        assertThatThrownBy(() -> this.initTerminalApplication("-z"))
+            .isInstanceOf(RuntimeException.class)
+            .cause().isInstanceOf(UnrecognizedOptionException.class)
+            .message().isSubstringOf(this.systemOutContents());
 
         verify(this.outStream);
     }
@@ -128,22 +114,18 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenOptionWithMissingArgument_whenInit_thenThrowsAndPrints (final String options) {
-        final var cause = assertThrows(
-            RuntimeException.class,
-            () -> this.initTerminalApplication(options)
-        ).getCause();
-
-        assertThat(cause, this.hasMessageInSysOut_andIsOfType(MissingArgumentException.class));
+        assertThatThrownBy(() -> this.initTerminalApplication(options))
+            .isInstanceOf(RuntimeException.class)
+            .cause().isInstanceOf(MissingArgumentException.class)
+            .message().isSubstringOf(this.systemOutContents());
     }
 
     @Test
     void givenInvalidAddress_whenInit_thenThrowsAndPrints () {
-        final var cause = assertThrows(
-            IllegalArgumentException.class,
-            () -> this.initTerminalApplication("-a NotAnAddress")
-        ).getCause();
-
-        assertThat(cause, this.hasMessageInSysOut_andIsOfType(UnknownHostException.class));
+        assertThatThrownBy(() -> this.initTerminalApplication("-a NotAnAddress"))
+            .isInstanceOf(IllegalArgumentException.class)
+            .cause().isInstanceOf(UnknownHostException.class)
+            .message().isSubstringOf(this.systemOutContents());
 
         verify(this.outStream);
     }
@@ -157,12 +139,9 @@ class TerminalApplicationCharacterizationTest {
         }
     )
     void givenOptionWithInvalidNumberArgument_thenThrowsOnInit (final String options) {
-        final var cause = assertThrows(
-            RuntimeException.class,
-            () -> this.initTerminalApplication(options)
-        ).getCause();
-
-        assertThat(cause, is(instanceOf(NumberFormatException.class)));
+        assertThatThrownBy(() -> this.initTerminalApplication(options))
+            .isInstanceOf(RuntimeException.class)
+            .cause().isInstanceOf(NumberFormatException.class);
 
         verify(this.outStream);
     }
@@ -171,11 +150,7 @@ class TerminalApplicationCharacterizationTest {
     void givenValidOptions_whenInit_thenPrintsNothingToStandardOut () {
         final var ignored = this.initTerminalApplication("-h");
 
-        assertThat(
-            "Should not print anything to standard out on valid initialization.",
-            this.systemOutContents(),
-            is(emptyString())
-        );
+        assertThat(this.systemOutContents(), is(emptyString()));
     }
 
     @ParameterizedTest
@@ -276,12 +251,9 @@ class TerminalApplicationCharacterizationTest {
 
     @Test
     void givenModelWithInvalidSchedulingPolicy_thenThrowsWhileInterpretingModel () {
-        final var exception = assertThrowsExactly(
-            UnknownPolicyException.class,
-            () -> this.runApplicationOnModelWith("oneMachineMasterIcon")
-        );
-
-        assertThat(exception, hasProperty("message", containsString("---")));
+        assertThatThrownBy(() -> this.runApplicationOnModelWith("oneMachineMasterIcon"))
+            .isInstanceOf(UnknownPolicyException.class)
+            .message().contains("---");
 
         verify(this.outStream);
     }
