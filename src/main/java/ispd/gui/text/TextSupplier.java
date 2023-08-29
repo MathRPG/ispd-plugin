@@ -7,7 +7,7 @@ import org.jetbrains.annotations.*;
 
 public class TextSupplier {
 
-    private static final Logger DEFAULT_LOGGER = Logger.getLogger(TextSupplier.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TextSupplier.class.getName());
 
     private static final String MISSING_KEY_TEXT_FORMAT = "Missing text for key \"{0}\"";
 
@@ -22,18 +22,18 @@ public class TextSupplier {
         this.logger = Objects.requireNonNull(logger);
     }
 
-    public static @Nls String getText (final @NonNls String key) {
+    public static @Nls String getText (final @NonNls @NotNull String key) {
         return theInstance
             .map(ins -> ins.getBundleText(key))
             .orElseThrow(MissingTextSupplierException::new);
     }
 
-    private static @NotNull String missingTextMessage (final String key) {
+    private static String missingTextMessage (final String key) {
         return MessageFormat.format(MISSING_KEY_TEXT_FORMAT, key);
     }
 
     public static void configure (final @NotNull ResourceBundle newBundle) {
-        configure(newBundle, DEFAULT_LOGGER);
+        configure(newBundle, LOGGER);
     }
 
     public static void configure (
