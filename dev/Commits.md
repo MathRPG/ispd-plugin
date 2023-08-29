@@ -1,3 +1,5 @@
+Inspired by [Arlo's Commit Notation](https://github.com/RefactoringCombos/ArlosCommitNotation).
+
 Template:
 
 ```
