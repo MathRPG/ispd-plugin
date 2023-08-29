@@ -1,6 +1,5 @@
 package ispd.application.terminal;
 
-import static ispd.application.terminal.HasMessageIn.*;
 import static org.approvaltests.Approvals.verify;
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -17,7 +16,6 @@ import java.nio.file.*;
 import java.util.regex.*;
 import org.apache.commons.cli.*;
 import org.approvaltests.*;
-import org.hamcrest.core.*;
 import org.jetbrains.annotations.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.*;
@@ -76,11 +74,6 @@ class TerminalApplicationCharacterizationTest {
 
     private String systemOutContents () {
         return this.outStream.toString();
-    }
-
-    private <T> CombinableMatcher<Throwable> hasMessageInSysOut_andIsOfType (final Class<T> type) {
-        return both(hasMessageIn(this.systemOutContents()))
-            .and(is(instanceOf(type)));
     }
 
     @BeforeEach
