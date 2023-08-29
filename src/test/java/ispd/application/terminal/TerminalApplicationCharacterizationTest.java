@@ -150,11 +150,7 @@ class TerminalApplicationCharacterizationTest {
     void givenValidOptions_whenInit_thenPrintsNothingToStandardOut () {
         final var ignored = this.initTerminalApplication("-h");
 
-        assertThat(
-            "Should not print anything to standard out on valid initialization.",
-            this.systemOutContents(),
-            is(emptyString())
-        );
+        assertThat(this.systemOutContents(), is(emptyString()));
     }
 
     @ParameterizedTest
