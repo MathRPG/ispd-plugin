@@ -68,7 +68,7 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
                 //indica que recurso está ocupado
                 this.processadoresDisponiveis--;
                 //cria evento para iniciar o atendimento imediatamente
-                final var novoEvt = new Event(
+                final Event novoEvt = new Event(
                     simulacao.getTime(this), EventType.SERVICE, this, cliente
                 );
                 simulacao.addFutureEvent(novoEvt);
@@ -82,23 +82,28 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
     public void clientProcessing (final Simulation simulacao, final GridTask cliente) {
         cliente.finalizarEsperaProcessamento(simulacao.getTime(this));
         cliente.iniciarAtendimentoProcessamento(simulacao.getTime(this));
+        if (cliente == null) {
+            System.out.println("cliente nao existe");
+        } else {
+            System.out.println("cliente é a tarefa " + cliente.getIdentificador());
+        }
         this.tarefaEmExecucao.add(cliente);
-        final var next = simulacao.getTime(this)
-                         + this.tempoProcessar(cliente.getTamProcessamento()
+        final Double next = simulacao.getTime(this)
+                            + this.tempoProcessar(cliente.getTamProcessamento()
                                                   - cliente.getMflopsProcessado());
         if (!this.falhas.isEmpty() && next > this.falhas.get(0)) {
-            var tFalha = this.falhas.remove(0);
+            Double tFalha = this.falhas.remove(0);
             if (tFalha < simulacao.getTime(this)) {
                 tFalha = simulacao.getTime(this);
             }
-            final var msg = new Request(this, RequestType.FAILURE, cliente);
-            final var evt = new Event(
+            final Request msg = new Request(this, RequestType.FAILURE, cliente);
+            final Event evt = new Event(
                 tFalha, EventType.MESSAGE, this, msg
             );
             simulacao.addFutureEvent(evt);
         } else {
             //Gera evento para atender proximo cliente da lista
-            final var evtFut = new Event(
+            final Event evtFut = new Event(
                 next, EventType.EXIT, this, cliente
             );
             //Event adicionado a lista de evntos futuros
@@ -113,7 +118,7 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
             .getMetrica()
             .incMflopsProcessados(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
         //Incrementa o tempo de processamento
-        final var tempoProc =
+        final double tempoProc =
             this.tempoProcessar(cliente.getTamProcessamento() - cliente.getMflopsProcessado());
         this.getMetrica().incSegundosDeProcessamento(tempoProc);
         //Incrementa o tempo de transmissão no pacote
@@ -123,31 +128,33 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
         cliente.calcEficiencia(this.getPoderComputacional());
         //Devolve tarefa para o mestre
 
-        final var Origem = cliente.getOrigem();
+        final Service            Origem = cliente.getOrigem();
         final ArrayList<Service> caminho;
         if (Origem.equals(this.vmmResponsavel)) {
             caminho = new ArrayList<>(this.caminhoVMM);
         } else {
-            final var index = this.VMMsIntermediarios.indexOf((CloudMaster) Origem);
+            System.out.println("A tarefa não saiu do vmm desta vm!!!!!");
+            final int index = this.VMMsIntermediarios.indexOf((CloudMaster) Origem);
             if (index == -1) {
-                final var auxMaq = this.maquinaHospedeira;
-                final var caminhoInter =
+                final CloudMachine auxMaq = this.maquinaHospedeira;
+                final ArrayList<Service> caminhoInter =
                     new ArrayList<>(getMenorCaminhoIndiretoCloud(
                         auxMaq,
                         (Processing) Origem
                     ));
                 caminho = new ArrayList<>(caminhoInter);
                 this.VMMsIntermediarios.add((CloudMaster) Origem);
-                final var idx = this.VMMsIntermediarios.indexOf((CloudMaster) Origem);
+                final int idx = this.VMMsIntermediarios.indexOf((CloudMaster) Origem);
                 this.caminhoIntermediarios.add(idx, caminhoInter);
             } else {
                 caminho = new ArrayList<Service>(this.caminhoIntermediarios.get(index));
             }
         }
         cliente.setCaminho(caminho);
+        System.out.println("Saida -" + this.id() + "- caminho size:" + caminho.size());
 
         //Gera evento para chegada da tarefa no proximo servidor
-        final var evtFut = new Event(
+        final Event evtFut = new Event(
             simulacao.getTime(this),
             EventType.ARRIVAL,
             cliente.getCaminho().remove(0),
@@ -161,8 +168,8 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
             this.processadoresDisponiveis++;
         } else {
             //Gera evento para atender proximo cliente da lista
-            final var proxCliente = this.filaTarefas.remove(0);
-            final var NovoEvt = new Event(
+            final GridTask proxCliente = this.filaTarefas.remove(0);
+            final Event NovoEvt = new Event(
                 simulacao.getTime(this), EventType.SERVICE, this, proxCliente
             );
             //Event adicionado a lista de evntos futuros
@@ -208,9 +215,9 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
 
     @Override
     public void handleReturn (final Simulation simulacao, final Request request) {
-        final var remover = this.filaTarefas.remove(request.getTarefa());
+        final boolean remover = this.filaTarefas.remove(request.getTarefa());
         if (remover) {
-            final var evtFut = new Event(
+            final Event evtFut = new Event(
                 simulacao.getTime(this),
                 EventType.ARRIVAL,
                 request.getTarefa().getOrigem(),
@@ -233,8 +240,8 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                final var proxCliente = this.filaTarefas.remove(0);
-                final var evtFut = new Event(
+                final GridTask proxCliente = this.filaTarefas.remove(0);
+                final Event evtFut = new Event(
                     simulacao.getTime(this),
                     EventType.SERVICE,
                     this, proxCliente
@@ -243,9 +250,9 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
                 simulacao.addFutureEvent(evtFut);
             }
         }
-        final var inicioAtendimento = request.getTarefa().cancelar(simulacao.getTime(this));
-        final var tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-        final var mflopsProcessados = this.getMflopsProcessados(tempoProc);
+        final double inicioAtendimento = request.getTarefa().cancelar(simulacao.getTime(this));
+        final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+        final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
         //Incrementa o número de Mflops processados por este recurso
         this.getMetrica().incMflopsProcessados(mflopsProcessados);
         //Incrementa o tempo de processamento
@@ -258,13 +265,13 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
     public void handleUpdate (final Simulation simulacao, final Request request) {
         //enviar resultados
         final List<Service> caminho = new ArrayList<>(this.caminhoVMM);
-        final var novaRequest =
+        final Request novaRequest =
             new Request(this, request.getTamComunicacao(), RequestType.UPDATE_RESULT);
         //Obtem informações dinâmicas
         novaRequest.setProcessadorEscravo(new ArrayList<>(this.tarefaEmExecucao));
         novaRequest.setFilaEscravo(new ArrayList<>(this.filaTarefas));
         novaRequest.setCaminho(caminho);
-        final var evtFut = new Event(
+        final Event evtFut = new Event(
             simulacao.getTime(this),
             EventType.MESSAGE,
             novaRequest.getCaminho().remove(0),
@@ -282,18 +289,18 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
     @Override
     public void handleFailure (final Simulation simulacao, final Request request) {
         this.recuperacao.remove(0);
-        for (final var tar : this.tarefaEmExecucao) {
+        for (final GridTask tar : this.tarefaEmExecucao) {
             if (tar.getEstado() == TaskState.PROCESSING) {
-                final var inicioAtendimento = tar.parar(simulacao.getTime(this));
-                final var tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-                final var mflopsProcessados = this.getMflopsProcessados(tempoProc);
+                final double inicioAtendimento = tar.parar(simulacao.getTime(this));
+                final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+                final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
                 //Incrementa o número de Mflops processados por este recurso
                 this.getMetrica().incMflopsProcessados(mflopsProcessados);
                 //Incrementa o tempo de processamento
                 this.getMetrica().incSegundosDeProcessamento(tempoProc);
                 //Incrementa procentagem da tarefa processada
                 // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
-                final var numCP = (int) (mflopsProcessados / 0.0);
+                final int numCP = (int) (mflopsProcessados / 0.0);
                 // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
                 tar.setMflopsProcessado(numCP * 0.0);
                 tar.setEstado(TaskState.FAILED);
@@ -320,8 +327,8 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                final var proxCliente = this.filaTarefas.remove(0);
-                final var evtFut = new Event(
+                final GridTask proxCliente = this.filaTarefas.remove(0);
+                final Event evtFut = new Event(
                     simulacao.getTime(this),
                     EventType.SERVICE,
                     this, proxCliente
@@ -329,9 +336,9 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
-            final var inicioAtendimento = request.getTarefa().parar(simulacao.getTime(this));
-            final var tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-            final var mflopsProcessados = this.getMflopsProcessados(tempoProc);
+            final double inicioAtendimento = request.getTarefa().parar(simulacao.getTime(this));
+            final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+            final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
             //Incrementa o número de Mflops processados por este recurso
             this.getMetrica().incMflopsProcessados(mflopsProcessados);
             //Incrementa o tempo de processamento
@@ -345,7 +352,7 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
 
     @Override
     public void handleCancel (final Simulation simulacao, final Request request) {
-        var remover = false;
+        boolean remover = false;
         if (request.getTarefa().getEstado() == TaskState.BLOCKED) {
             remover = this.filaTarefas.remove(request.getTarefa());
         } else if (request.getTarefa().getEstado() == TaskState.PROCESSING) {
@@ -360,8 +367,8 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
                 this.processadoresDisponiveis++;
             } else {
                 //Gera evento para atender proximo cliente da lista
-                final var proxCliente = this.filaTarefas.remove(0);
-                final var evtFut = new Event(
+                final GridTask proxCliente = this.filaTarefas.remove(0);
+                final Event evtFut = new Event(
                     simulacao.getTime(this),
                     EventType.SERVICE,
                     this, proxCliente
@@ -369,22 +376,22 @@ public class VirtualMachine extends Processing implements Client, RequestHandler
                 //Event adicionado a lista de evntos futuros
                 simulacao.addFutureEvent(evtFut);
             }
-            final var inicioAtendimento = request.getTarefa().parar(simulacao.getTime(this));
-            final var tempoProc         = simulacao.getTime(this) - inicioAtendimento;
-            final var mflopsProcessados = this.getMflopsProcessados(tempoProc);
+            final double inicioAtendimento = request.getTarefa().parar(simulacao.getTime(this));
+            final double tempoProc         = simulacao.getTime(this) - inicioAtendimento;
+            final double mflopsProcessados = this.getMflopsProcessados(tempoProc);
             //Incrementa o número de Mflops processados por este recurso
             this.getMetrica().incMflopsProcessados(mflopsProcessados);
             //Incrementa o tempo de processamento
             this.getMetrica().incSegundosDeProcessamento(tempoProc);
             //Incrementa procentagem da tarefa processada
             // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
-            final var numCP = (int) (mflopsProcessados / 0.0);
+            final int numCP = (int) (mflopsProcessados / 0.0);
             // Se for alterado o tempo de checkpoint, alterar também no métricas linha 832, cálculo da energia desperdiçada
             request.getTarefa().setMflopsProcessado(numCP * 0.0);
             this.tarefaEmExecucao.remove(request.getTarefa());
         }
         if (remover) {
-            final var evtFut = new Event(
+            final Event evtFut = new Event(
                 simulacao.getTime(this),
                 EventType.ARRIVAL,
                 request.getTarefa().getOrigem(),

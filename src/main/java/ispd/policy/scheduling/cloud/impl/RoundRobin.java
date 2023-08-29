@@ -22,6 +22,7 @@ public class RoundRobin extends CloudSchedulingPolicy {
 
     @Override
     public void iniciar () {
+        System.out.println("iniciou escalonamento RR");
         this.slavesUser = new LinkedList<>();
         this.resources  = this.slavesUser.listIterator(0);
     }
@@ -31,11 +32,13 @@ public class RoundRobin extends CloudSchedulingPolicy {
         final var destination = (Processing) destino;
         final int index       = this.escravos.indexOf(destination);
 
+        System.out.println("traçando rota para a VM: " + destination.id());
         return new ArrayList<>((List<Service>) this.caminhoEscravo.get(index));
     }
 
     @Override
     public void escalonar () {
+        System.out.println("---------------------------");
         final var task      = this.escalonarTarefa();
         final var taskOwner = task.getProprietario();
         this.slavesUser = (LinkedList<Processing>) this.getVMsAdequadas(taskOwner);
@@ -45,6 +48,8 @@ public class RoundRobin extends CloudSchedulingPolicy {
         } else {
             this.scheduleTask(task);
         }
+
+        System.out.println("---------------------------");
     }
 
     @Override
@@ -61,12 +66,21 @@ public class RoundRobin extends CloudSchedulingPolicy {
     }
 
     private void noAllocatedVms (final GridTask task) {
+        System.out.printf(
+            "Não existem VMs alocadas ainda, devolvendo tarefa %d%n",
+            task.getIdentificador()
+        );
         this.adicionarTarefa(task);
         this.mestre.freeScheduler();
     }
 
     private void scheduleTask (final GridTask task) {
         final var resource = this.escalonarRecurso();
+        System.out.printf(
+            "escalonando tarefa %d para:%s%n",
+            task.getIdentificador(),
+            resource.id()
+        );
         task.setLocalProcessamento(resource);
         task.setCaminho(this.escalonarRota(resource));
         this.mestre.sendTask(task);

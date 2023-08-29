@@ -19,7 +19,7 @@ import java.util.stream.*;
 
 public class CloudSequential extends Simulation {
 
-    private final PriorityQueue<Event> eventos = new PriorityQueue<>();
+    private final PriorityQueue<ispd.motor.Event> eventos = new PriorityQueue<>();
 
     private double time = 0;
 
@@ -52,13 +52,15 @@ public class CloudSequential extends Simulation {
         window.print("Creating routing.");
         window.print(" -> ");
 
-        for (final var mst : cloudQueueNetwork.getMestres()) {
-            final var temp = (Simulable) mst;
-            final var aux  = (Simulable) mst;
+        System.out.println("---------------------------------------");
+        for (final Processing mst : cloudQueueNetwork.getMestres()) {
+            final Simulable temp = (Simulable) mst;
+            final Simulable aux  = (Simulable) mst;
             //Cede acesso ao mestre a fila de eventos futuros
             aux.setSimulation(this);
             temp.setSimulation(this);
             //Encontra menor caminho entre o mestre e seus escravos
+            System.out.printf("Mestre %s encontrando seus escravos\n", mst.id());
             mst.determinarCaminhos(); //mestre encontra caminho para seus escravos
         }
 
@@ -75,7 +77,8 @@ public class CloudSequential extends Simulation {
             if (selecionarFalhas.cbkOmissaoHardware != null) {
                 window.println("There are injected hardware omission failures.");
                 window.println("Creating Hardware fault.");
-                Hardware.showMessage(window);
+                final Hardware fihardware = new Hardware();
+                fihardware.FIHardware1(window, cloudQueueNetwork);
             } else {
                 window.println("There aren't injected hardware omission failures.");
             }
@@ -84,7 +87,8 @@ public class CloudSequential extends Simulation {
                 window.println("There are injected software omission failures.");
                 window.println("Creating software fault.");
                 window.println("Software failure created.");
-                Software.showMessage(window);
+                final Software fisoftdware = new Software();
+                fisoftdware.FISfotware1(window, cloudQueueNetwork);
             } else {
                 window.println("There aren't injected software omission failures.");
             }
@@ -109,7 +113,9 @@ public class CloudSequential extends Simulation {
             if (selecionarFalhas.cbxValores != null) {
                 window.println("There are injected Values failures.");
                 window.println("Creating value fault.");
-                Value.setFaults(window, cloudQueueNetwork, new Global());
+                final Global global = new Global();
+                final Value  value  = new Value();
+                value.FIValue1(window, cloudQueueNetwork, global);
             } else {
                 window.println("There aren't injected Value failures.");
             }
@@ -118,7 +124,8 @@ public class CloudSequential extends Simulation {
             if (selecionarFalhas.cbxEstado != null) {
                 window.println("There are injected State failures.");
                 window.println("Creating state fault.");
-                State.showMessage(window);
+                final State state = new State();
+                state.FIState1(window, cloudQueueNetwork);
             } else {
                 window.println("There aren't injected State failures.");
             }
@@ -202,7 +209,8 @@ public class CloudSequential extends Simulation {
             .isEmpty()) {
             window.println("The model has no phisical machines.", Color.orange);
         } else {
-            for (final var maq : cloudQueueNetwork.getMaquinasCloud()) {
+            System.out.println("---------------------------------------");
+            for (final CloudMachine maq : cloudQueueNetwork.getMaquinasCloud()) {
                 // Encontra menor caminho entre o escravo e seu mestre
                 maq.determinarCaminhos(); // escravo encontra caminhos para seu mestre
             }
@@ -215,10 +223,14 @@ public class CloudSequential extends Simulation {
     @Override
     public void simulate () {
         //inicia os escalonadores
+        System.out.println("---------------------------------------");
         this.initCloudSchedulers();
-        this.initCloudAllocators();
+        System.out.println("---------------------------------------");
 
+        this.initCloudAllocators();
+        System.out.println("---------------------------------------");
         this.addEventos(this.getJobs());
+        System.out.println("---------------------------------------");
 
         if (this.atualizarEscalonadores()) {
             this.realizarSimulacaoAtualizaTime();
@@ -232,7 +244,7 @@ public class CloudSequential extends Simulation {
     }
 
     @Override
-    public void addFutureEvent (final Event ev) {
+    public void addFutureEvent (final ispd.motor.Event ev) {
         this.eventos.offer(ev);
     }
 
@@ -245,7 +257,7 @@ public class CloudSequential extends Simulation {
         // remover evento de saida do cliente do servidor
         final var interator = this.eventos.iterator();
         while (interator.hasNext()) {
-            final var ev = interator.next();
+            final ispd.motor.Event ev = interator.next();
             if (ev.getType() == eventType
                 && ev.getServidor().equals(eventServer)
                 && ev.getClient().equals(eventClient)) {
@@ -261,9 +273,10 @@ public class CloudSequential extends Simulation {
         return this.time;
     }
 
-    private void addEventos (final List<GridTask> tarefas) {
-        for (final var tarefa : tarefas) {
-            final var evt = new Event(
+    public void addEventos (final List<GridTask> tarefas) {
+        System.out.println("Tarefas sendo adicionadas na lista de eventos futuros");
+        for (final GridTask tarefa : tarefas) {
+            final var evt = new ispd.motor.Event(
                 tarefa.getTimeCriacao(),
                 EventType.ARRIVAL,
                 tarefa.getOrigem(),
@@ -274,8 +287,8 @@ public class CloudSequential extends Simulation {
     }
 
     private boolean atualizarEscalonadores () {
-        for (final var mst : this.getCloudQueueNetwork().getMestres()) {
-            final var mestre = (CloudMaster) mst;
+        for (final Processing mst : this.getCloudQueueNetwork().getMestres()) {
+            final CloudMaster mestre = (CloudMaster) mst;
             if (mestre.getEscalonador().getTempoAtualizar() != null) {
                 return true;
             }
@@ -295,12 +308,12 @@ public class CloudSequential extends Simulation {
             //executa estes eventos de acordo com sua ordem de chegada
             //de forma a evitar a execução de um evento antes de outro
             //que seria criado anteriormente
-            for (final var ob : updateArray) {
+            for (final Object[] ob : updateArray) {
                 final var event = this.eventos.peek();
                 Objects.requireNonNull(event);
                 if ((Double) ob[2] < event.getCreationTime()) {
-                    final var mestre = (GridMaster) ob[0];
-                    for (final var maq : mestre.getEscalonador().getEscravos()) {
+                    final GridMaster mestre = (GridMaster) ob[0];
+                    for (final Processing maq : mestre.getEscalonador().getEscravos()) {
                         mestre.atualizar(maq, (Double) ob[2]);
                     }
                     ob[2] = (Double) ob[2] + (Double) ob[1];
@@ -321,7 +334,7 @@ public class CloudSequential extends Simulation {
     }
 
     private void desligarMaquinas (final Simulation simulation, final CloudQueueNetwork qn) {
-        for (final var aux : qn.getMaquinasCloud()) {
+        for (final CloudMachine aux : qn.getMaquinasCloud()) {
             aux.desligar(simulation);
         }
     }
@@ -339,7 +352,7 @@ public class CloudSequential extends Simulation {
     }
 
     private void processTopEvent () {
-        final var eventoAtual = this.eventos.poll();
+        final Event eventoAtual = this.eventos.poll();
         Objects.requireNonNull(eventoAtual);
         this.time = eventoAtual.getCreationTime();
         switch (eventoAtual.getType()) {

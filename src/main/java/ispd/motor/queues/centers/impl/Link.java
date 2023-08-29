@@ -43,6 +43,10 @@ public class Link extends Communication {
     @Override
     public void clientProcessing (final Simulation simulacao, final GridTask cliente) {
         if (!this.conexoesSaida.equals(cliente.getCaminho().get(0))) {
+            System.out.println(
+                "link " + this.id() + " tarefa " + cliente.getIdentificador() + " tempo " +
+                simulacao.getTime(this) + " local " + cliente.getCaminho().get(0).id()
+            );
             throw new IllegalArgumentException(
                 "O destino da mensagem é um recurso sem conexão com este link");
         } else {

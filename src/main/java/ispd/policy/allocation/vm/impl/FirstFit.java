@@ -66,8 +66,11 @@ public class FirstFit extends VmAllocationPolicy {
                 this.maqIndex++;
 
                 if (auxMaq instanceof CloudMaster) {
+                    System.out.printf("%s é um VMM, a VM será redirecionada\n", auxMaq.id());
                     auxVM.setCaminho(this.escalonarRota(auxMaq));
+                    System.out.printf("%s enviada para %s\n", auxVM.id(), auxMaq.id());
                     this.mestre.sendVm(auxVM);
+                    System.out.println("---------------------------------------");
                     break;
                 } else {
                     final var maq = (CloudMachine) auxMaq;

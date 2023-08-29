@@ -6,11 +6,10 @@ import ispd.motor.simul.*;
 import java.util.*;
 import javax.swing.*;
 
-public enum Value {
-    ;
+public class Value {
 
     //Método para inserção de falha de resposta
-    public static void setFaults (
+    public void FIValue1 (
         final ProgressTracker janela,
         final CloudQueueNetwork redeDeFilas,
         final Global global
@@ -23,7 +22,11 @@ public enum Value {
         //Criação de filas vazias para armazenamento das máquinas antes da falha
 
         //Processo de falha e tratamento
-        if (redeDeFilas.getVMs() != null) {
+        if (redeDeFilas.getVMs() == null) {
+            System.out.println("---------------------------------------");
+            System.out.println("Rede de filas é nula.");
+
+        } else if (redeDeFilas.getVMs() != null) {
             //Variáveis para recuperação
             final double OciosidadeComputacaoOri  = global.getOciosidadeComputacao();
             final double OciosidadeComunicacaoOri = global.getOciosidadeComunicacao();
@@ -33,8 +36,7 @@ public enum Value {
             //Criação de números aleatórios para alterações das respostas para usuários
             final Random cloudMachines = new Random(); //Máquinas da nuvem
 
-            final double metricsCloud =
-                cloudMachines.nextInt(redeDeFilas.getMaquinasCloud().size());
+            final double metricsCloud = cloudMachines.nextInt(redeDeFilas.getMaquinasCloud().size());
 
             global.setOciosidadeComputacao(metricsCloud / 100);
             global.setOciosidadeComunicacao(metricsCloud);
@@ -52,7 +54,6 @@ public enum Value {
                 global.setSatisfacaoMedia(SatisfacaoMediaOri);
                 global.setEficiencia(EficienciaOri);
             }
-
         }
     }
 }
