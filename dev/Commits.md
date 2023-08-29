@@ -94,7 +94,7 @@ Abbreviations for common elements, specially in refactoring commits, are allowed
 | ext  | extract |
 | impl | implement/implementation |
 | inl  | inline |
-| met  | method |
+| mth  | method |
 | mv   | move |
 | pkg  | package |
 | rnm  | rename |
