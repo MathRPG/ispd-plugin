@@ -144,4 +144,8 @@ public class Switch extends Communication implements Vertex {
     public void addConexoesEntrada (final Link conexao) {
         this.conexoesSaida.add(conexao);
     }
+
+    public void addConexoesSaida (final Service conexao) {
+        this.conexoesSaida.add(conexao);
+    }
 }
