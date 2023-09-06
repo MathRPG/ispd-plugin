@@ -434,8 +434,8 @@ public class CloudMaster extends Processing implements VmMaster,
     }
 
     @Override
-    public void addOutboundConnection (final Link link) {
-        this.conexoesSaida.add(link);
+    public void addOutboundConnection (final Communication comm) {
+        this.conexoesSaida.add(comm);
     }
 
     @Override

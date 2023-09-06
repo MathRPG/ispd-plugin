@@ -136,13 +136,13 @@ public class Switch extends Communication implements Vertex {
     }
 
     @Override
-    public void addOutboundConnection (final Link link) {
-        this.conexoesSaida.add(link);
+    public void addOutboundConnection (final Communication comm) {
+        this.conexoesSaida.add(comm);
     }
 
     @Override
-    public void addInboundConnection (final Link link) {
-        this.addOutboundConnection(link);
+    public void addInboundConnection (final Communication comm) {
+        this.addOutboundConnection(comm);
     }
 
     public void addConexoesSaida (final Service conexao) {

@@ -142,8 +142,8 @@ public class GridMachine extends Processing implements RequestHandler, Vertex {
     }
 
     @Override
-    public void addOutboundConnection (final Link link) {
-        this.conexoesSaida.add(link);
+    public void addOutboundConnection (final Communication comm) {
+        this.conexoesSaida.add(comm);
     }
 
     @Override

@@ -1,9 +1,11 @@
 package ispd.motor.queues.centers.impl;
 
+import ispd.motor.queues.centers.*;
+
 public interface Vertex {
 
-    void addOutboundConnection (final Link link);
+    void addOutboundConnection (final Communication comm);
 
-    default void addInboundConnection (final Link link) {
+    default void addInboundConnection (final Communication comm) {
     }
 }

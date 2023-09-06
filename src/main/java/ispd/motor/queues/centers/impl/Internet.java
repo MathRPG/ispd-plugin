@@ -9,7 +9,7 @@ import java.util.*;
 
 public class Internet extends Communication implements Vertex {
 
-    private final List<Link> conexoesSaida = new ArrayList<>();
+    private final List<Communication> conexoesSaida = new ArrayList<>();
 
     public Internet (
         final String id, final double LarguraBanda, final double Ocupacao, final double Latencia
@@ -18,8 +18,8 @@ public class Internet extends Communication implements Vertex {
     }
 
     @Override
-    public void addOutboundConnection (final Link link) {
-        this.conexoesSaida.add(link);
+    public void addOutboundConnection (final Communication comm) {
+        this.conexoesSaida.add(comm);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class Internet extends Communication implements Vertex {
     }
 
     @Override
-    public List<Link> connections () {
+    public List<Communication> connections () {
         return this.conexoesSaida;
     }
 }
