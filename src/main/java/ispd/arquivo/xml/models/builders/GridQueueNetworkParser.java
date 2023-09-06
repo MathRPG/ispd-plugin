@@ -55,8 +55,8 @@ public class GridQueueNetworkParser {
         final Link link, final Vertex origination, final Vertex destination
     ) {
         link.setConexoesSaida((Service) destination);
-        origination.addConexoesSaida(link);
-        destination.addConexoesEntrada(link);
+        origination.addOutboundConnection(link);
+        destination.addInboundConnection(link);
     }
 
     /**
