@@ -1,9 +1,7 @@
 package ispd.arquivo.xml;
 
 import ispd.arquivo.xml.utils.*;
-import ispd.gui.*;
 import java.io.*;
-import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.xml.parsers.*;
@@ -61,17 +59,6 @@ public class ConfiguracaoISPD {
     private static File loadIspdDirectory () {
 
         return new File(".");
-    }
-
-    private static File getDirectory () {
-        final var location =
-            LogExceptions.class.getProtectionDomain().getCodeSource().getLocation();
-
-        try {
-            return new File(location.toURI());
-        } catch (final URISyntaxException ex) {
-            return new File(location.getPath());
-        }
     }
 
     private void readConfigFromDoc (final WrappedDocument doc) {
