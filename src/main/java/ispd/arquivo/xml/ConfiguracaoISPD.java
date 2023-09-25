@@ -258,11 +258,7 @@ public class ConfiguracaoISPD {
     /**
      * Set which was the last model opened.
      */
-    public void setLastFile (final File lastDir) {
-        if (lastDir == null) {
-            return;
-        }
-
-        this.lastModelOpen = lastDir;
+    public void setLastFile (final Optional<? extends File> lastFile) {
+        lastFile.ifPresent(file -> this.lastModelOpen = file);
     }
 }

@@ -1152,7 +1152,7 @@ public final class MainWindow extends JFrame {
     }
 
     private void formWindowClosing () {
-        this.configure.setLastFile(this.openFile);
+        this.configure.setLastFile(Optional.ofNullable(this.openFile));
         this.configure.saveCurrentConfig();
 
         if (!this.currentFileHasUnsavedChanges) {
