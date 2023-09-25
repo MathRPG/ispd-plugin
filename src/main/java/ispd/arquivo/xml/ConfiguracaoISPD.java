@@ -61,7 +61,7 @@ public class ConfiguracaoISPD {
     private static File loadIspdDirectory () {
         final var dir = getDirectory();
 
-        if (dir.getName().endsWith(".jar")) {
+        if (false) {
             return dir.getParentFile();
         } else {
             return new File(".");
