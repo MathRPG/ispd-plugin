@@ -61,11 +61,7 @@ public class ConfiguracaoISPD {
     private static File loadIspdDirectory () {
         final var dir = getDirectory();
 
-        if (false) {
-            return dir.getParentFile();
-        } else {
-            return new File(".");
-        }
+        return new File(".");
     }
 
     private static File getDirectory () {
