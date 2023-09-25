@@ -13,7 +13,7 @@ import org.xml.sax.*;
  */
 public class ConfiguracaoISPD {
 
-    public static final File DIRETORIO_ISPD = new File(".");
+    private static final File DIRETORIO_ISPD = new File(".");
 
     private static final String FILENAME = "configuration.xml";
 
