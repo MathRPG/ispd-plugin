@@ -13,7 +13,7 @@ import org.xml.sax.*;
  */
 public class ConfiguracaoISPD {
 
-    public static final File DIRETORIO_ISPD = loadIspdDirectory();
+    public static final File DIRETORIO_ISPD = new File(".");
 
     private static final String FILENAME = "configuration.xml";
 
@@ -54,11 +54,6 @@ public class ConfiguracaoISPD {
                 .getLogger(ConfiguracaoISPD.class.getName())
                 .warning("Error while reading configuration file '%s'".formatted(this.configurationFile));
         }
-    }
-
-    private static File loadIspdDirectory () {
-
-        return new File(".");
     }
 
     private void readConfigFromDoc (final WrappedDocument doc) {
