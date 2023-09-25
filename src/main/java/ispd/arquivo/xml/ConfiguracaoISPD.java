@@ -59,7 +59,6 @@ public class ConfiguracaoISPD {
     }
 
     private static File loadIspdDirectory () {
-        final var dir = getDirectory();
 
         return new File(".");
     }
