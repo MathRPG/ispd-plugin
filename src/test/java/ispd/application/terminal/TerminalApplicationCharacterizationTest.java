@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import ispd.annotations.*;
 import ispd.policy.loaders.*;
 import java.io.*;
 import java.net.*;
@@ -34,15 +33,12 @@ class TerminalApplicationCharacterizationTest {
 
     private final SystemTimeProvider systemTimeProvider = mock();
 
-    @RefactorOnNextJavaLts(reason = "Use Pattern Matching.")
     private static String @Nullable [] convertToOptionArray (final CharSequence spacedOptions) {
-        if (spacedOptions == null) {
-            return null;
-        }
-        if (spacedOptions.isEmpty()) {
-            return NO_OPTIONS;
-        }
-        return SPACE_MATCHER.split(spacedOptions);
+        return switch (spacedOptions) {
+            case null -> null;
+            case final CharSequence cs when cs.isEmpty() -> NO_OPTIONS;
+            default -> SPACE_MATCHER.split(spacedOptions);
+        };
     }
 
     private TerminalApplication initTerminalApplication (final CharSequence spacedOptions) {

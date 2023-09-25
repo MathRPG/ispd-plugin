@@ -436,8 +436,8 @@ public class GridMaster extends Processing
     }
 
     @Override
-    public void addConexoesSaida (final Link link) {
-        this.conexoesSaida.add(link);
+    public void addOutboundConnection (final Communication comm) {
+        this.conexoesSaida.add(comm);
     }
 
     /**

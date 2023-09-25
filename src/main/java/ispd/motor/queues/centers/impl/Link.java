@@ -32,9 +32,12 @@ public class Link extends Communication {
             //indica que recurso está ocupado
             this.linkDisponivel = false;
             //cria evento para iniciar o atendimento imediatamente
-            final var novoEvt =
-                new Event(simulacao.getTime(this), EventType.SERVICE, this, cliente);
-            simulacao.addFutureEvent(novoEvt);
+            simulacao.addFutureEvent(new Event(
+                simulacao.getTime(this),
+                EventType.SERVICE,
+                this,
+                cliente
+            ));
         } else {
             this.filaPacotes.add(cliente);
         }
@@ -49,12 +52,13 @@ public class Link extends Communication {
             cliente.finalizarEsperaComunicacao(simulacao.getTime(this));
             cliente.iniciarAtendimentoComunicacao(simulacao.getTime(this));
             //Gera evento para atender proximo cliente da lista
-            final var evtFut = new Event(
-                simulacao.getTime(this) + this.tempoTransmitir(cliente.getTamComunicacao()),
-                EventType.EXIT, this, cliente
-            );
             //Event adicionado a lista de evntos futuros
-            simulacao.addFutureEvent(evtFut);
+            simulacao.addFutureEvent(new Event(
+                simulacao.getTime(this) + this.tempoTransmitir(cliente.getTamComunicacao()),
+                EventType.EXIT,
+                this,
+                cliente
+            ));
         }
     }
 
@@ -68,29 +72,26 @@ public class Link extends Communication {
         //Incrementa o tempo de transmissão no pacote
         cliente.finalizarAtendimentoComunicacao(simulacao.getTime(this));
         //Gera evento para chegada da tarefa no proximo servidor
-        var evtFut =
-            new Event(
-                simulacao.getTime(this),
-                EventType.ARRIVAL,
-                cliente.getCaminho().remove(0),
-                cliente
-            );
         //Event adicionado a lista de evntos futuros
-        simulacao.addFutureEvent(evtFut);
+        simulacao.addFutureEvent(new Event(
+            simulacao.getTime(this),
+            EventType.ARRIVAL,
+            cliente.getCaminho().remove(0),
+            cliente
+        ));
         if (this.filaPacotes.isEmpty()) {
             //Indica que está livre
             this.linkDisponivel = true;
         } else {
             //Gera evento para atender proximo cliente da lista
             final var proxCliente = this.filaPacotes.remove(0);
-            evtFut = new Event(
+            //Event adicionado a lista de evntos futuros
+            simulacao.addFutureEvent(new Event(
                 simulacao.getTime(this),
                 EventType.SERVICE,
                 this,
                 proxCliente
-            );
-            //Event adicionado a lista de evntos futuros
-            simulacao.addFutureEvent(evtFut);
+            ));
         }
     }
 
@@ -108,32 +109,35 @@ public class Link extends Communication {
             final var tempoTrans = this.tempoTransmitir(cliente.getTamComunicacao());
             this.getMetrica().incSegundosDeTransmissao(tempoTrans);
             //Gera evento para chegada da mensagem no proximo servidor
-            var evtFut = new Event(
+            //Event adicionado a lista de evntos futuros
+            simulacao.addFutureEvent(new Event(
                 simulacao.getTime(this) + tempoTrans,
                 EventType.MESSAGE,
                 cliente.getCaminho().remove(0),
                 cliente
-            );
-            //Event adicionado a lista de evntos futuros
-            simulacao.addFutureEvent(evtFut);
+            ));
             if (!this.filaMensagens.isEmpty()) {
                 //Gera evento para chegada da mensagem no proximo servidor
-                evtFut = new Event(
-                    simulacao.getTime(this) + tempoTrans,
-                    EventType.MESSAGE_EXIT, this, this.filaMensagens.remove(0)
-                );
                 //Event adicionado a lista de evntos futuros
-                simulacao.addFutureEvent(evtFut);
+                simulacao.addFutureEvent(new Event(
+                    simulacao.getTime(this) + tempoTrans,
+                    EventType.MESSAGE_EXIT,
+                    this,
+                    this.filaMensagens.remove(0)
+                ));
             } else {
                 this.linkDisponivelMensagem = true;
             }
         } else if (this.linkDisponivelMensagem) {
             this.linkDisponivelMensagem = false;
             //Gera evento para chegada da mensagem no proximo servidor
-            final var evtFut =
-                new Event(simulacao.getTime(this), EventType.MESSAGE_EXIT, this, cliente);
             //Event adicionado a lista de evntos futuros
-            simulacao.addFutureEvent(evtFut);
+            simulacao.addFutureEvent(new Event(
+                simulacao.getTime(this),
+                EventType.MESSAGE_EXIT,
+                this,
+                cliente
+            ));
         } else {
             this.filaMensagens.add(cliente);
         }
