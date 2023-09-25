@@ -1,9 +1,7 @@
 package ispd.arquivo.xml;
 
 import ispd.arquivo.xml.utils.*;
-import ispd.gui.*;
 import java.io.*;
-import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 import javax.xml.parsers.*;
@@ -15,7 +13,7 @@ import org.xml.sax.*;
  */
 public class ConfiguracaoISPD {
 
-    public static final File DIRETORIO_ISPD = loadIspdDirectory();
+    private static final File DIRETORIO_ISPD = new File(".");
 
     private static final String FILENAME = "configuration.xml";
 
@@ -55,27 +53,6 @@ public class ConfiguracaoISPD {
             Logger
                 .getLogger(ConfiguracaoISPD.class.getName())
                 .warning("Error while reading configuration file '%s'".formatted(this.configurationFile));
-        }
-    }
-
-    private static File loadIspdDirectory () {
-        final var dir = getDirectory();
-
-        if (dir.getName().endsWith(".jar")) {
-            return dir.getParentFile();
-        } else {
-            return new File(".");
-        }
-    }
-
-    private static File getDirectory () {
-        final var location =
-            LogExceptions.class.getProtectionDomain().getCodeSource().getLocation();
-
-        try {
-            return new File(location.toURI());
-        } catch (final URISyntaxException ex) {
-            return new File(location.getPath());
         }
     }
 
@@ -281,11 +258,7 @@ public class ConfiguracaoISPD {
     /**
      * Set which was the last model opened.
      */
-    public void setLastFile (final File lastDir) {
-        if (lastDir == null) {
-            return;
-        }
-
-        this.lastModelOpen = lastDir;
+    public void setLastFile (final Optional<? extends File> lastFile) {
+        lastFile.ifPresent(file -> this.lastModelOpen = file);
     }
 }
